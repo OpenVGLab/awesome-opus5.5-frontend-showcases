@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opus Showcases · 纯 SVG 小游戏合集</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='14' width='56' height='36' rx='14' fill='%231d1a16'/%3E%3Ccircle cx='22' cy='32' r='6' fill='%23ff9f1c'/%3E%3Ccircle cx='44' cy='28' r='4' fill='%233fb950'/%3E%3Ccircle cx='50' cy='36' r='4' fill='%231e9bf0'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f4efe6; --ink: #1d1a16; --muted: #7a7166; --line: #e4dbcc; --card: #fffdf9;
+    --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Helvetica Neue", Arial, sans-serif;
+    --latin: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; color: var(--ink); font-family: var(--sans);
+    background-color: var(--bg);
+    background-image: radial-gradient(rgba(29, 26, 22, .07) 1px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1340px; margin: 0 auto; padding: 60px 28px 72px; }
+
+  header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; }
+  .eyebrow { font: 800 12px/1 var(--latin); letter-spacing: .3em; color: var(--muted); }
+  h1 { margin: 16px 0 18px; font-size: clamp(40px, 6vw, 76px); line-height: 1.02; font-weight: 900; letter-spacing: -.02em; }
+  h1 .svg {
+    background: linear-gradient(95deg, #e8483b 0%, #ff9f1c 28%, #3fb950 52%, #1e9bf0 76%, #7b61ff 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lead { max-width: 760px; margin: 0; font-size: 17px; line-height: 1.8; color: #4a443c; }
+  .lead code { font: 700 .92em/1 var(--latin); background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .stat { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 15px; font-size: 13px; color: #4a443c; }
+  .stat b { font: 900 15px/1 var(--latin); color: var(--ink); margin-right: 4px; }
+  .strip { display: flex; gap: 8px; }
+  .strip i { width: 14px; height: 64px; border-radius: 8px; transform: skewX(-12deg); }
+
+  .grid { display: grid; grid-template-columns: 1fr; gap: 26px; margin-top: 48px; }
+  @media (min-width: 760px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .card:last-child:nth-child(odd) { grid-column: span 2; }
+  }
+  @media (min-width: 1180px) {
+    .grid { grid-template-columns: repeat(6, 1fr); }
+    .grid .card { grid-column: span 2; }
+    .grid .card:nth-child(-n+2) { grid-column: span 3; }
+  }
+  .card {
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -20px rgba(60, 40, 10, .38);
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 26px 44px -22px rgba(60, 40, 10, .5); }
+  .thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #1f1b17; border-bottom: 4px solid var(--accent); }
+  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .35s ease, transform .6s ease; }
+  .thumb img.alt { opacity: 0; }
+  .card:hover .thumb img { transform: scale(1.035); }
+  .card:hover .thumb img.alt { opacity: 1; }
+  .thumb .go {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.9); opacity: 0;
+    background: var(--accent); color: #fff; font-weight: 900; font-size: 15px; padding: 12px 22px; border-radius: 999px;
+    box-shadow: 0 12px 26px -10px rgba(0, 0, 0, .6); transition: opacity .25s ease, transform .25s ease; white-space: nowrap;
+  }
+  .card:hover .thumb .go { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .body { display: flex; flex-direction: column; gap: 12px; flex: 1; padding: 20px 22px 22px; }
+  .meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+  .no { font: 900 13px/1 var(--latin); letter-spacing: .08em; color: var(--accent-ink); }
+  .chip { border-radius: 999px; padding: 4px 10px; font-weight: 800; background: var(--accent-soft); color: var(--accent-ink); }
+  .insp { margin-left: auto; }
+  h3 { margin: 0; font-size: 25px; font-weight: 900; letter-spacing: .01em; }
+  h3 small { display: block; margin-top: 3px; font: 800 12px/1.5 var(--latin); letter-spacing: .22em; color: var(--muted); }
+  .pitch { margin: 0; font-size: 15px; line-height: 1.7; color: #3d372f; }
+  .style { font-size: 13px; color: var(--muted); }
+  .style b { color: #4a443c; font-weight: 700; }
+  .keys { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: #4a443c; }
+  .keys span { white-space: nowrap; }
+  kbd {
+    display: inline-block; margin-right: 6px; padding: 5px 8px; min-width: 26px; text-align: center;
+    font: 800 12px/1 var(--sans); color: var(--ink); background: #fff;
+    border: 1px solid #d9cfbf; border-bottom-width: 3px; border-radius: 7px;
+  }
+  .foot { display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 8px; }
+  .size { margin-right: auto; font: 700 12px/1.4 var(--latin); color: var(--muted); }
+  .btn { text-decoration: none; font-weight: 900; font-size: 14px; border-radius: 12px; padding: 10px 16px; white-space: nowrap; }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.06); }
+  .btn.ghost { background: #fff; border: 1.5px solid var(--line); color: var(--ink); }
+  .btn.ghost:hover { border-color: var(--accent); }
+  .card.pending .thumb {
+    display: grid; place-items: center; color: var(--muted); font-weight: 900; letter-spacing: .1em;
+    background: repeating-linear-gradient(45deg, #ece5d8 0 14px, #e5dccd 14px 28px);
+  }
+  .card.pending .btn { pointer-events: none; opacity: .45; }
+
+  .tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; margin-top: 56px; }
+  .tip { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; font-size: 14px; line-height: 1.75; color: #4a443c; }
+  .tip b { display: block; margin-bottom: 4px; color: var(--ink); }
+  footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 36px; font-size: 12px; color: var(--muted); }
+  @media (max-width: 720px) {
+    header { grid-template-columns: 1fr; }
+    .strip { display: none; }
+    .wrap { padding-top: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">OPUS SHOWCASES · PURE SVG GAMES</div>
+      <h1>纯 <span class="svg">SVG</span> 小游戏合集</h1>
+      <p class="lead">5 款玩法与画风完全不同的小游戏，由 Claude Opus 5.5 写成。每一款都只是一个 <code>.svg</code> 文件：画面、界面、游戏逻辑和音效全部写在同一个文件里，不依赖任何外部图片、字体或脚本，浏览器直接打开就能玩。</p>
+      <div class="stats"><span class="stat"><b>5/5</b>款游戏已上线</span><span class="stat"><b>661</b>KB 合计</span><span class="stat"><b>11,168</b>行代码</span><span class="stat"><b>0</b>个外部依赖</span></div>
+    </div>
+    <div class="strip" aria-hidden="true"><i style="background:#e8483b"></i><i style="background:#1e9bf0"></i><i style="background:#7b61ff"></i><i style="background:#ff9f1c"></i><i style="background:#3fb950"></i></div>
+  </header>
+
+  <main class="grid">
+    <article class="card" style="--accent:#e8483b;--accent-soft:#e8483b1f;--accent-ink:#a7332a">
+      <a class="thumb" href="games/kitchen-rush.svg?v=1790166380" target="_blank" rel="noopener"><img src="thumbs/kitchen-rush-title.jpg?v=1790179460" alt="厨房大作战 标题画面" loading="lazy"><img class="alt" src="thumbs/kitchen-rush-play.jpg?v=1790179460" alt="厨房大作战 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
+      <div class="body"><div class="meta"><span class="no">01</span><span class="chip">合作烹饪</span><span class="insp">灵感 · 胡闹厨房</span></div><h3>厨房大作战<small>KITCHEN RUSH</small></h3><p class="pitch">切菜、下锅、装盘、出餐——在订单超时之前把菜端上桌！支持同一键盘双人合作。</p><div class="style"><b>画风</b> 俯视卡通 · 粗描边暖色调</div><div class="keys"><span><kbd>WASD</kbd>移动</span><span><kbd>空格</kbd>拿 / 放</span><span><kbd>K</kbd>切菜</span><span><kbd>Tab</kbd>换厨师</span></div><div class="foot"><span class="size">94 KB · 1,676 行</span><a class="btn ghost" href="games/kitchen-rush.svg" download>下载 .svg</a><a class="btn primary" href="games/kitchen-rush.svg?v=1790166380" target="_blank" rel="noopener">开始游戏</a></div></div>
+    </article>
+    <article class="card" style="--accent:#1e9bf0;--accent-soft:#1e9bf01f;--accent-ink:#156fac">
+      <a class="thumb" href="games/sunny-kart.svg?v=1790166427" target="_blank" rel="noopener"><img src="thumbs/sunny-kart-title.jpg?v=1790179460" alt="阳光卡丁车 标题画面" loading="lazy"><img class="alt" src="thumbs/sunny-kart-play.jpg?v=1790179460" alt="阳光卡丁车 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
+      <div class="body"><div class="meta"><span class="no">02</span><span class="chip">竞速</span><span class="insp">灵感 · 马力欧卡丁车</span></div><h3>阳光卡丁车<small>SUNNY KART</small></h3><p class="pitch">海边赛道三圈定胜负，漂移攒火花、抢道具，和 7 位对手争夺领奖台！</p><div class="style"><b>画风</b> 白天海岸 · 明亮低多边形伪 3D</div><div class="keys"><span><kbd>↑</kbd>油门</span><span><kbd>← →</kbd>转向</span><span><kbd>Shift</kbd>漂移</span><span><kbd>X</kbd>道具</span></div><div class="foot"><span class="size">130 KB · 2,134 行</span><a class="btn ghost" href="games/sunny-kart.svg" download>下载 .svg</a><a class="btn primary" href="games/sunny-kart.svg?v=1790166427" target="_blank" rel="noopener">开始游戏</a></div></div>
+    </article>
+    <article class="card" style="--accent:#7b61ff;--accent-soft:#7b61ff1f;--accent-ink:#5845b7">
+      <a class="thumb" href="games/pixel-quest.svg?v=1790180043" target="_blank" rel="noopener"><img src="thumbs/pixel-quest-title.jpg?v=1790180025" alt="像素大冒险 标题画面" loading="lazy"><img class="alt" src="thumbs/pixel-quest-play.jpg?v=1790179461" alt="像素大冒险 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
+      <div class="body"><div class="meta"><span class="no">03</span><span class="chip">横版平台</span><span class="insp">灵感 · 超级马里奥</span></div><h3>像素大冒险<small>PIXEL QUEST</small></h3><p class="pitch">踩怪、顶砖、吃果实变大，穿过草原、洞穴和云端，一路冲向终点旗！</p><div class="style"><b>画风</b> 8/16-bit 像素风</div><div class="keys"><span><kbd>← →</kbd>移动</span><span><kbd>空格</kbd>跳跃</span><span><kbd>Shift</kbd>奔跑 / 投掷</span><span><kbd>↓</kbd>蹲下</span></div><div class="foot"><span class="size">145 KB · 3,786 行</span><a class="btn ghost" href="games/pixel-quest.svg" download>下载 .svg</a><a class="btn primary" href="games/pixel-quest.svg?v=1790180043" target="_blank" rel="noopener">开始游戏</a></div></div>
+    </article>
+    <article class="card" style="--accent:#ff9f1c;--accent-soft:#ff9f1c1f;--accent-ink:#b77214">
+      <a class="thumb" href="games/fruit-slash.svg?v=1790166424" target="_blank" rel="noopener"><img src="thumbs/fruit-slash-title.jpg?v=1790179461" alt="水果刀客 标题画面" loading="lazy"><img class="alt" src="thumbs/fruit-slash-play.jpg?v=1790179461" alt="水果刀客 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
+      <div class="body"><div class="meta"><span class="no">04</span><span class="chip">切水果</span><span class="insp">灵感 · 水果忍者</span></div><h3>水果刀客<small>FRUIT SLASH</small></h3><p class="pitch">挥动鼠标化作刀光，一刀切开满天水果——千万别碰炸弹！</p><div class="style"><b>画风</b> 木纹道场 · 光泽水果与果汁飞溅</div><div class="keys"><span><kbd>鼠标 / 触屏</kbd>划动切水果</span></div><div class="foot"><span class="size">159 KB · 1,741 行</span><a class="btn ghost" href="games/fruit-slash.svg" download>下载 .svg</a><a class="btn primary" href="games/fruit-slash.svg?v=1790166424" target="_blank" rel="noopener">开始游戏</a></div></div>
+    </article>
+    <article class="card" style="--accent:#3fb950;--accent-soft:#3fb9501f;--accent-ink:#2d8539">
+      <a class="thumb" href="games/garden-defense.svg?v=1790166369" target="_blank" rel="noopener"><img src="thumbs/garden-defense-title.jpg?v=1790179461" alt="花园保卫战 标题画面" loading="lazy"><img class="alt" src="thumbs/garden-defense-play.jpg?v=1790179462" alt="花园保卫战 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
+      <div class="body"><div class="meta"><span class="no">05</span><span class="chip">塔防</span><span class="insp">灵感 · 植物大战僵尸</span></div><h3>花园保卫战<small>GARDEN DEFENSE</small></h3><p class="pitch">收集阳光、种下植物，守住后院，别让僵尸闯进家门！</p><div class="style"><b>画风</b> 柔和卡通 · 阳光后院</div><div class="keys"><span><kbd>鼠标</kbd>选卡 / 种植</span><span><kbd>1-6</kbd>选植物</span><span><kbd>S</kbd>铲子</span></div><div class="foot"><span class="size">132 KB · 1,831 行</span><a class="btn ghost" href="games/garden-defense.svg" download>下载 .svg</a><a class="btn primary" href="games/garden-defense.svg?v=1790166369" target="_blank" rel="noopener">开始游戏</a></div></div>
+    </article>
+  </main>
+
+  <section class="tips">
+    <div class="tip"><b>怎么玩</b>点击封面或“开始游戏”，会在新标签页直接打开 SVG 文件本身。每个游戏都有标题页、难度选择、玩法说明（H）和暂停（P）。</div>
+    <div class="tip"><b>声音</b>音效和音乐都是游戏运行时用 Web Audio 实时合成的，第一次按键或点击后开始发声，按 M 静音。</div>
+    <div class="tip"><b>设备</b>推荐桌面版 Chrome / Edge / Safari。键盘游戏若没有反应，先用鼠标点一下画面；切水果和塔防也支持触屏。</div>
+  </section>
+
+  <footer>
+    <span>Generated by Claude Opus · 2026-09-24</span>
+    <span><a href="https://github.com/YiyingYang12/awesome-opus5.5-frontend-showcases">github.com/YiyingYang12/awesome-opus5.5-frontend-showcases</a></span>
+  </footer>
+</div>
+</body>
+</html>
