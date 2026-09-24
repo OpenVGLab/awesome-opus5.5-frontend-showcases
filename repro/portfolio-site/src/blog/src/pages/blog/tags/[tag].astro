@@ -1,0 +1,52 @@
+---
+import { getCollection, render } from 'astro:content';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import PostCard from '../../../components/PostCard.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { breadcrumbJsonLd } from '../../../lib/seo';
+import { absolute, fromEntry, postPath, sortByDate, tagLabel, tagPath } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = sortByDate(await getCollection('blog'));
+  const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return tags.map((tag) => ({ params: { tag }, props: { tag, posts: posts.filter((p) => p.data.tags.includes(tag)), allTags: tags } }));
+}
+
+const { tag, posts, allTags } = Astro.props;
+const cards = await Promise.all(posts.map(async (p) => fromEntry(p, (await render(p)).remarkPluginFrontmatter.minutesRead)));
+const label = tagLabel(tag);
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: 'Topics', path: '/blog/tags/' },
+  { name: label, path: tagPath(tag) },
+];
+const jsonLd = [
+  breadcrumbJsonLd(Astro.site, crumbs),
+  {
+    '@type': 'CollectionPage',
+    name: `${label} articles`,
+    url: absolute(Astro.site, tagPath(tag)),
+    about: label,
+    mainEntity: { '@type': 'ItemList', itemListElement: posts.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: absolute(Astro.site, postPath(p.id)), name: p.data.title })) },
+  },
+];
+---
+
+<BaseLayout title={`${label} articles | Mara Ellison — Blog`} description={`${posts.length} article${posts.length === 1 ? '' : 's'} about ${label} by creative frontend developer Mara Ellison.`} path={tagPath(tag)} jsonLd={jsonLd} current="tags">
+  <section class="container archive">
+    <Breadcrumbs items={crumbs} />
+    <p class="kicker">Topic</p>
+    <h1 class="archive-title">#{label}</h1>
+    <p class="archive-intro">{posts.length} article{posts.length === 1 ? '' : 's'} tagged “{label}”.</p>
+    <div class="post-grid">
+      {cards.map((p) => <PostCard post={p} headingLevel={2} />)}
+    </div>
+    <nav class="other-tags" aria-label="Other topics">
+      <h2 class="blog-list-title">Other topics</h2>
+      <ul class="tag-list">
+        {allTags.filter((t) => t !== tag).map((t) => <li><a class="chip" href={tagPath(t)}>#{tagLabel(t)}</a></li>)}
+      </ul>
+    </nav>
+  </section>
+</BaseLayout>

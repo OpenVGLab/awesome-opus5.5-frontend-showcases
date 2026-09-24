@@ -1,0 +1,55 @@
+---
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import Pagination from '../../../components/Pagination.astro';
+import PostCard from '../../../components/PostCard.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { breadcrumbJsonLd } from '../../../lib/seo';
+import { absolute, fromGlob, postPath } from '../../../lib/site';
+
+export async function getStaticPaths({ paginate }) {
+  const modules = await Astro.glob('../../../content/blog/*.md');
+  const posts = modules.map(fromGlob).sort((a, b) => b.pubDate - a.pubDate);
+  return paginate(posts, { pageSize: 3 });
+}
+
+const { page } = Astro.props;
+const title = page.currentPage === 1 ? 'Archive' : `Archive — page ${page.currentPage}`;
+const path = page.currentPage === 1 ? '/blog/archive/' : `/blog/archive/${page.currentPage}/`;
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: page.currentPage === 1 ? 'Archive' : `Archive · ${page.currentPage}`, path },
+];
+const jsonLd = [
+  breadcrumbJsonLd(Astro.site, crumbs),
+  {
+    '@type': 'CollectionPage',
+    name: title,
+    url: absolute(Astro.site, path),
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: page.data.map((p, i) => ({ '@type': 'ListItem', position: page.start + i + 1, url: absolute(Astro.site, postPath(p.slug)), name: p.title })),
+    },
+  },
+];
+---
+
+<BaseLayout
+  title={`${title} | Mara Ellison — Blog`}
+  description={`All articles by Mara Ellison, newest first (page ${page.currentPage} of ${page.lastPage}).`}
+  path={path}
+  prev={page.url.prev ? `${page.url.prev.replace(/\/?$/, '/')}` : undefined}
+  next={page.url.next ? `${page.url.next.replace(/\/?$/, '/')}` : undefined}
+  jsonLd={jsonLd}
+>
+  <section class="container archive">
+    <Breadcrumbs items={crumbs} />
+    <p class="kicker">Archive · page {page.currentPage} of {page.lastPage}</p>
+    <h1 class="archive-title">Every article, newest first.</h1>
+    <p class="archive-intro">{page.total} articles on WebGL, performance, motion design and accessibility. Showing {page.start + 1}–{page.end + 1}.</p>
+    <div class="archive-list">
+      {page.data.map((p) => <PostCard post={p} size="row" headingLevel={2} />)}
+    </div>
+    <Pagination page={page} />
+  </section>
+</BaseLayout>

@@ -16,7 +16,7 @@ In each section, pieces made in this repo come first and include the full prompt
 - ✨ [SVG Animation](#-svg-animation) — 7 cases
 - 🎞️ [Lottie](#-lottie) — 5 cases
 - 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 10 cases
-- 🎬 [Code-drawn Animation](#-code-drawn-animation) — 10 cases
+- 🎬 [Code-drawn Animation](#-code-drawn-animation) — 11 cases
 - 🖥️ [Web & UI](#-web--ui) — 9 cases
 - 📊 [Benchmarks & Tools](#-benchmarks--tools)
 - [Inclusion criteria & contributing](#inclusion-criteria--contributing)
@@ -918,6 +918,7 @@ Animations where every frame is drawn by code, and videos rendered from them.
 | Piece | Source | Date | Notes |
 | --- | --- | --- | --- |
 | [A collage-style Mid-Autumn short](https://x.com/ring_hyacinth/status/2102986085328716066) | [Ring Hyacinth (@ring_hyacinth)](https://x.com/ring_hyacinth) | 2026-09-24 | A 40-second collage-style Mid-Autumn film. Opus 5.5 drew every frame in JavaScript (hand-drawn texture with p5.js + p5.brush) and synthesized the sound effects in Node.js; the author supplied script and music, and Nano Banana Pro made the background plates and paper textures. |
+| [Opus 5.5 turns a paper into a promo video, end to end](https://www.xiaohongshu.com/discovery/item/6ab4eafe000000001402f790?xsec_token=CBf1er_mSrdSMba3PwBnLsP7bvX1k2p-VOCwx1LsJLAuk%3D&xsec_source=app_share&type=video) | Traveller (Xiaohongshu) | 2026-09-24 | The author only asked Opus 5.5 to "turn my earlier paper into an animated video" (ShortOPD, arXiv 2607.13124), with no extra skills: a 97-second explainer, narration from an open-source TTS model aligned to the track, and background music synthesized from scratch with numpy. |
 | [An animated short Opus 5.5 made on its own terms](https://www.xiaohongshu.com/explore/6ab45d76000000000202be26?xsec_token=CBjc6DgxV29PzCmyBsUUBA6MoDnERoYo_3i5AdRNAl2tc=&xsec_source=pc_share) | 春和景明.LinxAI (Xiaohongshu) | 2026-09-24 | A 48-second vertical short; subject and visuals were left entirely to Opus 5.5. The post does not share the prompt. |
 | [The water cycle: a seamless one-shot loop](https://x.com/higgsfield_ai/status/2102781807179735211) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | Opus 5.5 and GPT-6 Sol together. Brief: “Create a seamless looping animation of the water cycle, entirely in code.” Environment, lighting, and character animation are built in code, rendered live in the browser, and packed into one HTML file with a timeline. |
 | [What is the purpose of life?](https://x.com/HarveenChadha/status/2102759892507398309) | [Harveen Singh Chadha (@HarveenChadha)](https://x.com/HarveenChadha) | 2026-09-23 | A one-shot pure-JavaScript animation in a whimsical hand-drawn collage style. Script and score by Opus too: 16 minutes, 19k tokens, $3.60. Prompt: “Create a pure javascript animation. 30s-60s whimsical hand drawn collage style with appropriate audio on the topic what is the purpose of life ?” |

@@ -1,0 +1,49 @@
+---
+// Table of contents for long-form posts (h2/h3) with scroll-spy highlighting.
+const { headings } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  items.length > 2 && (
+    <nav class="toc" aria-labelledby="toc-title" data-toc>
+      <details open>
+        <summary id="toc-title">On this page</summary>
+        <ol>
+          {items.map((h) => (
+            <li class={`toc-depth-${h.depth}`}>
+              <a href={`#${h.slug}`} data-toc-link={h.slug}>
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </details>
+    </nav>
+  )
+}
+
+<script>
+  const toc = document.querySelector('[data-toc]');
+  if (toc) {
+    const links = [...toc.querySelectorAll('[data-toc-link]')];
+    const targets = links.map((a) => document.getElementById(a.dataset.tocLink)).filter(Boolean);
+    const setActive = (id) => links.forEach((a) => a.classList.toggle('is-active', a.dataset.tocLink === id));
+    // Active section = the last heading that has scrolled past the reading line (40% down).
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const line = window.innerHeight * 0.4;
+      let current = targets[0];
+      for (const t of targets) if (t.getBoundingClientRect().top <= line) current = t;
+      if (current) setActive(current.id);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    if (window.matchMedia('(max-width: 1100px)').matches) toc.querySelector('details')?.removeAttribute('open');
+  }
+</script>

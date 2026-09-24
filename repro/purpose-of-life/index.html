@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What is the purpose of life? — a little collage film</title>
+<meta name="description" content="A 55-second hand-made paper collage animation with a synthesized score, written in plain JavaScript.">
+<style>
+  :root { --ink: #2b2420; --paper: #fbf6ea; --coral: #e35a43; --mustard: #f0b43a; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1e1814; }
+  body { font-family: "Courier New", Courier, "Liberation Mono", monospace; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+  canvas#film { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; cursor: pointer; }
+  #box { position: fixed; left: 50%; top: 50%; width: min(100vw, 177.78vh); height: min(100vh, 56.25vw); transform: translate(-50%, -50%); pointer-events: none; }
+  button { font: inherit; color: inherit; }
+
+  #start { position: absolute; left: 52.6%; top: 79%; transform: translate(-50%, -50%) rotate(-2deg); display: flex; flex-direction: column; align-items: center; gap: .55em; pointer-events: auto; cursor: pointer; font-size: min(1.25vw, 2.2vh); opacity: 0; transition: opacity .4s; }
+  body.ready #start { opacity: 1; }
+  #start.gone { display: none; }
+  #playBtn { width: 7.4em; height: 7.4em; padding: 0; border-radius: 52% 48% 50% 50% / 50% 52% 48% 50%; border: .28em solid var(--ink); background: var(--coral); box-shadow: .35em .5em 0 rgba(40,22,8,.38); cursor: pointer; display: grid; place-items: center; transition: transform .15s; animation: bob 1.8s ease-in-out infinite; }
+  #playBtn:hover { transform: scale(1.06) rotate(3deg); }
+  #playBtn:focus-visible { outline: .25em dashed var(--paper); outline-offset: .3em; }
+  #playBtn svg { width: 52%; height: 52%; margin-left: 9%; }
+  .hint { margin: 0; font-weight: bold; font-size: 1.15em; background: var(--paper); padding: .35em .8em; transform: rotate(2.5deg); box-shadow: .15em .25em 0 rgba(40,22,8,.3); letter-spacing: .04em; }
+  @keyframes bob { 50% { transform: translateY(-.35em) rotate(-2deg); } }
+
+  #controls { position: fixed; left: 50%; bottom: 14px; transform: translate(-50%, 8px) rotate(-.4deg); width: min(92vw, 760px); box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 8px 14px; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 14px 5px 12px 4px / 5px 12px 4px 14px; box-shadow: 3px 5px 0 rgba(20,10,0,.35); opacity: 0; pointer-events: none; transition: opacity .35s, transform .35s; }
+  body.ui #controls, body.paused #controls { opacity: 1; pointer-events: auto; transform: translate(-50%, 0) rotate(-.4deg); }
+  #controls button { flex: none; width: 40px; height: 40px; padding: 0; display: grid; place-items: center; border: 2.5px solid var(--ink); background: var(--mustard); border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%; cursor: pointer; box-shadow: 2px 3px 0 rgba(20,10,0,.3); }
+  #controls button:nth-of-type(2) { background: #a9d5e4; }
+  #controls button:nth-of-type(3) { background: #f2a2b4; }
+  #controls button:active { transform: translate(1px, 2px); box-shadow: 1px 1px 0 rgba(20,10,0,.3); }
+  #controls svg { width: 20px; height: 20px; }
+  #btnPlay .i-play, #btnPlay.is-paused .i-pause, #btnMute .i-off, #btnMute.is-muted .i-on { display: none; }
+  #btnPlay.is-paused .i-play, #btnMute.is-muted .i-off { display: block; }
+  #track { flex: 1; height: 30px; margin: 0 8px; position: relative; cursor: pointer; touch-action: none; }
+  #track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 3px; transform: translateY(-50%); background: repeating-linear-gradient(90deg, var(--ink) 0 9px, transparent 9px 14px); opacity: .55; }
+  #fill { position: absolute; left: 0; top: 50%; height: 7px; transform: translateY(-50%) rotate(-.3deg); background: var(--coral); border-radius: 4px 2px 5px 2px; }
+  #knob { position: absolute; top: 50%; width: 18px; height: 18px; margin-left: -9px; transform: translateY(-50%) rotate(12deg); background: var(--paper); border: 2.5px solid var(--ink); border-radius: 50% 45% 52% 48%; box-sizing: border-box; }
+  #time { flex: none; font-weight: bold; font-size: 14px; min-width: 92px; text-align: right; }
+
+  #replay { position: absolute; left: 11.5%; top: 86%; transform: translate(-50%, -50%) rotate(-1.5deg); display: none; align-items: center; gap: .45em; pointer-events: auto; cursor: pointer; font-size: min(1.2vw, 2.1vh); font-weight: bold; padding: .45em 1.1em .45em .8em; background: var(--mustard); border: .2em solid var(--ink); border-radius: 2em .6em 2em .6em / .6em 2em .6em 2em; box-shadow: .2em .3em 0 rgba(20,10,0,.35); }
+  #replay.on { display: flex; }
+  #replay svg { width: 1.5em; height: 1.5em; }
+  #replay:hover { transform: translate(-50%, -50%) rotate(1deg) scale(1.05); }
+  @media (max-width: 860px) { #replay { top: 76%; } }
+</style>
+</head>
+<body>
+<canvas id="film" aria-label="What is the purpose of life? A paper collage animation"></canvas>
+<div id="box">
+  <div id="start" role="presentation">
+    <button id="playBtn" type="button" aria-label="Play the film with sound">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 20 Q27 50 31 81 Q58 67 82 51 Q57 35 30 20 Z" fill="#fbf6ea" stroke="#2b2420" stroke-width="6" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="hint">press play &middot; sound on &middot; 55s</p>
+  </div>
+  <button id="replay" type="button" aria-label="Watch again">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M31 21a11 11 0 1 1-4-9" fill="none" stroke="#2b2420" stroke-width="4" stroke-linecap="round"/><path d="M29 5l-1 9-9-2" fill="none" stroke="#2b2420" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    watch again
+  </button>
+</div>
+<div id="controls">
+  <button id="btnPlay" type="button" aria-label="Pause (Space)" title="Pause (Space)">
+    <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4v12M14 4v12" stroke="#2b2420" stroke-width="3.4" stroke-linecap="round"/></svg>
+    <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.5 Q5.5 10 6 16.5 L16 10 Z" fill="#2b2420" stroke="#2b2420" stroke-width="1.5" stroke-linejoin="round"/></svg>
+  </button>
+  <button id="btnRestart" type="button" aria-label="Restart (R)" title="Restart (R)">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 10.5a5.6 5.6 0 1 1-2-4.4" fill="none" stroke="#2b2420" stroke-width="2.6" stroke-linecap="round"/><path d="M14.6 2.6l-.8 4.2-4.1-1" fill="none" stroke="#2b2420" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button id="btnMute" type="button" aria-label="Mute (M)" title="Mute (M)">
+    <svg class="i-on" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8h3l4-3.5v11L6 12H3z" fill="#2b2420" stroke="#2b2420" stroke-width="1.4" stroke-linejoin="round"/><path d="M13 7.5q2 2.5 0 5M15.2 5.5q3.6 4.5 0 9" fill="none" stroke="#2b2420" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg class="i-off" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8h3l4-3.5v11L6 12H3z" fill="#2b2420" stroke="#2b2420" stroke-width="1.4" stroke-linejoin="round"/><path d="M13 7.5l4.5 5M17.5 7.5l-4.5 5" fill="none" stroke="#2b2420" stroke-width="2.2" stroke-linecap="round"/></svg>
+  </button>
+  <div id="track" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="55"><div id="fill"></div><div id="knob"></div></div>
+  <span id="time">0:00 / 0:55</span>
+</div>
+<script src="js/core.js"></script>
+<script src="js/paper.js"></script>
+<script src="js/hand.js"></script>
+<script src="js/actors.js"></script>
+<script src="js/props.js"></script>
+<script src="js/scenes_a.js"></script>
+<script src="js/scenes_b.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

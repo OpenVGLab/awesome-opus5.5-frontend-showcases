@@ -1,0 +1,85 @@
+<!DOCTYPE html><html amp lang="en"> <head><meta charset="utf-8"><script>(function(){var m=document.createElement('meta');m.name='runtime-host';m.content=new URL('../../../amp',location.href).href.replace(/\/$/,'');document.head.appendChild(m);})();</script><script async src="../../../amp/v0.js"></script><title>Generative Music in the Browser with the Web Audio API | Mara Ellison (AMP)</title><link rel="canonical" href="https://maraellison.dev/blog/generative-music-with-the-web-audio-api/"><link rel="icon" href="../../../favicon.svg" type="image/svg+xml"><meta name="viewport" content="width=device-width"><meta name="description" content="Build a tiny lo-fi generator with oscillators, filters, a lookahead scheduler and a convolution reverb — the same engine behind this site's music player."><meta name="news_keywords" content="Web Audio API, generative music, JavaScript audio, creative coding, oscillators"><meta name="robots" content="index, follow, max-image-preview:large"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","@id":"https://maraellison.dev/blog/generative-music-with-the-web-audio-api/#article","mainEntityOfPage":{"@type":"WebPage","@id":"https://maraellison.dev/blog/generative-music-with-the-web-audio-api/"},"url":"https://maraellison.dev/blog/generative-music-with-the-web-audio-api/","headline":"Generative Music in the Browser with the Web Audio API","description":"Build a tiny lo-fi generator with oscillators, filters, a lookahead scheduler and a convolution reverb — the same engine behind this site's music player.","image":["https://maraellison.dev/images/blog/generative-music-with-the-web-audio-api-1600.webp","https://maraellison.dev/images/blog/generative-music-with-the-web-audio-api-og.jpg"],"datePublished":"2026-04-02T00:00:00.000Z","dateModified":"2026-04-02T00:00:00.000Z","author":{"@id":"https://maraellison.dev/#person"},"publisher":{"@id":"https://maraellison.dev/#person"},"isPartOf":{"@id":"https://maraellison.dev/blog/#blog"},"inLanguage":"en","keywords":"Web Audio API, generative music, JavaScript audio, creative coding, oscillators","articleSection":"web-audio","wordCount":441,"timeRequired":"PT2M"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://maraellison.dev/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://maraellison.dev/blog/"},{"@type":"ListItem","position":3,"name":"Generative Music in the Browser with the Web Audio API","item":"https://maraellison.dev/blog/generative-music-with-the-web-audio-api/"}]},{"@type":"Person","@id":"https://maraellison.dev/#person","name":"Mara Ellison","url":"https://maraellison.dev/","jobTitle":"Creative Frontend Developer","image":"https://maraellison.dev/images/mara-ellison-creative-frontend-developer-headshot-256.webp","sameAs":["https://github.com/maraellison","https://www.linkedin.com/in/maraellison","https://x.com/maraellison"]}]}</script><style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript><style amp-custom>
+:root{--bg:#f4f1ea;--ink:#141414;--muted:#67645e;--line:rgba(20,20,20,.12);--accent:#e83a1c;--surface:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--ink:#f2f0ea;--muted:#9d9a93;--line:rgba(242,240,234,.12);--accent:#ff6a4d;--surface:#17171b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 Georgia,'Times New Roman',serif}
+a{color:var(--accent)}header,article,footer{max-width:720px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px;border-bottom:1px solid var(--line);font:600 15px/1.2 system-ui,sans-serif}
+header a{color:var(--ink);text-decoration:none}.dot{display:inline-block;width:26px;height:26px;margin-right:8px;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font:italic 18px/26px Georgia,serif;vertical-align:middle}
+.kicker{margin:32px 0 8px;font:12px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0 0 12px;font-size:40px;line-height:1.1;font-weight:400}
+.meta{margin:0 0 24px;color:var(--muted);font:14px/1.5 system-ui,sans-serif}
+.cover{margin:0 0 28px;border-radius:14px;overflow:hidden}
+h2{margin:40px 0 12px;font-size:28px;font-weight:400;line-height:1.2}h3{margin:28px 0 8px;font-size:22px;font-weight:400}
+pre{overflow-x:auto;padding:16px;border-radius:12px;background:#161618;color:#e8e6e1;font:13px/1.6 ui-monospace,monospace}
+code{font-family:ui-monospace,monospace;font-size:.88em}p code,li code{padding:1px 5px;border-radius:5px;background:var(--line)}
+.code-bar{display:flex;justify-content:space-between;padding:6px 14px;border-radius:12px 12px 0 0;background:#222226;color:#aaa;font:12px ui-monospace,monospace}.code-bar+pre{border-radius:0 0 12px 12px;margin-top:0}
+table{width:100%;border-collapse:collapse;font:14px/1.5 system-ui,sans-serif}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+.bq{margin:28px 0;padding:16px 20px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;background:var(--surface)}
+.bq-title{margin:0 0 4px;font:700 12px/1.4 system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.bq-body{margin:0}.bq-body p{margin:0}.bq--quote{border:0;background:none;padding:0 0 0 20px;border-left:2px solid var(--accent);font-size:24px;line-height:1.35}.bq-cite{margin-top:8px;font:14px system-ui,sans-serif;color:var(--muted)}
+footer{margin-top:48px;padding-top:24px;padding-bottom:48px;border-top:1px solid var(--line);font:14px/1.6 system-ui,sans-serif;color:var(--muted)}
+kbd{padding:1px 6px;border:1px solid var(--line);border-radius:5px;font:12px ui-monospace,monospace}
+</style></head> <body> <header> <a href="../../../"><span class="dot">M</span>Mara Ellison</a> <a href="../../../blog/generative-music-with-the-web-audio-api/">Full version →</a> </header> <article> <p class="kicker">Web Audio · Creative Coding · Javascript</p> <h1>Generative Music in the Browser with the Web Audio API</h1> <p class="meta">
+By Mara Ellison · <time datetime="2026-04-02T00:00:00.000Z">2 April 2026</time> · 2 min read
+ </p> <div class="cover"> <amp-img src="../../../images/blog/generative-music-with-the-web-audio-api-1200.webp" width="1600" height="840" layout="responsive" alt="Layered sine waves in violet and coral forming a soft sound wave pattern" data-amp-auto-lightbox-disable="true"></amp-img> </div> <p>The little player in the corner of my <a href="../../../">homepage</a> does not stream an MP3. Every note is synthesised in real time by about 200 lines of JavaScript. Here is how that engine works, from the audio graph to the visualiser.</p>
+<h2 id="the-audio-graph">The audio graph</h2>
+<p>Web Audio is a graph of nodes. Sources (oscillators, noise buffers) flow through processors (filters, gains, reverb) into the destination — your speakers.</p>
+<div class="code-block" data-lang="js"><div class="code-bar"><span class="code-lang">js</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="js"><code><span class="line"><span>const</span><span> ctx</span><span> =</span><span> new</span><span> AudioContext</span><span>();</span></span>
+<span class="line"><span>const</span><span> master</span><span> =</span><span> ctx.</span><span>createGain</span><span>();</span></span>
+<span class="line"><span>const</span><span> compressor</span><span> =</span><span> ctx.</span><span>createDynamicsCompressor</span><span>();</span></span>
+<span class="line"><span>const</span><span> analyser</span><span> =</span><span> ctx.</span><span>createAnalyser</span><span>();</span></span>
+<span class="line"></span>
+<span class="line"><span>master.gain.value </span><span>=</span><span> 0.6</span><span>;</span></span>
+<span class="line"><span>master.</span><span>connect</span><span>(compressor).</span><span>connect</span><span>(analyser).</span><span>connect</span><span>(ctx.destination);</span></span></code></pre></div>
+<h2 id="a-lookahead-scheduler">A lookahead scheduler</h2>
+<p>JavaScript timers are imprecise, but the audio clock is not. The trick, described by Chris Wilson years ago, is to wake up often with <code>setInterval</code> and schedule any notes that fall within the next 100 milliseconds using exact audio-clock times.</p>
+<div class="code-block" data-lang="js"><div class="code-bar"><span class="code-lang">js</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="js"><code><span class="line"><span>const</span><span> LOOKAHEAD</span><span> =</span><span> 0.1</span><span>;</span></span>
+<span class="line"><span>let</span><span> nextNoteTime </span><span>=</span><span> ctx.currentTime;</span></span>
+<span class="line"><span>let</span><span> step </span><span>=</span><span> 0</span><span>;</span></span>
+<span class="line"></span>
+<span class="line"><span>setInterval</span><span>(() </span><span>=></span><span> {</span></span>
+<span class="line"><span>  while</span><span> (nextNoteTime </span><span>&#x3C;</span><span> ctx.currentTime </span><span>+</span><span> LOOKAHEAD</span><span>) {</span></span>
+<span class="line"><span>    playStep</span><span>(step, nextNoteTime);</span></span>
+<span class="line"><span>    nextNoteTime </span><span>+=</span><span> 60</span><span> /</span><span> 76</span><span> /</span><span> 2</span><span>; </span><span>// eighth notes at 76 BPM</span></span>
+<span class="line"><span>    step </span><span>=</span><span> (step </span><span>+</span><span> 1</span><span>) </span><span>%</span><span> 32</span><span>;</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}, </span><span>25</span><span>);</span></span></code></pre></div>
+<h2 id="chords-that-never-clash">Chords that never clash</h2>
+<p>Generative music sounds random when notes are random. Restrict every voice to the notes of the current chord and it will always sound intentional.</p>
+<div class="code-block" data-lang="js"><div class="code-bar"><span class="code-lang">js</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="js"><code><span class="line"><span>const</span><span> progression</span><span> =</span><span> [</span></span>
+<span class="line"><span>  [</span><span>53</span><span>, </span><span>57</span><span>, </span><span>60</span><span>, </span><span>64</span><span>], </span><span>// Fmaj7</span></span>
+<span class="line"><span>  [</span><span>52</span><span>, </span><span>55</span><span>, </span><span>59</span><span>, </span><span>62</span><span>], </span><span>// Em7</span></span>
+<span class="line"><span>  [</span><span>50</span><span>, </span><span>53</span><span>, </span><span>57</span><span>, </span><span>60</span><span>], </span><span>// Dm7</span></span>
+<span class="line"><span>  [</span><span>48</span><span>, </span><span>52</span><span>, </span><span>55</span><span>, </span><span>59</span><span>], </span><span>// Cmaj7</span></span>
+<span class="line"><span>];</span></span>
+<span class="line"><span>const</span><span> midiToHz</span><span> =</span><span> (</span><span>m</span><span>) </span><span>=></span><span> 440</span><span> *</span><span> Math.</span><span>pow</span><span>(</span><span>2</span><span>, (m </span><span>-</span><span> 69</span><span>) </span><span>/</span><span> 12</span><span>);</span></span></code></pre></div>
+<h2 id="making-it-feel-warm">Making it feel warm</h2>
+<p>Dry oscillators sound like a test tone. A low-pass filter softens them, slight detuning thickens them, and a convolution reverb puts them in a room. You do not need an impulse-response file — decaying noise works surprisingly well.</p>
+<div class="code-block" data-lang="js"><div class="code-bar"><span class="code-lang">js</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="js"><code><span class="line"><span>function</span><span> makeImpulse</span><span>(</span><span>seconds</span><span> =</span><span> 2.5</span><span>) {</span></span>
+<span class="line"><span>  const</span><span> rate</span><span> =</span><span> ctx.sampleRate;</span></span>
+<span class="line"><span>  const</span><span> buffer</span><span> =</span><span> ctx.</span><span>createBuffer</span><span>(</span><span>2</span><span>, rate </span><span>*</span><span> seconds, rate);</span></span>
+<span class="line"><span>  for</span><span> (</span><span>let</span><span> c </span><span>=</span><span> 0</span><span>; c </span><span>&#x3C;</span><span> 2</span><span>; c</span><span>++</span><span>) {</span></span>
+<span class="line"><span>    const</span><span> data</span><span> =</span><span> buffer.</span><span>getChannelData</span><span>(c);</span></span>
+<span class="line"><span>    for</span><span> (</span><span>let</span><span> i </span><span>=</span><span> 0</span><span>; i </span><span>&#x3C;</span><span> data.</span><span>length</span><span>; i</span><span>++</span><span>) {</span></span>
+<span class="line"><span>      data[i] </span><span>=</span><span> (Math.</span><span>random</span><span>() </span><span>*</span><span> 2</span><span> -</span><span> 1</span><span>) </span><span>*</span><span> Math.</span><span>pow</span><span>(</span><span>1</span><span> -</span><span> i </span><span>/</span><span> data.</span><span>length</span><span>, </span><span>3</span><span>);</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  return</span><span> buffer;</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<aside class="bq bq--warning" data-variant="warning" role="note">
+<p class="bq-title">Warning</p>
+<div class="bq-body">
+<p>Browsers only allow audio to start after a user gesture. Create or resume the <code>AudioContext</code> inside a click handler, and never autoplay background music — always give people a clear play and pause control.</p>
+</div>
+</aside>
+<h2 id="visualising-the-output">Visualising the output</h2>
+<p>An <code>AnalyserNode</code> exposes the frequency spectrum every frame. The equaliser bars in the player simply read five frequency bands and map them to heights.</p>
+<div class="code-block" data-lang="js"><div class="code-bar"><span class="code-lang">js</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="js"><code><span class="line"><span>const</span><span> bins</span><span> =</span><span> new</span><span> Uint8Array</span><span>(analyser.frequencyBinCount);</span></span>
+<span class="line"><span>function</span><span> draw</span><span>() {</span></span>
+<span class="line"><span>  analyser.</span><span>getByteFrequencyData</span><span>(bins);</span></span>
+<span class="line"><span>  bars.</span><span>forEach</span><span>((</span><span>bar</span><span>, </span><span>i</span><span>) </span><span>=></span><span> {</span></span>
+<span class="line"><span>    bar.style.transform </span><span>=</span><span> `scaleY(${</span><span>0.2</span><span> +</span><span> bins</span><span>[</span><span>i</span><span> *</span><span> 6</span><span>] </span><span>/</span><span> 320</span><span>})`</span><span>;</span></span>
+<span class="line"><span>  });</span></span>
+<span class="line"><span>  requestAnimationFrame</span><span>(draw);</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<p>That is the entire engine. The same scheduling ideas power the <a href="../../../#work">Sonic Garden installation</a>, which ran for six months without a restart.</p> </article> <footer> <p>© 2026 Mara Ellison · <a href="../../../blog/">More articles</a> · <a href="../../../">Portfolio</a></p> </footer> </body> </html>

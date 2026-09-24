@@ -1,0 +1,68 @@
+<!DOCTYPE html><html amp lang="en"> <head><meta charset="utf-8"><script>(function(){var m=document.createElement('meta');m.name='runtime-host';m.content=new URL('../../../amp',location.href).href.replace(/\/$/,'');document.head.appendChild(m);})();</script><script async src="../../../amp/v0.js"></script><title>Accessible Custom Cursors and Pointer Effects | Mara Ellison (AMP)</title><link rel="canonical" href="https://maraellison.dev/blog/accessible-custom-cursors/"><link rel="icon" href="../../../favicon.svg" type="image/svg+xml"><meta name="viewport" content="width=device-width"><meta name="description" content="Custom cursors and mouse trails can delight — or exclude. How to build them so they respect touch devices, reduced motion and assistive technology."><meta name="news_keywords" content="custom cursor, accessibility, reduced motion, pointer events, React, CSS"><meta name="robots" content="index, follow, max-image-preview:large"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","@id":"https://maraellison.dev/blog/accessible-custom-cursors/#article","mainEntityOfPage":{"@type":"WebPage","@id":"https://maraellison.dev/blog/accessible-custom-cursors/"},"url":"https://maraellison.dev/blog/accessible-custom-cursors/","headline":"Accessible Custom Cursors and Pointer Effects","description":"Custom cursors and mouse trails can delight — or exclude. How to build them so they respect touch devices, reduced motion and assistive technology.","image":["https://maraellison.dev/images/blog/accessible-custom-cursors-1600.webp","https://maraellison.dev/images/blog/accessible-custom-cursors-og.jpg"],"datePublished":"2026-01-08T00:00:00.000Z","dateModified":"2026-01-08T00:00:00.000Z","author":{"@id":"https://maraellison.dev/#person"},"publisher":{"@id":"https://maraellison.dev/#person"},"isPartOf":{"@id":"https://maraellison.dev/blog/#blog"},"inLanguage":"en","keywords":"custom cursor, accessibility, reduced motion, pointer events, React, CSS","articleSection":"accessibility","wordCount":358,"timeRequired":"PT2M"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://maraellison.dev/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://maraellison.dev/blog/"},{"@type":"ListItem","position":3,"name":"Accessible Custom Cursors and Pointer Effects","item":"https://maraellison.dev/blog/accessible-custom-cursors/"}]},{"@type":"Person","@id":"https://maraellison.dev/#person","name":"Mara Ellison","url":"https://maraellison.dev/","jobTitle":"Creative Frontend Developer","image":"https://maraellison.dev/images/mara-ellison-creative-frontend-developer-headshot-256.webp","sameAs":["https://github.com/maraellison","https://www.linkedin.com/in/maraellison","https://x.com/maraellison"]}]}</script><style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript><style amp-custom>
+:root{--bg:#f4f1ea;--ink:#141414;--muted:#67645e;--line:rgba(20,20,20,.12);--accent:#e83a1c;--surface:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--ink:#f2f0ea;--muted:#9d9a93;--line:rgba(242,240,234,.12);--accent:#ff6a4d;--surface:#17171b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 Georgia,'Times New Roman',serif}
+a{color:var(--accent)}header,article,footer{max-width:720px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px;border-bottom:1px solid var(--line);font:600 15px/1.2 system-ui,sans-serif}
+header a{color:var(--ink);text-decoration:none}.dot{display:inline-block;width:26px;height:26px;margin-right:8px;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font:italic 18px/26px Georgia,serif;vertical-align:middle}
+.kicker{margin:32px 0 8px;font:12px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0 0 12px;font-size:40px;line-height:1.1;font-weight:400}
+.meta{margin:0 0 24px;color:var(--muted);font:14px/1.5 system-ui,sans-serif}
+.cover{margin:0 0 28px;border-radius:14px;overflow:hidden}
+h2{margin:40px 0 12px;font-size:28px;font-weight:400;line-height:1.2}h3{margin:28px 0 8px;font-size:22px;font-weight:400}
+pre{overflow-x:auto;padding:16px;border-radius:12px;background:#161618;color:#e8e6e1;font:13px/1.6 ui-monospace,monospace}
+code{font-family:ui-monospace,monospace;font-size:.88em}p code,li code{padding:1px 5px;border-radius:5px;background:var(--line)}
+.code-bar{display:flex;justify-content:space-between;padding:6px 14px;border-radius:12px 12px 0 0;background:#222226;color:#aaa;font:12px ui-monospace,monospace}.code-bar+pre{border-radius:0 0 12px 12px;margin-top:0}
+table{width:100%;border-collapse:collapse;font:14px/1.5 system-ui,sans-serif}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+.bq{margin:28px 0;padding:16px 20px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;background:var(--surface)}
+.bq-title{margin:0 0 4px;font:700 12px/1.4 system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.bq-body{margin:0}.bq-body p{margin:0}.bq--quote{border:0;background:none;padding:0 0 0 20px;border-left:2px solid var(--accent);font-size:24px;line-height:1.35}.bq-cite{margin-top:8px;font:14px system-ui,sans-serif;color:var(--muted)}
+footer{margin-top:48px;padding-top:24px;padding-bottom:48px;border-top:1px solid var(--line);font:14px/1.6 system-ui,sans-serif;color:var(--muted)}
+kbd{padding:1px 6px;border:1px solid var(--line);border-radius:5px;font:12px ui-monospace,monospace}
+</style></head> <body> <header> <a href="../../../"><span class="dot">M</span>Mara Ellison</a> <a href="../../../blog/accessible-custom-cursors/">Full version →</a> </header> <article> <p class="kicker">Accessibility · CSS · React</p> <h1>Accessible Custom Cursors and Pointer Effects</h1> <p class="meta">
+By Mara Ellison · <time datetime="2026-01-08T00:00:00.000Z">8 January 2026</time> · 2 min read
+ </p> <div class="cover"> <amp-img src="../../../images/blog/accessible-custom-cursors-1200.webp" width="1600" height="840" layout="responsive" alt="A small coral dot inside a larger ring cursor, surrounded by fading particle trails" data-amp-auto-lightbox-disable="true"></amp-img> </div> <p>Move your mouse around my <a href="../../../">portfolio</a> and a small dot, a trailing ring and a burst of particles follow along. Open the same page on a phone, or with reduced motion enabled, and none of it appears. That second part is the important one.</p>
+<h2 id="the-problem-with-cursor-none">The problem with <code>cursor: none</code></h2>
+<p>Hiding the system cursor is a promise: <em>I will draw something at least as good.</em> Break that promise and people lose track of where they are. System cursors are also magnified by accessibility settings, recoloured by high-contrast themes and read by some assistive tools. A custom cursor gets none of that for free.</p>
+<h2 id="only-on-fine-pointers">Only on fine pointers</h2>
+<p>Touch screens do not have a hovering cursor, so never hide or replace it there. Gate the whole feature behind a media query — in CSS and in JavaScript.</p>
+<div class="code-block" data-lang="css"><div class="code-bar"><span class="code-lang">css</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="css"><code><span class="line"><span>@media</span><span> (</span><span>hover</span><span>: </span><span>hover</span><span>) </span><span>and</span><span> (pointer: fine) {</span></span>
+<span class="line"><span>  .has-custom-cursor</span><span>,</span></span>
+<span class="line"><span>  .has-custom-cursor</span><span> a</span><span>,</span></span>
+<span class="line"><span>  .has-custom-cursor</span><span> button</span><span> {</span></span>
+<span class="line"><span>    cursor</span><span>: </span><span>none</span><span>;</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<div class="code-block" data-lang="js"><div class="code-bar"><span class="code-lang">js</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="js"><code><span class="line"><span>const</span><span> fine</span><span> =</span><span> window.</span><span>matchMedia</span><span>(</span><span>'(hover: hover) and (pointer: fine)'</span><span>).matches;</span></span>
+<span class="line"><span>const</span><span> calm</span><span> =</span><span> window.</span><span>matchMedia</span><span>(</span><span>'(prefers-reduced-motion: reduce)'</span><span>).matches;</span></span>
+<span class="line"><span>const</span><span> enableCursor</span><span> =</span><span> fine </span><span>&#x26;&#x26;</span><span> !</span><span>calm;</span></span></code></pre></div>
+<h2 id="follow-dont-lag">Follow, don’t lag</h2>
+<p>The dot should track the pointer exactly; only decorative layers may trail behind. A simple linear interpolation per frame gives the ring its smooth follow without adding input latency to the part people aim with.</p>
+<div class="code-block" data-lang="js"><div class="code-bar"><span class="code-lang">js</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="js"><code><span class="line"><span>let</span><span> x </span><span>=</span><span> 0</span><span>, y </span><span>=</span><span> 0</span><span>, rx </span><span>=</span><span> 0</span><span>, ry </span><span>=</span><span> 0</span><span>;</span></span>
+<span class="line"><span>window.</span><span>addEventListener</span><span>(</span><span>'pointermove'</span><span>, (</span><span>e</span><span>) </span><span>=></span><span> { x </span><span>=</span><span> e.clientX; y </span><span>=</span><span> e.clientY; });</span></span>
+<span class="line"></span>
+<span class="line"><span>function</span><span> tick</span><span>() {</span></span>
+<span class="line"><span>  rx </span><span>+=</span><span> (x </span><span>-</span><span> rx) </span><span>/</span><span> 9</span><span>;</span></span>
+<span class="line"><span>  ry </span><span>+=</span><span> (y </span><span>-</span><span> ry) </span><span>/</span><span> 9</span><span>;</span></span>
+<span class="line"><span>  dot.style.transform </span><span>=</span><span> `translate(${</span><span>x</span><span>}px, ${</span><span>y</span><span>}px)`</span><span>;</span></span>
+<span class="line"><span>  ring.style.transform </span><span>=</span><span> `translate(${</span><span>rx</span><span>}px, ${</span><span>ry</span><span>}px)`</span><span>;</span></span>
+<span class="line"><span>  requestAnimationFrame</span><span>(tick);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>tick</span><span>();</span></span></code></pre></div>
+<h2 id="reduced-motion-and-trails">Reduced motion and trails</h2>
+<p>Particle trails are pure decoration. When <code>prefers-reduced-motion</code> is set, turn them off entirely — and turn the custom cursor off with them, so the system cursor comes back.</p>
+<aside class="bq bq--tip" data-variant="tip" role="note">
+<p class="bq-title">Tip</p>
+<div class="bq-body">
+<p>Give interactive elements a hover state that works <em>without</em> the custom cursor too. The cursor growing over a link is a bonus, not the only affordance.</p>
+</div>
+</aside>
+<h2 id="checklist">Checklist</h2>
+<ul>
+<li>Only enable on <code>(hover: hover) and (pointer: fine)</code>.</li>
+<li>Disable with <code>prefers-reduced-motion: reduce</code>.</li>
+<li>Keep <code>pointer-events: none</code> on every cursor layer.</li>
+<li>Never hide the cursor over text inputs.</li>
+<li>Test with 200% zoom and a high-contrast theme.</li>
+</ul>
+<p>Accessibility and delight are not opposites. The <a href="../../../#work">Pulse onboarding case study</a> shows how far the same principles can take a whole product.</p> </article> <footer> <p>© 2026 Mara Ellison · <a href="../../../blog/">More articles</a> · <a href="../../../">Portfolio</a></p> </footer> </body> </html>

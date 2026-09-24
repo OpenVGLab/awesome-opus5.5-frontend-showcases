@@ -16,7 +16,7 @@
 - ✨ [SVG 动画与插画](#-svg-动画与插画) — 7 条
 - 🎞️ [Lottie 动画](#-lottie-动画) — 5 条
 - 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 10 条
-- 🎬 [代码逐帧动画与视频](#-代码逐帧动画与视频) — 10 条
+- 🎬 [代码逐帧动画与视频](#-代码逐帧动画与视频) — 11 条
 - 🖥️ [网页、UI 与应用](#-网页ui-与应用) — 9 条
 - 📊 [评测与工具](#-评测与工具)
 - [收录标准与贡献](#收录标准与贡献)
@@ -918,6 +918,7 @@ Bodymovin JSON，用 lottie-web 播放；只用形状图层，不用图片和字
 | 作品 | 来源 | 日期 | 简介 |
 | --- | --- | --- | --- |
 | [拼贴风中秋短片](https://x.com/ring_hyacinth/status/2102986085328716066) | [Ring Hyacinth (@ring_hyacinth)](https://x.com/ring_hyacinth) | 2026-09-24 | 40 秒拼贴风中秋片：动画由 Opus 5.5 用 JavaScript 逐帧画出（手绘纹理用 p5.js + p5.brush），音效由它写 Node.js 程序合成；脚本和音乐由作者提供，背景底稿和纸张材质由 Nano Banana Pro 生成。 |
+| [Opus 5.5 端到端做论文宣传视频](https://www.xiaohongshu.com/discovery/item/6ab4eafe000000001402f790?xsec_token=CBf1er_mSrdSMba3PwBnLsP7bvX1k2p-VOCwx1LsJLAuk%3D&xsec_source=app_share&type=video) | Traveller（小红书） | 2026-09-24 | 作者只让 Opus 5.5 “把我之前的论文做成一个动画视频”（ShortOPD，arXiv 2607.13124），没加额外 skill：97 秒的讲解动画、开源 TTS 配音并自动对轨，背景音乐是它用 numpy 从零合成的。 |
 | [让 Opus 5.5 自由发挥写的动画短片](https://www.xiaohongshu.com/explore/6ab45d76000000000202be26?xsec_token=CBjc6DgxV29PzCmyBsUUBA6MoDnERoYo_3i5AdRNAl2tc=&xsec_source=pc_share) | 春和景明.LinxAI（小红书） | 2026-09-24 | 48 秒竖屏短片，题材和画面全交给 Opus 5.5 自由发挥；原帖没有公开 prompt。 |
 | [水循环：一镜到底的无缝循环动画](https://x.com/higgsfield_ai/status/2102781807179735211) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | Opus 5.5 与 GPT-6 Sol 合作完成。按 brief “Create a seamless looping animation of the water cycle, entirely in code.” 用代码搭建环境、光照和角色动画，在浏览器里实时渲染、首尾无缝衔接，最后打包成带时间轴控制的单个 HTML。 |
 | [人生的意义是什么？](https://x.com/HarveenChadha/status/2102759892507398309) | [Harveen Singh Chadha (@HarveenChadha)](https://x.com/HarveenChadha) | 2026-09-23 | 一次生成的纯 JavaScript 手绘拼贴风动画，脚本和配乐也由 Opus 完成；用时 16 分钟、1.9 万 tokens、3.6 美元。Prompt：“Create a pure javascript animation. 30s-60s whimsical hand drawn collage style with appropriate audio on the topic what is the purpose of life ?” |

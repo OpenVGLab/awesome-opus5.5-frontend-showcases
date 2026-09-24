@@ -1,0 +1,189 @@
+---
+import { getCollection, render } from 'astro:content';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Comments from '../../components/Comments.astro';
+import Newsletter from '../../components/Newsletter.astro';
+import PostCard from '../../components/PostCard.astro';
+import ReadingProgress from '../../components/ReadingProgress.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import VideoPlayer from '../../components/VideoPlayer.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { breadcrumbJsonLd, personJsonLd, postingJsonLd, videoJsonLd } from '../../lib/seo';
+import {
+  SITE,
+  absolute,
+  ampPath,
+  coverSrc,
+  coverSrcset,
+  formatDate,
+  fromEntry,
+  isoDate,
+  ogImageFor,
+  postPath,
+  relatedPosts,
+  sortByDate,
+  tagLabel,
+  tagPath,
+} from '../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = sortByDate(await getCollection('blog'));
+  return posts.map((post, i) => ({ params: { slug: post.id }, props: { post, newer: posts[i - 1] || null, older: posts[i + 1] || null, all: posts } }));
+}
+
+const { post, newer, older, all } = Astro.props;
+const { Content, headings, remarkPluginFrontmatter } = await render(post);
+const meta = { minutesRead: remarkPluginFrontmatter.minutesRead, words: remarkPluginFrontmatter.words };
+const d = post.data;
+const url = absolute(Astro.site, postPath(post.id));
+const related = await Promise.all(
+  relatedPosts(post, all).map(async (p) => {
+    const r = await render(p);
+    return fromEntry(p, r.remarkPluginFrontmatter.minutesRead);
+  }),
+);
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: d.title, path: postPath(post.id) },
+];
+const updated = d.updatedDate && d.updatedDate > d.pubDate ? d.updatedDate : null;
+const jsonLd = [postingJsonLd(Astro.site, post, meta), breadcrumbJsonLd(Astro.site, crumbs), personJsonLd(Astro.site), ...(d.video ? [videoJsonLd(Astro.site, post)] : [])];
+---
+
+<BaseLayout
+  title={`${d.title} | Mara Ellison`}
+  description={d.description}
+  path={postPath(post.id)}
+  image={ogImageFor(d.cover)}
+  imageAlt={d.coverAlt}
+  type="article"
+  jsonLd={jsonLd}
+  newsKeywords={d.keywords}
+  amp={ampPath(post.id)}
+  article={{ published: d.pubDate.toISOString(), modified: (updated || d.pubDate).toISOString(), tags: d.tags, section: tagLabel(d.tags[0]) }}
+>
+  <ReadingProgress minutes={meta.minutesRead} />
+  <article class="post" aria-labelledby="post-title">
+    <header class="post-header container">
+      <Breadcrumbs items={crumbs} />
+      <ul class="tag-list post-tags" aria-label="Topics">
+        {d.tags.map((t) => <li><a class="chip chip--accent" href={tagPath(t)}>#{tagLabel(t)}</a></li>)}
+      </ul>
+      <h1 id="post-title" class="post-title">{d.title}</h1>
+      <p class="post-lead">{d.description}</p>
+      <div class="post-meta">
+        <img class="post-avatar" src={`/${SITE.avatar}`} alt="" width="44" height="44" />
+        <div class="post-meta-text">
+          <a class="post-author" href="/#about" rel="author">{d.author}</a>
+          <span>
+            <time datetime={d.pubDate.toISOString()}>{formatDate(d.pubDate)}</time>
+            <span aria-hidden="true"> · </span>{meta.minutesRead} min read<span aria-hidden="true"> · </span>{meta.words.toLocaleString('en')} words
+          </span>
+        </div>
+        {
+          updated && (
+            <p class="last-updated" title="Last updated">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 12a8 8 0 1 1-2.3-5.7L20 8M20 3v5h-5" />
+              </svg>
+              Last updated <time datetime={updated.toISOString()}>{formatDate(updated)}</time>
+            </p>
+          )
+        }
+      </div>
+    </header>
+
+    <div class="post-media container" id="video">
+      {
+        d.video ? (
+          <VideoPlayer video={d.video} />
+        ) : (
+          <figure class="post-cover">
+            <img src={coverSrc(d.cover, 1200)} srcset={coverSrcset(d.cover)} sizes="(max-width: 1240px) 94vw, 1180px" width="1600" height="840" alt={d.coverAlt} fetchpriority="high" decoding="async" />
+          </figure>
+        )
+      }
+    </div>
+
+    <div class="post-layout container">
+      <aside class="post-aside">
+        <TableOfContents headings={headings} />
+        <ShareButtons url={url} title={d.title} layout="column" />
+      </aside>
+      <div class="post-body prose" data-post-body>
+        <Content />
+        <div class="post-end">
+          <p class="post-end-note">
+            Thanks for reading! Have a question or a project in mind? <a href="/#contact">Get in touch</a> or <a href="#comments">leave a comment</a>.
+            {updated && <span> This article was last updated on <time datetime={isoDate(updated)}>{formatDate(updated)}</time>.</span>}
+          </p>
+          <ShareButtons url={url} title={d.title} />
+        </div>
+      </div>
+    </div>
+
+    <footer class="post-footer container">
+      <section class="author-box" aria-label="About the author">
+        <img src={`/${SITE.avatar}`} alt="Illustrated portrait of Mara Ellison" width="72" height="72" loading="lazy" />
+        <div>
+          <p class="author-name">Written by <a href="/#about">Mara Ellison</a></p>
+          <p>Creative frontend developer in Lisbon. I build fast, accessible React, Next.js and WebGL experiences — <a href="/#work">see selected work</a>.</p>
+        </div>
+      </section>
+
+      <nav class="post-nav" aria-label="More articles">
+        {
+          newer ? (
+            <a class="post-nav-link" href={postPath(newer.id)} rel="prev">
+              <span>← Newer</span>
+              {newer.data.title}
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          older ? (
+            <a class="post-nav-link post-nav-link--next" href={postPath(older.id)} rel="next">
+              <span>Older →</span>
+              {older.data.title}
+            </a>
+          ) : (
+            <span />
+          )
+        }
+      </nav>
+
+      <section class="related" aria-labelledby="related-title">
+        <h2 id="related-title" class="blog-list-title">Related articles</h2>
+        <div class="post-grid">
+          {related.map((p) => <PostCard post={p} />)}
+        </div>
+      </section>
+
+      <Newsletter compact />
+      <Comments slug={post.id} title={d.title} />
+      <p class="amp-link"><a href={ampPath(post.id)}>Read the lightweight AMP version of this article</a></p>
+    </footer>
+  </article>
+</BaseLayout>
+
+<script>
+  import { copyText } from '../../scripts/clipboard.js';
+
+  document.querySelectorAll('[data-copy]').forEach((btn) => {
+    const label = btn.querySelector('.code-copy-label');
+    btn.addEventListener('click', async () => {
+      const code = btn.closest('.code-block')?.querySelector('pre code');
+      const ok = await copyText(code ? code.innerText : '');
+      btn.classList.toggle('is-copied', ok);
+      if (label) label.textContent = ok ? 'Copied!' : 'Press Ctrl+C';
+      setTimeout(() => {
+        btn.classList.remove('is-copied');
+        if (label) label.textContent = 'Copy';
+      }, 1800);
+    });
+  });
+</script>

@@ -1,0 +1,19 @@
+---
+// Static confirmation page that the newsletter form submits to when JavaScript is unavailable.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Subscribed | Mara Ellison — Blog" description="Newsletter subscription confirmation." path="/blog/newsletter/" noindex>
+  <section class="container archive newsletter-done">
+    <p class="kicker">Newsletter</p>
+    <h1 class="archive-title">You’re on the list.</h1>
+    <p class="archive-intro" data-confirm>Thanks for subscribing — look out for a confirmation email.</p>
+    <p><a class="btn btn--primary" href="/blog/">Back to the blog</a></p>
+  </section>
+</BaseLayout>
+
+<script>
+  const email = new URLSearchParams(location.search).get('email');
+  const el = document.querySelector('[data-confirm]');
+  if (email && el) el.textContent = `Thanks for subscribing! A confirmation email is on its way to ${email}.`;
+</script>

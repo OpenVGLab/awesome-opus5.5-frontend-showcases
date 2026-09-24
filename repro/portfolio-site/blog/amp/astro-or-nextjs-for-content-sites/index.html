@@ -1,0 +1,63 @@
+<!DOCTYPE html><html amp lang="en"> <head><meta charset="utf-8"><script>(function(){var m=document.createElement('meta');m.name='runtime-host';m.content=new URL('../../../amp',location.href).href.replace(/\/$/,'');document.head.appendChild(m);})();</script><script async src="../../../amp/v0.js"></script><title>Astro or Next.js? Choosing a Stack for Content-Heavy Sites | Mara Ellison (AMP)</title><link rel="canonical" href="https://maraellison.dev/blog/astro-or-nextjs-for-content-sites/"><link rel="icon" href="../../../favicon.svg" type="image/svg+xml"><meta name="viewport" content="width=device-width"><meta name="description" content="Why this portfolio uses Next.js for the interactive homepage and Astro for the blog — and a checklist for deciding on your own project."><meta name="news_keywords" content="Astro, Next.js, static site generation, content collections, web architecture"><meta name="robots" content="index, follow, max-image-preview:large"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","@id":"https://maraellison.dev/blog/astro-or-nextjs-for-content-sites/#article","mainEntityOfPage":{"@type":"WebPage","@id":"https://maraellison.dev/blog/astro-or-nextjs-for-content-sites/"},"url":"https://maraellison.dev/blog/astro-or-nextjs-for-content-sites/","headline":"Astro or Next.js? Choosing a Stack for Content-Heavy Sites","description":"Why this portfolio uses Next.js for the interactive homepage and Astro for the blog — and a checklist for deciding on your own project.","image":["https://maraellison.dev/images/blog/astro-or-nextjs-for-content-sites-1600.webp","https://maraellison.dev/images/blog/astro-or-nextjs-for-content-sites-og.jpg"],"datePublished":"2026-05-14T00:00:00.000Z","dateModified":"2026-05-14T00:00:00.000Z","author":{"@id":"https://maraellison.dev/#person"},"publisher":{"@id":"https://maraellison.dev/#person"},"isPartOf":{"@id":"https://maraellison.dev/blog/#blog"},"inLanguage":"en","keywords":"Astro, Next.js, static site generation, content collections, web architecture","articleSection":"astro","wordCount":368,"timeRequired":"PT2M"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://maraellison.dev/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://maraellison.dev/blog/"},{"@type":"ListItem","position":3,"name":"Astro or Next.js? Choosing a Stack for Content-Heavy Sites","item":"https://maraellison.dev/blog/astro-or-nextjs-for-content-sites/"}]},{"@type":"Person","@id":"https://maraellison.dev/#person","name":"Mara Ellison","url":"https://maraellison.dev/","jobTitle":"Creative Frontend Developer","image":"https://maraellison.dev/images/mara-ellison-creative-frontend-developer-headshot-256.webp","sameAs":["https://github.com/maraellison","https://www.linkedin.com/in/maraellison","https://x.com/maraellison"]}]}</script><style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript><style amp-custom>
+:root{--bg:#f4f1ea;--ink:#141414;--muted:#67645e;--line:rgba(20,20,20,.12);--accent:#e83a1c;--surface:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--ink:#f2f0ea;--muted:#9d9a93;--line:rgba(242,240,234,.12);--accent:#ff6a4d;--surface:#17171b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 Georgia,'Times New Roman',serif}
+a{color:var(--accent)}header,article,footer{max-width:720px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px;border-bottom:1px solid var(--line);font:600 15px/1.2 system-ui,sans-serif}
+header a{color:var(--ink);text-decoration:none}.dot{display:inline-block;width:26px;height:26px;margin-right:8px;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font:italic 18px/26px Georgia,serif;vertical-align:middle}
+.kicker{margin:32px 0 8px;font:12px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0 0 12px;font-size:40px;line-height:1.1;font-weight:400}
+.meta{margin:0 0 24px;color:var(--muted);font:14px/1.5 system-ui,sans-serif}
+.cover{margin:0 0 28px;border-radius:14px;overflow:hidden}
+h2{margin:40px 0 12px;font-size:28px;font-weight:400;line-height:1.2}h3{margin:28px 0 8px;font-size:22px;font-weight:400}
+pre{overflow-x:auto;padding:16px;border-radius:12px;background:#161618;color:#e8e6e1;font:13px/1.6 ui-monospace,monospace}
+code{font-family:ui-monospace,monospace;font-size:.88em}p code,li code{padding:1px 5px;border-radius:5px;background:var(--line)}
+.code-bar{display:flex;justify-content:space-between;padding:6px 14px;border-radius:12px 12px 0 0;background:#222226;color:#aaa;font:12px ui-monospace,monospace}.code-bar+pre{border-radius:0 0 12px 12px;margin-top:0}
+table{width:100%;border-collapse:collapse;font:14px/1.5 system-ui,sans-serif}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+.bq{margin:28px 0;padding:16px 20px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;background:var(--surface)}
+.bq-title{margin:0 0 4px;font:700 12px/1.4 system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.bq-body{margin:0}.bq-body p{margin:0}.bq--quote{border:0;background:none;padding:0 0 0 20px;border-left:2px solid var(--accent);font-size:24px;line-height:1.35}.bq-cite{margin-top:8px;font:14px system-ui,sans-serif;color:var(--muted)}
+footer{margin-top:48px;padding-top:24px;padding-bottom:48px;border-top:1px solid var(--line);font:14px/1.6 system-ui,sans-serif;color:var(--muted)}
+kbd{padding:1px 6px;border:1px solid var(--line);border-radius:5px;font:12px ui-monospace,monospace}
+</style></head> <body> <header> <a href="../../../"><span class="dot">M</span>Mara Ellison</a> <a href="../../../blog/astro-or-nextjs-for-content-sites/">Full version →</a> </header> <article> <p class="kicker">Astro · Next.js · Architecture</p> <h1>Astro or Next.js? Choosing a Stack for Content-Heavy Sites</h1> <p class="meta">
+By Mara Ellison · <time datetime="2026-05-14T00:00:00.000Z">14 May 2026</time> · 2 min read
+ </p> <div class="cover"> <amp-img src="../../../images/blog/astro-or-nextjs-for-content-sites-1200.webp" width="1600" height="840" layout="responsive" alt="Two stylised planets, one orange and one indigo, orbiting a shared sun" data-amp-auto-lightbox-disable="true"></amp-img> </div> <p>This website is built with two frameworks. The <a href="../../../">interactive homepage</a> is a Next.js app; the blog you are reading is generated by Astro. That sounds like over-engineering until you look at what each part of the site actually does.</p>
+<h2 id="two-different-defaults">Two different defaults</h2>
+<p>Next.js assumes your page is an application: React owns the whole document, and interactivity is the default. Astro assumes your page is a document: HTML is the default, and interactivity is opt-in, one “island” at a time.</p>
+<p>Neither default is better. They are optimised for different ratios of content to interaction.</p>
+<h2 id="when-astro-shines">When Astro shines</h2>
+<p>A blog post is 95% text. Shipping a JavaScript framework to render paragraphs is waste. Astro’s content collections give you typed frontmatter, and pages ship zero JavaScript unless you ask for it.</p>
+<div class="code-block" data-lang="ts"><div class="code-bar"><span class="code-lang">ts</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="ts"><code><span class="line"><span>import</span><span> { defineCollection, z } </span><span>from</span><span> 'astro:content'</span><span>;</span></span>
+<span class="line"><span>import</span><span> { glob } </span><span>from</span><span> 'astro/loaders'</span><span>;</span></span>
+<span class="line"></span>
+<span class="line"><span>const</span><span> blog</span><span> =</span><span> defineCollection</span><span>({</span></span>
+<span class="line"><span>  loader: </span><span>glob</span><span>({ pattern: </span><span>'**/*.md'</span><span>, base: </span><span>'./src/content/blog'</span><span> }),</span></span>
+<span class="line"><span>  schema: z.</span><span>object</span><span>({</span></span>
+<span class="line"><span>    title: z.</span><span>string</span><span>(),</span></span>
+<span class="line"><span>    description: z.</span><span>string</span><span>(),</span></span>
+<span class="line"><span>    pubDate: z.coerce.</span><span>date</span><span>(),</span></span>
+<span class="line"><span>    tags: z.</span><span>array</span><span>(z.</span><span>string</span><span>()),</span></span>
+<span class="line"><span>  }),</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"></span>
+<span class="line"><span>export</span><span> const</span><span> collections</span><span> =</span><span> { blog };</span></span></code></pre></div>
+<p>Built-in Markdown, syntax highlighting, RSS and file-based routing mean the whole blog needs almost no custom infrastructure.</p>
+<h2 id="when-nextjs-shines">When Next.js shines</h2>
+<p>The homepage is the opposite: a custom cursor, a WebGL project viewer, charts, a chat widget and a dozen other interactive pieces that share state. That is an application, and React with Next.js handles it well — including image optimisation and static export.</p>
+<aside class="bq bq--tip" data-variant="tip" role="note">
+<p class="bq-title">Tip</p>
+<div class="bq-body">
+<p>If you find yourself adding <code>client:load</code> to most of your Astro components, you are building an app. If most of your Next.js pages have no state, you are building a document.</p>
+</div>
+</aside>
+<h2 id="using-both">Using both</h2>
+<p>Both frameworks can export static files, so combining them is mostly a matter of build scripts: build the Next.js app, build the Astro blog into a <code>/blog</code> folder, and deploy the merged output to Netlify or Vercel. Shared design tokens live in one CSS file both projects import, so the header and footer look identical.</p>
+<h2 id="decision-checklist">Decision checklist</h2>
+<ul>
+<li><strong>Mostly text, occasional widgets?</strong> Astro.</li>
+<li><strong>Heavy shared client state?</strong> Next.js.</li>
+<li><strong>Authors editing Markdown in Git?</strong> Astro content collections.</li>
+<li><strong>Personalised or authenticated pages?</strong> Next.js with server rendering.</li>
+<li><strong>Both?</strong> Split by section, not by page — and keep the design system shared.</li>
+</ul>
+<p>Choosing the right tool for each part of a site is a performance decision too; the <a href="../../../blog/core-web-vitals-for-creative-websites/">Core Web Vitals playbook</a> explains why.</p> </article> <footer> <p>© 2026 Mara Ellison · <a href="../../../blog/">More articles</a> · <a href="../../../">Portfolio</a></p> </footer> </body> </html>

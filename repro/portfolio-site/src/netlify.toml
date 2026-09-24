@@ -1,0 +1,12 @@
+# Netlify: _headers and _redirects are generated into release/ by scripts/postbuild.mjs.
+[build]
+  command = "npm run assets && npm run build"
+  publish = "release"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_TELEMETRY_DISABLED = "1"
+  SITE_URL = "https://maraellison.dev"
+
+[build.processing.html]
+  pretty_urls = true

@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { breadcrumbJsonLd } from '../../../lib/seo';
+import { postPath, sortByDate, tagLabel, tagPath } from '../../../lib/site';
+
+const posts = sortByDate(await getCollection('blog'));
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))]
+  .map((t) => ({ tag: t, posts: posts.filter((p) => p.data.tags.includes(t)) }))
+  .sort((a, b) => b.posts.length - a.posts.length || a.tag.localeCompare(b.tag));
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+  { name: 'Topics', path: '/blog/tags/' },
+];
+---
+
+<BaseLayout
+  title="Topics | Mara Ellison — Blog"
+  description={`Browse ${tags.length} topics: ${tags.slice(0, 6).map((t) => tagLabel(t.tag)).join(', ')} and more.`}
+  path="/blog/tags/"
+  jsonLd={[breadcrumbJsonLd(Astro.site, crumbs)]}
+  current="tags"
+>
+  <section class="container archive">
+    <Breadcrumbs items={crumbs} />
+    <p class="kicker">Topics</p>
+    <h1 class="archive-title">Browse by topic.</h1>
+    <p class="archive-intro">{tags.length} topics across {posts.length} articles.</p>
+    <ul class="tag-index">
+      {
+        tags.map(({ tag, posts: list }) => (
+          <li class="tag-index-item">
+            <a class="tag-index-name" href={tagPath(tag)}>
+              #{tagLabel(tag)} <span>{list.length}</span>
+            </a>
+            <ul>
+              {list.map((p) => (
+                <li>
+                  <a href={postPath(p.id)}>{p.data.title}</a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

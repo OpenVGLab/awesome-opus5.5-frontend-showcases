@@ -1,0 +1,126 @@
+<!DOCTYPE html><html amp lang="en"> <head><meta charset="utf-8"><script>(function(){var m=document.createElement('meta');m.name='runtime-host';m.content=new URL('../../../amp',location.href).href.replace(/\/$/,'');document.head.appendChild(m);})();</script><script async src="../../../amp/v0.js"></script><title>Core Web Vitals for Creative Websites: A Practical Playbook | Mara Ellison (AMP)</title><link rel="canonical" href="https://maraellison.dev/blog/core-web-vitals-for-creative-websites/"><link rel="icon" href="../../../favicon.svg" type="image/svg+xml"><meta name="viewport" content="width=device-width"><meta name="description" content="How to keep LCP, INP and CLS green on sites full of WebGL, video and animation — with budgets, lazy loading and real-user measurements."><meta name="news_keywords" content="Core Web Vitals, LCP, INP, CLS, page speed, Next.js performance, creative websites"><meta name="robots" content="index, follow, max-image-preview:large"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","@id":"https://maraellison.dev/blog/core-web-vitals-for-creative-websites/#article","mainEntityOfPage":{"@type":"WebPage","@id":"https://maraellison.dev/blog/core-web-vitals-for-creative-websites/"},"url":"https://maraellison.dev/blog/core-web-vitals-for-creative-websites/","headline":"Core Web Vitals for Creative Websites: A Practical Playbook","description":"How to keep LCP, INP and CLS green on sites full of WebGL, video and animation — with budgets, lazy loading and real-user measurements.","image":["https://maraellison.dev/images/blog/core-web-vitals-for-creative-websites-1600.webp","https://maraellison.dev/images/blog/core-web-vitals-for-creative-websites-og.jpg"],"datePublished":"2026-07-22T00:00:00.000Z","dateModified":"2026-08-30T00:00:00.000Z","author":{"@id":"https://maraellison.dev/#person"},"publisher":{"@id":"https://maraellison.dev/#person"},"isPartOf":{"@id":"https://maraellison.dev/blog/#blog"},"inLanguage":"en","keywords":"Core Web Vitals, LCP, INP, CLS, page speed, Next.js performance, creative websites","articleSection":"performance","wordCount":492,"timeRequired":"PT2M"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://maraellison.dev/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://maraellison.dev/blog/"},{"@type":"ListItem","position":3,"name":"Core Web Vitals for Creative Websites: A Practical Playbook","item":"https://maraellison.dev/blog/core-web-vitals-for-creative-websites/"}]},{"@type":"Person","@id":"https://maraellison.dev/#person","name":"Mara Ellison","url":"https://maraellison.dev/","jobTitle":"Creative Frontend Developer","image":"https://maraellison.dev/images/mara-ellison-creative-frontend-developer-headshot-256.webp","sameAs":["https://github.com/maraellison","https://www.linkedin.com/in/maraellison","https://x.com/maraellison"]}]}</script><style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript><style amp-custom>
+:root{--bg:#f4f1ea;--ink:#141414;--muted:#67645e;--line:rgba(20,20,20,.12);--accent:#e83a1c;--surface:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--ink:#f2f0ea;--muted:#9d9a93;--line:rgba(242,240,234,.12);--accent:#ff6a4d;--surface:#17171b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 Georgia,'Times New Roman',serif}
+a{color:var(--accent)}header,article,footer{max-width:720px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px;border-bottom:1px solid var(--line);font:600 15px/1.2 system-ui,sans-serif}
+header a{color:var(--ink);text-decoration:none}.dot{display:inline-block;width:26px;height:26px;margin-right:8px;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font:italic 18px/26px Georgia,serif;vertical-align:middle}
+.kicker{margin:32px 0 8px;font:12px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0 0 12px;font-size:40px;line-height:1.1;font-weight:400}
+.meta{margin:0 0 24px;color:var(--muted);font:14px/1.5 system-ui,sans-serif}
+.cover{margin:0 0 28px;border-radius:14px;overflow:hidden}
+h2{margin:40px 0 12px;font-size:28px;font-weight:400;line-height:1.2}h3{margin:28px 0 8px;font-size:22px;font-weight:400}
+pre{overflow-x:auto;padding:16px;border-radius:12px;background:#161618;color:#e8e6e1;font:13px/1.6 ui-monospace,monospace}
+code{font-family:ui-monospace,monospace;font-size:.88em}p code,li code{padding:1px 5px;border-radius:5px;background:var(--line)}
+.code-bar{display:flex;justify-content:space-between;padding:6px 14px;border-radius:12px 12px 0 0;background:#222226;color:#aaa;font:12px ui-monospace,monospace}.code-bar+pre{border-radius:0 0 12px 12px;margin-top:0}
+table{width:100%;border-collapse:collapse;font:14px/1.5 system-ui,sans-serif}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+.bq{margin:28px 0;padding:16px 20px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;background:var(--surface)}
+.bq-title{margin:0 0 4px;font:700 12px/1.4 system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.bq-body{margin:0}.bq-body p{margin:0}.bq--quote{border:0;background:none;padding:0 0 0 20px;border-left:2px solid var(--accent);font-size:24px;line-height:1.35}.bq-cite{margin-top:8px;font:14px system-ui,sans-serif;color:var(--muted)}
+footer{margin-top:48px;padding-top:24px;padding-bottom:48px;border-top:1px solid var(--line);font:14px/1.6 system-ui,sans-serif;color:var(--muted)}
+kbd{padding:1px 6px;border:1px solid var(--line);border-radius:5px;font:12px ui-monospace,monospace}
+</style></head> <body> <header> <a href="../../../"><span class="dot">M</span>Mara Ellison</a> <a href="../../../blog/core-web-vitals-for-creative-websites/">Full version →</a> </header> <article> <p class="kicker">Performance · SEO · Next.js</p> <h1>Core Web Vitals for Creative Websites: A Practical Playbook</h1> <p class="meta">
+By Mara Ellison · <time datetime="2026-07-22T00:00:00.000Z">22 July 2026</time> · 2 min read
+<span> · Updated 30 August 2026</span> </p> <div class="cover"> <amp-img src="../../../images/blog/core-web-vitals-for-creative-websites-1200.webp" width="1600" height="840" layout="responsive" alt="Three circular gauges in green, amber and red representing Core Web Vitals scores" data-amp-auto-lightbox-disable="true"></amp-img> </div> <p>Creative websites have a reputation: gorgeous, heavy and slow. It does not have to be that way. The <a href="../../../#work">Aurora banking dashboard</a> went from a 4.1-second Largest Contentful Paint to 1.6 seconds without losing a single animation. Here is the playbook I use on every project.</p>
+<h2 id="the-three-numbers-that-matter">The three numbers that matter</h2>
+<p>Google’s Core Web Vitals boil user experience down to three field metrics. Each one has a threshold you should hit for at least 75% of page views.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Metric</th><th>Good</th><th>What usually hurts it</th></tr></thead><tbody><tr><td>Largest Contentful Paint (LCP)</td><td>≤ 2.5 s</td><td>Late hero images, render-blocking fonts, client-only rendering</td></tr><tr><td>Interaction to Next Paint (INP)</td><td>≤ 200 ms</td><td>Long JavaScript tasks, hydration of huge trees</td></tr><tr><td>Cumulative Layout Shift (CLS)</td><td>≤ 0.1</td><td>Images without dimensions, late-loading embeds, font swaps</td></tr></tbody></table>
+<h2 id="lcp-ship-the-hero-first">LCP: ship the hero first</h2>
+<p>The largest element above the fold should be in the HTML, not injected by JavaScript. With static generation that is the default; the remaining work is making sure the browser fetches the right bytes first.</p>
+<div class="code-block" data-lang="tsx"><div class="code-bar"><span class="code-lang">tsx</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="tsx"><code><span class="line"><span>import</span><span> Image </span><span>from</span><span> 'next/image'</span><span>;</span></span>
+<span class="line"></span>
+<span class="line"><span>export</span><span> function</span><span> Hero</span><span>() {</span></span>
+<span class="line"><span>  return</span><span> (</span></span>
+<span class="line"><span>    &#x3C;</span><span>Image</span></span>
+<span class="line"><span>      src</span><span>=</span><span>"/images/hero.webp"</span></span>
+<span class="line"><span>      alt</span><span>=</span><span>"Product configurator showing a rust-coloured jacket"</span></span>
+<span class="line"><span>      width</span><span>={</span><span>1600</span><span>}</span></span>
+<span class="line"><span>      height</span><span>={</span><span>900</span><span>}</span></span>
+<span class="line"><span>      priority</span></span>
+<span class="line"><span>      sizes</span><span>=</span><span>"100vw"</span></span>
+<span class="line"><span>    /></span></span>
+<span class="line"><span>  );</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<p><code>priority</code> turns off lazy loading and adds a preload hint. Use it on exactly one image per page — everything else should stay lazy.</p>
+<h2 id="inp-keep-the-main-thread-free">INP: keep the main thread free</h2>
+<p>Heavy libraries — WebGL globes, charting, chat widgets — should load when they are needed, not when the page boots. On this site the globe and charts only download once their section scrolls near the viewport.</p>
+<div class="code-block" data-lang="ts"><div class="code-bar"><span class="code-lang">ts</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="ts"><code><span class="line"><span>const</span><span> Globe</span><span> =</span><span> dynamic</span><span>(() </span><span>=></span><span> import</span><span>(</span><span>'./WorkGlobe'</span><span>), { ssr: </span><span>false</span><span> });</span></span>
+<span class="line"></span>
+<span class="line"><span>function</span><span> useNearViewport</span><span>(</span><span>ref</span><span>:</span><span> React</span><span>.</span><span>RefObject</span><span>&#x3C;</span><span>Element</span><span>>) {</span></span>
+<span class="line"><span>  const</span><span> [</span><span>near</span><span>, </span><span>setNear</span><span>] </span><span>=</span><span> useState</span><span>(</span><span>false</span><span>);</span></span>
+<span class="line"><span>  useEffect</span><span>(() </span><span>=></span><span> {</span></span>
+<span class="line"><span>    const</span><span> io</span><span> =</span><span> new</span><span> IntersectionObserver</span><span>(([</span><span>e</span><span>]) </span><span>=></span><span> e.isIntersecting </span><span>&#x26;&#x26;</span><span> setNear</span><span>(</span><span>true</span><span>), {</span></span>
+<span class="line"><span>      rootMargin: </span><span>'400px'</span><span>,</span></span>
+<span class="line"><span>    });</span></span>
+<span class="line"><span>    if</span><span> (ref.current) io.</span><span>observe</span><span>(ref.current);</span></span>
+<span class="line"><span>    return</span><span> () </span><span>=></span><span> io.</span><span>disconnect</span><span>();</span></span>
+<span class="line"><span>  }, [ref]);</span></span>
+<span class="line"><span>  return</span><span> near;</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<p>For long tasks you cannot avoid, yield to the browser between chunks so input events get a chance to run.</p>
+<h2 id="cls-reserve-every-pixel">CLS: reserve every pixel</h2>
+<p>Layout shift is almost always a missing size. Give media an aspect ratio, give embeds a min-height, and load web fonts with metric-compatible fallbacks.</p>
+<div class="code-block" data-lang="css"><div class="code-bar"><span class="code-lang">css</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="css"><code><span class="line"><span>.card-media</span><span> {</span></span>
+<span class="line"><span>  aspect-ratio</span><span>: </span><span>4</span><span> / </span><span>3</span><span>;</span></span>
+<span class="line"><span>  background</span><span>: </span><span>var</span><span>(</span><span>--surface-2</span><span>);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"></span>
+<span class="line"><span>.globe-slot</span><span> {</span></span>
+<span class="line"><span>  min-height</span><span>: </span><span>520</span><span>px</span><span>;</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<aside class="bq bq--note" data-variant="note" role="note">
+<p class="bq-title">Note</p>
+<div class="bq-body">
+<p><code>next/font</code> generates <code>size-adjust</code> fallbacks automatically. If you self-host fonts elsewhere, tools like Fontaine can generate the same overrides.</p>
+</div>
+</aside>
+<h2 id="measuring-in-the-field">Measuring in the field</h2>
+<p>Lab tools such as Lighthouse and WebPageTest are great for debugging, but only real-user data tells you whether you pass. The <code>web-vitals</code> library reports the same numbers Chrome does.</p>
+<div class="code-block" data-lang="ts"><div class="code-bar"><span class="code-lang">ts</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="ts"><code><span class="line"><span>import</span><span> { onCLS, onINP, onLCP } </span><span>from</span><span> 'web-vitals'</span><span>;</span></span>
+<span class="line"></span>
+<span class="line"><span>function</span><span> send</span><span>(</span><span>metric</span><span>) {</span></span>
+<span class="line"><span>  window.dataLayer?.</span><span>push</span><span>({ event: </span><span>'web_vitals'</span><span>, name: metric.name, value: metric.value });</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"></span>
+<span class="line"><span>onCLS</span><span>(send);</span></span>
+<span class="line"><span>onINP</span><span>(send);</span></span>
+<span class="line"><span>onLCP</span><span>(send);</span></span></code></pre></div>
+<h2 id="a-budget-you-can-enforce">A budget you can enforce</h2>
+<p>Budgets turn performance from a wish into a test. I run Lighthouse CI on every pull request with limits like these:</p>
+<div class="code-block" data-lang="json"><div class="code-bar"><span class="code-lang">json</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="json"><code><span class="line"><span>{</span></span>
+<span class="line"><span>  "ci"</span><span>: {</span></span>
+<span class="line"><span>    "assert"</span><span>: {</span></span>
+<span class="line"><span>      "assertions"</span><span>: {</span></span>
+<span class="line"><span>        "largest-contentful-paint"</span><span>: [</span><span>"error"</span><span>, { </span><span>"maxNumericValue"</span><span>: </span><span>2500</span><span> }],</span></span>
+<span class="line"><span>        "cumulative-layout-shift"</span><span>: [</span><span>"error"</span><span>, { </span><span>"maxNumericValue"</span><span>: </span><span>0.1</span><span> }],</span></span>
+<span class="line"><span>        "total-byte-weight"</span><span>: [</span><span>"warn"</span><span>, { </span><span>"maxNumericValue"</span><span>: </span><span>900000</span><span> }]</span></span>
+<span class="line"><span>      }</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<p>Performance is a feature your visitors feel before they see anything else. If you want to see how the same thinking applies to motion, read <a href="../../../blog/designing-a-motion-system/">how I design motion systems</a>.</p> </article> <footer> <p>© 2026 Mara Ellison · <a href="../../../blog/">More articles</a> · <a href="../../../">Portfolio</a></p> </footer> </body> </html>

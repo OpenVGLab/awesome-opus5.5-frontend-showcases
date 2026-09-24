@@ -1,0 +1,7 @@
+node_modules/
+.next/
+out/
+dist-blog/
+release/
+blog/node_modules/
+blog/.astro/

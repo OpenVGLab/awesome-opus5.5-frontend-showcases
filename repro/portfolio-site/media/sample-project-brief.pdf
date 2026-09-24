@@ -1,0 +1,83 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1004 >>
+stream
+BT
+/F1 24 Tf
+1 0 0 1 72 740 Tm
+(Project brief: Nordlys winter campaign) Tj
+/F2 12 Tf
+1 0 0 1 72 704 Tm
+(Prepared for Mara Ellison Studio - sample document for the contact form demo) Tj
+/F1 14 Tf
+1 0 0 1 72 674 Tm
+(Goal) Tj
+/F2 12 Tf
+1 0 0 1 72 654 Tm
+(Launch an interactive WebGL lookbook for the new Arctic Parka line.) Tj
+/F1 14 Tf
+1 0 0 1 72 624 Tm
+(Audience) Tj
+/F2 12 Tf
+1 0 0 1 72 604 Tm
+(Outdoor enthusiasts, 25-45, mostly on mobile \(68% of traffic\).) Tj
+/F1 14 Tf
+1 0 0 1 72 574 Tm
+(Timeline) Tj
+/F2 12 Tf
+1 0 0 1 72 554 Tm
+(Kickoff 10 November 2026 - launch 2 February 2027.) Tj
+/F1 14 Tf
+1 0 0 1 72 524 Tm
+(Budget) Tj
+/F2 12 Tf
+1 0 0 1 72 504 Tm
+(EUR 25k - 50k, including a two-week performance hardening sprint.) Tj
+/F1 14 Tf
+1 0 0 1 72 474 Tm
+(Must-haves) Tj
+/F2 12 Tf
+1 0 0 1 72 454 Tm
+(- Real-time 3D configurator with shareable URLs) Tj
+/F2 12 Tf
+1 0 0 1 72 434 Tm
+(- WCAG 2.2 AA, LCP under 2.5 s on 4G) Tj
+/F2 12 Tf
+1 0 0 1 72 414 Tm
+(- Localised in English, Norwegian and German) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+7 0 obj
+<< /Title (Sample project brief) /Author (Mara Ellison Studio) >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000001307 00000 n 
+0000001409 00000 n 
+0000001506 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R /Info 7 0 R >>
+startxref
+1587
+%%EOF

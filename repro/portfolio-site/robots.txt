@@ -1,0 +1,6 @@
+# Mara Ellison — portfolio & blog
+User-agent: *
+Allow: /
+Disallow: /blog/newsletter/
+
+Sitemap: https://maraellison.dev/sitemap.xml

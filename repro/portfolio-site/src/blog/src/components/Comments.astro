@@ -1,0 +1,148 @@
+---
+// Utterances-style comment thread. The real Utterances widget is an iframe served from
+// utteranc.es (GitHub issues), which this offline build cannot load, so the thread UI is rendered
+// locally: seeded comments at build time, new comments stored in localStorage.
+import seeds from '../data/comments.json';
+import { formatDate } from '../lib/site';
+
+const { slug, title } = Astro.props;
+const comments = seeds[slug] || [];
+const color = (name) => {
+  let h = 0;
+  for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 360;
+  return `hsl(${h} 65% 55%)`;
+};
+const escapeHtml = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const md = (s) =>
+  escapeHtml(s)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/(^|\s)@([\w.-]+)/g, '$1<span class="mention">@$2</span>');
+---
+
+<section class="comments" id="comments" aria-labelledby="comments-title" data-comments={slug}>
+  <header class="comments-head">
+    <h2 id="comments-title">Comments <span class="comments-count" data-comment-count>{comments.length}</span></h2>
+    <span class="comments-provider" title="Utterances-compatible thread (offline demo)">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.5 15.6c.4 0 .5-.2.5-.4v-1.5c-2.2.5-2.7-1-2.7-1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.3 1.9.9 2.3.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-4 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8a7.6 7.6 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.4 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.1 0 3.1-1.9 3.8-3.7 4 .3.3.6.8.6 1.5v2.2c0 .2.1.5.6.4A8 8 0 0 0 8 0Z"></path></svg>
+      Utterances · offline demo
+    </span>
+  </header>
+
+  <ol class="comment-list" data-comment-list>
+    {
+      comments.map((c) => (
+        <li class={`comment${c.owner ? ' comment--owner' : ''}`}>
+          <span class="comment-avatar" style={`--c:${color(c.author)}`} aria-hidden="true">
+            {c.author[0].toUpperCase()}
+          </span>
+          <div class="comment-box">
+            <p class="comment-meta">
+              <strong>{c.author}</strong>
+              {c.owner && <span class="comment-badge">Author</span>}
+              <span>commented on <time datetime={c.date}>{formatDate(new Date(`${c.date}T12:00:00Z`), { year: 'numeric', month: 'short', day: 'numeric' })}</time></span>
+            </p>
+            <div class="comment-body" set:html={`<p>${md(c.body)}</p>`} />
+            <p class="comment-reactions" aria-label={`${c.reactions} reactions`}>
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11v9H4v-9h3Zm0 0 4-8a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 2 2.3l-1.2 6.5a2 2 0 0 1-2 1.7H7"></path></svg>
+                {c.reactions}
+              </span>
+            </p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+
+  <form class="comment-form" data-comment-form novalidate>
+    <div class="comment-tabs" role="tablist" aria-label="Comment editor">
+      <button type="button" role="tab" aria-selected="true" data-tab="write">Write</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="preview">Preview</button>
+    </div>
+    <label class="sr-only" for="comment-name">Display name</label>
+    <input id="comment-name" name="name" maxlength="40" placeholder="Display name" autocomplete="nickname" />
+    <label class="sr-only" for="comment-text">Comment</label>
+    <textarea id="comment-text" name="comment" rows="4" maxlength="1200" placeholder={`Share your thoughts on “${title}” — **bold**, *italic* and \`code\` supported`}></textarea>
+    <div class="comment-preview" data-preview hidden></div>
+    <div class="comment-actions">
+      <span class="comment-hint" data-comment-msg role="status" aria-live="polite">Comments are stored in this browser for the demo.</span>
+      <button class="btn btn--primary btn--sm" type="submit">Comment</button>
+    </div>
+  </form>
+</section>
+
+<script>
+  const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const md = (s) =>
+    esc(s)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/\n/g, '<br>');
+  const hue = (name) => {
+    let h = 0;
+    for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) % 360;
+    return `hsl(${h} 65% 55%)`;
+  };
+
+  document.querySelectorAll('[data-comments]').forEach((root) => {
+    const key = `me-comments-${root.dataset.comments}`;
+    const list = root.querySelector('[data-comment-list]');
+    const count = root.querySelector('[data-comment-count]');
+    const form = root.querySelector('[data-comment-form]');
+    const text = form.querySelector('textarea');
+    const name = form.querySelector('input[name="name"]');
+    const preview = form.querySelector('[data-preview]');
+    const msg = form.querySelector('[data-comment-msg]');
+    const load = () => {
+      try {
+        return JSON.parse(localStorage.getItem(key) || '[]');
+      } catch {
+        return [];
+      }
+    };
+    const render = (c) => {
+      const li = document.createElement('li');
+      li.className = 'comment comment--new';
+      const when = new Date(c.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      li.innerHTML = `<span class="comment-avatar" style="--c:${hue(c.name)}" aria-hidden="true">${esc(c.name[0].toUpperCase())}</span><div class="comment-box"><p class="comment-meta"><strong>${esc(c.name)}</strong><span>commented on <time>${when}</time></span></p><div class="comment-body"><p>${md(c.text)}</p></div></div>`;
+      list.appendChild(li);
+      count.textContent = String(list.children.length);
+    };
+    load().forEach(render);
+
+    form.querySelectorAll('[data-tab]').forEach((tab) =>
+      tab.addEventListener('click', () => {
+        const isPreview = tab.dataset.tab === 'preview';
+        form.querySelectorAll('[data-tab]').forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+        preview.hidden = !isPreview;
+        text.hidden = isPreview;
+        preview.innerHTML = text.value.trim() ? `<p>${md(text.value)}</p>` : '<p class="muted">Nothing to preview yet.</p>';
+      }),
+    );
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const body = text.value.trim();
+      if (body.length < 3) {
+        msg.textContent = 'Write at least a few words before posting.';
+        text.hidden = false;
+        preview.hidden = true;
+        text.focus();
+        return;
+      }
+      const c = { name: name.value.trim() || 'guest', text: body, at: new Date().toISOString() };
+      const all = load();
+      all.push(c);
+      try {
+        localStorage.setItem(key, JSON.stringify(all.slice(-20)));
+      } catch {}
+      render(c);
+      text.value = '';
+      msg.textContent = 'Comment posted (saved locally).';
+      list.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  });
+</script>

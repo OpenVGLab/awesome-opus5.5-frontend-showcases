@@ -1,0 +1,25 @@
+---
+// Custom blockquote with styling options. Variants: default | note | tip | warning | quote (pull quote).
+// Markdown posts get the same markup from remark-callouts (`> [!TIP]`, `> [!QUOTE] Author`, ...).
+const { variant = 'default', title, cite, align = 'left', size = 'md' } = Astro.props;
+const titles = { note: 'Note', tip: 'Tip', warning: 'Warning' };
+const heading = title ?? titles[variant];
+---
+
+{
+  variant === 'quote' || variant === 'default' ? (
+    <figure class={`bq bq--${variant} bq--align-${align} bq--${size}`} data-variant={variant}>
+      <blockquote class="bq-body">
+        <slot />
+      </blockquote>
+      {cite && <figcaption class="bq-cite">— {cite}</figcaption>}
+    </figure>
+  ) : (
+    <aside class={`bq bq--${variant} bq--${size}`} data-variant={variant} role="note">
+      {heading && <p class="bq-title">{heading}</p>}
+      <div class="bq-body">
+        <slot />
+      </div>
+    </aside>
+  )
+}

@@ -1,0 +1,36 @@
+---
+import { coverSrc, coverSrcset, formatDate, isoDate, postPath, tagLabel, tagPath } from '../lib/site';
+
+const { post, size = 'default', headingLevel = 3, eager = false } = Astro.props;
+const H = `h${headingLevel}`;
+---
+
+<article class={`post-card post-card--${size}`}>
+  <a class="post-card-media" href={postPath(post.slug)} tabindex="-1" aria-hidden="true">
+    <img
+      src={coverSrc(post.cover, 800)}
+      srcset={coverSrcset(post.cover)}
+      sizes={size === 'hero' ? '(max-width: 900px) 92vw, 720px' : '(max-width: 700px) 92vw, 400px'}
+      width="1600"
+      height="840"
+      alt={post.coverAlt}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      fetchpriority={eager ? 'high' : undefined}
+    />
+    {post.hasVideo && <span class="post-card-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5L8 5.5Z" fill="currentColor"></path></svg>Video</span>}
+  </a>
+  <div class="post-card-body">
+    <p class="post-card-meta">
+      {post.featured && <span class="chip chip--accent">Featured</span>}
+      <time datetime={isoDate(post.pubDate)}>{formatDate(post.pubDate, { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+      <span aria-hidden="true">·</span>
+      <span>{post.minutesRead} min read</span>
+    </p>
+    <H class="post-card-title"><a href={postPath(post.slug)}>{post.title}</a></H>
+    <p class="post-card-desc">{post.description}</p>
+    <ul class="tag-list" aria-label="Topics">
+      {post.tags.map((t) => <li><a class="chip" href={tagPath(t)}>#{tagLabel(t)}</a></li>)}
+    </ul>
+  </div>
+</article>

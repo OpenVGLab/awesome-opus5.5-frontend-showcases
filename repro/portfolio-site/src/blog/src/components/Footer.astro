@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import { postPath, sortByDate } from '../lib/site';
+
+const recent = sortByDate(await getCollection('blog')).slice(0, 3);
+const socials = [
+  ['GitHub', 'https://github.com/maraellison'],
+  ['LinkedIn', 'https://www.linkedin.com/in/maraellison'],
+  ['X (Twitter)', 'https://x.com/maraellison'],
+  ['Dribbble', 'https://dribbble.com/maraellison'],
+  ['CodePen', 'https://codepen.io/maraellison'],
+];
+const buildDate = new Date();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <a class="footer-cta" href="/#contact">Have an idea? Let’s talk
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+    </a>
+    <div class="footer-grid">
+      <div class="footer-col footer-about">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">M</span>
+          <span class="brand-name">Mara Ellison</span>
+        </a>
+        <p style="margin-top:16px">Creative frontend developer in Lisbon writing about WebGL, performance, motion and accessible interfaces.</p>
+        <address>
+          Mara Ellison Studio<br />
+          Rua das Flores 28, 1200-195 Lisboa<br />
+          <a href="mailto:hello@maraellison.dev">hello@maraellison.dev</a>
+        </address>
+      </div>
+      <nav class="footer-col" aria-label="Portfolio">
+        <h2>Portfolio</h2>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#work">Selected work</a></li>
+          <li><a href="/#experience">Experience</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-label="Writing">
+        <h2>Writing</h2>
+        <ul>
+          {recent.map((p) => <li><a href={postPath(p.id)}>{p.data.title.split(':')[0]}</a></li>)}
+          <li><a href="/blog/">All articles</a></li>
+          <li><a href="/blog/archive/">Archive</a></li>
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-label="Connect">
+        <h2>Connect</h2>
+        <ul>
+          {socials.map(([label, url]) => <li><a href={url} target="_blank" rel="noopener noreferrer me">{label}</a></li>)}
+        </ul>
+      </nav>
+      <div class="footer-col">
+        <h2>Subscribe</h2>
+        <ul>
+          <li><a href="/blog/rss.xml">RSS feed</a></li>
+          <li><a href="/blog/tags/">Browse by topic</a></li>
+          <li><a href="/sitemap.xml">Sitemap</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Mara Ellison. Blog built with Astro — portfolio with Next.js.</span>
+      <span class="meta">
+        <span>Last built: <time datetime={buildDate.toISOString()}>{buildDate.toISOString().slice(0, 10)}</time></span>
+        <a href="#main">Back to top ↑</a>
+      </span>
+    </div>
+  </div>
+</footer>

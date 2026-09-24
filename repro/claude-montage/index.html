@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Way of Claude — a 30-second training montage</title>
+<meta name="description" content="A Kung Fu Panda–style growth montage starring the Claude mascot, animated and scored entirely in code.">
+<style>
+  :root {
+    --orange: #D97757;
+    --cream: #F6EFE2;
+    --ink: #1E1814;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, Caladea, "DejaVu Serif", serif;
+    --sans: "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial, "Liberation Sans", "DejaVu Sans", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0b0a; color: var(--cream); font-family: var(--sans); }
+  body.idle.playing { cursor: none; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .hidden { display: none !important; }
+
+  .overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #start {
+    background:
+      radial-gradient(ellipse at 50% 55%, rgba(20,14,10,0.35) 0%, rgba(14,10,8,0.78) 70%),
+      linear-gradient(to bottom, rgba(12,9,7,0.35), rgba(12,9,7,0.7));
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    text-align: center;
+  }
+  .start-inner { max-width: min(92vw, 900px); padding: 24px; }
+  .kicker {
+    font-size: clamp(11px, 1.05vw, 15px); letter-spacing: 0.34em; text-transform: uppercase;
+    color: rgba(246,239,226,0.72); margin-bottom: clamp(10px, 1.6vh, 18px);
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 500; margin: 0; line-height: 1.02;
+    font-size: clamp(40px, 6.4vw, 104px); color: var(--cream); text-shadow: 0 4px 30px rgba(0,0,0,0.45);
+  }
+  h1 em { font-style: italic; color: #F2A07F; }
+  .sub { font-family: var(--serif); font-style: italic; font-size: clamp(16px, 1.7vw, 26px); color: rgba(246,239,226,0.82); margin: clamp(8px, 1.4vh, 16px) 0 clamp(18px, 3.4vh, 38px); }
+  .play-big {
+    width: clamp(72px, 7.4vw, 112px); height: clamp(72px, 7.4vw, 112px); border-radius: 50%;
+    background: var(--orange); display: inline-grid; place-items: center; position: relative;
+    box-shadow: 0 10px 40px rgba(217,119,87,0.45), inset 0 -4px 0 rgba(0,0,0,0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .play-big:hover { transform: scale(1.06); box-shadow: 0 14px 50px rgba(217,119,87,0.6); }
+  .play-big svg { width: 42%; height: 42%; margin-left: 8%; fill: #FFF8EE; }
+  .play-big::after {
+    content: ""; position: absolute; inset: -9px; border-radius: 50%;
+    border: 2px solid rgba(246,239,226,0.35); border-top-color: var(--cream);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  #start.loading .play-big::after { opacity: 1; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hint { margin-top: clamp(14px, 2.6vh, 26px); font-size: clamp(12px, 1.05vw, 15px); color: rgba(246,239,226,0.62); letter-spacing: 0.04em; }
+  .hint .loadmsg { display: none; }
+  #start.loading .hint .loadmsg { display: inline; }
+  #start.loading .hint .readymsg { display: none; }
+  .hint svg { width: 1.1em; height: 1.1em; vertical-align: -0.2em; margin-right: 0.35em; fill: currentColor; }
+  kbd { font-family: var(--sans); font-size: 0.92em; padding: 1px 6px; border: 1px solid rgba(246,239,226,0.35); border-radius: 4px; }
+
+  #controls {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 64px; padding: 0 22px;
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(to top, rgba(10,8,6,0.78), rgba(10,8,6,0));
+    opacity: 0; transform: translateY(10px); transition: opacity 0.35s, transform 0.35s; pointer-events: none;
+  }
+  #controls.show { opacity: 1; transform: none; pointer-events: auto; }
+  .ctl { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; }
+  .ctl:hover { background: rgba(246,239,226,0.12); }
+  .ctl svg { width: 20px; height: 20px; fill: var(--cream); }
+  #btnPlay .i-pause { display: none; }
+  body.playing #btnPlay .i-play { display: none; }
+  body.playing #btnPlay .i-pause { display: block; }
+  #btnMute .i-off { display: none; }
+  #btnMute.off .i-on { display: none; }
+  #btnMute.off .i-off { display: block; }
+  #bar { position: relative; flex: 1; height: 22px; cursor: pointer; touch-action: none; }
+  #bar::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: rgba(246,239,226,0.25); }
+  #fill { position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--orange); width: 0; }
+  #knob { position: absolute; top: 4px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--cream); box-shadow: 0 1px 6px rgba(0,0,0,0.4); left: 0; }
+  #marks i { position: absolute; top: 6px; width: 2px; height: 10px; margin-left: -1px; background: rgba(246,239,226,0.55); border-radius: 1px; }
+  #time { font-variant-numeric: tabular-nums; font-size: 14px; color: rgba(246,239,226,0.85); min-width: 84px; text-align: center; }
+
+  #end { align-items: flex-end; justify-content: center; padding-bottom: 11vh; pointer-events: none; }
+  #replay {
+    pointer-events: auto; display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 24px; border-radius: 999px; background: rgba(30,24,20,0.82); color: var(--cream);
+    font-size: 16px; letter-spacing: 0.05em; box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  }
+  #replay:hover { background: var(--orange); }
+  #replay svg { width: 18px; height: 18px; fill: currentColor; }
+</style>
+</head>
+<body>
+  <canvas id="stage" aria-label="Animated training montage of the Claude mascot"></canvas>
+
+  <div id="start" class="overlay loading">
+    <div class="start-inner">
+      <div class="kicker">A 30-second training montage &middot; animated &amp; scored in code</div>
+      <h1>The Way of <em>Claude</em></h1>
+      <p class="sub">From &ldquo;Day one&rdquo; to humanity&rsquo;s hardest problems.</p>
+      <button id="playBig" class="play-big" aria-label="Play">
+        <svg viewBox="0 0 24 24"><path d="M6 3.8v16.4a1 1 0 0 0 1.52.85l13.2-8.2a1 1 0 0 0 0-1.7L7.52 2.95A1 1 0 0 0 6 3.8z"/></svg>
+      </button>
+      <div class="hint">
+        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.47 4.47 0 0 0 2.5-4zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg>
+        <span class="loadmsg">Tuning the guzheng&hellip;</span>
+        <span class="readymsg">Sound on &middot; <kbd>Space</kbd> play/pause &middot; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> seek</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <button id="btnPlay" class="ctl" aria-label="Play or pause">
+      <svg class="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>
+      <svg class="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+    </button>
+    <div id="bar" aria-label="Seek"><div id="fill"></div><div id="marks"></div><div id="knob"></div></div>
+    <span id="time">0:00 / 0:30</span>
+    <button id="btnMute" class="ctl" aria-label="Mute">
+      <svg class="i-on" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.47 4.47 0 0 0 2.5-4zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg>
+      <svg class="i-off" viewBox="0 0 24 24"><path d="M16.5 12A4.5 4.5 0 0 0 14 8v2.18l2.45 2.45c.03-.2.05-.41.05-.63zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.8 8.8 0 0 0 21 12a9 9 0 0 0-7-8.77v2.06A7 7 0 0 1 19 12zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25A6.9 6.9 0 0 1 14 18.7v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>
+    </button>
+    <button id="btnFull" class="ctl" aria-label="Fullscreen">
+      <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+    </button>
+  </div>
+
+  <div id="end" class="overlay hidden">
+    <button id="replay"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>Watch again</button>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

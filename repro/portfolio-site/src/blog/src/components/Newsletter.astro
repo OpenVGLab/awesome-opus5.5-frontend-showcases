@@ -1,0 +1,76 @@
+---
+// Newsletter form. Without JavaScript it submits (GET) to the static /blog/newsletter/ page;
+// with JavaScript it validates inline and confirms without leaving the article.
+const { compact = false } = Astro.props;
+const topics = ['WebGL', 'Performance', 'Motion'];
+---
+
+<section class={`newsletter${compact ? ' newsletter--compact' : ''}`} aria-labelledby="newsletter-title">
+  <div class="newsletter-copy">
+    <p class="kicker">Newsletter</p>
+    <h2 id="newsletter-title" class="newsletter-title">New articles, once a month.</h2>
+    <p>Essays and experiments on WebGL, web performance and motion design. No spam, unsubscribe any time.</p>
+  </div>
+  <form class="newsletter-form" method="get" action="/blog/newsletter/" data-newsletter novalidate>
+    <div class="newsletter-row">
+      <label class="sr-only" for="newsletter-email">Email address</label>
+      <input id="newsletter-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@studio.com" required aria-describedby="newsletter-msg" />
+      <button class="btn btn--accent" type="submit">Subscribe</button>
+    </div>
+    <fieldset class="newsletter-topics">
+      <legend>Topics</legend>
+      {
+        topics.map((t) => (
+          <label>
+            <input type="checkbox" name="topics" value={t.toLowerCase()} checked />
+            <span>{t}</span>
+          </label>
+        ))
+      }
+    </fieldset>
+    <p id="newsletter-msg" class="newsletter-msg" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<script>
+  const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  document.querySelectorAll('[data-newsletter]').forEach((form) => {
+    const input = form.querySelector('input[type="email"]');
+    const msg = form.querySelector('.newsletter-msg');
+    const button = form.querySelector('button[type="submit"]');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = input.value.trim();
+      form.classList.remove('is-error', 'is-success');
+      if (!EMAIL.test(email)) {
+        form.classList.add('is-error');
+        input.setAttribute('aria-invalid', 'true');
+        msg.textContent = 'Please enter a valid email address.';
+        input.focus();
+        return;
+      }
+      input.removeAttribute('aria-invalid');
+      const topics = [...form.querySelectorAll('input[name="topics"]:checked')].map((c) => c.value);
+      let list = [];
+      try {
+        list = JSON.parse(localStorage.getItem('me-newsletter') || '[]');
+      } catch {}
+      const already = list.some((s) => s.email === email);
+      button.disabled = true;
+      button.textContent = 'Subscribing…';
+      setTimeout(() => {
+        if (!already) {
+          list.push({ email, topics, at: new Date().toISOString() });
+          try {
+            localStorage.setItem('me-newsletter', JSON.stringify(list));
+          } catch {}
+        }
+        form.classList.add('is-success');
+        msg.textContent = already ? `${email} is already subscribed — thank you!` : `Thanks! A confirmation email is on its way to ${email}.`;
+        button.disabled = false;
+        button.textContent = 'Subscribed ✓';
+        form.reset();
+      }, 700);
+    });
+  });
+</script>

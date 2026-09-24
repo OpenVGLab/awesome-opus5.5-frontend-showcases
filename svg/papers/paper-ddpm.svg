@@ -1,0 +1,2248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xml:lang="zh-CN" lang="zh-CN" style="background:#FAF7F0">
+<title>DDPM 论文讲解 · 用 SVG 讲论文</title>
+<desc>Ho, Jain, Abbeel (2020), Denoising Diffusion Probabilistic Models — an interactive single-file SVG explainer: forward noising, learning to denoise (L_simple), and Algorithm 2 sampling, all computed live in the browser.</desc>
+<style><![CDATA[
+:root{
+  --sans:'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC','Source Han Sans SC','WenQuanYi Micro Hei',sans-serif;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman','Liberation Serif','DejaVu Serif',serif;
+  --mono:'SF Mono','JetBrains Mono','Cascadia Mono',Menlo,Consolas,'DejaVu Sans Mono','Liberation Mono',monospace;
+  background:#FAF7F0;
+  font-family:var(--sans);
+  fill:#1F2430;
+  text-spacing-trim:space-all;
+  text-autospace:no-autospace;
+  font-kerning:none;
+}
+:focus{outline:none}
+.hnum{font-family:var(--serif);font-style:italic;font-size:46px;fill:#DB7422}
+.kicker{font-size:19px;font-weight:700;fill:#DB7422;letter-spacing:4px}
+.cover-title{font-family:var(--serif);font-size:64px;fill:#1F2430}
+.cover-zh{font-size:30px;fill:#454D5C;letter-spacing:5px}
+.cover-auth{font-family:var(--serif);font-size:25px;fill:#1F2430}
+.cover-venue{font-family:var(--mono);font-size:15px;fill:#7C8391}
+.label{font-size:14px;font-weight:700;fill:#8A8F99;letter-spacing:2px}
+.hint{font-size:15px;fill:#7C8391}
+.cap{font-size:14px;fill:#7C8391}
+.cap-i{font-family:var(--serif);font-style:italic;font-size:15px;fill:#7C8391}
+.toc{cursor:pointer}
+.toc rect{fill:#FAF7F0;stroke:none;transition:fill .15s}
+.toc:hover rect,.toc:focus-visible rect{fill:#F0E8D9}
+.toc-n{font-family:var(--mono);font-size:15px;fill:#DB7422;font-weight:700}
+.toc-t{font-size:17px;fill:#454D5C}
+.btn{cursor:pointer}
+.btn rect{fill:#FFFDF9;stroke:#CBC2AE;stroke-width:1;transition:fill .15s,stroke .15s}
+.btn text{font-weight:600;fill:#454D5C;pointer-events:none}
+.btn:hover rect{fill:#F3ECDF;stroke:#A99F8A}
+.btn.primary rect{fill:#DB7422;stroke:#C4661B}
+.btn.primary text{fill:#FFFFFF}
+.btn.primary:hover rect{fill:#C8661C}
+.btn.on rect{fill:#1F2430;stroke:#1F2430}
+.btn.on text{fill:#FAF7F0}
+.btn:focus-visible rect{stroke:#DB7422;stroke-width:2}
+.btn.dis{opacity:.4;pointer-events:none}
+.slider{cursor:pointer;touch-action:none}
+.sl-track{stroke:#E3DBCA;stroke-width:4;stroke-linecap:round}
+.sl-fill{stroke:#1F2430;stroke-width:4;stroke-linecap:round}
+.sl-tick{stroke:#C7BEAA;stroke-width:1}
+.sl-lab{font-family:var(--mono);font-size:12px;fill:#8A909B;text-anchor:middle}
+.sl-knob circle{fill:#FFFDF9;stroke:#1F2430;stroke-width:2}
+.slider:focus-visible .sl-knob circle{stroke:#DB7422;stroke-width:3}
+.sl-val{font-family:var(--mono);font-size:14px;font-weight:700;fill:#1F2430;text-anchor:middle}
+.plot-bg{fill:#FFFDF9;stroke:#E0D8C7;stroke-width:1}
+.pgrid{stroke:#F1ECE2;stroke-width:1}
+.pgrid0{stroke:#DED6C5;stroke-width:1}
+.ptick{font-family:var(--mono);font-size:11px;fill:#A0A6B0}
+.sig{fill:none;stroke:#B7BCC4;stroke-width:1;stroke-dasharray:4 5}
+.sig-lab{font-family:var(--mono);font-size:11px;fill:#A0A6B0}
+.ghost{fill:none;stroke:#DCE5EE;stroke-linecap:round;stroke-linejoin:round}
+.ghost-c{fill:none;stroke:#B8C9DB;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:2 4;vector-effect:non-scaling-stroke}
+.cloud{fill:none;stroke-linecap:round}
+.trail{fill:none;stroke:#DB7422;stroke-opacity:.13;stroke-width:1;stroke-linejoin:round}
+.trail-tail{fill:none;stroke:#DB7422;stroke-opacity:.75;stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
+.walk{fill:none;stroke:#8D929A;stroke-opacity:.28;stroke-width:1;stroke-linejoin:round}
+.walk-tail{fill:none;stroke:#666C75;stroke-opacity:.9;stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round}
+.field{fill:none;stroke:#DB7422;stroke-opacity:.72;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.cgrid{stroke:#EEE8DC;stroke-width:1}
+.caxis{stroke:#BDB39F;stroke-width:1}
+.ctick{font-family:var(--mono);font-size:12px;fill:#8A909B}
+.card{fill:#FFFDF9;stroke:#E4DDCE;stroke-width:1}
+.card-o{fill:#FDF3E7;stroke:#F0CDA6;stroke-width:1}
+.card-b{fill:#F2F6FA;stroke:#D6E0EA;stroke-width:1}
+.num-xl{font-family:var(--mono);font-size:30px;fill:#1F2430}
+.num-big{font-family:var(--mono);font-size:24px;fill:#1F2430}
+.num{font-family:var(--mono);font-size:17px;fill:#1F2430}
+.num-s{font-family:var(--mono);font-size:13px;fill:#7C8391}
+.lab-s{font-size:13px;fill:#7C8391}
+.navdot{cursor:pointer}
+.navdot circle{transition:fill .2s}
+.pg{font-family:var(--mono);font-size:20px;fill:#454D5C}
+.cite{font-size:14px;fill:#8A8F99}
+.kbd{font-size:13px;fill:#A0A5AE}
+.alg-rule{stroke:#1F2430;stroke-width:1}
+.alg-rule2{stroke:#1F2430;stroke-width:.6}
+.alg-no{font-family:var(--mono);font-size:13px;fill:#A0A5AE}
+.hl{fill:#FBE6D0}
+.lens{fill:#FFFDF9;stroke:#E0D8C7;stroke-width:1}
+.pix{shape-rendering:crispEdges}
+]]></style>
+<defs id="defs"></defs>
+<rect width="1600" height="1000" fill="#FAF7F0"/>
+<g id="nojs">
+  <text x="72" y="300" style="font-family:Georgia,'Times New Roman',serif;font-size:60px;fill:#1F2430">Denoising Diffusion Probabilistic Models</text>
+  <text x="72" y="370" style="font-size:28px;fill:#454D5C">Ho · Jain · Abbeel · 2020 — 用 SVG 讲论文</text>
+  <text x="72" y="440" style="font-size:20px;fill:#7C8391">这份讲解需要在浏览器中启用脚本（直接用浏览器打开本文件即可）。</text>
+</g>
+<g id="stage"></g>
+<g id="chrome"></g>
+<text id="measure" x="-3000" y="-3000" visibility="hidden" aria-hidden="true"> </text>
+<script type="text/javascript"><![CDATA[
+(() => {
+'use strict';
+
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.documentElement;
+const defs = document.getElementById('defs');
+const stage = document.getElementById('stage');
+const chromeG = document.getElementById('chrome');
+const meas = document.getElementById('measure');
+const R = String.raw;
+
+const C = {
+  paper: '#FAF7F0', card: '#FFFDF9', rule: '#E4DDCE', rule2: '#CBC2AE',
+  ink: '#1F2430', ink2: '#454D5C', ink3: '#7C8391',
+  blue: '#1F4A73', blueM: '#5F81A6', blueL: '#A9BED4', blueLL: '#DCE5EE',
+  gray: '#8D929A', grayD: '#666C75', grayL: '#C9CCD1',
+  orange: '#DB7422', orangeD: '#B35A14', orangeL: '#EFB985', orangeLL: '#FBE6D0',
+  pixLo: '#F3EDE1'
+};
+const SANS = "'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Noto Sans CJK SC','Source Han Sans SC','WenQuanYi Micro Hei',sans-serif";
+const SERIF = "'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,'Times New Roman','Liberation Serif','DejaVu Serif',serif";
+const MATH = "'STIX Two Text',Cambria,'Times New Roman','Liberation Serif','DejaVu Serif',serif";
+const MSYM = "'STIX Two Math','Cambria Math','Latin Modern Math','DejaVu Math TeX Gyre','Noto Sans Math','Segoe UI Symbol','Apple Symbols',serif";
+const MONO = "'SF Mono','JetBrains Mono','Cascadia Mono',Menlo,Consolas,'DejaVu Sans Mono','Liberation Mono',monospace";
+
+/* ================= DDPM noise schedule: T = 1000, β linear from 1e-4 to 0.02 ================= */
+const T = 1000;
+const beta = new Float64Array(T + 1), alpha = new Float64Array(T + 1), abar = new Float64Array(T + 1);
+abar[0] = 1; alpha[0] = 1;
+for (let t = 1; t <= T; t++) {
+  beta[t] = 1e-4 + (0.02 - 1e-4) * (t - 1) / (T - 1);
+  alpha[t] = 1 - beta[t];
+  abar[t] = abar[t - 1] * alpha[t];
+}
+const sA = t => Math.sqrt(abar[t]);
+const sN = t => Math.sqrt(1 - abar[t]);
+
+/* ================= small utilities ================= */
+const STYLE_KEYS = { fill: 1, 'font-size': 1, 'font-weight': 1, 'font-family': 1, 'font-style': 1 };
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  if (attrs) {
+    const styled = !!attrs.class;
+    for (const k in attrs) {
+      const v = attrs[k];
+      if (v === undefined || v === null || v === false) continue;
+      if (k === 'text') e.textContent = v;
+      else if (styled && STYLE_KEYS[k]) e.style.setProperty(k, k === 'font-size' && typeof v === 'number' ? v + 'px' : String(v));
+      else e.setAttribute(k, v);
+    }
+  }
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const r1 = v => Math.round(v * 10) / 10;
+const r2 = v => Math.round(v * 100) / 100;
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+function mix(a, b, t) {
+  t = clamp(t, 0, 1);
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const ch = s => Math.round(((pa >> s) & 255) + ((((pb >> s) & 255) - ((pa >> s) & 255)) * t));
+  return '#' + ((1 << 24) | (ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).slice(1);
+}
+let uid = 0;
+const nextId = p => p + '-' + (++uid);
+const clear = g => { while (g.firstChild) g.removeChild(g.firstChild); };
+const SUPD = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+function fmtSci(v, d) {
+  const e = Math.floor(Math.log10(Math.abs(v)));
+  return (v / Math.pow(10, e)).toFixed(d) + '×10' + String(e).split('').map(c => SUPD[c]).join('');
+}
+const fmtAbar = v => (v >= 0.001 ? v.toFixed(4) : fmtSci(v, 2));
+const fmtBeta = t => (t >= 1 ? beta[t].toFixed(5) : '—');
+const fmtSigned = v => (v < 0 ? '−' : '+') + Math.abs(v).toFixed(2);
+const fmtTick = k => (k < 0 ? '−' + (-k) : String(k));
+
+function rngFrom(seed) {
+  let a = (seed >>> 0) || 1;
+  const u = () => {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  let spare = null;
+  const n = () => {
+    if (spare !== null) { const s = spare; spare = null; return s; }
+    let x, y, r;
+    do { x = 2 * u() - 1; y = 2 * u() - 1; r = x * x + y * y; } while (r >= 1 || r === 0);
+    const m = Math.sqrt(-2 * Math.log(r) / r);
+    spare = y * m;
+    return x * m;
+  };
+  return { u, n };
+}
+
+/* ================= text measurement ================= */
+const mcache = new Map();
+function measure(s, fam, size, wt, sty) {
+  const key = fam + '|' + size + '|' + (wt || 400) + '|' + (sty || 'normal') + '|' + s;
+  let w = mcache.get(key);
+  if (w === undefined) {
+    meas.setAttribute('font-family', fam);
+    meas.setAttribute('font-size', size);
+    meas.setAttribute('font-weight', wt || 400);
+    meas.setAttribute('font-style', sty || 'normal');
+    meas.textContent = s;
+    w = s ? meas.getComputedTextLength() : 0;
+    mcache.set(key, w);
+  }
+  return w;
+}
+
+/* Ink extents (ascent, descent) of a glyph, from canvas measureText; null if unavailable. */
+let inkCtx;
+const icache = new Map();
+function ink(ch, fam, size, wt, sty) {
+  const key = fam + '|' + size + '|' + wt + '|' + sty + '|' + ch;
+  if (icache.has(key)) return icache.get(key);
+  let r = null;
+  try {
+    if (inkCtx === undefined) inkCtx = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas').getContext('2d');
+    if (inkCtx) {
+      inkCtx.font = `${sty} ${wt} ${size}px ${fam}`;
+      const m = inkCtx.measureText(ch);
+      const a = m.actualBoundingBoxAscent, d = m.actualBoundingBoxDescent;
+      if (typeof a === 'number' && a + d > 0.05 * size) r = [a, d];
+    }
+  } catch (_) { inkCtx = null; }
+  icache.set(key, r);
+  return r;
+}
+
+/* ================= mini TeX → SVG <text>/<tspan> typesetter ================= */
+const GREEK = { alpha: 'α', beta: 'β', gamma: 'γ', delta: 'δ', epsilon: 'ϵ', varepsilon: 'ε', eta: 'η', theta: 'θ',
+  lambda: 'λ', mu: 'μ', nu: 'ν', pi: 'π', rho: 'ρ', sigma: 'σ', tau: 'τ', phi: 'ϕ', psi: 'ψ', omega: 'ω',
+  Sigma: 'Σ', Pi: 'Π', Delta: 'Δ', Gamma: 'Γ', Omega: 'Ω' };
+const SYM = {
+  cdot: ['·', 'bin', 'rm'], times: ['×', 'bin', 'rm'], pm: ['±', 'bin', 'rm'],
+  sim: ['∼', 'rel', 'sym'], approx: ['≈', 'rel', 'rm'], leftarrow: ['←', 'rel', 'sym'], gets: ['←', 'rel', 'sym'],
+  to: ['→', 'rel', 'sym'], rightarrow: ['→', 'rel', 'sym'], in: ['∈', 'rel', 'sym'], le: ['≤', 'rel', 'rm'],
+  ge: ['≥', 'rel', 'rm'], propto: ['∝', 'rel', 'sym'], mid: ['|', 'rel', 'rm'], neq: ['≠', 'rel', 'rm'],
+  nabla: ['∇', 'ord', 'sym'], ldots: ['…', 'ord', 'rm'], dots: ['…', 'ord', 'rm'], cdots: ['⋯', 'ord', 'sym'],
+  infty: ['∞', 'ord', 'rm'], partial: ['∂', 'ord', 'it'], prod: ['∏', 'bigop', 'sym'], sum: ['∑', 'bigop', 'sym'],
+  log: ['log', 'fn', 'rm'], exp: ['exp', 'fn', 'rm'], '|': ['‖', 'ord', 'sym'], '{': ['{', 'open', 'rm'], '}': ['}', 'close', 'rm']
+};
+const SPACE = { ',': 3 / 18, ':': 4 / 18, ';': 5 / 18, '!': -3 / 18, ' ': 0.25, quad: 1, qquad: 2 };
+const CAL = { N: '𝒩', L: 'ℒ' }, BB = { E: '𝔼', R: 'ℝ' };
+const MCOL = { blue: C.blue, gray: C.grayD, orange: C.orangeD, ink: C.ink, muted: C.ink3 };
+const VF = { it: [MATH, 'italic', 400], rm: [MATH, 'normal', 400], bf: [MATH, 'normal', 700], bfit: [MATH, 'italic', 700],
+  sym: [MSYM, 'normal', 400], cal: [MSYM, 'normal', 400], bb: [MSYM, 'normal', 400] };
+
+function tokTeX(s) {
+  const out = [];
+  for (let i = 0; i < s.length;) {
+    const c = s[i];
+    if (c === '\\') {
+      let j = i + 1;
+      if (/[A-Za-z]/.test(s[j] || '')) {
+        while (j < s.length && /[A-Za-z]/.test(s[j])) j++;
+        const name = s.slice(i + 1, j);
+        if (name === 'text' || name === 'c') {
+          let k = j;
+          while (s[k] === ' ') k++;
+          const e = s.indexOf('}', k);
+          out.push({ cmd: name, raw: s.slice(k + 1, e) });
+          i = e + 1;
+          continue;
+        }
+        out.push({ cmd: name });
+        i = j;
+      } else { out.push({ cmd: s[j] }); i = j + 1; }
+    } else if (c === ' ' || c === '\n' || c === '\t') i++;
+    else { const ch = String.fromCodePoint(s.codePointAt(i)); out.push({ ch }); i += ch.length; }
+  }
+  return out;
+}
+function clsOf(ch) {
+  if ('+−×·±'.includes(ch)) return 'bin';
+  if ('=<>≈∼≤≥→←∈'.includes(ch)) return 'rel';
+  if ('(['.includes(ch)) return 'open';
+  if (')]'.includes(ch)) return 'close';
+  if (',;'.includes(ch)) return 'punct';
+  return 'ord';
+}
+function parseTeX(src) {
+  const tk = tokTeX(src);
+  let p = 0;
+  const arg = () => {
+    const t = tk[p];
+    if (!t) return { t: 'list', items: [] };
+    if (t.ch === '{') { p++; return { t: 'list', items: list('}') }; }
+    return atom();
+  };
+  const delim = () => {
+    const t = tk[p++];
+    if (!t) return '';
+    if (t.ch) return t.ch === '.' ? '' : t.ch;
+    if (t.cmd === '|') return '‖';
+    if (t.cmd === '{') return '{';
+    if (t.cmd === '}') return '}';
+    return '';
+  };
+  function list(end) {
+    const items = [];
+    while (p < tk.length) {
+      const t = tk[p];
+      if (end === '}' && t.ch === '}') { p++; break; }
+      if (end === 'right' && t.cmd === 'right') break;
+      if (t.ch === '^' || t.ch === '_') {
+        p++;
+        const a = arg();
+        let last = items.pop() || { t: 'sym', ch: '', cls: 'ord' };
+        if (last.t !== 'ss') last = { t: 'ss', base: last };
+        if (t.ch === '^') last.sup = a; else last.sub = a;
+        items.push(last);
+        continue;
+      }
+      const a = atom();
+      if (a) items.push(a);
+    }
+    return items;
+  }
+  function atom() {
+    const t = tk[p++];
+    if (t.ch === '{') return { t: 'list', items: list('}') };
+    if (t.cmd !== undefined) {
+      const c = t.cmd;
+      if (c === 'frac') { const num = arg(); return { t: 'frac', num, den: arg() }; }
+      if (c === 'sqrt') return { t: 'sqrt', body: arg() };
+      if (c === 'bar' || c === 'hat' || c === 'tilde') return { t: 'acc', kind: c, base: arg() };
+      if (c === 'mathbf') return { t: 'font', v: 'bf', body: arg() };
+      if (c === 'boldsymbol') return { t: 'font', v: 'bfit', body: arg() };
+      if (c === 'mathrm') return { t: 'font', v: 'rm', body: arg() };
+      if (c === 'mathcal') return { t: 'font', v: 'cal', body: arg() };
+      if (c === 'mathbb') return { t: 'font', v: 'bb', body: arg() };
+      if (c === 'text') return { t: 'text', str: t.raw };
+      if (c === 'c') return { t: 'color', color: t.raw, body: arg() };
+      if (c === 'left') {
+        const l = delim();
+        const body = { t: 'list', items: list('right') };
+        p++;
+        return { t: 'lr', l, r: delim(), body };
+      }
+      if (/^[bB]ig[lr]?$/.test(c)) {
+        const ch = delim();
+        const cls = c.endsWith('l') ? 'open' : c.endsWith('r') ? 'close' : '([{'.includes(ch) ? 'open' : ')]}'.includes(ch) ? 'close' : 'ord';
+        return { t: 'delim', ch, big: c[0] === 'B' ? 2 : 1, cls };
+      }
+      if (SPACE[c] !== undefined) return { t: 'space', em: SPACE[c] };
+      if (GREEK[c]) return { t: 'sym', ch: GREEK[c], cls: 'ord', v: /[A-Z]/.test(c[0]) ? 'rm' : undefined };
+      if (SYM[c]) { const d = SYM[c]; return { t: 'sym', ch: d[0], cls: d[1], v: d[2] }; }
+      return { t: 'sym', ch: c, cls: 'ord', v: 'rm' };
+    }
+    let ch = t.ch;
+    if (ch === ':' && tk[p] && tk[p].ch === '=') { p++; return { t: 'sym', ch: ':=', cls: 'rel', v: 'rm' }; }
+    if (ch === '-') ch = '−';
+    return { t: 'sym', ch, cls: clsOf(ch) };
+  }
+  return list(null);
+}
+
+const isLat = ch => /^[A-Za-z]$/.test(ch);
+const isGrk = ch => /^[α-ωϵϕ]$/.test(ch);
+const isDig = ch => /^[0-9]$/.test(ch);
+function defVar(ch) {
+  if (isLat(ch) || isGrk(ch)) return 'it';
+  if ('∇∏∑∼‖←→∈'.includes(ch)) return 'sym';
+  return 'rm';
+}
+function metr(ch) {
+  if (/^[acemnorsuvwxzαεϵικνοστυω]$/.test(ch)) return [0.47, 0.01];
+  if (/^[gpqyγημρϕχ]$/.test(ch)) return [0.47, 0.23];
+  if (/^[jβζξψ]$/.test(ch)) return [0.72, 0.23];
+  if (/^[()[\]{}|‖]$/.test(ch)) return [0.75, 0.25];
+  if (ch === '∏' || ch === '∑') return [0.72, 0];
+  if (/^[=+−<>≤≥∼≈×±→←∈·]$/.test(ch) || ch === ':=') return [0.52, 0];
+  if (ch === ',' || ch === ';') return [0.12, 0.2];
+  return [0.7, 0];
+}
+function gapBetween(a, b, st) {
+  if (a === 'space' || b === 'space') return 0;
+  const m = st.size / 18;
+  if (st.level > 0) return a === 'punct' ? 2 * m : (a === 'op' || b === 'op') ? 1.5 * m : 0;
+  if (a === 'bin' || b === 'bin') return 4 * m;
+  if (a === 'rel' || b === 'rel') return a === 'rel' && b === 'rel' ? 0 : 5 * m;
+  if (a === 'punct') return 3 * m;
+  if (a === 'op' && (b === 'ord' || b === 'inner' || b === 'op')) return 3 * m;
+  if (b === 'op' && (a === 'ord' || a === 'close' || a === 'inner')) return 3 * m;
+  if (a === 'inner' && (b === 'ord' || b === 'inner' || b === 'open')) return 3 * m;
+  if (b === 'inner' && (a === 'ord' || a === 'close' || a === 'punct')) return 3 * m;
+  return 0;
+}
+function mbox(n, st) {
+  switch (n.t) {
+    case 'list': return hcat(n.items.map(k => mbox(k, st)), st);
+    case 'sym': return msym(n, st);
+    case 'ss': return msupsub(n, st);
+    case 'frac': return mfrac(n, st);
+    case 'sqrt': return msqrt(n, st);
+    case 'acc': return macc(n, st);
+    case 'lr': return mlr(n, st);
+    case 'delim': return mdelim(n, st);
+    case 'space': return { w: n.em * st.size, h: 0, d: 0, cls: 'space', draw() {} };
+    case 'text': {
+      const S = st.size * 0.9, w = measure(n.str, SANS, S, 400, 'normal');
+      return { w, h: 0.8 * S, d: 0.15 * S, cls: 'ord', draw(ctx, x, y) { ctx.spans.push({ x, y, t: n.str, s: S, f: SANS, st: 'normal', wt: 400, c: st.color }); } };
+    }
+    case 'color': return mbox(n.body, Object.assign({}, st, { color: MCOL[n.color] || n.color }));
+    case 'font': return mbox(n.body, Object.assign({}, st, { v: n.v }));
+  }
+  return { w: 0, h: 0, d: 0, cls: 'ord', draw() {} };
+}
+function hcat(boxes, st) {
+  for (let i = 0; i < boxes.length; i++) {
+    if (boxes[i].cls !== 'bin') continue;
+    let j = i - 1;
+    while (j >= 0 && boxes[j].cls === 'space') j--;
+    const prev = j >= 0 ? boxes[j].cls : null;
+    if (!prev || /^(bin|rel|open|punct|op)$/.test(prev)) boxes[i].cls = 'ord';
+  }
+  const xs = [];
+  let x = 0, h = 0, d = 0;
+  for (let i = 0; i < boxes.length; i++) {
+    if (i > 0) x += gapBetween(boxes[i - 1].cls, boxes[i].cls, st);
+    xs.push(x);
+    x += boxes[i].w;
+    h = Math.max(h, boxes[i].h);
+    d = Math.max(d, boxes[i].d);
+  }
+  const one = boxes.length === 1 ? boxes[0] : null;
+  return { w: x, h, d, cls: one ? one.cls : 'ord', italic: one ? one.italic : false, bigop: one ? one.bigop : false,
+    draw(ctx, X, Y) { for (let i = 0; i < boxes.length; i++) boxes[i].draw(ctx, X + xs[i], Y); } };
+}
+function msym(n, st) {
+  let ch = n.ch, v = n.v || defVar(ch), cls = n.cls;
+  const f0 = st.v;
+  if (f0 === 'bf') { if (isLat(ch) || isDig(ch)) v = 'bf'; else if (isGrk(ch)) v = 'bfit'; }
+  else if (f0 === 'bfit') { if (isLat(ch) || isGrk(ch)) v = 'bfit'; else if (isDig(ch)) v = 'bf'; }
+  else if (f0 === 'rm') { if (isLat(ch) || isGrk(ch)) v = 'rm'; }
+  else if (f0 === 'cal' && CAL[ch]) { ch = CAL[ch]; v = 'cal'; }
+  else if (f0 === 'bb' && BB[ch]) { ch = BB[ch]; v = 'bb'; }
+  let S = st.size, bigop = false, dy = 0;
+  if (cls === 'fn') cls = 'op';
+  if (cls === 'bigop') { bigop = true; cls = 'op'; S *= st.display && st.level === 0 ? 1.4 : 1.1; }
+  const f = VF[v] || VF.rm;
+  const w = measure(ch, f[0], S, f[2], f[1]);
+  const m0 = metr(n.ch), k = ch.length === 1 || ch.codePointAt(0) > 0xFFFF ? ink(ch, f[0], S, f[2], f[1]) : null;
+  let h = k ? k[0] : m0[0] * S, d = k ? k[1] : m0[1] * S;
+  if (bigop) { dy = (h - d) / 2 - 0.25 * st.size; h -= dy; d += dy; }
+  return { w, h, d, cls, italic: f[1] === 'italic', bigop,
+    draw(ctx, x, y) { ctx.spans.push({ x, y: y + dy, t: ch, s: S, f: f[0], st: f[1], wt: f[2], c: st.color }); } };
+}
+function msupsub(n, st) {
+  const base = mbox(n.base, st);
+  const S = st.size;
+  const sst = Object.assign({}, st, { size: S * (st.level === 0 ? 0.7 : 0.8), level: st.level + 1, display: false });
+  const sup = n.sup ? mbox(n.sup, sst) : null, sub = n.sub ? mbox(n.sub, sst) : null;
+  if (base.bigop && st.display && st.level === 0) {
+    const w = Math.max(base.w, sup ? sup.w : 0, sub ? sub.w : 0), gap = 0.1 * S;
+    return { w, h: base.h + (sup ? gap + sup.d + sup.h : 0), d: base.d + (sub ? gap + sub.h + sub.d : 0), cls: 'op',
+      draw(ctx, x, y) {
+        base.draw(ctx, x + (w - base.w) / 2, y);
+        if (sup) sup.draw(ctx, x + (w - sup.w) / 2, y - base.h - gap - sup.d);
+        if (sub) sub.draw(ctx, x + (w - sub.w) / 2, y + base.d + gap + sub.h);
+      } };
+  }
+  let u = sup ? Math.max(0.37 * S, base.h - 0.27 * S) : 0;
+  let v = sub ? Math.max(0.17 * S, base.d * 0.6 + 0.08 * S) : 0;
+  if (sup && sub) {
+    const gap = (u - sup.d) - (sub.h - v), need = 0.12 * S;
+    if (gap < need) { u += (need - gap) / 2; v += (need - gap) / 2; }
+  }
+  const supdx = base.w + (base.italic ? 0.06 * S : 0.03 * S), subdx = base.w + (base.italic ? -0.01 * S : 0.02 * S);
+  const w = Math.max(base.w, sup ? supdx + sup.w : 0, sub ? subdx + sub.w : 0) + 0.03 * S;
+  return { w, h: Math.max(base.h, sup ? u + sup.h : 0), d: Math.max(base.d, sub ? v + sub.d : 0), cls: base.cls,
+    draw(ctx, x, y) {
+      base.draw(ctx, x, y);
+      if (sup) sup.draw(ctx, x + supdx, y - u);
+      if (sub) sub.draw(ctx, x + subdx, y + v);
+    } };
+}
+function mfrac(n, st) {
+  const S = st.size;
+  const fst = st.display && st.level === 0
+    ? Object.assign({}, st, { display: false })
+    : Object.assign({}, st, { size: S * (st.level === 0 ? 0.8 : 0.85), level: st.level + 1, display: false });
+  const num = mbox(n.num, fst), den = mbox(n.den, fst);
+  const axis = 0.25 * S, th = Math.max(1, 0.05 * S), g1 = st.display ? 0.13 * S : 0.09 * S, pad = 0.1 * S;
+  const w = Math.max(num.w, den.w) + 2 * pad;
+  const numY = -axis - th / 2 - g1 - num.d, denY = -axis + th / 2 + g1 + den.h;
+  return { w, h: -numY + num.h, d: denY + den.d, cls: 'inner',
+    draw(ctx, x, y) {
+      num.draw(ctx, x + (w - num.w) / 2, y + numY);
+      den.draw(ctx, x + (w - den.w) / 2, y + denY);
+      ctx.rects.push({ x: x + pad * 0.35, y: y - axis - th / 2, w: w - pad * 0.7, h: th, c: st.color });
+    } };
+}
+function msqrt(n, st) {
+  const S = st.size, body = mbox(n.body, st);
+  const th = Math.max(1, 0.05 * S), gap = 0.1 * S;
+  const top = Math.max(body.h, 0.6 * S) + gap + th / 2;
+  const bot = Math.max(body.d, 0.04 * S) + 0.03 * S;
+  const Ht = top + bot, sw = 0.5 * S + 0.06 * Ht;
+  const w = sw + body.w + 0.1 * S;
+  return { w, h: top + th / 2 + 0.03 * S, d: bot, cls: 'ord',
+    draw(ctx, x, y) {
+      const ax = x + 0.04 * S, ay = y + bot - 0.4 * Ht;
+      const bx = x + 0.14 * S, by = y + bot - 0.47 * Ht;
+      const cx = x + 0.3 * S + 0.03 * Ht, cy = y + bot;
+      const dx = x + sw - 0.03 * S, dyy = y - top;
+      const ex = x + sw + body.w + 0.06 * S;
+      ctx.paths.push({ d: `M${r2(ax)} ${r2(ay)}L${r2(bx)} ${r2(by)}L${r2(cx)} ${r2(cy)}L${r2(dx)} ${r2(dyy)}L${r2(ex)} ${r2(dyy)}`, sw: th, c: st.color });
+      ctx.paths.push({ d: `M${r2(bx)} ${r2(by)}L${r2(cx)} ${r2(cy)}`, sw: th * 2, c: st.color, cap: 'butt' });
+      body.draw(ctx, x + sw, y);
+    } };
+}
+function macc(n, st) {
+  const S = st.size, base = mbox(n.base, st);
+  const sl = base.italic ? 0.07 * S : 0, th = Math.max(1, 0.05 * S), yb = base.h + 0.09 * S;
+  return { w: base.w, h: yb + (n.kind === 'bar' ? th : 0.15 * S), d: base.d, cls: base.cls, italic: base.italic,
+    draw(ctx, x, y) {
+      base.draw(ctx, x, y);
+      const cx = x + base.w / 2 + sl;
+      if (n.kind === 'bar') {
+        const hw = Math.max(base.w * 0.4, 0.2 * S);
+        ctx.rects.push({ x: cx - hw, y: y - yb - th, w: 2 * hw, h: th, c: st.color });
+      } else if (n.kind === 'hat') {
+        const hw = 0.2 * S;
+        ctx.paths.push({ d: `M${r2(cx - hw)} ${r2(y - yb)}L${r2(cx)} ${r2(y - yb - 0.14 * S)}L${r2(cx + hw)} ${r2(y - yb)}`, sw: th * 0.9, c: st.color });
+      } else {
+        const hw = 0.22 * S, yy = y - yb - 0.06 * S;
+        ctx.paths.push({ d: `M${r2(cx - hw)} ${r2(yy + 0.03 * S)}C${r2(cx - hw * 0.4)} ${r2(yy - 0.09 * S)} ${r2(cx + hw * 0.4)} ${r2(yy + 0.09 * S)} ${r2(cx + hw)} ${r2(yy - 0.03 * S)}`, sw: th * 0.9, c: st.color });
+      }
+    } };
+}
+function delimW(ch, S, H) {
+  if (ch === '(' || ch === ')') return 0.3 * S + 0.05 * H;
+  if (ch === '[' || ch === ']') return 0.3 * S;
+  if (ch === '‖') return 0.38 * S;
+  if (ch === '|') return 0.26 * S;
+  return 0;
+}
+function delimDraw(ch, x, yT, yB, S, c, ctx) {
+  const H = yB - yT, wd = delimW(ch, S, H), th = Math.max(1, 0.052 * S);
+  if (ch === '(' || ch === ')') {
+    const fl = ch === ')';
+    const X = v => r2(fl ? 2 * x + wd - v : v);
+    const x0 = x + wd * 0.88, x1 = x + wd * 0.1, dx = 0.1 * S;
+    ctx.paths.push({ fill: c, d: `M${X(x0)} ${r2(yT)}C${X(x1)} ${r2(yT + H * 0.28)} ${X(x1)} ${r2(yB - H * 0.28)} ${X(x0)} ${r2(yB)}C${X(x1 + dx)} ${r2(yB - H * 0.3)} ${X(x1 + dx)} ${r2(yT + H * 0.3)} ${X(x0)} ${r2(yT)}Z` });
+  } else if (ch === '[' || ch === ']') {
+    const fl = ch === ']';
+    const xa = fl ? x + 0.06 * S : x + wd - 0.06 * S, xb = fl ? x + wd - 0.1 * S : x + 0.1 * S;
+    ctx.paths.push({ d: `M${r2(xa)} ${r2(yT)}H${r2(xb)}V${r2(yB)}H${r2(xa)}`, sw: th, c, cap: 'butt', join: 'miter' });
+  } else if (ch === '‖') {
+    ctx.paths.push({ d: `M${r2(x + 0.12 * S)} ${r2(yT)}V${r2(yB)}M${r2(x + 0.26 * S)} ${r2(yT)}V${r2(yB)}`, sw: th * 0.9, c, cap: 'butt' });
+  } else if (ch === '|') {
+    ctx.paths.push({ d: `M${r2(x + 0.13 * S)} ${r2(yT)}V${r2(yB)}`, sw: th * 0.9, c, cap: 'butt' });
+  }
+  return wd;
+}
+function mlr(n, st) {
+  const S = st.size, body = mbox(n.body, st);
+  if (body.h + body.d <= 1.12 * S) {
+    const parts = [];
+    if (n.l) parts.push(msym({ ch: n.l, cls: 'open', v: n.l === '‖' ? 'sym' : 'rm' }, st));
+    parts.push(body);
+    if (n.r) parts.push(msym({ ch: n.r, cls: 'close', v: n.r === '‖' ? 'sym' : 'rm' }, st));
+    const b = hcat(parts, st);
+    b.cls = 'ord';
+    return b;
+  }
+  const axis = 0.25 * S, ext = Math.max(body.h - axis, body.d + axis) + 0.1 * S;
+  const H = 2 * ext, lw = n.l ? delimW(n.l, S, H) : 0, rw = n.r ? delimW(n.r, S, H) : 0, pad = 0.03 * S;
+  return { w: lw + body.w + rw + 2 * pad, h: axis + ext, d: ext - axis, cls: 'inner',
+    draw(ctx, x, y) {
+      if (n.l) delimDraw(n.l, x, y - axis - ext, y - axis + ext, S, st.color, ctx);
+      body.draw(ctx, x + lw + pad, y);
+      if (n.r) delimDraw(n.r, x + lw + body.w + 2 * pad, y - axis - ext, y - axis + ext, S, st.color, ctx);
+    } };
+}
+function mdelim(n, st) {
+  const S = st.size, axis = 0.25 * S, ext = (n.big === 2 ? 0.8 : 0.62) * S, w = delimW(n.ch, S, 2 * ext);
+  return { w, h: axis + ext, d: ext - axis, cls: n.cls,
+    draw(ctx, x, y) { delimDraw(n.ch, x, y - axis - ext, y - axis + ext, S, st.color, ctx); } };
+}
+function mlayout(src, o) {
+  const st = { size: o.size || 26, color: o.color || C.ink, level: 0, display: o.display !== false, v: null };
+  return mbox({ t: 'list', items: parseTeX(src) }, st);
+}
+function emitSpans(textEl, spans, base) {
+  for (const s of spans) {
+    const a = { x: r2(s.x), y: r2(s.y), 'font-size': r2(s.s), text: s.t };
+    if (s.f !== base.f) a['font-family'] = s.f;
+    if (s.st !== base.st) a['font-style'] = s.st;
+    if (s.wt !== base.wt) a['font-weight'] = s.wt;
+    if (s.c !== base.c) a.fill = s.c;
+    el('tspan', a, textEl);
+  }
+}
+function emitShapes(g, ctx) {
+  for (const r of ctx.rects) el('rect', { x: r2(r.x), y: r2(r.y), width: r2(r.w), height: r2(r.h), fill: r.c }, g);
+  for (const p of ctx.paths) {
+    if (p.fill) el('path', { d: p.d, fill: p.fill }, g);
+    else el('path', { d: p.d, fill: 'none', stroke: p.c, 'stroke-width': r2(p.sw), 'stroke-linejoin': p.join || 'round', 'stroke-linecap': p.cap || 'round' }, g);
+  }
+}
+function math(parent, src, x, y, o = {}) {
+  const box = mlayout(src, o);
+  const x0 = o.anchor === 'middle' ? x - box.w / 2 : o.anchor === 'end' ? x - box.w : x;
+  const ctx = { spans: [], rects: [], paths: [] };
+  box.draw(ctx, x0, y);
+  const color = o.color || C.ink;
+  const g = el('g', { class: 'blk math' }, parent);
+  const tx = el('text', { 'font-family': MATH, fill: color }, g);
+  emitSpans(tx, ctx.spans, { f: MATH, st: 'normal', wt: 400, c: color });
+  emitShapes(g, ctx);
+  return { g, w: box.w, h: box.h, d: box.d, x: x0 };
+}
+
+/* ================= rich text: CJK-aware wrapping with inline $math$ ================= */
+const CJK_RE = /[\u2E80-\u9FFF\u3000-\u303F\uFF00-\uFFEF\uF900-\uFAFF\u2014\u2018\u2019\u201C\u201D\u2026]/;
+const NO_START = '，。、；：！？）》」』”’…—';
+const NO_END = '（《「『“‘';
+function rich(parent, x, y, width, src, o = {}) {
+  const size = o.size || 20, lh = (o.lh || 1.6) * size;
+  const family = o.font || SANS, baseColor = o.color || C.ink2, baseWeight = o.weight || 400, baseStyle = o.style || 'normal';
+  const fontFor = sty => {
+    let f = family, wt = baseWeight, sy = baseStyle, col = baseColor, sc = 1;
+    if (sty.bold) { wt = 700; col = o.boldColor || C.ink; }
+    if (sty.tag === 'b') col = C.blue;
+    else if (sty.tag === 'o') col = C.orangeD;
+    else if (sty.tag === 'g') col = C.grayD;
+    else if (sty.tag === 'm') { f = MONO; sc = 0.9; }
+    else if (sty.tag === 'i') { f = SERIF; sy = 'italic'; }
+    return { f, wt, sy, col, sc };
+  };
+  const atoms = [];
+  const stack = [];
+  let bold = false, buf = '';
+  const sty = () => ({ bold, tag: stack.length ? stack[stack.length - 1] : null });
+  const flush = () => { if (buf) { atoms.push({ k: 't', s: buf, sty: sty(), cjk: false, p: '' }); buf = ''; } };
+  for (let i = 0; i < src.length;) {
+    const c = src[i];
+    if (c === '$') {
+      flush();
+      const j = src.indexOf('$', i + 1);
+      atoms.push({ k: 'm', src: src.slice(i + 1, j), sty: sty(), p: '' });
+      i = j + 1;
+    } else if (c === '*' && src[i + 1] === '*') { flush(); bold = !bold; i += 2; }
+    else if (c === '{' && src[i + 2] === '|') { flush(); stack.push(src[i + 1]); i += 3; }
+    else if (c === '}' && stack.length) { flush(); stack.pop(); i++; }
+    else if (c === '\n') { flush(); atoms.push({ k: 'br' }); i++; }
+    else if (c === '\\' && src[i + 1] === 'n') { flush(); atoms.push({ k: 'br' }); i += 2; }
+    else if (c === ' ') { flush(); atoms.push({ k: 'sp' }); i++; }
+    else if (CJK_RE.test(c)) {
+      flush();
+      atoms.push({ k: 't', s: c, sty: sty(), cjk: true, p: NO_START.includes(c) ? 'ns' : NO_END.includes(c) ? 'ne' : '' });
+      i++;
+    } else { buf += c; i++; }
+  }
+  flush();
+  const spW = measure('a a', family, size, baseWeight, baseStyle) - measure('aa', family, size, baseWeight, baseStyle);
+  for (const a of atoms) {
+    if (a.k === 't') { const f = fontFor(a.sty); a.w = measure(a.s, f.f, size * f.sc, f.wt, f.sy); }
+    else if (a.k === 'm') {
+      const f = fontFor(a.sty);
+      a.box = mlayout(a.src, { size: size * (o.mathScale || 1.05), color: a.sty.tag || a.sty.bold ? f.col : (o.mathColor || baseColor), display: false });
+      a.w = a.box.w;
+    }
+  }
+  // CJK punctuation compression: adjacent full-width punctuation shares one em.
+  const fullP = a => a && a.k === 't' && a.cjk && a.p && a.w > 0.85 * size;
+  for (let i = 0; i < atoms.length; i++) {
+    const a = atoms[i];
+    if (!fullP(a)) continue;
+    if (a.p === 'ns' && fullP(atoms[i + 1])) a.trimR = a.w / 2;
+    if (a.p === 'ne' && fullP(atoms[i - 1])) a.shiftL = a.w / 2;
+  }
+  for (const a of atoms) if (a.trimR || a.shiftL) a.w -= Math.max(a.trimR || 0, a.shiftL || 0);
+  const units = [];
+  let prev = null;
+  for (const a of atoms) {
+    if (a.k === 'br') { units.push({ br: true }); prev = null; continue; }
+    if (a.k === 'sp') { units.push({ sp: true }); prev = null; continue; }
+    if (prev && (a.p === 'ns' || prev.p === 'ne')) units[units.length - 1].items.push(a);
+    else units.push({ items: [a] });
+    prev = a;
+  }
+  const autoGap = (p, a) => {
+    if (!p) return 0;
+    const pc = p.k === 't' && p.cjk, ac = a.k === 't' && a.cjk;
+    if (pc === ac) return 0;
+    if ((pc && p.p) || (ac && a.p)) return 0;
+    return 0.2 * size;
+  };
+  let cur = { atoms: [], w: 0 };
+  const lines = [cur];
+  let pend = false;
+  for (const u of units) {
+    if (u.br) { cur = { atoms: [], w: 0 }; lines.push(cur); pend = false; continue; }
+    if (u.sp) { pend = cur.atoms.length > 0; continue; }
+    const place = (start, prevA, usePend) => {
+      let xx = start;
+      const pos = [];
+      u.items.forEach((a, k) => {
+        xx += k === 0 ? (usePend ? spW : autoGap(prevA, a)) : autoGap(u.items[k - 1], a);
+        pos.push(xx);
+        xx += a.w;
+      });
+      return { pos, end: xx };
+    };
+    let pl = place(cur.w, cur.atoms[cur.atoms.length - 1], pend);
+    if (cur.atoms.length && pl.end > width + 0.5) {
+      cur = { atoms: [], w: 0 };
+      lines.push(cur);
+      pl = place(0, null, false);
+    }
+    u.items.forEach((a, k) => { a.x = pl.pos[k]; cur.atoms.push(a); });
+    cur.w = pl.end;
+    pend = false;
+  }
+  const g = el('g', { class: 'blk rich' }, parent);
+  const tx = el('text', { 'font-family': family, 'font-size': size, fill: baseColor, 'font-weight': baseWeight, 'font-style': baseStyle === 'normal' ? null : baseStyle }, g);
+  const ctx = { spans: [], rects: [], paths: [] };
+  const key = s => (s.bold ? 'B' : '') + (s.tag || '');
+  lines.forEach((ln, li) => {
+    const by = y + size * 0.92 + li * lh;
+    const ox = o.align === 'center' ? x + (width - ln.w) / 2 : o.align === 'right' ? x + width - ln.w : x;
+    let run = null;
+    const emit = () => {
+      if (!run) return;
+      const f = fontFor(run.sty);
+      el('tspan', { x: r2(ox + run.x), y: r2(by), text: run.s,
+        'font-family': f.f !== family ? f.f : null, 'font-weight': f.wt !== baseWeight ? f.wt : null,
+        'font-style': f.sy !== baseStyle ? f.sy : null, fill: f.col !== baseColor ? f.col : null,
+        'font-size': f.sc !== 1 ? r2(size * f.sc) : null }, tx);
+      run = null;
+    };
+    for (const a of ln.atoms) {
+      if (a.k === 't') {
+        const kk = key(a.sty);
+        const open = run && run.key === kk && !run.sealed && !a.shiftL;
+        if (open && Math.abs(run.end - a.x) < 0.01) { run.s += a.s; run.end = a.x + a.w; }
+        else if (open && !a.cjk && !run.lastCjk && Math.abs(run.end + spW - a.x) < 0.01) { run.s += ' ' + a.s; run.end = a.x + a.w; }
+        else { emit(); run = { key: kk, s: a.s, x: a.x - (a.shiftL || 0), end: a.x + a.w, sty: a.sty }; }
+        run.lastCjk = a.cjk;
+        if (a.trimR) run.sealed = true;
+      } else { emit(); a.box.draw(ctx, ox + a.x, by); }
+    }
+    emit();
+  });
+  emitSpans(tx, ctx.spans, { f: '', st: '', wt: -1, c: '' });
+  emitShapes(g, ctx);
+  return { g, h: lines.length * lh, n: lines.length, w: Math.max.apply(null, lines.map(l => l.w)) };
+}
+
+/* ================= animation ================= */
+const tickers = new Set();
+function addTicker(fn) { const o = { fn }; tickers.add(o); return () => tickers.delete(o); }
+function frame(now) {
+  requestAnimationFrame(frame);
+  for (const o of Array.from(tickers)) {
+    if (!tickers.has(o)) continue;
+    let keep;
+    try { keep = o.fn(now); } catch (e) { tickers.delete(o); setTimeout(() => { throw e; }); continue; }
+    if (keep === false) tickers.delete(o);
+  }
+}
+const ease = p => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+const easeOut = p => 1 - Math.pow(1 - p, 3);
+function tween(dur, fn, o = {}) {
+  const e = o.ease || ease, t0 = performance.now() + (o.delay || 0);
+  let done = false, res;
+  const promise = new Promise(r => { res = r; });
+  const stop = addTicker(now => {
+    if (done) return false;
+    if (now < t0) return true;
+    const p = Math.min(1, (now - t0) / dur);
+    fn(e(p), p);
+    if (p >= 1) { done = true; res(); return false; }
+    return true;
+  });
+  return { promise, cancel() { if (!done) { done = true; stop(); res(); } }, finish() { if (!done) { fn(1, 1); done = true; stop(); res(); } } };
+}
+
+/* ================= UI pieces ================= */
+function button(parent, x, y, label, onClick, o = {}) {
+  const fs = o.size || 15, h = o.h || 36;
+  const w = o.w || Math.round(measure(label, SANS, fs, 600, 'normal') + 2 * (o.pad || 16));
+  const g = el('g', { class: 'btn' + (o.cls ? ' ' + o.cls : ''), transform: `translate(${x},${y})`, tabindex: '0', role: 'button', 'aria-label': o.aria || label }, parent);
+  el('rect', { x: 0.5, y: 0.5, width: w - 1, height: h - 1, rx: o.rx || 8 }, g);
+  const t = el('text', { x: w / 2, y: h / 2 + fs * 0.36, 'text-anchor': 'middle', 'font-size': fs, text: label }, g);
+  const fire = e => { e.preventDefault(); e.stopPropagation(); onClick(e); };
+  g.addEventListener('click', e => { fire(e); if (e.detail > 0 && g.blur) g.blur(); });
+  g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fire(e); });
+  return { g, w, h, setLabel(s) { t.textContent = s; }, setOn(b) { g.classList.toggle('on', !!b); } };
+}
+function chips(parent, x, y, items, value, onChange) {
+  const g = el('g', {}, parent);
+  const bs = [];
+  let cx = x;
+  for (const it of items) {
+    const b = button(g, cx, y, it.label, () => { set(it.value); onChange(it.value); }, { size: 14, h: 32, pad: 12, rx: 16 });
+    b.value = it.value;
+    bs.push(b);
+    cx += b.w + 6;
+  }
+  function set(v) { for (const b of bs) b.setOn(b.value === v); }
+  set(value);
+  return { g, set, w: cx - x - 6 };
+}
+function slider(parent, x, y, w, o) {
+  const g = el('g', { class: 'slider', transform: `translate(${x},${y})`, tabindex: '0', role: 'slider',
+    'aria-valuemin': o.min, 'aria-valuemax': o.max, 'aria-label': o.aria || 'slider' }, parent);
+  el('rect', { x: -14, y: -26, width: w + 28, height: 50, fill: C.paper, 'fill-opacity': 0.001 }, g);
+  el('line', { x1: 0, y1: 0, x2: w, y2: 0, class: 'sl-track' }, g);
+  const fill = el('line', { x1: 0, y1: 0, x2: 0, y2: 0, class: 'sl-fill' }, g);
+  const px = v => ((v - o.min) / (o.max - o.min)) * w;
+  for (const v of o.ticks || []) {
+    el('line', { x1: r1(px(v)), y1: 8, x2: r1(px(v)), y2: 13, class: 'sl-tick' }, g);
+    el('text', { x: r1(px(v)), y: 29, class: 'sl-lab', text: String(v) }, g);
+  }
+  const knob = el('g', { class: 'sl-knob' }, g);
+  el('circle', { r: 9 }, knob);
+  const bub = el('text', { y: -16, class: 'sl-val' }, knob);
+  let val = o.value, drag = false;
+  function set(v, fire) {
+    v = clamp(Math.round(v), o.min, o.max);
+    const changed = v !== val;
+    val = v;
+    knob.setAttribute('transform', `translate(${r1(px(v))},0)`);
+    fill.setAttribute('x2', r1(px(v)));
+    bub.textContent = o.fmt ? o.fmt(v) : String(v);
+    g.setAttribute('aria-valuenow', v);
+    if (fire && changed) o.onInput(v);
+  }
+  const fromEv = e => {
+    const m = g.getScreenCTM().inverse();
+    const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m);
+    return o.min + (p.x / w) * (o.max - o.min);
+  };
+  g.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    drag = true;
+    try { g.setPointerCapture(e.pointerId); } catch (_) { /* synthetic pointers */ }
+    set(fromEv(e), true);
+    if (o.onStart) o.onStart();
+  });
+  g.addEventListener('pointermove', e => { if (drag) set(fromEv(e), true); });
+  const end = () => { drag = false; };
+  g.addEventListener('pointerup', end);
+  g.addEventListener('pointercancel', end);
+  set(val, false);
+  return { g, set, get: () => val };
+}
+function plot(parent, x, y, size, L, o = {}) {
+  const g = el('g', { transform: `translate(${x},${y})` }, parent);
+  const sc = size / (2 * L), c = size / 2;
+  el('rect', { x: 0, y: 0, width: size, height: size, class: 'plot-bg' }, g);
+  const m = Math.floor(L);
+  for (let k = -m; k <= m; k++) {
+    const q = r1(c + k * sc);
+    el('line', { x1: q, y1: 0, x2: q, y2: size, class: k ? 'pgrid' : 'pgrid0' }, g);
+    el('line', { x1: 0, y1: q, x2: size, y2: q, class: k ? 'pgrid' : 'pgrid0' }, g);
+  }
+  if (o.ticks !== false) for (const k of [-2, 0, 2]) {
+    el('text', { x: r1(c + k * sc), y: size + 15, class: 'ptick', 'text-anchor': 'middle', text: fmtTick(k) }, g);
+    el('text', { x: -6, y: r1(c - k * sc + 4), class: 'ptick', 'text-anchor': 'end', text: fmtTick(k) }, g);
+  }
+  const back = el('g', {}, g);
+  if (o.sigma) for (const k of [1, 2]) {
+    el('circle', { cx: c, cy: c, r: r1(k * sc), class: 'sig' }, back);
+    el('text', { x: r1(c + k * sc * 0.707 + 4), y: r1(c - k * sc * 0.707 - 4), class: 'sig-lab', text: k + 'σ' }, back);
+  }
+  const ghost = el('g', {}, back);
+  const cid = nextId('clip');
+  const cp = el('clipPath', { id: cid }, defs);
+  el('rect', { x: 0, y: 0, width: size, height: size }, cp);
+  const inner = el('g', { 'clip-path': `url(#${cid})` }, g);
+  const front = el('g', {}, g);
+  return { g, back, ghost, inner, front, sc, c, size, L,
+    X: v => c + v * sc, Y: v => c - v * sc,
+    toData(e) {
+      const mm = g.getScreenCTM().inverse();
+      const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(mm);
+      return [(p.x - c) / sc, (c - p.y) / sc];
+    } };
+}
+function drawGhost(P, shape) {
+  clear(P.ghost);
+  const d = shape.strokes.map(st => 'M' + st.map(q => r1(P.X(q[0])) + ' ' + r1(P.Y(q[1]))).join('L')).join('');
+  el('path', { d, class: 'ghost', 'stroke-width': r1(Math.max(5, 4.6 * shape.s * P.sc)) }, P.ghost);
+  el('path', { d, class: 'ghost-c' }, P.ghost);
+}
+function cloudD(xs, n, P) {
+  const out = new Array(n), c = P.c, sc = P.sc;
+  for (let i = 0; i < n; i++) out[i] = 'M' + r1(c + xs[2 * i] * sc) + ' ' + r1(c - xs[2 * i + 1] * sc) + 'h0';
+  return out.join('');
+}
+function chart(parent, x, y, w, h, o) {
+  const g = el('g', { transform: `translate(${x},${y})` }, parent);
+  const X = v => ((v - o.xmin) / (o.xmax - o.xmin)) * w;
+  const Y = v => h - ((v - o.ymin) / (o.ymax - o.ymin)) * h;
+  for (const v of o.yticks || []) {
+    el('line', { x1: 0, y1: r1(Y(v)), x2: w, y2: r1(Y(v)), class: 'cgrid' }, g);
+    el('text', { x: -8, y: r1(Y(v) + 4), class: 'ctick', 'text-anchor': 'end', text: (o.yfmt || String)(v) }, g);
+  }
+  for (const v of o.xticks || []) {
+    el('line', { x1: r1(X(v)), y1: h, x2: r1(X(v)), y2: h + 5, class: 'caxis' }, g);
+    el('text', { x: r1(X(v)), y: h + 19, class: 'ctick', 'text-anchor': 'middle', text: (o.xfmt || String)(v) }, g);
+  }
+  el('line', { x1: 0, y1: h, x2: w, y2: h, class: 'caxis' }, g);
+  el('line', { x1: 0, y1: 0, x2: 0, y2: h, class: 'caxis' }, g);
+  return { g, X, Y, w, h, x, y };
+}
+function curveD(ch, f, t0, t1, stride) {
+  let d = '';
+  for (let t = t0; t <= t1; t += stride) d += (d ? 'L' : 'M') + r1(ch.X(t)) + ' ' + r1(ch.Y(f(t)));
+  return d;
+}
+function arrowD(x1, y1, x2, y2, hl, hw) {
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L;
+  const k = Math.min(hl, L * 0.6), wk = hw * k / hl;
+  const bx = x2 - ux * k, by = y2 - uy * k;
+  return { line: `M${r1(x1)} ${r1(y1)}L${r1(bx)} ${r1(by)}`,
+    head: `M${r1(x2)} ${r1(y2)}L${r1(bx - uy * wk)} ${r1(by + ux * wk)}L${r1(bx + uy * wk)} ${r1(by - ux * wk)}Z` };
+}
+function arrow(parent, color, o = {}) {
+  const g = el('g', {}, parent);
+  const ln = el('path', { stroke: color, 'stroke-width': o.w || 1.8, fill: 'none', 'stroke-linecap': 'round', 'stroke-dasharray': o.dash || null }, g);
+  const hd = el('path', { fill: color }, g);
+  return { g, set(x1, y1, x2, y2) { const a = arrowD(x1, y1, x2, y2, o.hl || 10, o.hw || 4.5); ln.setAttribute('d', a.line); hd.setAttribute('d', a.head); } };
+}
+function arcArrow(parent, x1, y1, x2, y2, bend, color, o = {}) {
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy);
+  const qx = mx - (dy / L) * bend, qy = my + (dx / L) * bend;
+  const tx = x2 - qx, ty = y2 - qy, tl = Math.hypot(tx, ty), ux = tx / tl, uy = ty / tl;
+  const hl = o.hl || 11, hw = o.hw || 5, bx = x2 - ux * hl, by = y2 - uy * hl;
+  const g = el('g', {}, parent);
+  el('path', { d: `M${r1(x1)} ${r1(y1)}Q${r1(qx)} ${r1(qy)} ${r1(bx)} ${r1(by)}`, fill: 'none', stroke: color, 'stroke-width': o.w || 1.8, 'stroke-dasharray': o.dash || null, 'stroke-linecap': 'round' }, g);
+  el('path', { d: `M${r1(x2)} ${r1(y2)}L${r1(bx - uy * hw)} ${r1(by + ux * hw)}L${r1(bx + uy * hw)} ${r1(by - ux * hw)}Z`, fill: color }, g);
+  return g;
+}
+function box(parent, x, y, w, pad, cls, fill) {
+  const g = el('g', {}, parent);
+  const r = el('rect', { x, y, width: w, height: 10, rx: 10, class: cls }, g);
+  const inner = el('g', {}, g);
+  const h = fill(inner, x + pad, y + pad, w - 2 * pad);
+  r.setAttribute('height', r1(h + 2 * pad));
+  return { g, h: h + 2 * pad };
+}
+function readout(parent, x, y, tex, o = {}) {
+  math(parent, tex, x, y, { size: o.lsize || 17, color: C.ink3, display: false });
+  return el('text', { x, y: y + (o.dy || 33), class: o.cls || 'num-big', fill: o.fill || null, text: '' }, parent);
+}
+function header(g, n, title, sub) {
+  const h = el('g', { class: 'hdr' }, g);
+  el('text', { x: 70, y: 99, class: 'hnum', text: String(n) }, h);
+  rich(h, 108, 67, 1420, title, { size: 32, color: C.ink, weight: 700, lh: 1.2, mathColor: C.ink });
+  if (sub) rich(h, 110, 111, 1400, sub, { size: 16, color: C.ink3, font: SERIF, style: 'italic', lh: 1.2, mathColor: C.ink3 });
+}
+function para(parent, x, y, w, src, o) { return rich(parent, x, y, w, src, o).h; }
+function bullet(parent, x, y, w, color, src, o = {}) {
+  const r = rich(parent, x + 20, y, w - 20, src, Object.assign({ size: 20 }, o));
+  el('rect', { x, y: y + 6, width: 4, height: r1(r.h - 14), rx: 2, fill: color }, parent);
+  return r.h;
+}
+
+/* ================= toy data: Gaussian mixtures laid along a shape ================= */
+function spiralPts() {
+  const pts = [];
+  for (let i = 0; i <= 800; i++) {
+    const u = i / 800, th = 0.55 * Math.PI + 3.1 * Math.PI * u, r = 0.28 + 1.22 * u;
+    pts.push([r * Math.cos(th), r * Math.sin(th)]);
+  }
+  return [pts];
+}
+function moonsPts() {
+  const a = [], b = [];
+  for (let i = 0; i <= 300; i++) {
+    const th = (Math.PI * i) / 300;
+    a.push([Math.cos(th), Math.sin(th)]);
+    b.push([1 - Math.cos(th), 0.5 - Math.sin(th)]);
+  }
+  return [a, b];
+}
+function ddpmPts() {
+  const H = 1.1, h2 = H / 2, strokes = [];
+  const ell = (cx, cy, rx, ry, n) => { const p = []; for (let i = 0; i <= n; i++) { const a = Math.PI / 2 - (Math.PI * i) / n; p.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]); } return p; };
+  const seg = (x1, y1, x2, y2, n) => { const p = []; for (let i = 0; i <= n; i++) p.push([x1 + ((x2 - x1) * i) / n, y1 + ((y2 - y1) * i) / n]); return p; };
+  const D = x0 => strokes.push(seg(x0, -h2, x0, h2, 60).concat(ell(x0, 0, 0.62, h2, 120).slice(1)));
+  const P = x0 => strokes.push(seg(x0, -h2, x0, h2, 60).concat(ell(x0, h2 / 2, 0.55, h2 / 2, 80).slice(1)));
+  const M = (x0, w) => {
+    const q = [[x0, -h2], [x0, h2], [x0 + w / 2, -H / 10], [x0 + w, h2], [x0 + w, -h2]];
+    let s = [];
+    for (let i = 0; i < 4; i++) { const sg = seg(q[i][0], q[i][1], q[i + 1][0], q[i + 1][1], 50); s = s.concat(i ? sg.slice(1) : sg); }
+    strokes.push(s);
+  };
+  D(0); D(0.8); P(1.6); M(2.34, 0.75);
+  return strokes;
+}
+function resample(pts, h) {
+  const cum = [0];
+  for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  const L = cum[cum.length - 1], n = Math.max(2, Math.round(L / h) + 1), out = [];
+  let j = 0;
+  for (let k = 0; k < n; k++) {
+    const d = (L * k) / (n - 1);
+    while (j < pts.length - 2 && cum[j + 1] < d) j++;
+    const u = (d - cum[j]) / (cum[j + 1] - cum[j] || 1);
+    out.push([pts[j][0] + (pts[j + 1][0] - pts[j][0]) * u, pts[j][1] + (pts[j + 1][1] - pts[j][1]) * u]);
+  }
+  return out;
+}
+const SHAPES = { spiral: { label: '螺旋', s: 0.042, gen: spiralPts }, moons: { label: '双月', s: 0.05, gen: moonsPts }, ddpm: { label: 'DDPM', s: 0.036, gen: ddpmPts } };
+const SHAPE_ITEMS = Object.keys(SHAPES).map(k => ({ value: k, label: SHAPES[k].label }));
+const shapeCache = {};
+function getShape(name) {
+  if (shapeCache[name]) return shapeCache[name];
+  const def = SHAPES[name];
+  let strokes = def.gen();
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const st of strokes) for (const q of st) { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); }
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, k = 3 / Math.max(x1 - x0, y1 - y0);
+  strokes = strokes.map(st => resample(st.map(q => [(q[0] - cx) * k, (q[1] - cy) * k]), def.s * 1.8));
+  const means = [], segs = [];
+  for (const st of strokes) st.forEach((q, i) => { means.push(q[0], q[1]); if (i) segs.push(st[i - 1][0], st[i - 1][1], q[0], q[1]); });
+  return (shapeCache[name] = { name, label: def.label, s: def.s, strokes, means: new Float64Array(means), K: means.length / 2, segs: new Float64Array(segs) });
+}
+function sampleData(shape, out, n, rng) {
+  for (let i = 0; i < n; i++) {
+    const k = Math.floor(rng.u() * shape.K);
+    out[2 * i] = shape.means[2 * k] + shape.s * rng.n();
+    out[2 * i + 1] = shape.means[2 * k + 1] + shape.s * rng.n();
+  }
+}
+function forwardTo(x0, eps, n, t, out) {
+  const a = sA(t), b = sN(t);
+  for (let i = 0; i < 2 * n; i++) out[i] = a * x0[i] + b * eps[i];
+}
+
+/* Analytic optimal denoiser for q(x0) = (1/K) Σ N(m_k, s²I):
+   p_t = (1/K) Σ N(√ᾱ_t m_k, v_t I) with v_t = ᾱ_t s² + 1 − ᾱ_t, and ε̂ = −√(1−ᾱ_t) ∇log p_t. */
+let amBuf = new Float64Array(512), d2Buf = new Float64Array(256);
+function epsHat(shape, xs, n, t, out) {
+  const K = shape.K, Mn = shape.means, ab = abar[t];
+  const a = Math.sqrt(ab), sq = Math.sqrt(1 - ab), v = ab * shape.s * shape.s + (1 - ab), inv2v = 0.5 / v;
+  if (amBuf.length < 2 * K) { amBuf = new Float64Array(2 * K); d2Buf = new Float64Array(K); }
+  const am = amBuf, d2 = d2Buf;
+  for (let k = 0; k < 2 * K; k++) am[k] = a * Mn[k];
+  for (let i = 0; i < n; i++) {
+    const x = xs[2 * i], y = xs[2 * i + 1];
+    let dmin = Infinity;
+    for (let k = 0; k < K; k++) {
+      const dx = x - am[2 * k], dy = y - am[2 * k + 1], q = dx * dx + dy * dy;
+      d2[k] = q;
+      if (q < dmin) dmin = q;
+    }
+    let sw = 0, mx = 0, my = 0;
+    for (let k = 0; k < K; k++) {
+      const e = (d2[k] - dmin) * inv2v;
+      if (e > 36) continue;
+      const wk = Math.exp(-e);
+      sw += wk; mx += wk * am[2 * k]; my += wk * am[2 * k + 1];
+    }
+    mx /= sw; my /= sw;
+    const gx = (mx - x) / v, gy = (my - y) / v;
+    out[2 * i] = -sq * gx;
+    out[2 * i + 1] = -sq * gy;
+  }
+}
+/* One iteration of Algorithm 2 (σ_t² = β_t; z = 0 when t = 1), with ε̂ standing in for ε_θ. */
+function alg2Step(shape, xs, n, t, rng, eh) {
+  epsHat(shape, xs, n, t, eh);
+  const c1 = 1 / Math.sqrt(alpha[t]), c2 = (1 - alpha[t]) / Math.sqrt(1 - abar[t]), sig = Math.sqrt(beta[t]);
+  for (let i = 0; i < 2 * n; i++) {
+    const z = t > 1 ? rng.n() : 0;
+    xs[i] = c1 * (xs[i] - c2 * eh[i]) + sig * z;
+  }
+}
+function meanDist(shape, xs, n) {
+  const sg = shape.segs, ns = sg.length / 4;
+  let tot = 0;
+  for (let i = 0; i < n; i++) {
+    const px = xs[2 * i], py = xs[2 * i + 1];
+    let best = Infinity;
+    for (let k = 0; k < ns; k++) {
+      const ax = sg[4 * k], ay = sg[4 * k + 1], dx = sg[4 * k + 2] - ax, dy = sg[4 * k + 3] - ay;
+      let u = ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy);
+      u = u < 0 ? 0 : u > 1 ? 1 : u;
+      const ex = ax + u * dx - px, ey = ay + u * dy - py, q = ex * ex + ey * ey;
+      if (q < best) best = q;
+    }
+    tot += Math.sqrt(best);
+  }
+  return tot / n;
+}
+function cloudStats(xs, n) {
+  let mx = 0, my = 0;
+  for (let i = 0; i < n; i++) { mx += xs[2 * i]; my += xs[2 * i + 1]; }
+  mx /= n; my /= n;
+  let vx = 0, vy = 0;
+  for (let i = 0; i < n; i++) { vx += (xs[2 * i] - mx) ** 2; vy += (xs[2 * i + 1] - my) ** 2; }
+  return { mx, my, sx: Math.sqrt(vx / (n - 1)), sy: Math.sqrt(vy / (n - 1)) };
+}
+const stepsPerFrame = t => (t > 600 ? 8 : t > 250 ? 5 : 2);
+
+const state = { t: 250, shape: 'spiral', seed: 1 };
+const listeners = [];
+function setShape(name) { if (state.shape === name) return; state.shape = name; listeners.forEach(f => f('shape')); }
+function reseed() { state.seed++; listeners.forEach(f => f('seed')); }
+
+/* ================= slides ================= */
+const slides = [];
+function addSlide(build, meta) {
+  const g = el('g', { class: 'slide', display: 'none', opacity: 0 });
+  const s = Object.assign({ g, builds: [] }, meta || {});
+  build(s);
+  stage.appendChild(g);
+  slides.push(s);
+  return s;
+}
+const bd = (g, extra) => el('g', Object.assign({ class: 'bd' }, extra || {}), g);
+
+/* ---------- cover ---------- */
+function buildCover(s) {
+  const g = s.g;
+  const A = bd(g);
+  el('line', { x1: 72, y1: 184, x2: 104, y2: 184, stroke: C.orange, 'stroke-width': 2 }, A);
+  el('text', { x: 116, y: 191, class: 'kicker', text: '用 SVG 讲论文' }, A);
+  const B = bd(g);
+  el('text', { x: 68, y: 294, class: 'cover-title', text: 'Denoising Diffusion' }, B);
+  el('text', { x: 68, y: 372, class: 'cover-title', text: 'Probabilistic Models' }, B);
+  el('text', { x: 72, y: 434, class: 'cover-zh', text: '去噪扩散概率模型' }, B);
+  const Au = bd(g);
+  el('text', { x: 72, y: 502, class: 'cover-auth', text: 'Jonathan Ho · Ajay Jain · Pieter Abbeel' }, Au);
+  el('text', { x: 72, y: 534, class: 'cover-venue', text: 'UC Berkeley · NeurIPS 2020 · arXiv:2006.11239' }, Au);
+  const Hk = bd(g);
+  rich(Hk, 72, 574, 620, '把数据一点点加噪、变成纯噪声很容易；DDPM 学会的是**反过来**：从一团随机噪声出发，一小步一小步地去噪，最后得到像真实数据一样的样本。', { size: 20 });
+  const toc = bd(g);
+  el('text', { x: 72, y: 722, class: 'label', text: '本讲 8 步 · 点击跳转' }, toc);
+  ['问题', '前向过程', '一步到位', '二维演示', '训练目标', '采样', '分数视角', '小结'].forEach((nm, i) => {
+    const it = el('g', { class: 'toc', tabindex: '0', role: 'link', transform: `translate(${72 + (i % 4) * 156},${742 + Math.floor(i / 4) * 44})` }, toc);
+    el('rect', { x: -8, y: 0, width: 146, height: 36, rx: 7 }, it);
+    el('text', { x: 4, y: 24, class: 'toc-n', text: String(i + 1) }, it);
+    el('text', { x: 24, y: 24, class: 'toc-t', text: nm }, it);
+    const goI = e => { e.preventDefault(); e.stopPropagation(); go(i + 1); };
+    it.addEventListener('click', goI);
+    it.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') goI(e); });
+  });
+  el('text', { x: 72, y: 872, class: 'hint', text: '按 → 开始；也可以点下方按钮，或打开「自动播放」。' }, toc);
+
+  const Rg = bd(g);
+  const cx = 1168, cy = 516, sc = 114, rad = 350;
+  el('circle', { cx, cy, r: rad, class: 'lens' }, Rg);
+  for (const k of [1, 2]) el('circle', { cx, cy, r: k * sc, class: 'sig' }, Rg);
+  for (const k of [1, 2]) el('text', { x: r1(cx + k * sc * 0.707 + 5), y: r1(cy - k * sc * 0.707 - 5), class: 'sig-lab', text: k + 'σ' }, Rg);
+  const cid = nextId('clip');
+  const cp = el('clipPath', { id: cid }, defs);
+  el('circle', { cx, cy, r: rad - 1 }, cp);
+  const P = { c: 0, sc };
+  const clipG = el('g', { 'clip-path': `url(#${cid})` }, Rg);
+  const pts = el('path', { class: 'cloud', 'stroke-width': 3.6, transform: `translate(${cx},${cy})` }, clipG);
+  const phases = {};
+  const mkPhase = (k, src) => { const pg = el('g', { display: 'none' }, Rg); rich(pg, cx - 380, 134, 760, src, { size: 16, align: 'center', color: C.ink2 }); phases[k] = pg; };
+  mkPhase('data', R`数据 {b|$\mathbf{x}_0$}：沿“DDPM”字样放置的高斯混合`);
+  mkPhase('fwd', R`前向加噪 $\mathbf{x}_t=\sqrt{\bar\alpha_t}\,\mathbf{x}_0+\sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}$`);
+  mkPhase('rev', R`反向采样：{o|Algorithm 2}，从 $\mathbf{x}_T\sim\mathcal{N}(\mathbf{0},\mathbf{I})$ 逐步去噪`);
+  mkPhase('done', R`得到{o|新样本}：不是原来那些点，而是重新生成的`);
+  const showPhase = k => { for (const q in phases) phases[q].setAttribute('display', q === k ? 'inline' : 'none'); };
+  const tl = el('text', { x: cx, y: cy + rad + 28, class: 'num', 'text-anchor': 'middle', text: '' }, Rg);
+  rich(Rg, 1346, 812, 180, '实时计算 · N = 700\n公式同第 3、6 步\n去噪器为解析最优解', { size: 13, color: C.ink3, lh: 1.5, align: 'right' });
+
+  const shape = getShape('ddpm'), N = 700, rng = rngFrom(20200619);
+  const x0 = new Float64Array(2 * N), eps = new Float64Array(2 * N), xs = new Float64Array(2 * N), eh = new Float64Array(2 * N);
+  sampleData(shape, x0, N, rng);
+  const draw = (col, op) => { pts.setAttribute('d', cloudD(xs, N, P)); pts.setAttribute('stroke', col); pts.setAttribute('opacity', op); };
+  xs.set(x0);
+  draw(C.blue, 1);
+  showPhase('data');
+  tl.textContent = 't = 0';
+  let stop = null;
+  s.enter = () => {
+    if (stop) return;
+    let st = 'show', t0 = performance.now(), t = 0;
+    xs.set(x0);
+    draw(C.blue, 1);
+    showPhase('data');
+    tl.textContent = 't = 0';
+    stop = addTicker(now => {
+      const dt = now - t0;
+      s.loop = { phase: st, t };
+      if (st === 'show') {
+        if (dt > 1500) { st = 'fwd'; t0 = now; for (let i = 0; i < 2 * N; i++) eps[i] = rng.n(); showPhase('fwd'); }
+      } else if (st === 'fwd') {
+        const p = Math.min(1, dt / 2600);
+        t = Math.round(T * Math.pow(ease(p), 1.6));
+        forwardTo(x0, eps, N, t, xs);
+        draw(mix(C.blue, C.gray, 1 - sA(t)), 1);
+        tl.textContent = 't = ' + t;
+        if (p >= 1) { st = 'hold'; t0 = now; }
+      } else if (st === 'hold') {
+        if (dt > 700) { st = 'rev'; t0 = now; t = T; showPhase('rev'); }
+      } else if (st === 'rev') {
+        const t1 = performance.now();
+        for (let k = stepsPerFrame(t); k > 0 && t >= 1; k--) { alg2Step(shape, xs, N, t, rng, eh); t--; if (performance.now() - t1 > 14) break; }
+        draw(mix(C.gray, C.orange, sA(t)), 1);
+        tl.textContent = 't = ' + t;
+        if (t === 0) { st = 'done'; t0 = now; showPhase('done'); }
+      } else if (st === 'done') {
+        if (dt > 2400) { st = 'fade'; t0 = now; }
+      } else if (st === 'fade') {
+        const p = Math.min(1, dt / 900);
+        if (p < 0.5) pts.setAttribute('opacity', r2(1 - 2 * p));
+        else { if (xs[0] !== x0[0]) { xs.set(x0); draw(C.blue, 0); showPhase('data'); tl.textContent = 't = 0'; } pts.setAttribute('opacity', r2(2 * p - 1)); }
+        if (p >= 1) { st = 'show'; t0 = now; t = 0; }
+      }
+    });
+  };
+  s.leave = () => { if (stop) { stop(); stop = null; } };
+  s.primary = () => go(1);
+}
+
+/* ---------- 1. problem ---------- */
+function smiley(n) {
+  const img = new Float64Array(n * n), S = 4;
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    let acc = 0;
+    for (let a = 0; a < S; a++) for (let b = 0; b < S; b++) {
+      const x = ((i + (a + 0.5) / S) / n) * 2 - 1, y = ((j + (b + 0.5) / S) / n) * 2 - 1, r = Math.hypot(x, y);
+      let v = -1;
+      if (r < 0.84) v = -0.3;
+      if (r >= 0.72 && r < 0.86) v = 1;
+      if (Math.hypot(x + 0.3, y + 0.2) < 0.14 || Math.hypot(x - 0.3, y + 0.2) < 0.14) v = 1;
+      if (y > 0.14 && Math.abs(Math.hypot(x, y + 0.05) - 0.47) < 0.08) v = 1;
+      acc += v;
+    }
+    img[j * n + i] = acc / (S * S);
+  }
+  return img;
+}
+function pixelThumb(parent, x, y, img, eimg, n, px, t) {
+  const g = el('g', { transform: `translate(${x},${y})` }, parent);
+  const a = sA(t), b = sN(t);
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const k = j * n + i, v = a * img[k] + b * eimg[k];
+    el('rect', { x: i * px, y: j * px, width: px + 0.4, height: px + 0.4, fill: mix(C.pixLo, C.blue, (v + 1) / 2) }, g);
+  }
+  el('rect', { x: 0, y: 0, width: n * px, height: n * px, fill: 'none', stroke: C.rule2 }, g);
+}
+function buildProblem(s) {
+  const g = s.g;
+  header(g, 1, '问题：怎样“凭空”生成数据？', 'The generative modeling problem');
+  const A = bd(g);
+  let y = 186;
+  y += para(A, 72, y, 570, R`手里有很多样本 $\mathbf{x}_0\sim q(\mathbf{x}_0)$（比如图片），想要一个模型**凭空**造出新的、看起来同样真实的样本。`, { size: 22 }) + 14;
+  y += para(A, 72, y, 570, R`难点：$q(\mathbf{x}_0)$ 住在高维空间里、形状复杂——既写不出它的公式，也没法直接从中抽样。`, { size: 22 }) + 40;
+  const B = bd(g);
+  el('text', { x: 72, y: y + 14, class: 'label', text: 'DDPM 的思路：拆成两个方向' }, B);
+  y += 38;
+  y += bullet(B, 72, y, 570, C.gray, R`{g|**前向过程** $q$}：把数据一点点加上高斯噪声，$T$ 步之后变成纯噪声。这一半是固定的，**不用学**。`, { size: 21 }) + 14;
+  y += bullet(B, 72, y, 570, C.orange, R`{o|**反向过程** $p_\theta$}：学会每次去掉一点噪声。于是从随机噪声 $\mathbf{x}_T\sim\mathcal{N}(\mathbf{0},\mathbf{I})$ 出发，一步步就能走回数据。`, { size: 21 }) + 34;
+  const Cc = bd(g);
+  y += para(Cc, 72, y, 570, R`把一个难问题（一步生成整张图）拆成 $T$ 个容易的小问题（每次只去掉一点噪声）——这是整篇论文的出发点。`, { size: 18, color: C.ink3, lh: 1.7 }) + 22;
+  const Nt = bd(g);
+  box(Nt, 72, y, 570, 16, 'card', (gg, x, yy, w) => {
+    el('text', { x, y: yy + 13, class: 'label', text: '记号' }, gg);
+    const rows = [
+      [R`$\mathbf{x}_0$`, '一个真实数据样本（例如一张图）'],
+      [R`$\mathbf{x}_t$`, R`加噪 $t$ 步后的样本，$t=1,\ldots,T$，论文中 $T=1000$`],
+      [R`$\boldsymbol{\epsilon}$`, R`标准高斯噪声 $\mathcal{N}(\mathbf{0},\mathbf{I})$`],
+      [R`$\theta$`, R`神经网络的参数；{o|橙色}表示“学出来的”`]
+    ];
+    rows.forEach((r, i) => {
+      rich(gg, x, yy + 24 + i * 29, 70, r[0], { size: 17, color: C.ink });
+      rich(gg, x + 62, yy + 24 + i * 29, w - 62, r[1], { size: 16, color: C.ink2 });
+    });
+    return 24 + rows.length * 29;
+  });
+
+  const F = bd(g);
+  const n = 24, px = 6, tw = n * px, ty = 392;
+  const img = smiley(n), rng = rngFrom(424242), eimg = new Float64Array(n * n);
+  for (let i = 0; i < n * n; i++) eimg[i] = rng.n();
+  const tS = 300;
+  const nodes = [{ x: 700, t: T, tex: R`\mathbf{x}_T` }, { x: 922, t: tS, tex: R`\mathbf{x}_t` }, { x: 1146, t: tS - 1, tex: R`\mathbf{x}_{t-1}` }, { x: 1384, t: 0, tex: R`\mathbf{x}_0` }];
+  for (const nd of nodes) {
+    pixelThumb(F, nd.x, ty, img, eimg, n, px, nd.t);
+    math(F, nd.tex, nd.x + tw / 2, ty + tw + 34, { size: 24, anchor: 'middle' });
+    el('text', { x: nd.x + tw / 2, y: ty + tw + 58, class: 'num-s', 'text-anchor': 'middle', text: 't = ' + nd.t }, F);
+  }
+  const my = ty + tw / 2;
+  arrow(F, C.orange, { dash: '2 5', w: 2 }).set(852, my, 914, my);
+  arrow(F, C.orange, { dash: '2 5', w: 2 }).set(1298, my, 1376, my);
+  arcArrow(F, 1040, ty - 8, 1176, ty - 8, -44, C.orange, { w: 2 });
+  math(F, R`p_\theta(\mathbf{x}_{t-1}\mid\mathbf{x}_t)`, 1108, ty - 66, { size: 22, anchor: 'middle', color: C.orangeD });
+  arcArrow(F, 1170, ty + tw + 6, 1046, ty + tw + 6, -40, C.gray, { w: 1.8, dash: '6 5' });
+  math(F, R`q(\mathbf{x}_t\mid\mathbf{x}_{t-1})`, 1108, ty + tw + 98, { size: 22, anchor: 'middle', color: C.grayD });
+  rich(F, 700, ty - 88, 330, R`{o|**反向过程**：去噪，需要学习} →`, { size: 17 });
+  rich(F, 700, ty + tw + 76, 330, R`← {g|**前向过程**：加噪，固定不变}`, { size: 17 });
+  para(F, 700, ty + tw + 130, 828, R`仿论文图 2 的有向图模型。四张小图是同一张 24×24 的“图片”，按 $\mathbf{x}_t=\sqrt{\bar\alpha_t}\,\mathbf{x}_0+\sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}$ 在浏览器里实时加噪（公式见第 3 步）。相邻两步 $\mathbf{x}_t$、$\mathbf{x}_{t-1}$ 几乎一样：每一步只改一点点。`, { size: 15, color: C.ink3, lh: 1.65 });
+}
+
+/* ---------- 2. forward process ---------- */
+function buildForward(s) {
+  const g = s.g;
+  header(g, 2, '前向过程：每一步加一点高斯噪声', 'Forward (diffusion) process');
+  const A = bd(g);
+  math(A, R`q(\mathbf{x}_t\mid\mathbf{x}_{t-1}) := \mathcal{N}\big(\mathbf{x}_t;\ \sqrt{1-\beta_t}\,\mathbf{x}_{t-1},\ \beta_t\mathbf{I}\big)`, 72, 214, { size: 27 });
+  math(A, R`q(\mathbf{x}_{1:T}\mid\mathbf{x}_0) := \prod_{t=1}^{T} q(\mathbf{x}_t\mid\mathbf{x}_{t-1})`, 72, 304, { size: 22 });
+  const B = bd(g);
+  let y = 356;
+  y += para(B, 72, y, 580, R`每一步先把 $\mathbf{x}_{t-1}$ 乘上略小于 1 的 $\sqrt{1-\beta_t}$，再加上方差为 $\beta_t$ 的高斯噪声。整条链是固定的，**没有要学习的参数**。`, { size: 20 }) + 18;
+  const bx = box(B, 72, y, 580, 18, 'card-o', (gg, x, yy, w) => {
+    el('text', { x, y: yy + 14, class: 'label', fill: C.orangeD, text: '论文设定' }, gg);
+    return 26 + para(gg, x, yy + 24, w, R`$T=1000$；$\beta_t$ 从 $\beta_1=10^{-4}$ **线性**增加到 $\beta_T=0.02$。`, { size: 21, color: C.ink });
+  });
+  y += bx.h + 20;
+  y += para(B, 72, y, 580, R`每步的 $\beta_t$ 都很小，单步几乎看不出变化；但 1000 步叠加之后，起点的信息几乎被完全抹掉（右图）。`, { size: 20 }) + 16;
+  para(B, 72, y, 580, R`为什么要乘 $\sqrt{1-\beta_t}$？若 $\mathrm{Var}(\mathbf{x}_{t-1})=1$，则 $\mathrm{Var}(\mathbf{x}_t)=(1-\beta_t)+\beta_t=1$——尺度保持不变，不会越加越大。`, { size: 17, color: C.ink3 });
+
+  const Rg = bd(g);
+  const P = plot(Rg, 700, 160, 500, 3, { sigma: true });
+  drawGhost(P, getShape('spiral'));
+  const trailG = el('g', {}, P.inner), dotG = el('g', {}, P.inner);
+  const pan = 1238;
+  const rT = readout(Rg, pan, 178, R`t`, { cls: 'num-xl', dy: 38 });
+  const rB = readout(Rg, pan, 262, R`\beta_t`, {});
+  const rS = readout(Rg, pan, 334, R`\sqrt{1-\beta_t}\ \text{（缩小）}`, {});
+  const rN = readout(Rg, pan, 414, R`\sqrt{\beta_t}\ \text{（噪声标准差）}`, {});
+  const replay = button(Rg, pan, 486, '⟲ 重新模拟', () => run(true));
+  para(Rg, pan, 540, 290, '7 个粒子从螺旋上出发，各自按上式逐步走 1000 步：这是真实的随机游走，每一步都在计算。', { size: 15, color: C.ink3, lh: 1.6 });
+
+  const Cg = bd(g);
+  const CH = chart(Cg, 760, 744, 740, 104, { xmin: 0, xmax: T, ymin: 0, ymax: 0.02, xticks: [0, 250, 500, 750, 1000], yticks: [0, 0.01, 0.02], yfmt: v => (v ? v.toFixed(2) : '0') });
+  math(Cg, R`\beta_t`, 700, 700, { size: 20 });
+  el('text', { x: 732, y: 700, class: 'lab-s', text: '线性调度（论文设定）' }, Cg);
+  el('path', { d: `M${r1(CH.X(1))} ${r1(CH.Y(beta[1]))}L${r1(CH.X(T))} ${r1(CH.Y(beta[T]))}`, stroke: C.ink, 'stroke-width': 1.8, fill: 'none' }, CH.g);
+  math(CH.g, R`\beta_1=10^{-4}`, 12, CH.h - 10, { size: 15, color: C.ink3 });
+  math(CH.g, R`\beta_T=0.02`, CH.w - 8, 16, { size: 15, color: C.ink3, anchor: 'end' });
+  const mk = el('g', {}, CH.g);
+  el('line', { x1: 0, y1: 0, x2: 0, y2: CH.h, stroke: C.orange, 'stroke-width': 1, 'stroke-dasharray': '3 3' }, mk);
+  const mkDot = el('circle', { r: 5, fill: C.orange, stroke: '#fff', 'stroke-width': 1.5 }, mk);
+
+  let walkers = [], stopAnim = null, seed = 7;
+  function simulate() {
+    clear(trailG); clear(dotG);
+    const sh = getShape('spiral'), rng = rngFrom(seed * 7919 + 13);
+    walkers = [];
+    for (let i = 0; i < 7; i++) {
+      const k = Math.floor(((i + 0.5) / 7) * sh.K);
+      let x = sh.means[2 * k], y2 = sh.means[2 * k + 1];
+      const px = new Float32Array(T + 1), py = new Float32Array(T + 1), cum = new Float32Array(T + 1);
+      px[0] = P.X(x); py[0] = P.Y(y2);
+      let d = 'M' + r1(px[0]) + ' ' + r1(py[0]);
+      for (let t = 1; t <= T; t++) {
+        const a = Math.sqrt(1 - beta[t]), b = Math.sqrt(beta[t]);
+        x = a * x + b * rng.n();
+        y2 = a * y2 + b * rng.n();
+        px[t] = P.X(x); py[t] = P.Y(y2);
+        cum[t] = cum[t - 1] + Math.hypot(px[t] - px[t - 1], py[t] - py[t - 1]);
+        d += 'L' + r1(px[t]) + ' ' + r1(py[t]);
+      }
+      const tot = cum[T] + 4;
+      const path = el('path', { d, class: 'walk', 'stroke-dasharray': `${r1(tot)} ${r1(tot)}`, 'stroke-dashoffset': r1(tot) }, trailG);
+      const tail = el('path', { class: 'walk-tail' }, trailG);
+      el('circle', { cx: r1(px[0]), cy: r1(py[0]), r: 3.5, fill: C.blue }, dotG);
+      const dot = el('circle', { r: 5.5, stroke: '#fff', 'stroke-width': 1.5 }, dotG);
+      walkers.push({ px, py, cum, tot, path, tail, dot });
+    }
+  }
+  function show(t) {
+    const col = mix(C.blue, C.grayD, 1 - sA(t));
+    for (const w of walkers) {
+      w.path.setAttribute('stroke-dashoffset', r1(w.tot - w.cum[t]));
+      let d = '';
+      for (let k = Math.max(0, t - 70); k <= t; k++) d += (d ? 'L' : 'M') + r1(w.px[k]) + ' ' + r1(w.py[k]);
+      w.tail.setAttribute('d', d);
+      w.dot.setAttribute('cx', r1(w.px[t]));
+      w.dot.setAttribute('cy', r1(w.py[t]));
+      w.dot.setAttribute('fill', col);
+    }
+    rT.textContent = String(t);
+    rB.textContent = fmtBeta(t);
+    rS.textContent = t ? Math.sqrt(1 - beta[t]).toFixed(5) : '—';
+    rN.textContent = t ? Math.sqrt(beta[t]).toFixed(4) : '—';
+    mk.setAttribute('transform', `translate(${r1(CH.X(Math.max(1, t)))},0)`);
+    mkDot.setAttribute('cy', r1(CH.Y(beta[Math.max(1, t)])));
+  }
+  function run(newSeed) {
+    if (stopAnim) stopAnim.cancel();
+    if (newSeed) seed++;
+    simulate();
+    show(0);
+    stopAnim = tween(5200, (e, p) => show(Math.round(p * T)), { ease: p => p, delay: 250 });
+    return stopAnim.promise;
+  }
+  simulate();
+  show(T);
+  s.enter = () => { run(false); };
+  s.leave = () => { if (stopAnim) stopAnim.finish(); };
+  s.primary = () => run(true);
+  s.reseed = () => run(true);
+  s.auto = async ({ wait }) => { await wait(6200); await wait(4500); };
+  void replay;
+}
+
+/* ---------- 3. closed form ---------- */
+function buildClosed(s) {
+  const g = s.g;
+  header(g, 3, R`一步到位：从 $\mathbf{x}_0$ 直接得到任意时刻的 $\mathbf{x}_t$`, R`Sampling $\mathbf{x}_t$ at an arbitrary timestep $t$ in closed form`);
+  const A = bd(g);
+  math(A, R`\alpha_t := 1-\beta_t,\qquad \bar\alpha_t := \prod_{s=1}^{t}\alpha_s`, 72, 226, { size: 26 });
+  math(A, R`q(\mathbf{x}_t\mid\mathbf{x}_0) = \mathcal{N}\big(\mathbf{x}_t;\ \sqrt{\bar\alpha_t}\,\mathbf{x}_0,\ (1-\bar\alpha_t)\mathbf{I}\big)`, 72, 316, { size: 26 });
+  const B = bd(g);
+  el('text', { x: 72, y: 372, class: 'label', text: '等价地（重参数化）' }, B);
+  box(B, 72, 386, 580, 20, 'card-b', (gg, x, yy) => {
+    math(gg, R`\mathbf{x}_t = \c{blue}{\sqrt{\bar\alpha_t}}\,\mathbf{x}_0 + \c{gray}{\sqrt{1-\bar\alpha_t}}\,\boldsymbol{\epsilon},\quad \boldsymbol{\epsilon}\sim\mathcal{N}(\mathbf{0},\mathbf{I})`, x, yy + 36, { size: 27 });
+    return 50;
+  });
+  let y = 500;
+  const Cg = bd(g);
+  y += para(Cg, 72, y, 580, R`高斯的小步叠加起来仍是高斯，所以不必真的走 $t$ 步：一行公式就能直接得到任意时刻的 $\mathbf{x}_t$。训练时正是这样随机挑一个 $t$，一步造出带噪样本。`, { size: 20 }) + 16;
+  para(Cg, 72, y, 580, R`右图：{b|信号系数 $\sqrt{\bar\alpha_t}$} 从 1 降到接近 0，{g|噪声系数 $\sqrt{1-\bar\alpha_t}$} 从 0 升到接近 1。**拖动图中竖线**（或按 ↑ ↓）查看任意 $t$ 的数值。`, { size: 20 });
+
+  const Rg = bd(g);
+  const CH = chart(Rg, 770, 178, 730, 350, { xmin: 0, xmax: T, ymin: 0, ymax: 1, xticks: [0, 200, 400, 600, 800, 1000], yticks: [0, 0.25, 0.5, 0.75, 1], yfmt: v => v.toFixed(2) });
+  el('text', { x: CH.x + CH.w, y: CH.y + CH.h + 42, class: 'ctick', 'text-anchor': 'end', text: 't →' }, Rg);
+  el('path', { d: curveD(CH, sN, 0, T, 2), stroke: C.gray, 'stroke-width': 2.4, fill: 'none' }, CH.g);
+  el('path', { d: curveD(CH, sA, 0, T, 2), stroke: C.blue, 'stroke-width': 2.4, fill: 'none' }, CH.g);
+  math(CH.g, R`\sqrt{\bar\alpha_t}`, CH.X(560), CH.Y(sA(560)) - 16, { size: 20, color: C.blue });
+  math(CH.g, R`\sqrt{1-\bar\alpha_t}`, CH.X(560), CH.Y(sN(560)) + 34, { size: 20, color: C.grayD });
+  let tc = 1;
+  while (abar[tc] > 0.5) tc++;
+  el('line', { x1: r1(CH.X(tc)), y1: r1(CH.Y(Math.SQRT1_2)), x2: r1(CH.X(tc)), y2: CH.h, stroke: C.ink3, 'stroke-width': 1, 'stroke-dasharray': '1 3' }, CH.g);
+  el('circle', { cx: r1(CH.X(tc)), cy: r1(CH.Y(Math.SQRT1_2)), r: 3.5, fill: C.ink }, CH.g);
+  rich(CH.g, CH.X(tc) + 8, CH.h - 30, 300, R`$t\approx$ ${tc}：两条曲线相交，$\bar\alpha_t=0.5$`, { size: 14, color: C.ink3, lh: 1.3 });
+  const cur = el('g', {}, CH.g);
+  el('line', { x1: 0, y1: -6, x2: 0, y2: CH.h, stroke: C.ink, 'stroke-width': 1, 'stroke-dasharray': '3 3' }, cur);
+  const tag = el('g', {}, cur);
+  el('rect', { x: -34, y: -32, width: 68, height: 24, rx: 12, fill: C.ink }, tag);
+  const tagT = el('text', { x: 0, y: -15, 'text-anchor': 'middle', class: 'num-s', fill: C.paper, 'font-weight': 700, text: '' }, tag);
+  const d1 = el('circle', { r: 6, fill: C.blue, stroke: '#fff', 'stroke-width': 1.8 }, cur);
+  const d2 = el('circle', { r: 6, fill: C.gray, stroke: '#fff', 'stroke-width': 1.8 }, cur);
+  const l1 = el('text', { class: 'num', fill: C.blue, 'font-weight': 700 }, cur);
+  const l2 = el('text', { class: 'num', fill: C.grayD, 'font-weight': 700 }, cur);
+  const hit = el('rect', { x: -10, y: -40, width: CH.w + 20, height: CH.h + 40, fill: C.paper, 'fill-opacity': 0.001, style: 'cursor:ew-resize;touch-action:none' }, CH.g);
+  const cells = [[R`t`, v => String(v)], [R`\beta_t`, fmtBeta], [R`\bar\alpha_t`, v => fmtAbar(abar[v])], [R`\sqrt{\bar\alpha_t}`, v => sA(v).toFixed(4)], [R`\sqrt{1-\bar\alpha_t}`, v => sN(v).toFixed(4)]];
+  const vals = cells.map((c, i) => {
+    const x = 770 + i * 150;
+    if (i) el('line', { x1: x - 16, y1: 598, x2: x - 16, y2: 668, stroke: C.rule }, Rg);
+    return readout(Rg, x, 614, c[0], { dy: 40, fill: i === 3 ? C.blue : i === 4 ? C.grayD : null });
+  });
+  const note = bd(g);
+  para(note, 770, 712, 730, R`到 $t=T$：$\sqrt{\bar\alpha_T}\approx$ ${sA(T).toFixed(4)}，$\mathbf{x}_0$ 只剩不到 1% 的权重，$\mathbf{x}_T$ 与 $\mathcal{N}(\mathbf{0},\mathbf{I})$ 几乎没有区别——这正是反向过程出发的地方。（数值均由脚本按 $\beta_t$ 调度实时算出。）`, { size: 16, color: C.ink3, lh: 1.65 });
+  function setT(t) {
+    t = clamp(Math.round(t), 0, T);
+    state.t = t;
+    const X = CH.X(t);
+    cur.setAttribute('transform', `translate(${r1(X)},0)`);
+    d1.setAttribute('cy', r1(CH.Y(sA(t))));
+    d2.setAttribute('cy', r1(CH.Y(sN(t))));
+    const right = t < 820, va = sA(t), vn = sN(t), up = va >= vn;
+    for (const [lab, v, above] of [[l1, va, up], [l2, vn, !up]]) {
+      lab.textContent = v.toFixed(3);
+      lab.setAttribute('x', right ? 12 : -12);
+      lab.setAttribute('text-anchor', right ? 'start' : 'end');
+      lab.setAttribute('y', r1(CH.Y(v) + (above ? -10 : 22)));
+    }
+    tagT.textContent = 't = ' + t;
+    cells.forEach((c, i) => { vals[i].textContent = c[1](t); });
+  }
+  let drag = false;
+  const fromEv = e => { const m = CH.g.getScreenCTM().inverse(); const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m); return (p.x / CH.w) * T; };
+  hit.addEventListener('pointerdown', e => { e.preventDefault(); drag = true; try { hit.setPointerCapture(e.pointerId); } catch (_) { /* synthetic */ } setT(fromEv(e)); });
+  hit.addEventListener('pointermove', e => { if (drag) setT(fromEv(e)); });
+  hit.addEventListener('pointerup', () => { drag = false; });
+  setT(state.t);
+  let anim = null;
+  s.enter = () => setT(state.t);
+  s.leave = () => { if (anim) anim.cancel(); };
+  s.nudge = d => { if (anim) anim.cancel(); setT(state.t + d); };
+  s.primary = () => { if (anim) anim.cancel(); anim = tween(4000, e => setT(e * T)); };
+  s.auto = async ({ wait }) => {
+    anim = tween(4200, e => setT(e * T), { delay: 900 });
+    await anim.promise;
+    await wait(1200);
+    anim = tween(1600, e => setT(T + (250 - T) * e));
+    await anim.promise;
+    await wait(4000);
+  };
+}
+
+/* ---------- 4. 2-D forward demo ---------- */
+function buildDemo(s) {
+  const g = s.g;
+  header(g, 4, R`二维演示：拖动 $t$，看数据扩散成高斯`, 'Forward diffusion of a 2-D point cloud');
+  const L = bd(g);
+  const P = plot(L, 72, 152, 640, 3.2, { sigma: true });
+  const cl = el('path', { class: 'cloud', 'stroke-width': 4.4 }, P.inner);
+  const lgBg = el('rect', { x: 6, y: 6, height: 24, rx: 5, fill: C.card, 'fill-opacity': 0.9 }, P.front);
+  lgBg.setAttribute('width', r1(rich(P.front, 13, 9, 600, R`浅蓝带：原始数据分布 $q(\mathbf{x}_0)$　虚线圆：$\mathcal{N}(\mathbf{0},\mathbf{I})$ 的 1σ、2σ`, { size: 13, color: C.ink3, lh: 1.3 }).w + 14));
+  const N = 1000;
+  const x0 = new Float64Array(2 * N), eps = new Float64Array(2 * N), xs = new Float64Array(2 * N);
+  const sl = slider(L, 96, 860, 592, { min: 0, max: T, value: state.t, ticks: [0, 250, 500, 750, 1000], fmt: v => 't = ' + v, aria: '时间步 t', onInput: v => { stopPlay(); update(v); } });
+
+  const Rg = bd(g);
+  const px = 790;
+  para(Rg, px, 160, 740, R`每个点固定一对 $(\mathbf{x}_0,\boldsymbol{\epsilon})$；拖动 $t$ 时，脚本按下式实时重算全部 1000 个点：`, { size: 17, color: C.ink3 });
+  math(Rg, R`\mathbf{x}_t = \c{blue}{\sqrt{\bar\alpha_t}}\;\mathbf{x}_0 + \c{gray}{\sqrt{1-\bar\alpha_t}}\;\boldsymbol{\epsilon}`, px, 252, { size: 32 });
+  const eqY = 310;
+  const m1 = math(Rg, R`=`, px + 64, eqY, { size: 30 });
+  let cx = px + 64 + m1.w + 14;
+  const n1 = el('text', { x: cx, y: eqY, class: 'num-xl', fill: C.blue, text: '0.0000' }, Rg);
+  cx += measure('0.0000', MONO, 30, 400, 'normal') + 8;
+  const m2 = math(Rg, R`\mathbf{x}_0\ +`, cx, eqY, { size: 30 });
+  cx += m2.w + 14;
+  const n2 = el('text', { x: cx, y: eqY, class: 'num-xl', fill: C.grayD, text: '0.0000' }, Rg);
+  cx += measure('0.0000', MONO, 30, 400, 'normal') + 8;
+  math(Rg, R`\boldsymbol{\epsilon}`, cx, eqY, { size: 30 });
+
+  const rT = readout(Rg, px, 372, R`t`, { cls: 'num-xl', dy: 38 });
+  const rB = readout(Rg, px + 170, 372, R`\beta_t`, { dy: 38 });
+  const rA = readout(Rg, px + 360, 372, R`\bar\alpha_t=\prod_{s\le t}\alpha_s`, { dy: 38 });
+  const CH = chart(Rg, px + 44, 468, 690, 104, { xmin: 0, xmax: T, ymin: 0, ymax: 1, xticks: [0, 250, 500, 750, 1000], yticks: [0, 0.5, 1], yfmt: v => (v === 0.5 ? '0.5' : String(v)) });
+  el('path', { d: curveD(CH, sN, 0, T, 4), stroke: C.gray, 'stroke-width': 2, fill: 'none' }, CH.g);
+  el('path', { d: curveD(CH, sA, 0, T, 4), stroke: C.blue, 'stroke-width': 2, fill: 'none' }, CH.g);
+  math(CH.g, R`\sqrt{\bar\alpha_t}`, CH.X(690), CH.Y(sA(690)) - 9, { size: 16, color: C.blue });
+  math(CH.g, R`\sqrt{1-\bar\alpha_t}`, CH.X(690), CH.Y(sN(690)) + 23, { size: 16, color: C.grayD });
+  const mk = el('g', {}, CH.g);
+  el('line', { x1: 0, y1: 0, x2: 0, y2: CH.h, stroke: C.orange, 'stroke-width': 1.2, 'stroke-dasharray': '3 3' }, mk);
+  const mA = el('circle', { r: 4.5, fill: C.blue, stroke: '#fff', 'stroke-width': 1.3 }, mk);
+  const mN = el('circle', { r: 4.5, fill: C.gray, stroke: '#fff', 'stroke-width': 1.3 }, mk);
+
+  const stat = box(Rg, px, 628, 738, 16, 'card', (gg, x, yy) => {
+    el('text', { x, y: yy + 14, class: 'label', text: '点云统计（N = 1000，实时）' }, gg);
+    return 100;
+  });
+  const sy = 628 + 16;
+  const stMean = el('text', { x: px + 16, y: sy + 50, class: 'num', text: '' }, Rg);
+  const stStd = el('text', { x: px + 16, y: sy + 80, class: 'num', text: '' }, Rg);
+  const stD = el('text', { x: px + 390, y: sy + 50, class: 'num', text: '' }, Rg);
+  const stN = el('text', { x: px + 390, y: sy + 80, class: 'num', text: '' }, Rg);
+  void stat;
+  para(Rg, px, 770, 740, R`$t\to T$ 时均值 → 0、标准差 → 1、约 39% 的点落在 1σ 圆内（二维标准正态的理论值 $1-e^{-1/2}\approx$ 39.3%）：点云变成了 $\mathcal{N}(\mathbf{0},\mathbf{I})$。`, { size: 15, color: C.ink3, lh: 1.6 });
+  const ch = chips(Rg, px, 848, SHAPE_ITEMS, state.shape, v => setShape(v));
+  button(Rg, px + ch.w + 18, 846, '⟲ 重抽 ϵ', () => reseed(), { h: 36 });
+  const playB = button(Rg, px + ch.w + 130, 846, '▶ 播放 0 → T', () => play(), { cls: 'primary', h: 36 });
+
+  let sh = null, dRef = 0;
+  function regen() {
+    sh = getShape(state.shape);
+    drawGhost(P, sh);
+    const rng = rngFrom(state.seed * 1000003 + 11);
+    sampleData(sh, x0, N, rng);
+    for (let i = 0; i < 2 * N; i++) eps[i] = rng.n();
+    dRef = meanDist(sh, x0, N);
+  }
+  let curT = state.t;
+  function update(t) {
+    curT = t;
+    state.t = t;
+    forwardTo(x0, eps, N, t, xs);
+    cl.setAttribute('d', cloudD(xs, N, P));
+    cl.setAttribute('stroke', mix(C.blue, C.gray, 1 - sA(t)));
+    n1.textContent = sA(t).toFixed(4);
+    n2.textContent = sN(t).toFixed(4);
+    rT.textContent = String(t);
+    rB.textContent = fmtBeta(t);
+    rA.textContent = fmtAbar(abar[t]);
+    mk.setAttribute('transform', `translate(${r1(CH.X(t))},0)`);
+    mA.setAttribute('cy', r1(CH.Y(sA(t))));
+    mN.setAttribute('cy', r1(CH.Y(sN(t))));
+    const cs = cloudStats(xs, N);
+    let in1 = 0;
+    for (let i = 0; i < N; i++) if (xs[2 * i] ** 2 + xs[2 * i + 1] ** 2 < 1) in1++;
+    const d = meanDist(sh, xs, N);
+    stMean.textContent = `均值   (${fmtSigned(cs.mx)}, ${fmtSigned(cs.my)})`;
+    stStd.textContent = `标准差 (${cs.sx.toFixed(2)}, ${cs.sy.toFixed(2)})`;
+    stD.textContent = `到数据形状的平均距离 ${d.toFixed(3)}`;
+    stN.textContent = `1σ 圆内比例 ${(100 * in1 / N).toFixed(1)}%`;
+    s.stats = { t, mean: [cs.mx, cs.my], std: [cs.sx, cs.sy], dbar: d, dRef, in1: in1 / N };
+    if (sl.get() !== t) sl.set(t, false);
+  }
+  let anim = null;
+  function stopPlay() { if (anim) { anim.cancel(); anim = null; } }
+  function play() {
+    stopPlay();
+    anim = tween(4800, e => update(Math.round(e * T)), { ease: p => p * p * (3 - 2 * p) });
+    return anim.promise;
+  }
+  regen();
+  update(state.t);
+  listeners.push(() => { regen(); update(curT); ch.set(state.shape); });
+  s.enter = () => { update(state.t); };
+  s.leave = stopPlay;
+  s.nudge = d => { stopPlay(); update(clamp(curT + d, 0, T)); };
+  s.primary = play;
+  s.reseed = reseed;
+  s.setShape = setShape;
+  s.points = () => Array.from(xs);
+  s.setT = t => { stopPlay(); update(clamp(t, 0, T)); };
+  s.auto = async ({ wait }) => { await wait(900); await play(); await wait(3200); };
+  void playB;
+}
+
+/* ---------- 5. reverse process & L_simple ---------- */
+function buildTrain(s) {
+  const g = s.g;
+  header(g, 5, R`反向过程：训练网络 $\boldsymbol{\epsilon}_\theta$ 预测噪声`, 'Reverse process and the simplified training objective');
+  const A = bd(g);
+  math(A, R`p_\theta(\mathbf{x}_{t-1}\mid\mathbf{x}_t) := \mathcal{N}\big(\mathbf{x}_{t-1};\ \boldsymbol{\mu}_\theta(\mathbf{x}_t,t),\ \sigma_t^2\mathbf{I}\big)`, 72, 196, { size: 25 });
+  let y = 218;
+  y += para(A, 72, y, 670, R`反向过程也是一条高斯链，从 $p(\mathbf{x}_T)=\mathcal{N}(\mathbf{x}_T;\mathbf{0},\mathbf{I})$ 出发。方差固定为 $\sigma_t^2\mathbf{I}$（论文取 $\sigma_t^2=\beta_t$，另试的 $\tilde\beta_t$ 效果相近），只需学均值。论文把均值写成“从 $\mathbf{x}_t$ 里减去预测的噪声”：`, { size: 18 }) + 8;
+  math(A, R`\boldsymbol{\mu}_\theta(\mathbf{x}_t,t) = \frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}}\,\c{orange}{\boldsymbol{\epsilon}_\theta(\mathbf{x}_t,t)}\right)`, 110, y + 44, { size: 25 });
+  y += 94;
+  const B = bd(g);
+  y += para(B, 72, y, 670, R`于是网络只要回答一个问题：**$\mathbf{x}_t$ 里加进去的噪声是什么？** 训练目标：`, { size: 18 }) + 6;
+  const lb = box(B, 72, y, 670, 16, 'card-o', (gg, x, yy, w) => {
+    math(gg, R`L_{\mathrm{simple}}(\theta) := \mathbb{E}_{t,\mathbf{x}_0,\boldsymbol{\epsilon}}\Big[\big\|\boldsymbol{\epsilon}-\boldsymbol{\epsilon}_\theta\big(\sqrt{\bar\alpha_t}\,\mathbf{x}_0+\sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon},\ t\big)\big\|^2\Big]`, x, yy + 34, { size: 23 });
+    return 56 + para(gg, x, yy + 58, w, R`$t$ 在 $\{1,\ldots,T\}$ 上均匀抽取。它是变分下界去掉各项权重后的简化版；论文发现用它训练样本质量更好，实现也更简单。`, { size: 15, color: C.ink3, lh: 1.55 });
+  });
+  y += lb.h + 16;
+  const Al = bd(g);
+  algBox(Al, 72, y, 670, 'Algorithm 1', 'Training', [
+    { tex: R`**repeat**` },
+    { tex: R`$\mathbf{x}_0\sim q(\mathbf{x}_0)$`, ind: 1 },
+    { tex: R`$t\sim\mathrm{Uniform}(\{1,\ldots,T\})$`, ind: 1 },
+    { tex: R`$\boldsymbol{\epsilon}\sim\mathcal{N}(\mathbf{0},\mathbf{I})$`, ind: 1 },
+    { tex: R`Take gradient descent step on\n$\qquad\nabla_\theta\big\|\boldsymbol{\epsilon}-\boldsymbol{\epsilon}_\theta(\sqrt{\bar\alpha_t}\,\mathbf{x}_0+\sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon},t)\big\|^2$`, ind: 1 },
+    { tex: R`**until** converged` }
+  ], { size: 16, row: 31 });
+
+  const Rg = bd(g);
+  const P = plot(Rg, 800, 158, 470, 3, { sigma: false });
+  const faint = el('path', { class: 'cloud', 'stroke-width': 3, stroke: C.grayL, opacity: 0.8 }, P.inner);
+  const lay = el('g', {}, P.inner);
+  const shrink = el('path', { stroke: C.blueM, 'stroke-width': 1.2, 'stroke-dasharray': '3 4', fill: 'none' }, lay);
+  const aTrue = arrow(lay, C.grayD, { w: 2.2, hl: 12, hw: 5 });
+  const aPred = arrow(lay, C.orange, { w: 2.4, hl: 12, hw: 5 });
+  const dX0 = el('circle', { r: 6, fill: C.blue, stroke: '#fff', 'stroke-width': 1.5 }, lay);
+  const dSX0 = el('circle', { r: 5, fill: C.card, stroke: C.blue, 'stroke-width': 1.8 }, lay);
+  const dXt = el('circle', { r: 6.5, fill: C.ink, stroke: '#fff', 'stroke-width': 1.8 }, lay);
+  const labG = el('g', {}, P.front);
+  const ix = 1292, iy = 158, isz = 236;
+  el('rect', { x: ix, y: iy, width: isz, height: isz, class: 'plot-bg' }, Rg);
+  el('text', { x: ix + 10, y: iy + 20, class: 'lab-s', text: '噪声空间（同一原点）' }, Rg);
+  const icx = ix + isz / 2, icy = iy + isz / 2 + 8, isc = 44;
+  el('circle', { cx: icx, cy: icy, r: isc, class: 'sig' }, Rg);
+  el('circle', { cx: icx, cy: icy, r: 2, fill: C.ink3 }, Rg);
+  const iErr = el('path', { stroke: C.ink, 'stroke-width': 1.2, 'stroke-dasharray': '2 3', fill: 'none' }, Rg);
+  const iTrue = arrow(Rg, C.grayD, { w: 2.2 });
+  const iPred = arrow(Rg, C.orange, { w: 2.4 });
+  const iLab1 = el('g', {}, Rg), iLab2 = el('g', {}, Rg);
+  const rt = readout(Rg, ix, 428, R`t\sim\mathrm{Uniform}`, { dy: 34 });
+  const rl = readout(Rg, ix, 500, R`\|\boldsymbol{\epsilon}-\hat{\boldsymbol{\epsilon}}\|^2`, { dy: 34 });
+  button(Rg, ix, 566, '⟲ 再抽一个样本', () => { next(); restartCycle(); }, { w: isz });
+  box(Rg, 800, 694, 728, 18, 'card-o', (gg, x, yy, w) => {
+    let h = para(gg, x, yy, w, R`**这里用解析最优去噪器代替训练好的网络。** 浏览器里没法训练 U-Net；演示数据是已知的高斯混合（沿形状放置的一组小方差高斯），带噪分布 $p_t$ 仍是高斯混合，于是 $L_{\mathrm{simple}}$ 的最优解有闭式：`, { size: 15, lh: 1.55 });
+    math(gg, R`\hat{\boldsymbol{\epsilon}}(\mathbf{x}_t,t)=\mathbb{E}[\boldsymbol{\epsilon}\mid\mathbf{x}_t]=-\sqrt{1-\bar\alpha_t}\,\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t)`, x + w / 2, yy + h + 30, { size: 21, anchor: 'middle', color: C.orangeD });
+    h += 44;
+    return h;
+  });
+  para(Rg, 800, 648, 728, R`{b|● $\mathbf{x}_0$　○ $\sqrt{\bar\alpha_t}\,\mathbf{x}_0$}　● $\mathbf{x}_t$　{g|→ 真实噪声 $\sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}$}　{o|→ 网络的预测 $\sqrt{1-\bar\alpha_t}\,\hat{\boldsymbol{\epsilon}}$}`, { size: 14, color: C.ink2 });
+
+  let cnt = 0;
+  const N = 380, fx0 = new Float64Array(2 * N), fe = new Float64Array(2 * N), fxs = new Float64Array(2 * N);
+  const one = new Float64Array(2), oe = new Float64Array(2);
+  function next() {
+    cnt++;
+    const sh = getShape(state.shape);
+    drawGhost(P, sh);
+    const rng = rngFrom(state.seed * 7717 + cnt * 104729);
+    let t = 1 + Math.floor(rng.u() * T);
+    if (cnt === 1) while (t < 150 || t > 600) t = 1 + Math.floor(rng.u() * T);
+    const k = Math.floor(rng.u() * sh.K);
+    const x0 = [sh.means[2 * k] + sh.s * rng.n(), sh.means[2 * k + 1] + sh.s * rng.n()];
+    const e = [rng.n(), rng.n()];
+    const a = sA(t), b = sN(t);
+    const xt = [a * x0[0] + b * e[0], a * x0[1] + b * e[1]];
+    one[0] = xt[0]; one[1] = xt[1];
+    epsHat(sh, one, 1, t, oe);
+    sampleData(sh, fx0, N, rng);
+    for (let i = 0; i < 2 * N; i++) fe[i] = rng.n();
+    forwardTo(fx0, fe, N, t, fxs);
+    faint.setAttribute('d', cloudD(fxs, N, P));
+    const X = P.X, Y = P.Y;
+    shrink.setAttribute('d', `M${r1(X(x0[0]))} ${r1(Y(x0[1]))}L${r1(X(a * x0[0]))} ${r1(Y(a * x0[1]))}`);
+    aTrue.set(X(a * x0[0]), Y(a * x0[1]), X(xt[0]), Y(xt[1]));
+    aPred.set(X(xt[0] - b * oe[0]), Y(xt[1] - b * oe[1]), X(xt[0]), Y(xt[1]));
+    for (const [c, p] of [[dX0, x0], [dSX0, [a * x0[0], a * x0[1]]], [dXt, xt]]) { c.setAttribute('cx', r1(X(p[0]))); c.setAttribute('cy', r1(Y(p[1]))); }
+    clear(labG);
+    const lab = (tex, p, col, dx, dy) => math(labG, tex, clamp(X(p[0]) + dx, 8, P.size - 60), clamp(Y(p[1]) + dy, 22, P.size - 8), { size: 17, color: col });
+    lab(R`\mathbf{x}_0`, x0, C.blue, 10, -10);
+    lab(R`\mathbf{x}_t`, xt, C.ink, 10, 20);
+    iErr.setAttribute('d', `M${r1(icx + isc * e[0])} ${r1(icy - isc * e[1])}L${r1(icx + isc * oe[0])} ${r1(icy - isc * oe[1])}`);
+    iTrue.set(icx, icy, icx + isc * e[0], icy - isc * e[1]);
+    iPred.set(icx, icy, icx + isc * oe[0], icy - isc * oe[1]);
+    clear(iLab1); clear(iLab2);
+    const inset = (gEl, tex, vx, vy, col) => {
+      const L2 = Math.hypot(vx, vy) || 1, ex = icx + isc * vx + (vx / L2) * 14, ey = icy - isc * vy - (vy / L2) * 14;
+      math(gEl, tex, clamp(ex, ix + 12, ix + isz - 12), clamp(ey + 6, iy + 40, iy + isz - 8), { size: 17, color: col, anchor: 'middle' });
+    };
+    inset(iLab1, R`\boldsymbol{\epsilon}`, e[0], e[1], C.grayD);
+    inset(iLab2, R`\hat{\boldsymbol{\epsilon}}`, oe[0], oe[1], C.orangeD);
+    rt.textContent = 't = ' + t;
+    const loss = (e[0] - oe[0]) ** 2 + (e[1] - oe[1]) ** 2;
+    rl.textContent = loss.toFixed(3);
+    s.example = { t, x0, eps: e, xt, epsHat: [oe[0], oe[1]], loss };
+  }
+  let cyc = null;
+  function restartCycle() {
+    if (cyc) cyc();
+    let last = performance.now();
+    cyc = addTicker(now => { if (now - last > 3400) { last = now; next(); } });
+  }
+  next();
+  listeners.push(k => { if (k === 'shape' || k === 'seed') next(); });
+  s.enter = () => { restartCycle(); };
+  s.leave = () => { if (cyc) { cyc(); cyc = null; } };
+  s.primary = () => { next(); restartCycle(); };
+  s.reseed = s.primary;
+  s.setShape = setShape;
+  s.auto = async ({ wait }) => { await wait(11000); };
+}
+function algBox(parent, x, y, w, name, title, lines, o = {}) {
+  const size = o.size || 17, row = o.row || 34, top = 34;
+  el('line', { x1: x, y1: y, x2: x + w, y2: y, class: 'alg-rule' }, parent);
+  rich(parent, x + 2, y + 6, w, `**${name}** ${title}`, { size: 17, font: SERIF, color: C.ink });
+  el('line', { x1: x, y1: y + top, x2: x + w, y2: y + top, class: 'alg-rule2' }, parent);
+  const hl = el('rect', { x: x - 4, y: y + top + 4, width: w + 8, height: row, rx: 4, class: 'hl', opacity: 0 }, parent);
+  let yy = y + top + 8;
+  const ys = [];
+  lines.forEach((ln, i) => {
+    let h = ln.h || row;
+    const ix = x + 30 + (ln.ind || 0) * 26;
+    if (ln.display) math(parent, ln.tex, ix, yy + size * 0.95 + (h - row) / 2, { size: ln.size || size * 1.3 });
+    else {
+      const r = rich(parent, ix, yy + 1, w - 34 - (ln.ind || 0) * 26, ln.tex, { size, font: SERIF, color: C.ink, lh: 1.55, mathScale: 1.08, mathColor: C.ink });
+      h = Math.max(h, r.h + row - size * 1.55);
+    }
+    el('text', { x: x + 4, y: yy + size * 0.95 + (ln.display ? (h - row) / 2 : 0), class: 'alg-no', text: (i + 1) + ':' }, parent);
+    ys.push([yy - 4, h]);
+    yy += h;
+  });
+  el('line', { x1: x, y1: yy + 6, x2: x + w, y2: yy + 6, class: 'alg-rule' }, parent);
+  return { h: yy + 6 - y, hl, ys, bottom: yy + 6,
+    mark(a, b) {
+      if (a < 0) { hl.setAttribute('opacity', 0); return; }
+      const y0 = ys[a][0], y1 = ys[b][0] + ys[b][1];
+      hl.setAttribute('y', r1(y0));
+      hl.setAttribute('height', r1(y1 - y0));
+      hl.setAttribute('opacity', 1);
+    } };
+}
+
+/* ---------- 6. sampling (Algorithm 2) ---------- */
+function buildSample(s) {
+  const g = s.g;
+  header(g, 6, '采样：从纯噪声一步步走回数据', 'Algorithm 2 — sampling with the learned reverse process');
+  const L = bd(g);
+  const P = plot(L, 72, 152, 640, 3.2, { sigma: true });
+  const trailG = el('g', {}, P.inner), tailG = el('g', {}, P.inner);
+  const cl = el('path', { class: 'cloud', 'stroke-width': 4.4 }, P.inner);
+  const runB = button(L, 72, 846, '▶ 开始采样', () => toggle(), { cls: 'primary', w: 150, h: 38 });
+  button(L, 234, 846, '⟲ 换一组起点噪声', () => reseed(), { h: 38 });
+  const ch = chips(L, 0, 849, SHAPE_ITEMS, state.shape, v => setShape(v));
+  ch.g.setAttribute('transform', `translate(${712 - ch.w},0)`);
+
+  const Rg = bd(g);
+  const alg = algBox(Rg, 780, 158, 748, 'Algorithm 2', 'Sampling', [
+    { tex: R`$\mathbf{x}_T\sim\mathcal{N}(\mathbf{0},\mathbf{I})$` },
+    { tex: R`**for** $t=T,\ldots,\,1$ **do**` },
+    { tex: R`$\mathbf{z}\sim\mathcal{N}(\mathbf{0},\mathbf{I})$ if $t>1$, else $\mathbf{z}=\mathbf{0}$`, ind: 1 },
+    { tex: R`\mathbf{x}_{t-1}=\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\,\c{orange}{\boldsymbol{\epsilon}_\theta(\mathbf{x}_t,t)}\right)+\sigma_t\mathbf{z}`, ind: 1, display: true, h: 78, size: 23 },
+    { tex: R`**end for**` },
+    { tex: R`**return** $\mathbf{x}_0$` }
+  ], { size: 17, row: 36 });
+  const tLive = el('text', { x: 1522, y: 158 + 34 + 8 + 36 + 17, class: 'num', fill: C.orangeD, 'text-anchor': 'end', 'font-weight': 700, text: '' }, Rg);
+  const ry = alg.bottom + 22;
+  const rT = readout(Rg, 780, ry + 18, R`t`, { cls: 'num-xl', dy: 38 });
+  const rS = readout(Rg, 930, ry + 18, R`\sigma_t=\sqrt{\beta_t}`, { dy: 36 });
+  const rA = readout(Rg, 1110, ry + 18, R`\sqrt{\bar\alpha_t}`, { dy: 36 });
+  const rP = readout(Rg, 1290, ry + 18, R`\text{已计算步数}`, { dy: 36 });
+  const barY = ry + 74;
+  el('rect', { x: 780, y: barY, width: 748, height: 4, rx: 2, fill: C.rule }, Rg);
+  const bar = el('rect', { x: 780, y: barY, width: 0, height: 4, rx: 2, fill: C.orange }, Rg);
+  const cy0 = barY + 38;
+  const CH = chart(Rg, 830, cy0 + 26, 690, 100, { xmin: T, xmax: 0, ymin: 0, ymax: 0.8, xticks: [1000, 750, 500, 250, 0], yticks: [0, 0.4, 0.8], yfmt: v => (v ? v.toFixed(1) : '0') });
+  rich(Rg, 780, cy0 - 8, 748, R`点到数据形状的平均距离 $\bar d$（每 10 步计算一次）`, { size: 15, color: C.ink2 });
+  const refL = el('line', { x1: 0, x2: CH.w, stroke: C.blue, 'stroke-width': 1, 'stroke-dasharray': '4 4' }, CH.g);
+  const refT = el('text', { x: 6, class: 'num-s', fill: C.blue, text: '' }, CH.g);
+  const dPath = el('path', { stroke: C.orange, 'stroke-width': 2, fill: 'none', 'stroke-linejoin': 'round' }, CH.g);
+  const dTxt = el('text', { x: 780, y: CH.y + CH.h + 50, class: 'num', text: '' }, Rg);
+  box(Rg, 780, CH.y + CH.h + 66, 748, 12, 'card-o', (gg, x, yy, w) => para(gg, x, yy - 2, w, R`**这里用解析最优去噪器 $\hat{\boldsymbol{\epsilon}}$ 代替训练好的网络 $\boldsymbol{\epsilon}_\theta$**（见第 5 步）。$\sigma_t^2=\beta_t$；每帧画 2–8 步，但 1000 步中的每一步都按上式计算。`, { size: 14, lh: 1.5 }) - 6);
+
+  const N = 1000, M = 14, TAIL = 80;
+  const xs = new Float64Array(2 * N), eh = new Float64Array(2 * N), ref = new Float64Array(2 * N);
+  let sh, rng, t = T, mode = 'idle', trails = [], dHist = [], dStart = 0, dRef = 0, dNow = 0, stop = null, onDone = null, fade = null;
+  function reset() {
+    if (stop) { stop(); stop = null; }
+    if (onDone) { const f = onDone; onDone = null; f(); }
+    sh = getShape(state.shape);
+    drawGhost(P, sh);
+    rng = rngFrom(state.seed * 2654435761 + 99);
+    for (let i = 0; i < 2 * N; i++) xs[i] = rng.n();
+    sampleData(sh, ref, N, rngFrom(state.seed * 31 + 5));
+    dRef = meanDist(sh, ref, N);
+    t = T; mode = 'idle';
+    if (fade) { fade.cancel(); fade = null; }
+    clear(trailG); clear(tailG);
+    tailG.setAttribute('opacity', 1);
+    trails = [];
+    for (let j = 0; j < M; j++) {
+      const i = Math.floor((j + 0.5) * N / M), x = r1(P.X(xs[2 * i])), y = r1(P.Y(xs[2 * i + 1]));
+      trails.push({ i, d: 'M' + x + ' ' + y, pts: [x, y], full: el('path', { class: 'trail' }, trailG), tail: el('path', { class: 'trail-tail' }, tailG) });
+    }
+    dStart = dNow = meanDist(sh, xs, N);
+    dHist = [[T, dStart]];
+    refL.setAttribute('y1', r1(CH.Y(dRef))); refL.setAttribute('y2', r1(CH.Y(dRef)));
+    refT.setAttribute('y', r1(CH.Y(dRef) - 6));
+    refT.textContent = '真实数据 ' + dRef.toFixed(3);
+    render();
+    runB.setLabel('▶ 开始采样');
+    alg.mark(0, 0);
+  }
+  function render() {
+    cl.setAttribute('d', cloudD(xs, N, P));
+    cl.setAttribute('stroke', mix(C.gray, C.orange, sA(t)));
+    for (const tr of trails) {
+      tr.full.setAttribute('d', tr.d);
+      const p = tr.pts, k0 = Math.max(0, p.length - 2 * TAIL);
+      let d = '';
+      for (let k = k0; k < p.length; k += 2) d += (d ? 'L' : 'M') + p[k] + ' ' + p[k + 1];
+      tr.tail.setAttribute('d', d);
+    }
+    rT.textContent = String(t);
+    rS.textContent = t ? Math.sqrt(beta[t]).toFixed(4) : '—';
+    rA.textContent = sA(t).toFixed(4);
+    rP.textContent = (T - t) + ' / ' + T;
+    bar.setAttribute('width', r1(748 * (T - t) / T));
+    tLive.textContent = mode === 'idle' ? '' : 't = ' + t;
+    dPath.setAttribute('d', dHist.map((q, k) => (k ? 'L' : 'M') + r1(CH.X(q[0])) + ' ' + r1(CH.Y(Math.min(0.8, q[1])))).join(''));
+    dTxt.textContent = mode === 'done'
+      ? `d̄：${dStart.toFixed(3)}（纯噪声）→ ${dNow.toFixed(3)}（采样结果），真实数据 ${dRef.toFixed(3)}`
+      : `d̄ 当前 ${dNow.toFixed(3)}　起点 ${dStart.toFixed(3)}　真实数据 ${dRef.toFixed(3)}`;
+    s.sampler = { t, mode, dStart, dNow, dRef, hist: dHist.slice() };
+  }
+  function tick() {
+    if (mode !== 'run') return false;
+    const t1 = performance.now();
+    for (let k = stepsPerFrame(t); k > 0 && t >= 1; k--) {
+      alg2Step(sh, xs, N, t, rng, eh);
+      t--;
+      if (t % 2 === 0) for (const tr of trails) { const x = r1(P.X(xs[2 * tr.i])), y = r1(P.Y(xs[2 * tr.i + 1])); tr.d += 'L' + x + ' ' + y; tr.pts.push(x, y); }
+      if (t % 10 === 0) { dNow = meanDist(sh, xs, N); dHist.push([t, dNow]); }
+      if (performance.now() - t1 > 14) break;
+    }
+    if (t === 0) {
+      mode = 'done';
+      dNow = meanDist(sh, xs, N);
+      alg.mark(5, 5);
+      runB.setLabel('▶ 再采一次');
+      render();
+      fade = tween(1600, p => tailG.setAttribute('opacity', r2(1 - p)), { delay: 500 });
+      if (onDone) { const f = onDone; onDone = null; f(); }
+      return false;
+    }
+    render();
+    return true;
+  }
+  function start() {
+    if (mode === 'done') { reset(); }
+    mode = 'run';
+    alg.mark(1, 4);
+    runB.setLabel('❚❚ 暂停');
+    if (stop) stop();
+    stop = addTicker(tick);
+  }
+  function toggle() {
+    if (mode === 'run') { mode = 'pause'; if (stop) { stop(); stop = null; } runB.setLabel('▶ 继续'); render(); }
+    else start();
+  }
+  reset();
+  listeners.push(() => { ch.set(state.shape); reset(); });
+  s.leave = () => { if (mode === 'run') toggle(); };
+  s.primary = toggle;
+  s.reseed = reseed;
+  s.setShape = setShape;
+  s.run = () => new Promise(res => { if (mode === 'done') reset(); onDone = res; if (mode !== 'run') start(); });
+  s.points = () => Array.from(xs);
+  s.auto = async ({ wait, alive }) => {
+    await wait(1200);
+    if (!alive()) return;
+    if (mode === 'done') reset();
+    await s.run();
+    await wait(3800);
+  };
+}
+
+/* ---------- 7. score view ---------- */
+function buildScore(s) {
+  const g = s.g;
+  header(g, 7, '为什么有效：预测噪声 ≈ 估计分数', 'Connection to denoising score matching and Langevin dynamics');
+  const A = bd(g);
+  math(A, R`\hat{\boldsymbol{\epsilon}}(\mathbf{x}_t,t) = -\sqrt{1-\bar\alpha_t}\;\nabla_{\mathbf{x}_t}\log p_t(\mathbf{x}_t)`, 72, 208, { size: 28 });
+  let y = 244;
+  y += para(A, 72, y, 600, R`最优的噪声预测，恰好是带噪分布的**分数**（score）$\nabla\log p_t$ 乘上 $-\sqrt{1-\bar\alpha_t}$：它指向数据更密集的方向。所以训练 $\boldsymbol{\epsilon}_\theta$ 相当于在多个噪声尺度上做**去噪分数匹配**（denoising score matching），而 Algorithm 2 的每一步都像“沿分数走一小步、再加一点噪声”的 Langevin 动力学。`, { size: 20, lh: 1.7 }) + 20;
+  const B = bd(g);
+  const tb = box(B, 72, y, 600, 18, 'card-b', (gg, x, yy, w) => {
+    el('text', { x, y: yy + 14, class: 'label', fill: C.blue, text: '试一试' }, gg);
+    return 26 + para(gg, x, yy + 26, w, R`**拖动 $t$**：$t$ 大时箭头平缓地指向中心；$t$ 小时紧紧指向数据形状。\n**点击图中任意位置**放下一个粒子，看它从当前 $t$ 按 Algorithm 2 走回数据（按空格一次放 12 个）。`, { size: 17, lh: 1.65 });
+  });
+  y += tb.h + 24;
+  const Lg = bd(g);
+  const leg = (yy, draw, src) => { draw(yy); para(Lg, 120, yy - 14, 540, src, { size: 16, color: C.ink2 }); };
+  leg(y + 10, yy => { const a = arrowD(76, yy, 104, yy, 8, 4); el('path', { d: a.line, class: 'field' }, Lg); el('path', { d: a.head, fill: C.orange, 'fill-opacity': 0.8 }, Lg); }, R`箭头：$-\hat{\boldsymbol{\epsilon}}(\mathbf{x},t)$ 的方向（解析最优去噪器），与 $\nabla\log p_t(\mathbf{x})$ 同向`);
+  leg(y + 42, yy => { el('circle', { cx: 90, cy: yy, r: 3, fill: C.blueM }, Lg); }, R`浅蓝点：当前 $t$ 下的样本 $\mathbf{x}_t\sim q(\mathbf{x}_t)$`);
+  leg(y + 74, yy => { el('path', { d: `M76 ${yy}H104`, stroke: C.blueLL, 'stroke-width': 9, 'stroke-linecap': 'round' }, Lg); }, R`浅蓝带：$p_t$ 的高密度区（数据形状缩小 $\sqrt{\bar\alpha_t}$ 倍）`);
+  leg(y + 106, yy => { el('path', { d: `M76 ${yy + 5}q8 -12 14 -4t14 -6`, stroke: C.orange, 'stroke-width': 1.6, fill: 'none' }, Lg); }, '橙线：你放下的粒子走过的轨迹');
+  const rTg = bd(g);
+  const ys = Math.max(y + 158, 862);
+  const m1 = math(rTg, R`t=`, 72, ys, { size: 19, color: C.ink3, display: false });
+  const rT = el('text', { x: r1(72 + m1.w + 6), y: ys, class: 'num', text: '' }, rTg);
+  const m2 = math(rTg, R`\bar\alpha_t=`, 212, ys, { size: 19, color: C.ink3, display: false });
+  const rA = el('text', { x: r1(212 + m2.w + 6), y: ys, class: 'num', text: '' }, rTg);
+  el('text', { x: 430, y: ys, class: 'lab-s', 'font-size': 16, text: '已放下的粒子' }, rTg);
+  const rN = el('text', { x: r1(430 + measure('已放下的粒子', SANS, 16, 400, 'normal') + 8), y: ys, class: 'num', text: '' }, rTg);
+
+  const Rg = bd(g);
+  const P = plot(Rg, 800, 150, 640, 3.2, { sigma: false });
+  const cl = el('path', { class: 'cloud', 'stroke-width': 3.4, stroke: C.blueL, opacity: 0.9 }, P.inner);
+  const field = el('path', { class: 'field' }, P.inner);
+  const heads = el('path', { fill: C.orange, 'fill-opacity': 0.72 }, P.inner);
+  const partG = el('g', {}, P.inner);
+  const hit = el('rect', { x: 0, y: 0, width: P.size, height: P.size, fill: C.paper, 'fill-opacity': 0.001, style: 'cursor:crosshair' }, P.front);
+  let tt = 100;
+  const sl = slider(Rg, 824, 858, 592, { min: 0, max: T, value: tt, ticks: [0, 250, 500, 750, 1000], fmt: v => 't = ' + v, aria: '时间步 t', onInput: v => setT(v) });
+
+  const N = 600, x0 = new Float64Array(2 * N), eps = new Float64Array(2 * N), xs = new Float64Array(2 * N);
+  const G = 19, grid = new Float64Array(2 * G * G), ge = new Float64Array(2 * G * G);
+  for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) { grid[2 * (j * G + i)] = -3 + (6 * i) / (G - 1); grid[2 * (j * G + i) + 1] = -3 + (6 * j) / (G - 1); }
+  let sh = null;
+  const parts = [];
+  function regen() {
+    sh = getShape(state.shape);
+    drawGhost(P, sh);
+    const rng = rngFrom(state.seed * 5003 + 17);
+    sampleData(sh, x0, N, rng);
+    for (let i = 0; i < 2 * N; i++) eps[i] = rng.n();
+  }
+  function setT(v) {
+    tt = clamp(Math.round(v), 0, T);
+    forwardTo(x0, eps, N, tt, xs);
+    cl.setAttribute('d', cloudD(xs, N, P));
+    const a = sA(tt);
+    P.ghost.setAttribute('transform', `translate(${r1(P.c * (1 - a))},${r1(P.c * (1 - a))}) scale(${a.toFixed(4)})`);
+    let dl = '', dh = '';
+    if (tt >= 1) {
+      epsHat(sh, grid, G * G, tt, ge);
+      const sp = (6 / (G - 1)) * P.sc, maxL = sp * 0.82;
+      for (let k = 0; k < G * G; k++) {
+        const vx = -ge[2 * k], vy = -ge[2 * k + 1], m = Math.hypot(vx, vy);
+        if (m < 1e-9) continue;
+        const len = maxL * Math.tanh(m / 3), ux = vx / m, uy = vy / m;
+        const x1 = P.X(grid[2 * k]) - (ux * len) / 2, y1 = P.Y(grid[2 * k + 1]) + (uy * len) / 2;
+        const a = arrowD(x1, y1, x1 + ux * len, y1 - uy * len, Math.min(6, len * 0.45), Math.min(3, len * 0.22));
+        dl += a.line; dh += a.head;
+      }
+    }
+    field.setAttribute('d', dl);
+    heads.setAttribute('d', dh);
+    rT.textContent = String(tt);
+    rA.textContent = fmtAbar(abar[tt]);
+    if (sl.get() !== tt) sl.set(tt, false);
+  }
+  function drop(px, py) {
+    if (tt < 1) return;
+    if (parts.length >= 24) { const o = parts.shift(); o.g.remove(); }
+    const pg = el('g', {}, partG);
+    const path = el('path', { stroke: C.orange, 'stroke-width': 1.6, fill: 'none', 'stroke-linejoin': 'round', opacity: 0.9 }, pg);
+    const dot = el('circle', { r: 5, fill: C.orange, stroke: '#fff', 'stroke-width': 1.5 }, pg);
+    el('circle', { cx: r1(P.X(px)), cy: r1(P.Y(py)), r: 3, fill: 'none', stroke: C.orangeD, 'stroke-width': 1.2 }, pg);
+    parts.push({ g: pg, path, dot, x: new Float64Array([px, py]), e: new Float64Array(2), t: tt, d: 'M' + r1(P.X(px)) + ' ' + r1(P.Y(py)), rng: rngFrom(parts.length * 977 + tt * 31 + Math.floor(px * 1000)) });
+    rN.textContent = String(parts.length);
+    ensureRun();
+  }
+  let runStop = null;
+  function ensureRun() {
+    if (runStop) return;
+    runStop = addTicker(() => {
+      let active = 0;
+      for (const p of parts) {
+        if (p.t <= 0) continue;
+        active++;
+        for (let k = stepsPerFrame(p.t) + 1; k > 0 && p.t >= 1; k--) {
+          alg2Step(sh, p.x, 1, p.t, p.rng, p.e);
+          p.t--;
+          if (p.t % 3 === 0 || p.t === 0) p.d += 'L' + r1(P.X(p.x[0])) + ' ' + r1(P.Y(p.x[1]));
+        }
+        p.path.setAttribute('d', p.d);
+        p.dot.setAttribute('cx', r1(P.X(p.x[0])));
+        p.dot.setAttribute('cy', r1(P.Y(p.x[1])));
+      }
+      if (!active) { runStop = null; return false; }
+      return true;
+    });
+  }
+  function clearParts() { for (const p of parts) p.g.remove(); parts.length = 0; rN.textContent = '0'; }
+  function dropMany(k) {
+    const rng = rngFrom(performance.now() | 0);
+    for (let i = 0; i < k; i++) drop(-2.8 + 5.6 * rng.u(), -2.8 + 5.6 * rng.u());
+  }
+  hit.addEventListener('pointerdown', e => { e.preventDefault(); const q = P.toData(e); drop(q[0], q[1]); });
+  regen();
+  setT(tt);
+  rN.textContent = '0';
+  listeners.push(() => { regen(); clearParts(); setT(tt); });
+  let anim = null;
+  s.enter = () => setT(tt);
+  s.leave = () => { if (anim) anim.cancel(); };
+  s.nudge = d => { if (anim) anim.cancel(); setT(tt + d); };
+  s.primary = () => { if (tt < 1) setT(300); dropMany(12); };
+  s.reseed = reseed;
+  s.setShape = setShape;
+  s.drop = (x, y) => drop(x, y);
+  s.setT = setT;
+  s.auto = async ({ wait }) => {
+    anim = tween(4200, e => setT(T + (80 - T) * e), { delay: 800 });
+    await anim.promise;
+    await wait(500);
+    dropMany(12);
+    await wait(5200);
+  };
+}
+
+/* ---------- 8. summary ---------- */
+function buildSummary(s) {
+  const g = s.g;
+  header(g, 8, '小结：学会一点点去噪，就能从噪声生成数据', 'Takeaways');
+  const A = bd(g);
+  const ts = [0, 200, 400, 600, 800, 1000];
+  const cw = 132, gap = 50, x0s = 318, r1y = 160, r2y = 336;
+  rich(A, 72, r1y + 36, 230, R`{g|**前向 $q$：加噪**}`, { size: 19 });
+  el('text', { x: 72, y: r1y + 88, class: 'lab-s', text: '固定，不用学（第 2–4 步）' }, A);
+  rich(A, 72, r2y + 36, 230, R`{o|**反向 $p_\theta$：去噪采样**}`, { size: 19 });
+  el('text', { x: 72, y: r2y + 88, class: 'lab-s', text: 'Algorithm 2（第 5–6 步）' }, A);
+  const sh = getShape('spiral'), Nn = 450, rng = rngFrom(8088);
+  const d0 = new Float64Array(2 * Nn), de = new Float64Array(2 * Nn), dx = new Float64Array(2 * Nn);
+  sampleData(sh, d0, Nn, rng);
+  for (let i = 0; i < 2 * Nn; i++) de[i] = rng.n();
+  const mini = (x, y) => {
+    const P = { c: cw / 2, sc: cw / 6.6 };
+    const gg = el('g', { transform: `translate(${x},${y})` }, A);
+    el('rect', { x: 0, y: 0, width: cw, height: cw, rx: 6, class: 'plot-bg' }, gg);
+    const cid = nextId('clip');
+    const cp = el('clipPath', { id: cid }, defs);
+    el('rect', { x: 0, y: 0, width: cw, height: cw, rx: 6 }, cp);
+    const p = el('path', { class: 'cloud', 'stroke-width': 2.4, 'clip-path': `url(#${cid})` }, gg);
+    return { P, p, gg };
+  };
+  const rev = [];
+  ts.forEach((t, i) => {
+    const x = x0s + i * (cw + gap);
+    const m = mini(x, r1y);
+    forwardTo(d0, de, Nn, t, dx);
+    m.p.setAttribute('d', cloudD(dx, Nn, m.P));
+    m.p.setAttribute('stroke', mix(C.blue, C.gray, 1 - sA(t)));
+    const m2 = mini(x, r2y);
+    rev.push(m2);
+    el('text', { x: x + cw / 2, y: r1y + cw + 26, 'text-anchor': 'middle', class: 'num-s', text: 't = ' + t }, A);
+    if (i < ts.length - 1) {
+      arrow(A, C.gray, { w: 1.6, dash: '5 4' }).set(x + cw + 8, r1y + cw / 2, x + cw + gap - 8, r1y + cw / 2);
+      arrow(A, C.orange, { w: 1.8 }).set(x + cw + gap - 8, r2y + cw / 2, x + cw + 8, r2y + cw / 2);
+    }
+  });
+  const status = el('text', { x: x0s + 5 * (cw + gap) + cw, y: r2y + cw + 26, 'text-anchor': 'end', class: 'num-s', text: '采样计算中…' }, A);
+  let job = null;
+  function computeRev() {
+    if (job) return;
+    const r = rngFrom(99001), xs = new Float64Array(2 * Nn), eh = new Float64Array(2 * Nn);
+    for (let i = 0; i < 2 * Nn; i++) xs[i] = r.n();
+    let t = T;
+    const snap = tt => {
+      const k = ts.indexOf(tt);
+      if (k < 0) return;
+      rev[k].p.setAttribute('d', cloudD(xs, Nn, rev[k].P));
+      rev[k].p.setAttribute('stroke', mix(C.gray, C.orange, sA(tt)));
+    };
+    snap(T);
+    job = addTicker(() => {
+      const t1 = performance.now();
+      while (t >= 1 && performance.now() - t1 < 6) { alg2Step(sh, xs, Nn, t, r, eh); t--; snap(t); }
+      if (t === 0) { status.textContent = '同一套 Algorithm 2 实时算出'; return false; }
+      return true;
+    });
+  }
+  const cards = [
+    ['前向（固定）', C.grayD, R`$\mathbf{x}_t=\sqrt{\bar\alpha_t}\,\mathbf{x}_0+\sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}$\n$T=1000$，$\beta_t$ 从 $10^{-4}$ 线性增至 0.02。`],
+    ['训练（Algorithm 1）', C.ink, R`随机挑 $t$ 和 $\boldsymbol{\epsilon}$，让网络预测噪声：\n最小化 $L_{\mathrm{simple}}=\mathbb{E}\,\|\boldsymbol{\epsilon}-\boldsymbol{\epsilon}_\theta(\mathbf{x}_t,t)\|^2$。`],
+    ['采样（Algorithm 2）', C.orangeD, R`从 $\mathbf{x}_T\sim\mathcal{N}(\mathbf{0},\mathbf{I})$ 出发逐步去噪 $T$ 步，\n每步减去预测噪声、再加 $\sigma_t\mathbf{z}$（$\sigma_t^2=\beta_t$）。`]
+  ];
+  const B = bd(g);
+  cards.forEach((c, i) => {
+    const x = 72 + i * 492;
+    box(B, x, 530, 472, 18, 'card', (gg, xx, yy, w) => {
+      el('text', { x: xx, y: yy + 16, 'font-size': 18, 'font-weight': 700, fill: c[1], text: c[0] }, gg);
+      return 30 + para(gg, xx, yy + 28, w, c[2], { size: 17, lh: 1.7 });
+    });
+  });
+  const Cg = bd(g);
+  el('text', { x: 72, y: 718, class: 'label', text: '论文里的网络与结果' }, Cg);
+  para(Cg, 72, 730, 700, R`$\boldsymbol{\epsilon}_\theta$ 是一个 U-Net：骨干类似去掉掩码的 PixelCNN++，全程使用 group normalization，在 16×16 分辨率加 self-attention；所有 $t$ 共享参数，$t$ 用 Transformer 的正弦位置编码告诉网络。在 CIFAR10、CelebA-HQ 和 LSUN（256×256）上生成了高质量样本；CIFAR10 无条件生成 FID 3.17、Inception Score 9.46（论文摘要）。`, { size: 16, lh: 1.65 });
+  el('text', { x: 828, y: 718, class: 'label', text: '之后' }, Cg);
+  para(Cg, 828, 730, 700, R`这条“加噪—学去噪—逐步采样”的路线后来成为图像生成的主流方法之一：DDIM（更少步数采样）、Improved DDPM、Latent Diffusion / Stable Diffusion 等后续工作都在这个框架上发展。`, { size: 16, lh: 1.65 });
+  para(Cg, 828, 826, 700, R`本演示中的去噪器是二维高斯混合的**解析最优解**，不是训练出来的网络；公式、$T$、$\beta_t$ 调度与 $\sigma_t^2$ 均与论文一致。`, { size: 14, color: C.ink3, lh: 1.6 });
+  s.enter = computeRev;
+  s.warm = computeRev;
+  s.auto = async ({ wait }) => { await wait(12000); };
+}
+
+/* ================= navigation ================= */
+let cur = 0, trans = null, autoOn = false, autoGen = 0;
+const navDots = [];
+let pgText, autoBtn, prevBtn, nextBtn;
+function buildChrome() {
+  const c = chromeG;
+  el('line', { x1: 72, y1: 914, x2: 1528, y2: 914, stroke: C.rule, 'stroke-width': 1 }, c);
+  el('text', { x: 72, y: 950, class: 'cite', text: 'Ho, Jain & Abbeel · DDPM · NeurIPS 2020' }, c);
+  const prevB = button(c, 598, 930, '‹ 上一步', () => go(cur - 1), { w: 96, aria: '上一步' });
+  const n = slides.length, dx = 22, dotX0 = 800 - ((n - 1) * dx) / 2;
+  for (let i = 0; i < n; i++) {
+    const d = el('g', { class: 'navdot', transform: `translate(${r1(dotX0 + i * dx)},948)`, role: 'link', 'aria-label': i ? '第 ' + i + ' 步' : '封面' }, c);
+    el('circle', { r: 11, fill: C.paper, 'fill-opacity': 0.001 }, d);
+    const dot = el('circle', { r: i ? 5 : 4, fill: C.rule2 }, d);
+    d.addEventListener('click', () => go(i));
+    navDots.push(dot);
+  }
+  const nextB = button(c, 906, 930, '下一步 ›', () => go(cur + 1), { w: 96, aria: '下一步' });
+  autoBtn = button(c, 1316, 930, '▶ 自动播放', () => setAuto(!autoOn), { w: 124, aria: '自动播放' });
+  pgText = el('text', { x: 1528, y: 952, class: 'pg', 'text-anchor': 'end', text: '' }, c);
+  el('text', { x: 800, y: 990, class: 'kbd', 'text-anchor': 'middle', text: '←  → 翻页　·　↑  ↓ 调节 t　·　空格 运行当前演示　·　A 自动播放　·　1 2 3 切换数据形状' }, c);
+  prevBtn = prevB; nextBtn = nextB;
+}
+function updateNav() {
+  prevBtn.g.classList.toggle('dis', cur === 0);
+  nextBtn.g.classList.toggle('dis', cur === slides.length - 1);
+  navDots.forEach((d, i) => { d.setAttribute('fill', i === cur ? C.orange : i < cur ? C.ink3 : C.rule2); d.setAttribute('r', i === cur ? 6.5 : i ? 5 : 4); });
+  pgText.textContent = cur ? cur + ' / ' + (slides.length - 1) : '';
+}
+function playBuild(s) {
+  for (const b of s.builds) b.cancel();
+  s.builds = [];
+  s.g.querySelectorAll('.bd').forEach((it, i) => {
+    it.setAttribute('opacity', 0);
+    s.builds.push(tween(560, p => { it.setAttribute('opacity', r2(p)); it.setAttribute('transform', `translate(0,${r1(16 * (1 - p))})`); }, { delay: 180 + i * 85, ease: easeOut }));
+  });
+}
+function go(i) {
+  if (i < 0 || i >= slides.length || i === cur) return;
+  const dir = i > cur ? 1 : -1, from = slides[cur], to = slides[i];
+  if (trans) trans.finish();
+  if (from.leave) from.leave();
+  if (document.activeElement && document.activeElement.blur && from.g.contains(document.activeElement)) document.activeElement.blur();
+  cur = i;
+  to.g.setAttribute('display', 'inline');
+  const D = 60;
+  trans = tween(620, p => {
+    from.g.setAttribute('opacity', r2(1 - p));
+    from.g.setAttribute('transform', `translate(${r1(-dir * D * p)},0)`);
+    to.g.setAttribute('opacity', r2(p));
+    to.g.setAttribute('transform', `translate(${r1(dir * D * (1 - p))},0)`);
+  });
+  const tr = trans;
+  tr.promise.then(() => {
+    if (slides[cur] !== from) { from.g.setAttribute('display', 'none'); from.g.removeAttribute('transform'); }
+    if (trans === tr) trans = null;
+  });
+  playBuild(to);
+  if (to.enter) to.enter(dir);
+  updateNav();
+  if (autoOn) runAuto();
+}
+function setAuto(on) {
+  autoOn = on;
+  autoBtn.setLabel(on ? '❚❚ 暂停播放' : '▶ 自动播放');
+  autoBtn.setOn(on);
+  if (on) runAuto(); else autoGen++;
+}
+async function runAuto() {
+  const gen = ++autoGen, s = slides[cur];
+  const alive = () => autoOn && gen === autoGen;
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  await (s.auto ? s.auto({ wait, alive }) : wait(cur === 0 ? 5200 : 9000));
+  if (!alive()) return;
+  if (cur < slides.length - 1) go(cur + 1); else setAuto(false);
+}
+document.addEventListener('keydown', e => {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  const s = slides[cur];
+  if (!s) return;
+  const k = e.key;
+  if (k === 'ArrowRight' || k === 'PageDown') { e.preventDefault(); go(cur + 1); }
+  else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); go(cur - 1); }
+  else if (k === 'Home') { e.preventDefault(); go(0); }
+  else if (k === 'End') { e.preventDefault(); go(slides.length - 1); }
+  else if (k === 'ArrowUp' || k === 'ArrowDown') { if (s.nudge) { e.preventDefault(); s.nudge((k === 'ArrowUp' ? 1 : -1) * (e.shiftKey ? 100 : 10)); } }
+  else if (k === ' ' || k === 'Enter') { if (s.primary) { e.preventDefault(); s.primary(); } }
+  else if (k === 'a' || k === 'A') setAuto(!autoOn);
+  else if (k === 'r' || k === 'R') { if (s.reseed) s.reseed(); }
+  else if (k === '1' || k === '2' || k === '3') { if (s.setShape) s.setShape(SHAPE_ITEMS[+k - 1].value); }
+});
+
+/* ================= init ================= */
+function init() {
+  const nojs = document.getElementById('nojs');
+  if (nojs) nojs.remove();
+  addSlide(buildCover, { title: '封面' });
+  addSlide(buildProblem, { title: '问题：怎样“凭空”生成数据？' });
+  addSlide(buildForward, { title: '前向过程：每一步加一点高斯噪声' });
+  addSlide(buildClosed, { title: '一步到位：直接写出 q(x_t | x_0)' });
+  addSlide(buildDemo, { title: '二维演示：拖动 t，看数据扩散成高斯' });
+  addSlide(buildTrain, { title: '反向过程与训练目标 L_simple' });
+  addSlide(buildSample, { title: '采样：Algorithm 2' });
+  addSlide(buildScore, { title: '为什么有效：与分数匹配的联系' });
+  addSlide(buildSummary, { title: '小结' });
+  buildChrome();
+  const first = slides[0];
+  first.g.setAttribute('display', 'inline');
+  first.g.setAttribute('opacity', 1);
+  playBuild(first);
+  if (first.enter) first.enter(1);
+  updateNav();
+  requestAnimationFrame(frame);
+  setTimeout(() => { const last = slides[slides.length - 1]; if (last.warm) last.warm(); }, 1500);
+  window.DDPM = {
+    get step() { return cur; },
+    get slides() { return slides.length; },
+    go, state,
+    slide: i => slides[i === undefined ? cur : i],
+    schedule: { T, beta, alpha, abar }
+  };
+}
+init();
+})();
+]]></script>
+</svg>

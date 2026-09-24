@@ -1,0 +1,2308 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" lang="zh-CN">
+<title>Attention Is All You Need · 用 SVG 讲论文</title>
+<link xmlns="http://www.w3.org/1999/xhtml" rel="icon" href="data:,"/>
+<desc>单文件交互式论文讲解：Vaswani et al. 2017《Attention Is All You Need》中的缩放点积注意力与多头注意力。← / → 翻页，空格自动播放。</desc>
+<style><![CDATA[
+svg:root { background: #ECE6D9; fill: #2A2825; }
+text { font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei", "Helvetica Neue", Arial, sans-serif; text-spacing-trim: space-all; }
+.sans { font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei", "Helvetica Neue", Arial, sans-serif; }
+.serif, .tok-t { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", "Liberation Serif", "Noto Serif", "DejaVu Serif", serif; }
+.mono { font-family: "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", "DejaVu Sans Mono", monospace; }
+.mi, .mn, .mo, .mw { font-family: "Times New Roman", "Liberation Serif", "Noto Serif", "DejaVu Serif", serif; font-weight: 400; }
+.mi { font-style: italic; }
+.mpath { stroke: #2A2825; fill: none; }
+.mline { stroke: #2A2825; }
+.mfill { fill: #2A2825; }
+
+.ink2 { fill: #5C564C; } .ink3 { fill: #948B7D; } .paper { fill: #FAF7F0; }
+.cq { fill: #B85A0C; } .ck { fill: #1F5596; } .cv { fill: #2A6E41; }
+.cg { fill: #948B7D; } .co { fill: #2A2825; }
+.s-cq { stroke: #B85A0C; } .s-ck { stroke: #1F5596; } .s-cv { stroke: #2A6E41; }
+.mfill.s-cq { fill: #B85A0C; } .mfill.s-ck { fill: #1F5596; } .mfill.s-cv { fill: #2A6E41; }
+.kicker { letter-spacing: 0.14em; fill: #948B7D; font-weight: 600; }
+.kq { fill: #C8691A; }
+.runhead { font-style: italic; fill: #A39B8E; }
+.rule { stroke: #DCD3C3; stroke-width: 1; }
+.brk { fill: none; stroke: #7D7568; stroke-width: 1.3; }
+.axis { stroke: #B9B0A1; stroke-width: 1; }
+
+/* scenes */
+.scene { opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .5s ease, transform .6s cubic-bezier(.3,.6,.2,1), visibility 0s linear .6s; }
+.scene.on { opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+  transition: opacity .6s ease .15s, transform .75s cubic-bezier(.2,.7,.2,1) .1s, visibility 0s linear 0s; }
+.scene.from-right { transform: translate(70px, 0); }
+.scene.from-left { transform: translate(-70px, 0); }
+.scene.to-left { transform: translate(-70px, 0); }
+.scene.to-right { transform: translate(70px, 0); }
+.scene .rise { opacity: 0; }
+.scene.play .rise { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0ms); }
+@keyframes rise { from { opacity: 0; transform: translate(0, 18px); } to { opacity: 1; transform: none; } }
+
+/* matrices */
+.cell { transition: opacity .3s ease; }
+.cell.hid { opacity: 0; }
+.cell.pop rect { animation: pop .45s cubic-bezier(.2,.9,.3,1.3); transform-box: fill-box; transform-origin: center; }
+@keyframes pop { from { transform: scale(.3); } to { transform: none; } }
+.cell-t { pointer-events: none; }
+.mark { fill: none; stroke: #E07B24; stroke-width: 2.2; pointer-events: none; }
+.mark.k { stroke: #2F6CB3; } .mark.v { stroke: #3A8C57; } .mark.ink { stroke: #2A2825; }
+.hot .cell rect { cursor: pointer; }
+.hot .cell:hover rect { stroke: #2A2825; stroke-width: 1.2; }
+
+/* tokens & fans */
+.tok { cursor: pointer; }
+.tok .pill { fill: transparent; stroke: transparent; transition: fill .25s, stroke .25s; }
+.tok:hover .pill { fill: #EFE7D8; }
+.tok.sel .pill { fill: #FBE3CB; stroke: #E07B24; stroke-width: 1.6; }
+.tok.sel .tok-t { fill: #A9500A; font-weight: 700; }
+.keytok .pill { stroke: none; }
+.fan-line { fill: none; stroke-linecap: round; }
+.wlab { font-weight: 600; }
+
+/* ui controls */
+.btn { cursor: pointer; }
+.btn rect { fill: #FAF7F0; stroke: #2A2825; stroke-width: 1.2; transition: fill .2s; }
+.btn text { fill: #2A2825; font-weight: 600; pointer-events: none; }
+.btn:hover rect { fill: #EFE7D8; }
+.btn.primary rect { fill: #2A2825; }
+.btn.primary text { fill: #FAF7F0; }
+.btn.primary:hover rect { fill: #4A453E; }
+.btn.chip rect { stroke: #CFC5B3; }
+.btn.on rect { fill: #2A2825; stroke: #2A2825; }
+.btn.on text { fill: #FAF7F0; }
+.btn.dis { opacity: .35; pointer-events: none; }
+.toggle { cursor: pointer; }
+.toggle .tr { fill: #D8CFBF; transition: fill .25s; }
+.toggle.on .tr { fill: #2A2825; }
+.toggle .kn { fill: #FAF7F0; transition: transform .25s cubic-bezier(.3,.7,.3,1.2); }
+.toggle.on .kn { transform: translate(20px, 0); }
+.slider { cursor: pointer; }
+.sl-track { stroke: #DCD3C3; stroke-width: 5; stroke-linecap: round; }
+.sl-fill { stroke: #2A2825; stroke-width: 5; stroke-linecap: round; }
+.sl-knob { fill: #FAF7F0; stroke: #2A2825; stroke-width: 2.2; transition: r .15s; }
+.slider:hover .sl-knob { r: 11; }
+.dot { cursor: pointer; }
+.dot .dr { fill: #D3C9B8; transition: fill .3s, width .3s, x .3s; }
+.dot:hover .dr { fill: #9A9083; }
+.dot.cur .dr { fill: #2A2825; }
+.panel { fill: #F3EDE1; stroke: #E2D9C9; stroke-width: 1; }
+.hint-pulse { animation: hint 1.6s ease-in-out infinite; }
+@keyframes hint { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.flowdot { pointer-events: none; }
+.rnn rect { transition: fill .25s; }
+.rnn.done rect { fill: #EFE8DA; }
+.rnn.act rect { fill: #2A2825; stroke: #2A2825; }
+.rnn.act text { fill: #FAF7F0; }
+.clickable { cursor: pointer; }
+.clickable:hover > .hov { fill: #EFE7D8; }
+]]></style>
+<defs>
+  <filter id="sheetShadow" x="-5%" y="-5%" width="110%" height="110%">
+    <feDropShadow dx="0" dy="3" stdDeviation="8" flood-color="#6B5E45" flood-opacity="0.18"/>
+  </filter>
+  <marker id="arr" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M1,1.5 L9,5 L1,8.5 z" fill="#5C564C"/>
+  </marker>
+  <marker id="arrQ" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M1,1.5 L9,5 L1,8.5 z" fill="#E07B24"/>
+  </marker>
+  <marker id="arrK" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M1,1.5 L9,5 L1,8.5 z" fill="#2F6CB3"/>
+  </marker>
+  <marker id="arrV" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M1,1.5 L9,5 L1,8.5 z" fill="#3A8C57"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="1600" height="1000" fill="#FAF7F0" filter="url(#sheetShadow)"/>
+<g id="stage"></g>
+<g id="chrome"></g>
+<script><![CDATA[
+(function () {
+'use strict';
+// ===================================================================
+//  Core: DOM helpers, numbers, model, animation, text & math layout
+// ===================================================================
+const NS = 'http://www.w3.org/2000/svg';
+const SVG = document.documentElement;
+const C = {
+  q: '#E07B24', qd: '#B85A0C', qs: '#FBE3CB',
+  k: '#2F6CB3', kd: '#1F5596', ks: '#DCE7F4',
+  v: '#3A8C57', vd: '#2A6E41', vs: '#DCEFE2',
+  ink: '#2A2825', ink2: '#5C564C', ink3: '#948B7D', rule: '#DCD3C3',
+  paper: '#FAF7F0', paper2: '#F3EDE1',
+};
+const RGB = { q: [224, 123, 36], k: [47, 108, 179], v: [58, 140, 87], ink: [42, 40, 37], gray: [150, 141, 128] };
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
+
+function el(tag, attrs, parent, text) {
+  const e = document.createElementNS(NS, tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k];
+    if (v === undefined || v === null || v === false) continue;
+    e.setAttribute(k, v);
+  }
+  if (text !== undefined && text !== null) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+const G = (parent, attrs) => el('g', attrs, parent);
+function riseG(parent, d, attrs) {
+  const g = el('g', attrs, parent);
+  g.setAttribute('class', ((attrs && attrs.class) ? attrs.class + ' ' : '') + 'rise');
+  g.style.setProperty('--d', (d | 0) + 'ms');
+  return g;
+}
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const sum = (a) => a.reduce((s, v) => s + v, 0);
+const argmax = (a) => a.reduce((bi, v, i) => (v > a[bi] ? i : bi), 0);
+const EASE = {
+  io: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+  out: (t) => 1 - Math.pow(1 - t, 3),
+  lin: (t) => t,
+};
+function fx(v, d = 2) {
+  const a = Math.abs(v);
+  let s = a >= 9.995 && d > 0 ? a.toFixed(d - 1) : a.toFixed(d);
+  if (Number(s) === 0) return (0).toFixed(d);
+  return (v < 0 ? '-' : '') + s;
+}
+const fsig = (v, d = 2) => (v >= 0 ? '+' : '-') + Math.abs(v).toFixed(d);
+
+// ---------- seeded randomness (only for the d_k experiment) ----------
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function gaussian(rnd) {
+  let spare = null;
+  return () => {
+    if (spare !== null) { const s = spare; spare = null; return s; }
+    let u = 0; while (!u) u = rnd();
+    const v = rnd(), r = Math.sqrt(-2 * Math.log(u));
+    spare = r * Math.sin(2 * Math.PI * v);
+    return r * Math.cos(2 * Math.PI * v);
+  };
+}
+
+// ---------- linear algebra ----------
+const LA = {
+  mm(A, B) {
+    const n = A.length, k = B.length, m = B[0].length, out = [];
+    for (let i = 0; i < n; i++) {
+      const r = new Array(m).fill(0);
+      for (let t = 0; t < k; t++) { const a = A[i][t], b = B[t]; for (let j = 0; j < m; j++) r[j] += a * b[j]; }
+      out.push(r);
+    }
+    return out;
+  },
+  T: (A) => A[0].map((_, j) => A.map((r) => r[j])),
+  dot(a, b) { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; },
+  softmax(row) {
+    const m = Math.max(...row), e = row.map((v) => Math.exp(v - m)), s = sum(e);
+    return e.map((v) => v / s);
+  },
+  // Frobenius norm of the softmax Jacobian diag(a) - a a^T
+  jacNorm(a) {
+    let s = 0;
+    for (let i = 0; i < a.length; i++) for (let j = 0; j < a.length; j++) {
+      const v = (i === j ? a[i] : 0) - a[i] * a[j]; s += v * v;
+    }
+    return Math.sqrt(s);
+  },
+};
+
+// ---------- the demo model ----------
+// Sentence (tokenisation simplified; "The" and "the" share one vocabulary entry).
+const TOK = ['The', 'animal', "didn't", 'cross', 'the', 'street', 'because', 'it', 'was', 'too', 'tired'];
+const VOCAB = ['the', 'animal', "didn't", 'cross', 'street', 'because', 'it', 'was', 'too', 'tired'];
+const IT = 7, ANIMAL = 1;
+// Demo parameters: constructed for teaching (fitted offline to readable target patterns),
+// NOT weights from the paper. Everything downstream is computed live below.
+const PARAMS = {
+  E: [[0.89,-0.79,0.03,-0.83,0.33,-0.35],[-0.84,-1.41,-0.9,0.11,0.67,0.95],[-0.02,-0.53,1.03,0.21,-0.42,1.07],[0.51,-1.46,1.12,0.51,0.35,-0.63],[-1.18,-0.61,-0.03,-0.75,0.19,0.21],[0.12,-0.03,0.33,0.2,0.7,0.63],[1.05,-0.09,-0.31,-1.19,-0.19,1.45],[1.01,0.14,-0.25,0.41,1.2,0.31],[0.18,0.15,0.62,-0.14,1.31,0.54],[0.9,-0.34,-0.94,0.89,-1,0.79]],
+  Wq0: [[0.52,-0.12,-1.01,0.34],[-0.81,-0.01,-0.22,-0.21],[0.41,0.81,0.26,-0.18],[-0.6,-0.03,-0.1,0.08],[-0.57,0.99,-0.34,-0.36],[-0.28,-0.12,0.46,1.22]],
+  Wk0: [[-0.97,-0.29,0.19,0.28],[-0.52,0.43,-0.51,-1],[-0.4,-0.22,0.86,-0.2],[-0.13,0.6,0.51,0.42],[0.59,-0.82,0.15,0.1],[-0.34,-0.56,-0.4,0.72]],
+  Wq1: [[0.24,-0.6],[-0.36,-0.02],[-0.77,0.63],[0.62,0.28],[0.39,0.03],[0.3,-0.96]],
+  Wk1: [[0.47,0.06],[-0.33,0.98],[0.04,0.38],[-0.59,-0.14],[0.05,-0.54],[0.85,-0.59]],
+  Wq2: [[-0.78,-0.5],[-0.58,0.18],[0.54,-0.12],[0.2,-0.73],[-0.4,-0.27],[0.03,0.78]],
+  Wk2: [[-0.55,0.81],[-0.94,-0.34],[0.45,0.56],[0.09,0.58],[0.13,0.3],[-0.15,0.05]],
+  Wq3: [[0.45,-0.02],[-0.51,-0.32],[-0.27,-0.47],[-0.77,0.37],[-0.02,-1.09],[-0.61,-0.09]],
+  Wk3: [[-0.96,0.15],[-0.34,-0.23],[-0.46,0.57],[-0.4,-0.46],[0.26,0.96],[-0.11,0.37]],
+  Wv0: [[0.43,-0.23,-0.67,-0.43],[-0.68,0.76,-0.15,-0.98],[0.15,-0.78,0.99,-0.93],[1.5,0.9,-0.19,-0.65],[0.22,-0.7,-0.54,0.85],[0.62,-0.21,0.34,-0.59]],
+  Wv1: [[0.74,-0.25],[-0.12,-0.51],[-0.87,-0.18],[-1.39,0.06],[-0.75,0.56],[1.18,0.29]],
+  Wv2: [[0.49,0.43],[0.17,-0.26],[-0.45,0.02],[0.53,-0.97],[1.09,-0.98],[0.08,0.5]],
+  Wv3: [[-0.63,-0.74],[0.23,0.53],[0.9,0.44],[-0.12,0.21],[0.34,-0.45],[-0.04,-0.55]],
+  Wo: [[-0.34,-0.86,-0.16,0.23,0,-1.02],[0.38,-0.09,-0.92,-0.52,0.61,1.17],[0.51,0.36,-0.68,-0.27,1.19,-0.09],[-0.64,-0.55,-0.16,-0.62,-0.21,-0.46],[0.96,-0.09,0.69,-0.23,0.33,0.31],[0.2,0.04,-0.72,0.35,-0.33,0.22]]
+};
+const X0 = TOK.map((t) => PARAMS.E[VOCAB.indexOf(t.toLowerCase())].slice());
+const D_MODEL = 6, D_K = 4, H = 3, D_HEAD = 2;
+
+function attend(X, Wq, Wk, Wv, opt) {
+  const o = Object.assign({ scale: true, tau: 1 }, opt);
+  const Q = LA.mm(X, Wq), K = LA.mm(X, Wk), V = LA.mm(X, Wv);
+  const dk = Wq[0].length;
+  const c = o.scale ? 1 / Math.sqrt(dk) : 1;
+  const raw = LA.mm(Q, LA.T(K));
+  const S = raw.map((r) => r.map((v) => v * c));
+  const A = S.map((r) => LA.softmax(r.map((v) => v / o.tau)));
+  const Z = LA.mm(A, V);
+  return { X, Q, K, V, raw, S, A, Z, dk, c };
+}
+const Model = {
+  single: (opt, X) => attend(X || X0, PARAMS.Wq0, PARAMS.Wk0, PARAMS.Wv0, opt),
+  head: (h, X) => attend(X || X0, PARAMS['Wq' + h], PARAMS['Wk' + h], PARAMS['Wv' + h]),
+  multi() {
+    const hs = [1, 2, 3].map((h) => Model.head(h));
+    const concat = X0.map((_, i) => [].concat(...hs.map((r) => r.Z[i])));
+    return { hs, concat, out: LA.mm(concat, PARAMS.Wo) };
+  },
+};
+
+// ---------- animation ----------
+let FLUSH = false;
+const Anim = {
+  list: new Set(), raf: 0,
+  add(a) { this.list.add(a); if (!this.raf) this.raf = requestAnimationFrame(Anim.tick); },
+  tick(now) {
+    Anim.raf = 0;
+    for (const a of Array.from(Anim.list)) {
+      if (a.t0 === null) a.t0 = now;
+      const p = a.dur > 0 ? clamp((now - a.t0) / a.dur, 0, 1) : 1;
+      a.fn(a.ease(p));
+      if (p >= 1) { Anim.list.delete(a); if (a.done) a.done(); }
+    }
+    if (Anim.list.size) Anim.raf = requestAnimationFrame(Anim.tick);
+  },
+};
+function tween(dur, fn, ease, done) {
+  const a = { t0: null, dur, fn, ease: ease || EASE.io, done, fin: false };
+  if (FLUSH || dur <= 0) { fn(1); a.fin = true; if (done) done(); return a; }
+  fn(a.ease(0));
+  Anim.add(a);
+  return a;
+}
+class Timeline {
+  constructor() { this.pending = []; this.tweens = new Set(); this.loops = new Set(); this.dead = false; }
+  at(ms, fn) {
+    if (this.dead) return;
+    if (FLUSH) { fn(); return; }
+    const item = { fn, due: performance.now() + ms, id: 0 };
+    item.id = setTimeout(() => {
+      const i = this.pending.indexOf(item); if (i >= 0) this.pending.splice(i, 1);
+      if (!this.dead) fn();
+    }, ms);
+    this.pending.push(item);
+  }
+  tween(dur, fn, ease, done) {
+    if (this.dead) return null;
+    let a;
+    a = tween(dur, fn, ease, () => { this.tweens.delete(a); if (done) done(); });
+    if (!a.fin) this.tweens.add(a);
+    return a;
+  }
+  // endless rAF loop (decorations); killed with the timeline, skipped while flushing
+  loop(fn) {
+    if (this.dead) return;
+    const L = { alive: true, t0: null };
+    const step = (now) => {
+      if (!L.alive || this.dead) return;
+      if (L.t0 === null) L.t0 = now;
+      fn(now - L.t0);
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    this.loops.add(L);
+  }
+  kill() {
+    this.dead = true;
+    for (const p of this.pending) clearTimeout(p.id);
+    this.pending = [];
+    for (const a of this.tweens) Anim.list.delete(a);
+    this.tweens.clear();
+    for (const L of this.loops) L.alive = false;
+  }
+  flush() {
+    FLUSH = true;
+    try {
+      let guard = 0;
+      while ((this.pending.length || this.tweens.size) && guard++ < 200) {
+        for (const a of Array.from(this.tweens)) {
+          Anim.list.delete(a); this.tweens.delete(a); a.fn(1); if (a.done) a.done();
+        }
+        const items = this.pending.sort((a, b) => a.due - b.due);
+        this.pending = [];
+        for (const it of items) { clearTimeout(it.id); if (!this.dead) it.fn(); }
+      }
+    } finally { FLUSH = false; }
+  }
+}
+
+// ---------- text measurement ----------
+const measureLayer = el('g', { opacity: 0, 'aria-hidden': 'true', 'pointer-events': 'none' }, SVG);
+const measurer = el('text', { x: 0, y: -200 }, measureLayer);
+const mCache = new Map();
+function measure(str, cls, size, weight) {
+  const key = cls + '|' + size + '|' + (weight || '') + '|' + str;
+  let w = mCache.get(key);
+  if (w !== undefined) return w;
+  measurer.setAttribute('class', cls);
+  measurer.setAttribute('font-size', size);
+  if (weight) measurer.setAttribute('font-weight', weight); else measurer.removeAttribute('font-weight');
+  measurer.textContent = str;
+  w = measurer.getComputedTextLength();
+  mCache.set(key, w);
+  return w;
+}
+const spaceW = (cls, size) => Math.max(size * 0.22, measure('a a', cls, size) - measure('aa', cls, size));
+
+// ---------- mini TeX: parse ----------
+function opAtom(c) {
+  if (c === '-') c = '−';
+  const rel = '=≈→<>≤≥'.includes(c), bin = '+−×·'.includes(c), punct = c === ',';
+  return { t: 'atom', s: c, f: 'mo', sp: rel ? 'rel' : bin ? 'bin' : punct ? 'punct' : null };
+}
+function parseTex(src) {
+  let i = 0;
+  function row(stop) {
+    const items = [];
+    while (i < src.length) {
+      const c = src[i];
+      if (c === stop) { i++; break; }
+      if (c === ' ') { i++; continue; }
+      if (c === '{') { i++; items.push(row('}')); continue; }
+      if (c === '_' || c === '^') {
+        i++;
+        const arg = argument();
+        let last = items.pop() || { t: 'atom', s: '', f: 'mo' };
+        if (last.t !== 'scr') last = { t: 'scr', base: last, sub: null, sup: null };
+        if (c === '_') last.sub = arg; else last.sup = arg;
+        items.push(last);
+        continue;
+      }
+      if (c === '\\') { items.push(command()); continue; }
+      if (/[A-Za-z]/.test(c)) {
+        let w = '';
+        while (i < src.length && /[A-Za-z]/.test(src[i])) w += src[i++];
+        if (w.length > 1 && /[a-z]/.test(w)) items.push({ t: 'atom', s: w, f: 'mw' });
+        else for (const ch of w) items.push({ t: 'atom', s: ch, f: 'mi' });
+        continue;
+      }
+      if (/[0-9.]/.test(c)) {
+        let w = '';
+        while (i < src.length && /[0-9.]/.test(src[i])) w += src[i++];
+        items.push({ t: 'atom', s: w, f: 'mn' });
+        continue;
+      }
+      i++;
+      items.push(opAtom(c));
+    }
+    return { t: 'row', items };
+  }
+  function argument() {
+    while (src[i] === ' ') i++;
+    const c = src[i];
+    if (c === '{') { i++; return row('}'); }
+    if (c === '\\') return command();
+    i++;
+    if (/[A-Za-z]/.test(c)) return { t: 'atom', s: c, f: 'mi' };
+    if (/[0-9]/.test(c)) return { t: 'atom', s: c, f: 'mn' };
+    return opAtom(c);
+  }
+  function command() {
+    i++;
+    let name = '';
+    while (i < src.length && /[A-Za-z]/.test(src[i])) name += src[i++];
+    if (!name) name = src[i++];
+    switch (name) {
+      case 'frac': { const num = argument(), den = argument(); return { t: 'frac', num, den }; }
+      case 'sqrt': return { t: 'sqrt', body: argument() };
+      case 'big': return { t: 'big', body: argument() };
+      case 'q': case 'k': case 'v': case 'g': return { t: 'color', cls: 'c' + name, body: argument() };
+      case 'rm': { const a = argument(); return upright(a); }
+      case 'txt': { const a = argument(); return { t: 'text', s: flat(a) }; }
+      case 'cdot': return opAtom('·');
+      case 'times': return opAtom('×');
+      case 'to': return opAtom('→');
+      case 'approx': return opAtom('≈');
+      case 'dots': return { t: 'atom', s: '…', f: 'mo' };
+      case 'sum': return { t: 'atom', s: 'Σ', f: 'mo', big: true };
+      case 'norm': return { t: 'atom', s: '‖', f: 'mo' };
+      case 'partial': return { t: 'atom', s: '∂', f: 'mi' };
+      case 'tau': return { t: 'atom', s: 'τ', f: 'mi' };
+      case 'sigma': return { t: 'atom', s: 'σ', f: 'mi' };
+      case 'pi': return { t: 'atom', s: 'π', f: 'mi' };
+      case ',': return { t: 'space', em: 0.17 };
+      case ';': return { t: 'space', em: 0.3 };
+      case 'quad': return { t: 'space', em: 1 };
+      default: return { t: 'atom', s: name, f: 'mw' };
+    }
+  }
+  function flat(n) { return n.t === 'row' ? n.items.map(flat).join('') : (n.s || ''); }
+  function upright(n) {
+    if (n.t === 'row') { n.items.forEach(upright); return n; }
+    if (n.t === 'atom' && n.f === 'mi') n.f = 'mw';
+    return n;
+  }
+  return row(null);
+}
+
+// ---------- mini TeX: layout -> boxes that emit <tspan>s and paths ----------
+function mlay(node, size) {
+  switch (node.t) {
+    case 'row': {
+      const boxes = [];
+      let prev = null;
+      for (const it of node.items) {
+        const b = mlay(it, size);
+        let gapL = 0;
+        if (it.t === 'atom' && it.sp) {
+          const unary = !prev || (prev.t === 'atom' && (prev.sp || '(['.includes(prev.s)));
+          if (it.sp === 'rel') gapL = size * 0.28;
+          else if (it.sp === 'bin' && !unary) gapL = size * 0.2;
+          b.gapR = it.sp === 'rel' ? size * 0.28 : it.sp === 'bin' && !unary ? size * 0.2 : it.sp === 'punct' ? size * 0.26 : 0;
+        }
+        b.gapL = gapL;
+        boxes.push(b);
+        prev = it;
+      }
+      let w = 0, a = size * 0.7, d = size * 0.2;
+      const xs = [];
+      boxes.forEach((b, k) => {
+        w += b.gapL + (k > 0 ? boxes[k - 1].gapR || 0 : 0);
+        xs.push(w);
+        w += b.w;
+        a = Math.max(a, b.a); d = Math.max(d, b.d);
+      });
+      return { w, a, d, emit(t, g, x, y, cc) { boxes.forEach((b, k) => b.emit(t, g, x + xs[k], y, cc)); } };
+    }
+    case 'atom': {
+      const cls = node.f === 'mi' ? 'mi' : node.f === 'mn' ? 'mn' : node.f === 'mw' ? 'mw' : 'mo';
+      const sz = node.big ? size * 1.25 : size;
+      const w = measure(node.s, cls, sz) + (node.f === 'mi' ? size * 0.03 : 0);
+      return {
+        w, a: sz * 0.72, d: sz * 0.22,
+        emit(t, g, x, y, cc) {
+          el('tspan', { x: x.toFixed(2), y: (y + (node.big ? size * 0.08 : 0)).toFixed(2), class: cls + (cc ? ' ' + cc : ''), 'font-size': sz.toFixed(2) }, t, node.s);
+        },
+      };
+    }
+    case 'text': {
+      const w = measure(node.s, 'sans', size * 0.8);
+      return { w, a: size * 0.7, d: size * 0.2, emit(t, g, x, y, cc) { el('tspan', { x: x.toFixed(2), y: y.toFixed(2), class: 'sans' + (cc ? ' ' + cc : ''), 'font-size': (size * 0.8).toFixed(2) }, t, node.s); } };
+    }
+    case 'space': return { w: size * node.em, a: 0, d: 0, emit() {} };
+    case 'color': {
+      const b = mlay(node.body, size);
+      return { w: b.w, a: b.a, d: b.d, emit(t, g, x, y) { b.emit(t, g, x, y, node.cls); } };
+    }
+    case 'scr': {
+      const b = mlay(node.base, size);
+      const ss = Math.max(size * 0.68, 9);
+      const sub = node.sub && mlay(node.sub, ss), sup = node.sup && mlay(node.sup, ss);
+      const ital = node.base.t === 'atom' && node.base.f === 'mi';
+      const tall = node.base.t !== 'atom';
+      const supX = b.w + (ital ? size * 0.04 : size * 0.02);
+      const subX = b.w + (ital ? -size * 0.03 : size * 0.02);
+      const supDy = tall ? -(b.a - ss * 0.3) : -size * (sub ? 0.42 : 0.38);
+      const subDy = size * (sup ? 0.3 : 0.24) + (tall ? b.d * 0.5 : 0);
+      const w = Math.max(sup ? supX + sup.w : b.w, sub ? subX + sub.w : b.w) + size * 0.04;
+      const a = Math.max(b.a, sup ? -supDy + sup.a : 0), d = Math.max(b.d, sub ? subDy + sub.d : 0);
+      return {
+        w, a, d,
+        emit(t, g, x, y, cc) {
+          b.emit(t, g, x, y, cc);
+          if (sup) sup.emit(t, g, x + supX, y + supDy, cc);
+          if (sub) sub.emit(t, g, x + subX, y + subDy, cc);
+        },
+      };
+    }
+    case 'frac': {
+      const s2 = size * 0.9;
+      const nb = mlay(node.num, s2), db = mlay(node.den, s2);
+      const pad = size * 0.14, axis = size * 0.28, gap = size * 0.14, th = Math.max(1.1, size * 0.05);
+      const w = Math.max(nb.w, db.w) + 2 * pad;
+      const numBase = -(axis + gap + nb.d + th / 2), denBase = -axis + gap + db.a + th / 2;
+      return {
+        w, a: -numBase + nb.a, d: denBase + db.d,
+        emit(t, g, x, y, cc) {
+          nb.emit(t, g, x + (w - nb.w) / 2, y + numBase, cc);
+          db.emit(t, g, x + (w - db.w) / 2, y + denBase, cc);
+          el('line', { x1: x + pad * 0.3, x2: x + w - pad * 0.3, y1: y - axis, y2: y - axis, class: 'mline', 'stroke-width': th }, g);
+        },
+      };
+    }
+    case 'sqrt': {
+      const bb = mlay(node.body, size), s = size;
+      const top = bb.a + s * 0.12, lw = Math.max(1.1, s * 0.055), signW = s * 0.56;
+      return {
+        w: signW + bb.w + s * 0.1, a: top + lw, d: bb.d + s * 0.05,
+        emit(t, g, x, y, cc) {
+          const yt = y - top, yb = y + bb.d + s * 0.03;
+          const d = `M${(x + s * 0.03).toFixed(2)},${(y - s * 0.24).toFixed(2)} L${(x + s * 0.15).toFixed(2)},${(y - s * 0.31).toFixed(2)} L${(x + s * 0.3).toFixed(2)},${yb.toFixed(2)} L${(x + s * 0.5).toFixed(2)},${yt.toFixed(2)} L${(x + signW + bb.w + s * 0.06).toFixed(2)},${yt.toFixed(2)}`;
+          el('path', { d, class: 'mpath', 'stroke-width': lw, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, g);
+          bb.emit(t, g, x + signW, y, cc);
+        },
+      };
+    }
+    case 'big': {
+      const bb = mlay(node.body, size), s = size;
+      const top = bb.a + s * 0.08, bot = bb.d + s * 0.08, pw = s * 0.36;
+      return {
+        w: bb.w + 2 * pw + s * 0.06, a: top, d: bot,
+        emit(t, g, x, y, cc) {
+          const yt = y - top, yb = y + bot, ym = (yt + yb) / 2, th = s * 0.075;
+          const L = x + pw * 0.85, lc = x + pw * 0.02;
+          el('path', { d: `M${L},${yt} Q${lc},${ym} ${L},${yb} Q${lc + th * 1.6},${ym} ${L},${yt} Z`, class: 'mfill' }, g);
+          const R = x + pw + bb.w + s * 0.06 + pw * 0.15, rc = R + pw * 0.83;
+          el('path', { d: `M${R},${yt} Q${rc},${ym} ${R},${yb} Q${rc - th * 1.6},${ym} ${R},${yt} Z`, class: 'mfill' }, g);
+          bb.emit(t, g, x + pw + s * 0.03, y, cc);
+        },
+      };
+    }
+  }
+  return { w: 0, a: 0, d: 0, emit() {} };
+}
+// display formula; y = baseline
+function formula(parent, tex, o) {
+  const box = mlay(parseTex(tex), o.size || 26);
+  const g = el('g', { class: 'formula' + (o.cls ? ' ' + o.cls : '') }, parent);
+  const t = el('text', null, g);
+  let x = o.x;
+  if (o.anchor === 'middle') x -= box.w / 2; else if (o.anchor === 'end') x -= box.w;
+  box.emit(t, g, x, o.y, o.color || null);
+  return { g, w: box.w, a: box.a, d: box.d, x };
+}
+
+// ---------- rich paragraph with wrapping ----------
+// markup: {q:..} {k:..} {v:..} orange/blue/green, {b:..} bold, {g:..} gray, {c:..} mono, {m:..} inline math
+const STY = { q: 'cq', k: 'ck', v: 'cv', b: 'co', g: 'cg', c: 'mono', t: 'tok-t' };
+const NO_START = '，。、；：！？）》」』】”’…%·,.;:!?)';
+const NO_END = '（《「『【“‘(';
+const isCJK = (ch) => /[\u2E80-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF\u3000-\u303F\u2014\u2026\u201C\u201D]/.test(ch);
+function parseRich(str) {
+  const out = [];
+  let i = 0, buf = '';
+  while (i < str.length) {
+    if (str[i] === '{' && /^[a-z]:/.test(str.slice(i + 1, i + 3))) {
+      if (buf) { out.push({ text: buf, sty: '' }); buf = ''; }
+      const sty = str[i + 1];
+      let depth = 1, j = i + 3;
+      while (j < str.length && depth) { if (str[j] === '{') depth++; else if (str[j] === '}') depth--; j++; }
+      out.push({ text: str.slice(i + 3, j - 1), sty });
+      i = j;
+      continue;
+    }
+    buf += str[i++];
+  }
+  if (buf) out.push({ text: buf, sty: '' });
+  return out;
+}
+function richAtoms(str, base) {
+  const atoms = [];
+  for (const s of parseRich(str)) {
+    if (s.sty === 'm') {
+      const box = mlay(parseTex(s.text), base.size * 1.06);
+      atoms.push({ kind: 'math', box, w: box.w });
+      continue;
+    }
+    const cls = (base.cls + ' ' + (STY[s.sty] || '')).trim();
+    const weight = s.sty === 'b' ? 700 : 'qkv'.includes(s.sty) && s.sty ? 700 : base.weight;
+    let word = '';
+    const flush = () => {
+      if (!word) return;
+      atoms.push({ kind: 'word', text: word, cls, weight, w: measure(word, cls, base.size, weight), noStart: NO_START.includes(word[0]) });
+      word = '';
+    };
+    for (const ch of s.text) {
+      if (ch === ' ') { flush(); atoms.push({ kind: 'space', w: spaceW(cls, base.size) }); }
+      else if (isCJK(ch)) {
+        flush();
+        atoms.push({ kind: 'word', text: ch, cls, weight, cjk: true, w: measure(ch, cls, base.size, weight), noStart: NO_START.includes(ch), noEnd: NO_END.includes(ch) });
+      } else word += ch;
+    }
+    flush();
+  }
+  return atoms;
+}
+function breakLines(atoms, maxW) {
+  const units = [];
+  for (const a of atoms) {
+    const prev = units[units.length - 1];
+    if (prev && !prev.space && a.kind !== 'space' && (a.noStart || prev.noEnd)) {
+      prev.atoms.push(a); prev.w += a.w; prev.noEnd = !!a.noEnd; continue;
+    }
+    units.push({ atoms: [a], w: a.w, space: a.kind === 'space', noEnd: !!a.noEnd });
+  }
+  const lines = [];
+  let line = [], w = 0;
+  const trim = () => { while (line.length && line[line.length - 1].space) w -= line.pop().w; };
+  for (const u of units) {
+    if (u.space) { if (line.length) { line.push(u); w += u.w; } continue; }
+    if (maxW && line.length && w + u.w > maxW) { trim(); lines.push({ units: line, w }); line = []; w = 0; }
+    line.push(u); w += u.w;
+  }
+  trim();
+  if (line.length) lines.push({ units: line, w });
+  return lines;
+}
+function para(parent, str, o) {
+  const base = { cls: o.cls || 'sans', size: o.size || 17, weight: o.weight };
+  const lines = breakLines(richAtoms(str, base), o.w || 0);
+  const lh = o.lh || Math.round(base.size * 1.62);
+  const g = el('g', { class: 'para' }, parent);
+  const texts = [];
+  lines.forEach((ln, li) => {
+    const y = o.y + li * lh;
+    let x = o.x;
+    if (o.anchor === 'middle') x -= ln.w / 2; else if (o.anchor === 'end') x -= ln.w;
+    const t = el('text', { x: x.toFixed(1), y, 'font-size': base.size, class: base.cls }, g);
+    if (base.weight) t.setAttribute('font-weight', base.weight);
+    if (o.fill) t.setAttribute('fill', o.fill);
+    texts.push(t);
+    let cx = x, run = null;
+    const pieces = [];
+    for (const u of ln.units) for (const a of u.atoms) {
+      if (a.kind === 'space') { cx += a.w; run = null; continue; }
+      if (a.kind === 'math') {
+        const mg = el('g', null, g);
+        const before = t.childNodes.length;
+        a.box.emit(t, mg, cx, y, null);
+        pieces.push({ math: true, spans: Array.from(t.childNodes).slice(before), mg, w: a.w });
+        cx += a.w; run = null; continue;
+      }
+      if (run && a.cjk && run.cjk && run.cls === a.cls && run.weight === a.weight) { run.el.textContent += a.text; run.piece.w += a.w; }
+      else {
+        const ts = el('tspan', { x: cx.toFixed(1), y, class: a.cls }, t, a.text);
+        if (a.weight) ts.setAttribute('font-weight', a.weight);
+        const piece = { el: ts, w: a.w };
+        pieces.push(piece);
+        run = { el: ts, cls: a.cls, weight: a.weight, cjk: !!a.cjk, piece };
+      }
+      cx += a.w;
+    }
+    // second pass: replace predicted run widths by the rendered ones so later runs never drift
+    let delta = 0;
+    for (const p of pieces) {
+      if (p.math) {
+        if (delta) {
+          p.spans.forEach((s) => s.setAttribute('x', (parseFloat(s.getAttribute('x')) + delta).toFixed(2)));
+          p.mg.setAttribute('transform', `translate(${delta.toFixed(2)},0)`);
+        }
+        continue;
+      }
+      if (delta) p.el.setAttribute('x', (parseFloat(p.el.getAttribute('x')) + delta).toFixed(1));
+      const real = p.el.getComputedTextLength();
+      if (real > 0) delta += real - p.w;
+    }
+  });
+  return { g, h: lines.length * lh, n: lines.length, lh, w: Math.max(0, ...lines.map((l) => l.w)), texts };
+}
+// single-line label helper (no wrapping), returns text element
+function label(parent, x, y, str, o) {
+  o = o || {};
+  const t = el('text', {
+    x, y, 'font-size': o.size || 14, class: o.cls || 'sans', 'text-anchor': o.anchor || 'start',
+    'font-weight': o.weight, fill: o.fill, transform: o.rot ? `rotate(${o.rot},${x},${y})` : null,
+  }, parent, str);
+  if (o.rot) t.setAttribute('data-rot', '1');
+  return t;
+}
+
+// ===================================================================
+//  Components: matrix, attention fan, slider, toggle, button
+// ===================================================================
+function cellStyle(kind, v, vmax) {
+  const t = clamp(Math.abs(v) / (vmax || 1), 0, 1);
+  switch (kind) {
+    case 'a': return [rgba(RGB.ink, 0.035 + 0.9 * v), v > 0.5 ? C.paper : C.ink];
+    case 's': return v >= 0 ? [rgba(RGB.ink, 0.05 + 0.64 * t), t > 0.6 ? C.paper : C.ink] : [rgba(RGB.gray, 0.05 + 0.24 * t), C.ink2];
+    case 'x': return [rgba(RGB.gray, 0.07 + 0.3 * t), C.ink];
+    case 'q': case 'k': case 'v':
+      return v >= 0 ? [rgba(RGB[kind], 0.1 + 0.5 * t), C.ink] : [rgba(RGB.gray, 0.06 + 0.26 * t), C.ink2];
+    case 'wq': case 'wk': case 'wv': {
+      const h = kind[1];
+      return v >= 0 ? [rgba(RGB[h], 0.06 + 0.32 * t), C.ink] : [rgba(RGB.gray, 0.05 + 0.2 * t), C.ink2];
+    }
+    default:
+      return v >= 0 ? [rgba(RGB.ink, 0.06 + 0.66 * t), t > 0.62 ? C.paper : C.ink] : [rgba(RGB.gray, 0.06 + 0.3 * t), C.ink2];
+  }
+}
+
+function Matrix(parent, o) {
+  const cw = o.cw, ch = o.ch, gap = o.gap == null ? 2 : o.gap, fs = o.fs || 12;
+  const m = { o, cells: [], data: null, x: o.x, y: o.y, w: o.cols * cw, h: o.rows * ch };
+  m.g = el('g', { class: 'mat' + (o.onCell ? ' hot' : ''), transform: `translate(${o.x},${o.y})` }, parent);
+  if (o.bracket !== false) {
+    const b = 5, W = m.w, Hh = m.h;
+    el('path', { d: `M${-4 + b},-4 H-4 V${Hh + 4} H${-4 + b}`, class: 'brk' }, m.g);
+    el('path', { d: `M${W + 4 - b},-4 H${W + 4} V${Hh + 4} H${W + 4 - b}`, class: 'brk' }, m.g);
+  }
+  for (let i = 0; i < o.rows; i++) {
+    const row = [];
+    for (let j = 0; j < o.cols; j++) {
+      const cg = el('g', { class: 'cell' }, m.g);
+      const r = el('rect', {
+        x: j * cw + gap / 2, y: i * ch + gap / 2, width: cw - gap, height: ch - gap,
+        rx: Math.min(4.5, (ch - gap) * 0.24), fill: C.paper2,
+      }, cg);
+      const t = o.numbers === false ? null
+        : el('text', { x: j * cw + cw / 2, y: i * ch + ch / 2 + fs * 0.36, 'text-anchor': 'middle', class: 'mono cell-t', 'font-size': fs }, cg);
+      if (o.onCell) {
+        cg.addEventListener('pointerenter', () => o.onCell(i, j, false));
+        cg.addEventListener('click', () => o.onCell(i, j, true));
+      }
+      row.push({ g: cg, r, t });
+    }
+    m.cells.push(row);
+  }
+  if (o.rowLabels) {
+    m.rowLab = o.rowLabels.map((s, i) => {
+      const t = label(m.g, -9, i * ch + ch / 2 + (o.lfs || 14) * 0.34, s, { size: o.lfs || 14, cls: 'tok-t ink2', anchor: 'end' });
+      if (o.onRow) { t.setAttribute('class', 'tok-t ink2 clickable'); t.addEventListener('click', () => o.onRow(i)); }
+      return t;
+    });
+  }
+  if (o.colLabels) {
+    m.colLab = o.colLabels.map((s, j) => label(m.g, j * cw + cw / 2 - 1, -9, s, { size: o.lfs || 13, cls: 'tok-t ink2', rot: -45 }));
+  }
+  m.marks = el('g', null, m.g);
+  const markEls = {};
+  m.set = (data, vmax) => {
+    m.data = data;
+    const vm = vmax || Math.max(1e-9, ...data.flat().map(Math.abs));
+    for (let i = 0; i < o.rows; i++) for (let j = 0; j < o.cols; j++) {
+      const v = data[i][j], c = m.cells[i][j];
+      const [fill, tf] = cellStyle(o.kind, v, vm);
+      c.r.setAttribute('fill', fill);
+      if (c.t) { c.t.textContent = o.fmt ? o.fmt(v) : fx(v); c.t.setAttribute('fill', tf); }
+    }
+  };
+  m.center = (i, j) => [o.x + j * cw + cw / 2, o.y + i * ch + ch / 2];
+  m.mark = (key, i0, j0, i1, j1, cls) => {
+    let r = markEls[key];
+    if (!r) r = markEls[key] = el('rect', { class: 'mark ' + (cls || ''), rx: 5 }, m.marks);
+    r.setAttribute('class', 'mark ' + (cls || ''));
+    r.setAttribute('x', j0 * cw - 1.5); r.setAttribute('y', i0 * ch - 1.5);
+    r.setAttribute('width', (j1 - j0 + 1) * cw + 3); r.setAttribute('height', (i1 - i0 + 1) * ch + 3);
+    r.style.display = '';
+  };
+  m.unmark = (key) => { if (markEls[key]) markEls[key].style.display = 'none'; };
+  m.unmarkAll = () => { for (const k in markEls) markEls[k].style.display = 'none'; };
+  m.hideAll = () => m.cells.flat().forEach((c) => { c.g.classList.remove('pop'); c.g.classList.add('hid'); });
+  m.showAll = () => m.cells.flat().forEach((c) => c.g.classList.remove('hid'));
+  m.showCell = (i, j, pop) => {
+    const c = m.cells[i][j];
+    if (!c.g.classList.contains('hid')) return;
+    c.g.classList.remove('hid');
+    if (pop && !FLUSH) c.g.classList.add('pop');
+  };
+  // reveal cells in the order given by order(i, j) (smaller first) over `dur` ms
+  m.reveal = (tl, order, dur, delay) => {
+    const items = [];
+    for (let i = 0; i < o.rows; i++) for (let j = 0; j < o.cols; j++) items.push([order(i, j), i, j]);
+    items.sort((a, b) => a[0] - b[0]);
+    let k = 0;
+    tl.at(delay || 0, () => tl.tween(dur, (p) => {
+      const lim = p * items.length;
+      while (k < items.length && k < lim) { const it = items[k++]; m.showCell(it[1], it[2], true); }
+    }, EASE.lin));
+  };
+  return m;
+}
+
+// Two-row attention diagram (like the paper's attention visualisations):
+// top row = the querying word, bottom row = every word it can attend to.
+let fanCount = 0;
+function Fan(parent, o) {
+  const f = { o, sel: o.sel == null ? IT : o.sel, cur: null };
+  const g = el('g', { class: 'fan' }, parent);
+  const gid = 'fanGrad' + (++fanCount);
+  const lg = el('linearGradient', { id: gid, gradientUnits: 'userSpaceOnUse', x1: 0, y1: o.yTop, x2: 0, y2: o.yBot }, el('defs', null, g));
+  el('stop', { offset: '0', 'stop-color': C.q }, lg);
+  el('stop', { offset: '1', 'stop-color': C.k }, lg);
+  const gl = el('g', null, g);
+  let size = o.size || 24;
+  let ws = TOK.map((t) => measure(t, 'tok-t', size));
+  let gap = (o.x1 - o.x0 - sum(ws)) / (TOK.length - 1);
+  while (gap < 18 && size > 12) { size--; ws = TOK.map((t) => measure(t, 'tok-t', size)); gap = (o.x1 - o.x0 - sum(ws)) / (TOK.length - 1); }
+  const cx = [];
+  let x = o.x0;
+  ws.forEach((w) => { cx.push(x + w / 2); x += w + gap; });
+  f.cx = cx; f.size = size; f.g = g;
+  const lines = TOK.map(() => el('path', { class: 'fan-line', stroke: `url(#${gid})` }, gl));
+  f.lines = lines;
+  f.top = TOK.map((t, i) => {
+    const tg = el('g', { class: 'tok', transform: `translate(${cx[i].toFixed(1)},${o.yTop})` }, g);
+    el('rect', { class: 'pill', x: -ws[i] / 2 - 9, y: -size * 0.98, width: ws[i] + 18, height: size * 1.42, rx: size * 0.42 }, tg);
+    el('text', { class: 'tok-t', 'text-anchor': 'middle', 'font-size': size }, tg, t);
+    tg.addEventListener('click', () => { if (o.onPick) o.onPick(i); else f.select(i); });
+    return tg;
+  });
+  f.bot = TOK.map((t, i) => {
+    const tg = el('g', { class: 'keytok', transform: `translate(${cx[i].toFixed(1)},${o.yBot})` }, g);
+    const pill = el('rect', { class: 'pill', x: -ws[i] / 2 - 9, y: -size * 0.98, width: ws[i] + 18, height: size * 1.42, rx: size * 0.42, fill: 'transparent' }, tg);
+    el('text', { class: 'tok-t', 'text-anchor': 'middle', 'font-size': size }, tg, t);
+    const num = o.nums === false ? null : el('text', { class: 'mono wlab', 'text-anchor': 'middle', 'font-size': o.numSize || 15, y: size * 0.44 + (o.numGap || 24) }, tg, '');
+    return { g: tg, pill, num };
+  });
+  f.y1 = o.yTop + size * 0.5;
+  f.y2 = o.yBot - size * 1.05;
+  f.render = (sx, w) => {
+    const y1 = f.y1, y2 = f.y2, ym = (y1 + y2) / 2;
+    const order = w.map((_, j) => j).sort((a, b) => w[a] - w[b]);
+    const mx = argmax(w);
+    order.forEach((j) => {
+      const p = lines[j];
+      p.setAttribute('d', `M${sx.toFixed(1)},${y1} C${sx.toFixed(1)},${ym} ${cx[j].toFixed(1)},${ym} ${cx[j].toFixed(1)},${y2}`);
+      p.setAttribute('stroke-width', (0.8 + 17 * w[j]).toFixed(2));
+      p.setAttribute('stroke-opacity', (0.1 + 0.9 * Math.min(1, w[j] * 1.2)).toFixed(3));
+      gl.appendChild(p);
+    });
+    f.bot.forEach((b, j) => {
+      b.pill.setAttribute('fill', rgba(RGB.k, Math.min(0.62, w[j] * 0.75)));
+      if (b.num) {
+        b.num.textContent = w[j].toFixed(2);
+        b.num.setAttribute('fill', j === mx ? C.kd : w[j] >= 0.1 ? C.ink : C.ink3);
+      }
+    });
+    f.cur = { sx, w };
+    if (o.onRender) o.onRender(w);
+  };
+  f.select = (i, instant) => {
+    const w1 = o.getW(i);
+    const start = f.cur || { sx: cx[i], w: w1 };
+    f.sel = i;
+    f.top.forEach((tg, k) => tg.classList.toggle('sel', k === i));
+    if (instant) { f.render(cx[i], w1); return; }
+    tween(480, (t) => f.render(lerp(start.sx, cx[i], t), start.w.map((v, j) => lerp(v, w1[j], t))), EASE.io);
+  };
+  f.refresh = (instant) => f.select(f.sel, instant);
+  return f;
+}
+
+function Slider(parent, o) {
+  const s = { o, v: o.value };
+  const g = el('g', { class: 'slider', transform: `translate(${o.x},${o.y})` }, parent);
+  el('line', { class: 'sl-track', x1: 0, x2: o.w, y1: 0, y2: 0 }, g);
+  const fill = el('line', { class: 'sl-fill', x1: 0, x2: 0, y1: 0, y2: 0 }, g);
+  if (o.steps) o.steps.forEach((v, k) => {
+    const tx = (k / (o.steps.length - 1)) * o.w;
+    el('line', { x1: tx, x2: tx, y1: 8, y2: 12, class: 'axis' }, g);
+    label(g, tx, 27, String(v), { size: 11.5, cls: 'mono ink3', anchor: 'middle' });
+  });
+  if (o.ticks) o.ticks.forEach(([v, txt]) => {
+    const tx = toT(v) * o.w;
+    el('line', { x1: tx, x2: tx, y1: 8, y2: 12, class: 'axis' }, g);
+    label(g, tx, 27, txt, { size: 11.5, cls: 'mono ink3', anchor: 'middle' });
+  });
+  const knob = el('circle', { class: 'sl-knob', r: 9, cx: 0, cy: 0 }, g);
+  const hit = el('rect', { x: -14, y: -16, width: o.w + 28, height: 32, fill: 'transparent' }, g);
+  if (o.label) para(g, o.label, { x: 0, y: -17, size: 14, cls: 'sans ink2' });
+  const val = label(g, o.w, -17, '', { size: 14, cls: 'mono', anchor: 'end', weight: 700 });
+  function toT(v) {
+    if (o.steps) return o.steps.indexOf(v) / (o.steps.length - 1);
+    if (o.log) return Math.log(v / o.min) / Math.log(o.max / o.min);
+    return (v - o.min) / (o.max - o.min);
+  }
+  function fromT(t) {
+    t = clamp(t, 0, 1);
+    if (o.steps) return o.steps[Math.round(t * (o.steps.length - 1))];
+    let v = o.log ? o.min * Math.pow(o.max / o.min, t) : o.min + t * (o.max - o.min);
+    if (o.round) v = o.round(v);
+    return v;
+  }
+  s.set = (v, fire) => {
+    s.v = v;
+    const x = toT(v) * o.w;
+    knob.setAttribute('cx', x.toFixed(1)); fill.setAttribute('x2', x.toFixed(1));
+    val.textContent = o.fmt ? o.fmt(v) : String(v);
+    if (fire && o.onInput) o.onInput(v);
+  };
+  const local = (e) => {
+    const pt = SVG.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    return pt.matrixTransform(g.getScreenCTM().inverse());
+  };
+  let drag = false;
+  const move = (e) => { const v = fromT(local(e).x / o.w); if (v !== s.v) s.set(v, true); };
+  hit.addEventListener('pointerdown', (e) => { drag = true; hit.setPointerCapture(e.pointerId); userAct(); move(e); e.preventDefault(); });
+  hit.addEventListener('pointermove', (e) => { if (drag) move(e); });
+  hit.addEventListener('pointerup', () => { drag = false; });
+  hit.addEventListener('pointercancel', () => { drag = false; });
+  s.nudge = (dir) => {
+    if (o.steps) s.set(o.steps[clamp(o.steps.indexOf(s.v) + dir, 0, o.steps.length - 1)], true);
+    else s.set(fromT(toT(s.v) + dir * (o.nudge || 0.05)), true);
+  };
+  s.g = g;
+  s.set(o.value, false);
+  return s;
+}
+
+function Toggle(parent, o) {
+  const t = { v: !!o.value };
+  const g = el('g', { class: 'toggle', transform: `translate(${o.x},${o.y})` }, parent);
+  el('rect', { class: 'tr', x: 0, y: -12, width: 44, height: 24, rx: 12 }, g);
+  el('circle', { class: 'kn', cx: 12, cy: 0, r: 9 }, g);
+  const p = para(g, o.label, { x: 54, y: 5.5, size: o.size || 15, cls: 'sans' });
+  const st = label(g, 54 + p.w + 8, 5.5, '', { size: 13, cls: 'sans ink3' });
+  el('rect', { x: -4, y: -16, width: 54 + p.w + 44, height: 32, fill: 'transparent' }, g);
+  g.addEventListener('click', () => { userAct(); t.set(!t.v, true); });
+  t.set = (v, fire) => {
+    t.v = v; g.classList.toggle('on', v);
+    st.textContent = v ? (o.on || '开') : (o.off || '关');
+    if (fire && o.onChange) o.onChange(v);
+  };
+  t.g = g;
+  t.w = 54 + p.w + 40;
+  t.set(t.v);
+  return t;
+}
+
+function Button(parent, o) {
+  const size = o.size || 15, h = o.h || 36;
+  const w = o.w || Math.ceil(measure(o.label, 'sans', size, 600) + (o.pad || 34));
+  const g = el('g', { class: 'btn ' + (o.kind || ''), transform: `translate(${o.x},${o.y})`, role: 'button' }, parent);
+  el('rect', { x: 0, y: 0, width: w, height: h, rx: o.rx == null ? h / 2 : o.rx }, g);
+  const t = el('text', { x: w / 2, y: h / 2 + size * 0.36, 'text-anchor': 'middle', 'font-size': size, class: 'sans' }, g, o.label);
+  g.addEventListener('click', (e) => { e.stopPropagation(); if (o.onClick) o.onClick(); });
+  return {
+    g, w, h,
+    setLabel: (s) => { t.textContent = s; },
+    setOn: (v) => g.classList.toggle('on', !!v),
+    setDisabled: (v) => g.classList.toggle('dis', !!v),
+  };
+}
+
+// small helpers for diagrams
+function arrow(parent, d, o) {
+  o = o || {};
+  return el('path', { d, fill: 'none', stroke: o.stroke || C.ink2, 'stroke-width': o.w || 1.4, 'marker-end': o.marker === false ? null : `url(#${o.marker || 'arr'})`, 'stroke-dasharray': o.dash, opacity: o.opacity }, parent);
+}
+function box(parent, x, y, w, h, o) {
+  o = o || {};
+  return el('rect', { x, y, width: w, height: h, rx: o.rx == null ? 7 : o.rx, fill: o.fill || C.paper2, stroke: o.stroke || C.ink2, 'stroke-width': o.sw || 1.2, 'stroke-dasharray': o.dash }, parent);
+}
+
+// ===================================================================
+//  Scenes 0–3: cover, problem, key idea, Q/K/V
+// ===================================================================
+const SC = [];
+const ST = { scale: true, tau: 1 };
+function header(g, s) {
+  const r = riseG(g, 0);
+  label(r, 72, 62, s.kicker, { size: 13, cls: 'sans kicker' });
+  para(r, s.title, { x: 72, y: 107, size: 34, weight: 700, cls: 'sans' });
+  label(r, 1528, 62, 'Attention Is All You Need · Vaswani et al., 2017', { size: 14, cls: 'serif runhead', anchor: 'end' });
+  if (s.lead) para(riseG(g, 90), s.lead, { x: 72, y: 146, w: s.leadW || 1240, size: 18, lh: 28, cls: 'sans ink2' });
+}
+
+// ---------------------------------------------------------------- cover
+function drawSDPA(g) {
+  const cx = 1130, bw = 200, bx = cx - bw / 2;
+  const xq = 1075, xk = 1185, xv = 1360, m2x = 1100, m2w = 300, m2c = m2x + m2w / 2;
+  const flow = el('g', null, g);
+  const boxes = el('g', null, g);
+  const ann = el('g', null, g);
+  const B = (y, txt, o) => {
+    box(boxes, (o && o.x) || bx, y, (o && o.w) || bw, 40, { rx: 8, fill: (o && o.fill) || C.paper2, stroke: C.ink2, dash: o && o.dash });
+    label(boxes, (o && o.c) || cx, y + 26, txt, { size: 16, anchor: 'middle', weight: 600, cls: 'sans' });
+  };
+  // edges
+  arrow(g, `M${xq},806 V756`, { stroke: C.q, marker: 'arrQ', w: 1.8 });
+  arrow(g, `M${xk},806 V756`, { stroke: C.k, marker: 'arrK', w: 1.8 });
+  arrow(g, `M${xv},806 V436`, { stroke: C.v, marker: 'arrV', w: 1.8 });
+  [[712, 676], [632, 596], [552, 516], [472, 436]].forEach(([a, b]) => arrow(g, `M${cx},${a} V${b}`));
+  arrow(g, `M${m2c},392 V346`);
+  B(716, 'MatMul', { fill: C.paper2 });
+  B(636, 'Scale');
+  B(556, 'Mask (opt.)', { dash: '5 4', fill: C.paper });
+  B(476, 'SoftMax');
+  B(396, 'MatMul', { x: m2x, w: m2w, c: m2c });
+  formula(g, '\\q{Q}', { x: xq, y: 836, size: 30, anchor: 'middle' });
+  formula(g, '\\k{K}', { x: xk, y: 836, size: 30, anchor: 'middle' });
+  formula(g, '\\v{V}', { x: xv, y: 836, size: 30, anchor: 'middle' });
+  formula(g, 'Attention(\\q{Q}, \\k{K}, \\v{V})', { x: m2c, y: 330, size: 21, anchor: 'middle' });
+  const A = (y, s) => para(ann, s, { x: 1244, y: y + 25, size: 13.5, cls: 'sans ink3' });
+  A(716, '{m:\\q{Q}\\k{K}^T}：两两打分');
+  A(636, '÷ {m:\\sqrt{d_k}}');
+  A(556, '可选（解码器）');
+  A(476, '每行和为 1');
+  para(ann, '× {m:\\v{V}}：加权求和', { x: 1412, y: 421, size: 13.5, cls: 'sans ink3' });
+  label(g, 1210, 884, '缩放点积注意力（按论文图 2 左重绘）', { size: 14, cls: 'sans ink3', anchor: 'middle' });
+  // flowing dots (SMIL, decorative)
+  const dot = (color, path, begin) => {
+    const c = el('circle', { r: 5.5, fill: color, class: 'flowdot', opacity: 0.9 }, flow);
+    el('animateMotion', { dur: '3.6s', repeatCount: 'indefinite', path, begin }, c);
+  };
+  dot(C.q, `M${xq},806 V736 H${cx} V416 H${m2c} V330`, '0s');
+  dot(C.k, `M${xk},806 V736 H${cx} V416 H${m2c} V330`, '0.35s');
+  dot(C.v, `M${xv},806 V416 H${m2c} V330`, '1.1s');
+}
+SC.push({
+  id: 'cover', short: '封面',
+  build(g) {
+    const r1 = riseG(g, 0), r2 = riseG(g, 120), r3 = riseG(g, 260), r4 = riseG(g, 420), r5 = riseG(g, 600);
+    label(r1, 96, 192, '论文图解 · PAPER EXPLAINED IN SVG', { size: 15, cls: 'sans kicker kq' });
+    label(r2, 88, 302, 'Attention Is', { size: 90, cls: 'serif', weight: 700 });
+    label(r2, 88, 400, 'All You Need', { size: 90, cls: 'serif', weight: 700 });
+    para(r3, 'Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, Illia Polosukhin', { x: 96, y: 458, w: 800, size: 19, lh: 30, cls: 'sans ink2' });
+    label(r3, 96, 538, 'Vaswani et al.  ·  NIPS 2017  ·  arXiv:1706.03762', { size: 15, cls: 'mono ink3' });
+    el('rect', { x: 96, y: 584, width: 60, height: 5, rx: 2.5, fill: C.q }, r4);
+    label(r4, 96, 646, '用 SVG 讲论文', { size: 46, weight: 700, cls: 'sans' });
+    para(r4, '8 步看懂缩放点积注意力与多头注意力：每一步都有动画，所有数字由页面脚本实时计算。', { x: 96, y: 698, w: 780, size: 21, lh: 32, cls: 'sans ink2' });
+    const b = Button(r5, { x: 96, y: 776, h: 48, size: 18, label: '开始阅读  →', kind: 'primary', onClick: () => go(1) });
+    label(r5, 96 + b.w + 22, 806, '← → 翻页　·　空格 自动播放', { size: 15, cls: 'sans ink3' });
+    drawSDPA(riseG(g, 320));
+  },
+  dwell: 4500,
+});
+
+// ---------------------------------------------------------------- step 1
+SC.push({
+  kicker: 'STEP 1 · 论文 §1 / §4', short: '问题',
+  title: '问题：RNN 只能一个词一个词地读',
+  lead: '循环神经网络（RNN）按顺序处理句子：第 {m:t} 步的隐状态 {m:h_t} 要等 {m:h_{t-1}} 算完才能开始。相隔很远的两个词，信息只能一站一站地接力传过去。',
+  build(g) {
+    header(g, this);
+    const N = TOK.length, pitch = 127, x0 = 164;
+    const cx = TOK.map((_, i) => x0 + pitch * i);
+    const ch = riseG(g, 150);
+    this.counter = label(ch, 1528, 226, '', { size: 16, cls: 'sans ink2', anchor: 'end' });
+    this.cells = TOK.map((t, i) => {
+      label(ch, cx[i], 262, t, { size: 22, cls: 'tok-t', anchor: 'middle' });
+      arrow(ch, `M${cx[i]},272 V296`);
+      const cg = el('g', { class: 'rnn' }, ch);
+      box(cg, cx[i] - 42, 300, 84, 48, { rx: 10, fill: C.paper, stroke: C.ink2 });
+      formula(cg, `h_{${i + 1}}`, { x: cx[i], y: 332, size: 21, anchor: 'middle' });
+      if (i < N - 1) arrow(ch, `M${cx[i] + 42},324 H${cx[i + 1] - 44}`);
+      return cg;
+    });
+    // relay dot + bracket
+    this.dot = el('circle', { r: 7.5, cx: cx[1], cy: 364, fill: C.q, opacity: 0 }, ch);
+    this.dotLab = label(ch, cx[1] + 14, 369, 'animal 的信息', { size: 13, cls: 'sans cq' });
+    const br = el('g', { opacity: 0 }, ch);
+    el('path', { d: `M${cx[1]},384 V392 H${cx[7]} V384`, fill: 'none', stroke: C.q, 'stroke-width': 1.6 }, br);
+    para(br, 'animal → it：信息要接力 {b:6 次}（颜色变淡只是示意）', { x: (cx[1] + cx[7]) / 2, y: 418, size: 15, cls: 'sans ink2', anchor: 'middle' });
+    this.bracket = br;
+    this.cx = cx;
+
+    // left: two problems + sequential vs parallel strip
+    const L = riseG(g, 300);
+    label(L, 72, 488, '两个麻烦', { size: 22, weight: 700 });
+    const p1 = para(L, '① {b:长距离依赖难学}：两个词相隔越远，信息要走的路径越长，越难学到它们之间的联系（论文 §4）。', { x: 72, y: 530, w: 650, size: 17, lh: 28 });
+    para(L, '② {b:难以并行}：{m:h_t} 必须等 {m:h_{t-1}}，同一个句子内部只能顺序计算；句子越长，这个瓶颈越明显（论文 §1）。', { x: 72, y: 530 + p1.h + 16, w: 650, size: 17, lh: 28 });
+    const sy = 718;
+    label(L, 72, sy + 14, 'RNN', { size: 15, weight: 700 });
+    label(L, 72, sy + 64, '自注意力', { size: 15, weight: 700 });
+    this.seq = []; this.par = [];
+    for (let k = 0; k < N; k++) {
+      this.seq.push(el('rect', { x: 180 + 26 * k, y: sy, width: 19, height: 19, rx: 4, fill: C.paper2, stroke: C.rule }, L));
+      this.par.push(el('rect', { x: 180 + 26 * k, y: sy + 50, width: 19, height: 19, rx: 4, fill: C.paper2, stroke: C.rule }, L));
+    }
+    arrow(L, `M180,${sy + 92} H466`, { w: 1 });
+    label(L, 180, sy + 112, '时间', { size: 12.5, cls: 'sans ink3' });
+    para(L, '11 步依次完成：{m:O(n)} 次顺序操作', { x: 484, y: sy + 15, size: 15, cls: 'sans ink2' });
+    para(L, '1 步同时完成：{m:O(1)} 次顺序操作', { x: 484, y: sy + 65, size: 15, cls: 'sans ink2' });
+
+    // right: Table 1 excerpt (booktabs style)
+    const R = riseG(g, 420);
+    para(R, '论文表 1（节选） {g:不同层类型的比较}', { x: 800, y: 488, size: 17, weight: 700 });
+    const tx = [800, 1092, 1282, 1440];
+    el('rect', { x: 792, y: 566, width: 736, height: 40, fill: C.qs, opacity: 0.75, rx: 4 }, R);
+    el('line', { x1: 792, x2: 1528, y1: 506, y2: 506, stroke: C.ink, 'stroke-width': 1.6 }, R);
+    el('line', { x1: 792, x2: 1528, y1: 552, y2: 552, stroke: C.ink, 'stroke-width': 0.8 }, R);
+    el('line', { x1: 792, x2: 1528, y1: 700, y2: 700, stroke: C.ink, 'stroke-width': 1.6 }, R);
+    ['层类型', '每层计算复杂度', '顺序操作数', '最大路径长度'].forEach((s, k) =>
+      label(R, tx[k], 536, s, { size: 15, weight: 700, anchor: k ? 'middle' : 'start' }));
+    const rows = [
+      ['Self-Attention（自注意力）', 'O(n^2 \\cdot d)', 'O(1)', 'O(1)'],
+      ['Recurrent（循环）', 'O(n \\cdot d^2)', 'O(n)', 'O(n)'],
+      ['Convolutional（卷积）', 'O(k \\cdot n \\cdot d^2)', 'O(1)', 'O(\\log_k(n))'],
+    ];
+    rows.forEach((r, ri) => {
+      const y = 592 + ri * 44;
+      label(R, tx[0], y, r[0], { size: 15.5, weight: ri === 0 ? 700 : 400 });
+      for (let k = 1; k < 4; k++) formula(R, r[k], { x: tx[k], y, size: 19, anchor: 'middle' });
+    });
+    para(R, '{m:n}：序列长度　{m:d}：表示维度　{m:k}：卷积核大小', { x: 800, y: 728, size: 13.5, cls: 'sans ink3' });
+    para(R, '→ 自注意力让任意两个位置直接相连：路径长度 {m:O(1)}，一层之内所有位置同时计算。下一步看它是怎么做到的。', { x: 800, y: 790, w: 728, size: 17, lh: 28 });
+  },
+  enter(tl) {
+    const N = TOK.length, per = 430, hold = 2600, period = N * per + hold;
+    const setT = (t) => {
+      this.cells.forEach((c, i) => { c.classList.toggle('act', i === t); c.classList.toggle('done', i < t); });
+      this.seq.forEach((r, i) => r.setAttribute('fill', i < t ? '#D8CFBF' : i === t ? C.ink : C.paper2));
+      this.par.forEach((r) => r.setAttribute('fill', t >= 0 ? C.ink : C.paper2));
+      this.counter.textContent = t >= 0 ? `顺序计算：第 ${Math.min(t + 1, N)} / ${N} 步` : '';
+      const hop = clamp(t - 1, 0, 6);
+      const on = t >= 1;
+      const x = this.cx[1 + hop];
+      this.dot.setAttribute('cx', x);
+      this.dot.setAttribute('opacity', on ? Math.pow(0.84, hop).toFixed(3) : 0);
+      this.dotLab.setAttribute('x', x + 14);
+      this.dotLab.setAttribute('opacity', on && hop === 0 ? 1 : 0);
+      this.bracket.setAttribute('opacity', t >= 7 ? 1 : 0);
+    };
+    setT(-1);
+    let last = -2;
+    tl.at(700, () => tl.loop((ms) => {
+      const ph = ms % period;
+      const t = ph < N * per ? Math.floor(ph / per) : N - 1;
+      if (t !== last) { last = t; setT(t); }
+    }));
+    this.freeze = () => setT(N - 1);
+  },
+  dwell: 9000,
+});
+
+// ---------------------------------------------------------------- step 2
+SC.push({
+  kicker: 'STEP 2 · 论文 §3.2', short: '关键想法',
+  title: '关键想法：每个词直接看向所有词',
+  lead: '让一个词和句子里的所有词（包括它自己）各算一个相关度，把相关度变成加起来等于 1 的权重，再按权重把大家的信息加权汇总——这就是注意力（attention）。',
+  leadW: 1456,
+  keys: '↑↓ 换词',
+  build(g) {
+    header(g, this);
+    const att = this.att = Model.single();
+    const vmax = Math.max(...att.V.flat().map(Math.abs));
+    const R = riseG(g, 160);
+    const rl = (y, s) => label(R, 208, y, s, { size: 14, cls: 'sans ink3', anchor: 'end' });
+    rl(257, '当前词'); rl(425, '所有词'); rl(456, '权重');
+    const hint = label(R, 1492, 206, '点上排任意一个词试试 ↓', { size: 15, cls: 'sans cq hint-pulse', anchor: 'end', weight: 600 });
+    const fan = this.fan = Fan(R, {
+      x0: 236, x1: 1492, yTop: 252, yBot: 420, size: 24, numGap: 25,
+      getW: (i) => att.A[i],
+      onPick: (i) => { userAct(); hint.style.display = 'none'; this.select(i); },
+      onRender: (w) => this.renderPipe(w),
+    });
+    // pipeline rows under the fan, aligned with the word columns
+    const P = riseG(g, 300);
+    const pl = (y, s) => para(P, s, { x: 208, y, size: 14, cls: 'sans ink3', anchor: 'end' });
+    pl(514, '① 相关度分数'); pl(582, '② softmax'); pl(642, '③ 权重 × value');
+    this.scoreT = fan.cx.map((x) => label(P, x, 514, '', { size: 14, cls: 'mono ink2', anchor: 'middle' }));
+    el('line', { x1: 236, x2: 1492, y1: 600.5, y2: 600.5, class: 'axis' }, P);
+    this.bars = fan.cx.map((x) => el('rect', { x: x - 13, y: 600, width: 26, height: 0, rx: 3, fill: C.ink, opacity: 0.8 }, P));
+    this.strips = fan.cx.map((x) => [0, 1, 2, 3].map((c) => el('rect', { x: x - 21 + c * 10.5, y: 628, width: 9.5, height: 20, rx: 2, fill: C.paper2 }, P)));
+    this.conv = fan.cx.map(() => el('path', { fill: 'none', stroke: C.v, 'stroke-linecap': 'round' }, P));
+    this.zM = Matrix(P, { x: 760, y: 722, rows: 1, cols: 4, cw: 54, ch: 38, kind: 'v', fs: 14 });
+    this.zLab = label(P, 740, 747, '', { size: 16, cls: 'sans', anchor: 'end', weight: 700 });
+    formula(P, '= \\sum_j a_j \\v{v_j}', { x: 996, y: 747, size: 20 });
+    para(P, '（{m:a_j}：权重；{m:v_j}：第 {m:j} 个词的 value）', { x: 1110, y: 747, size: 13, cls: 'sans ink3' });
+    this.vmax = vmax;
+    const N = riseG(g, 420);
+    para(N, '{b:animal → it 只隔 1 步}（RNN 要 6 步）；而且 11 个词的这些计算互不依赖，可以同时进行。', { x: 72, y: 816, w: 1400, size: 17 });
+    para(N, '数值由页面脚本实时计算：演示用 {m:d_{model} = 6} 的小模型，参数为讲解专门构造，不是论文训练出的。第 3–5 步会把这些计算一步步拆开。', { x: 72, y: 852, w: 1440, size: 13.5, cls: 'sans ink3' });
+    // value flow dots travelling from keys up to the query
+    this.flow = TOK.map(() => el('circle', { r: 3, fill: C.v, class: 'flowdot', opacity: 0 }, R));
+    this.sel = IT;
+  },
+  renderPipe(w) {
+    const i = this.fan.sel, att = this.att;
+    const cx = this.fan.cx;
+    const zx = 760 + 108, zy = 718;
+    const z = [0, 0, 0, 0];
+    w.forEach((wj, j) => {
+      this.scoreT[j].textContent = fx(att.S[i][j]);
+      const h = 72 * wj;
+      this.bars[j].setAttribute('y', (600 - h).toFixed(1));
+      this.bars[j].setAttribute('height', h.toFixed(1));
+      att.V[j].forEach((v, c) => {
+        z[c] += wj * v;
+        this.strips[j][c].setAttribute('fill', cellStyle('v', wj * v, this.vmax)[0]);
+      });
+      this.conv[j].setAttribute('d', `M${cx[j].toFixed(1)},652 Q${cx[j].toFixed(1)},${zy - 22} ${zx},${zy}`);
+      this.conv[j].setAttribute('stroke-width', (0.6 + 7 * wj).toFixed(2));
+      this.conv[j].setAttribute('stroke-opacity', (0.08 + 0.8 * Math.min(1, wj * 1.3)).toFixed(3));
+    });
+    this.zM.set([z], this.vmax);
+    this.zLab.textContent = `${TOK[i]} 的新表示`;
+  },
+  select(i) { this.fan.select(i); },
+  enter(tl) {
+    this.fan.select(this.fan.sel, true);
+    tl.at(900, () => tl.loop((ms) => {
+      const w = this.fan.cur ? this.fan.cur.w : null;
+      if (!w) return;
+      this.fan.lines.forEach((p, j) => {
+        const L = p.getTotalLength();
+        const ph = ((ms / 1700) + j * 0.137) % 1;
+        const pt = p.getPointAtLength(L * (1 - ph));
+        const c = this.flow[j];
+        c.setAttribute('cx', pt.x.toFixed(1)); c.setAttribute('cy', pt.y.toFixed(1));
+        c.setAttribute('r', (1.6 + 5 * Math.sqrt(w[j])).toFixed(2));
+        c.setAttribute('opacity', (Math.min(1, w[j] * 2.2) * Math.sin(Math.PI * ph)).toFixed(3));
+      });
+    }));
+  },
+  leave() { this.flow.forEach((c) => c.setAttribute('opacity', 0)); },
+  key(k) {
+    if (k === 'ArrowUp' || k === 'ArrowDown') {
+      this.select((this.fan.sel + (k === 'ArrowDown' ? 1 : TOK.length - 1)) % TOK.length);
+      return true;
+    }
+    return false;
+  },
+  auto(tl) {
+    const seq = [IT, 10, 3, 9, IT];
+    seq.forEach((i, k) => tl.at(1400 + k * 2600, () => this.select(i)));
+    return 1400 + seq.length * 2600;
+  },
+});
+
+// ---------------------------------------------------------------- step 3
+SC.push({
+  kicker: 'STEP 3 · 论文 §3.2.1–3.2.2', short: 'Q / K / V',
+  title: 'Q / K / V：同一个词的三种身份',
+  lead: '每个词向量分别乘三个矩阵，得到 query、key、value 三个向量。整句话一起算，就是三次矩阵乘法。',
+  keys: '鼠标悬停格子看计算',
+  build(g) {
+    header(g, this);
+    const att = this.att = Model.single();
+    const X = att.X;
+    const Wm = [PARAMS.Wq0, PARAMS.Wk0, PARAMS.Wv0];
+    const R = [att.Q, att.K, att.V];
+    const names = ['Q', 'K', 'V'], hues = ['q', 'k', 'v'];
+    // formulas + roles (top-left)
+    const F = riseG(g, 120);
+    const roles = ['{q:query}：我在找什么', '{k:key}：我能被怎样找到', '{v:value}：被找到时交出的内容'];
+    ['\\q{Q} = X\\q{W^Q}', '\\k{K} = X\\k{W^K}', '\\v{V} = X\\v{W^V}'].forEach((tex, k) => {
+      formula(F, tex, { x: 92, y: 262 + k * 48, size: 26 });
+      para(F, roles[k], { x: 236, y: 260 + k * 48, size: 16, cls: 'sans ink2' });
+    });
+    // X
+    const MX = riseG(g, 200);
+    this.mX = Matrix(MX, { x: 196, y: 424, rows: 11, cols: 6, cw: 44, ch: 30, kind: 'x', rowLabels: TOK, lfs: 15 });
+    this.mX.set(X);
+    formula(MX, 'X', { x: 328, y: 790, size: 24, anchor: 'middle' });
+    label(MX, 328, 812, '词向量 · 11 × 6', { size: 12.5, cls: 'sans ink3', anchor: 'middle' });
+    for (let c = 0; c < 6; c++) label(MX, 196 + 44 * c + 22, 414, String(c + 1), { size: 11, cls: 'mono ink3', anchor: 'middle' });
+    // W and results
+    this.mW = []; this.mR = [];
+    [512, 732, 952].forEach((x, k) => {
+      const gW = riseG(g, 320 + k * 90);
+      const mw = Matrix(gW, { x, y: 220, rows: 6, cols: 4, cw: 44, ch: 30, kind: 'w' + hues[k] });
+      mw.set(Wm[k]);
+      formula(gW, `\\${hues[k]}{W^${names[k]}}`, { x: x + 88, y: 208, size: 21, anchor: 'middle' });
+      const gR = riseG(g, 380 + k * 90);
+      const mr = Matrix(gR, { x, y: 424, rows: 11, cols: 4, cw: 44, ch: 30, kind: hues[k], onCell: (i, j, click) => this.inspect(k, i, j, click) });
+      mr.set(R[k]);
+      formula(gR, `\\${hues[k]}{${names[k]}}`, { x: x + 88, y: 790, size: 24, anchor: 'middle' });
+      para(gR, k < 2 ? '11 × {m:d_k} = 11 × 4' : '11 × {m:d_v} = 11 × 4', { x: x + 88, y: 812, size: 12.5, cls: 'sans ink3', anchor: 'middle' });
+      for (let c = 0; c < 4; c++) label(gR, x + 44 * c + 22, 414, String(c + 1), { size: 11, cls: 'mono ink3', anchor: 'middle' });
+      this.mW.push(mw); this.mR.push(mr);
+    });
+    // right panel: dot-product breakdown
+    const P = riseG(g, 520);
+    el('rect', { x: 1162, y: 220, width: 366, height: 590, rx: 12, class: 'panel' }, P);
+    label(P, 1184, 254, '一个格子是怎么算出来的', { size: 17, weight: 700 });
+    this.fG = el('g', null, P);
+    this.terms = [];
+    for (let m = 0; m < 6; m++) {
+      const y = 340 + m * 27;
+      this.terms.push({
+        idx: label(P, 1184, y, `m=${m + 1}`, { size: 13, cls: 'mono ink3' }),
+        a: label(P, 1300, y, '', { size: 14.5, cls: 'mono', anchor: 'end' }),
+        x: label(P, 1318, y, '×', { size: 14.5, cls: 'mono ink3', anchor: 'middle' }),
+        b: label(P, 1386, y, '', { size: 14.5, cls: 'mono', anchor: 'end' }),
+        r: label(P, 1506, y, '', { size: 14.5, cls: 'mono ink2', anchor: 'end' }),
+      });
+    }
+    el('line', { x1: 1184, x2: 1506, y1: 500, y2: 500, stroke: C.ink2, 'stroke-width': 1 }, P);
+    label(P, 1184, 528, '合计', { size: 15, weight: 700 });
+    this.total = label(P, 1506, 529, '', { size: 20, cls: 'mono', anchor: 'end', weight: 700 });
+    para(P, '每个格子 = {m:X} 的一行（一个词）与 {m:W} 的一列做点积。整张 {m:\\q{Q}} 就是 11 × 6 的矩阵乘以 6 × 4 的矩阵。', { x: 1184, y: 570, w: 326, size: 15, lh: 24, cls: 'sans ink2' });
+    para(P, '演示：{m:d_{model} = 6}，{m:d_k = d_v = 4}。原论文 base：{m:d_{model} = 512}，每个头 {m:d_k = d_v = 64}。{m:W^Q}、{m:W^K}、{m:W^V} 在真实模型里是训练学到的，这里是讲解用的构造值。', { x: 1184, y: 680, w: 326, size: 13.5, lh: 22, cls: 'sans ink3' });
+    label(riseG(g, 700), 196, 852, '把鼠标移到 Q、K、V 的任意格子上，右侧显示它的计算过程', { size: 14, cls: 'sans cq hint-pulse', weight: 600 });
+    this.Wm = Wm; this.R = R; this.hues = hues; this.names = names;
+  },
+  inspect(k, i, j, click, nTerms) {
+    if (click) userAct();
+    if (this.lock && nTerms === undefined) return;
+    const hue = this.hues[k], X = this.att.X, W = this.Wm[k];
+    const n = nTerms === undefined ? 6 : nTerms;
+    this.mX.unmarkAll(); this.mW.forEach((m) => m.unmarkAll()); this.mR.forEach((m) => m.unmarkAll());
+    this.mX.mark('row', i, 0, i, 5, hue === 'q' ? '' : hue);
+    this.mW[k].mark('col', 0, j, 5, j, hue === 'q' ? '' : hue);
+    this.mR[k].mark('cell', i, j, i, j, 'ink');
+    this.fG.textContent = '';
+    const name = TOK[i].replace("'", '’');
+    formula(this.fG, `\\${hue}{${this.names[k]}}_{${name},${j + 1}} = \\sum_m X_{${name},m} \\, \\${hue}{W^${this.names[k]}}_{m,${j + 1}}`, { x: 1184, y: 296, size: 19 });
+    let s = 0;
+    this.terms.forEach((t, m) => {
+      const show = m < n;
+      const a = X[i][m], b = W[m][j];
+      [t.idx, t.a, t.x, t.b, t.r].forEach((e) => e.setAttribute('opacity', show ? 1 : 0.12));
+      t.a.textContent = fx(a); t.b.textContent = fx(b);
+      t.b.setAttribute('class', 'mono c' + hue);
+      t.r.textContent = '= ' + fx(a * b, 3);
+      if (show) s += a * b;
+    });
+    this.total.textContent = n === 6 ? fx(s, 2) : '…';
+    this.total.setAttribute('class', 'mono c' + hue);
+  },
+  enter(tl) {
+    this.lock = true;
+    this.mR.forEach((m) => { m.hideAll(); m.unmarkAll(); });
+    this.inspect(0, IT, 0, false, 0);
+    // demo: build Q[it,1] term by term, then the other columns of that row
+    for (let m = 1; m <= 6; m++) tl.at(1100 + m * 190, () => this.inspect(0, IT, 0, false, m));
+    tl.at(1100 + 7 * 190, () => this.mR[0].showCell(IT, 0, true));
+    for (let j = 1; j < 4; j++) tl.at(2600 + j * 520, () => { this.inspect(0, IT, j, false, 6); this.mR[0].showCell(IT, j, true); });
+    tl.at(4900, () => {
+      this.mX.unmarkAll(); this.mW.forEach((m) => m.unmarkAll()); this.mR.forEach((m) => m.unmarkAll());
+    });
+    this.mR.forEach((m, k) => m.reveal(tl, (i, j) => i * 4 + j, 1100, 5000 + k * 260));
+    tl.at(6600, () => { this.lock = false; this.inspect(0, IT, 0, false, 6); });
+  },
+  auto(tl) {
+    tl.at(8200, () => this.inspect(1, ANIMAL, 0, false, 6));
+    tl.at(10200, () => this.inspect(2, ANIMAL, 2, false, 6));
+    return 12400;
+  },
+});
+
+// ===================================================================
+//  Scenes 4–6: scores & scaling, softmax & weighted sum, multi-head
+// ===================================================================
+const DK_STEPS = [4, 8, 16, 32, 64, 128, 256, 512];
+let EXP = null;
+// random q, k with i.i.d. N(0,1) components; prefix sums give q·k for every d_k at once
+function buildExperiment() {
+  const gs = gaussian(mulberry32(20170612));
+  const n = 1500, dots = {};
+  DK_STEPS.forEach((d) => { dots[d] = new Float64Array(n); });
+  for (let s = 0; s < n; s++) {
+    let acc = 0, k = 0;
+    for (let i = 0; i < 512; i++) {
+      acc += gs() * gs();
+      if (i + 1 === DK_STEPS[k]) { dots[DK_STEPS[k]][s] = acc; k++; }
+    }
+  }
+  const gq = gaussian(mulberry32(34));
+  const q = Array.from({ length: 512 }, gq);
+  const keys = Array.from({ length: 11 }, () => Array.from({ length: 512 }, gq));
+  const logits = {};
+  DK_STEPS.forEach((d) => { logits[d] = keys.map((kv) => { let a = 0; for (let i = 0; i < d; i++) a += q[i] * kv[i]; return a; }); });
+  return { dots, logits, n };
+}
+
+// ---------------------------------------------------------------- step 4
+SC.push({
+  kicker: 'STEP 4 · 论文 §3.2.1', short: '打分与缩放',
+  title: '打分与缩放：{m:\\q{Q}\\k{K}^T / \\sqrt{d_k}}',
+  lead: '每个 query 和每个 key 做点积，得到一张 11 × 11 的分数表，再统一除以 {m:\\sqrt{d_k}}。为什么要除？右边用随机向量做个实验。',
+  keys: 'S 缩放开关 · ↑↓ 调 d_k',
+  build(g) {
+    header(g, this);
+    const L = riseG(g, 150);
+    const att0 = Model.single({ scale: true });
+    this.rawMax = Math.max(...att0.raw.flat().map(Math.abs));
+    this.mQ = Matrix(L, { x: 170, y: 400, rows: 11, cols: 4, cw: 40, ch: 30, kind: 'q', rowLabels: TOK, lfs: 14 });
+    this.mKT = Matrix(L, { x: 370, y: 262, rows: 4, cols: 11, cw: 40, ch: 30, kind: 'k', colLabels: TOK });
+    this.mS = Matrix(L, { x: 370, y: 400, rows: 11, cols: 11, cw: 40, ch: 30, kind: 's', fs: 11.5, onCell: (i, j, click) => this.pick(i, j, click) });
+    this.mQ.set(att0.Q); this.mKT.set(LA.T(att0.K));
+    formula(L, '\\q{Q}', { x: 250, y: 768, size: 24, anchor: 'middle' });
+    formula(L, '\\k{K}^T', { x: 250, y: 334, size: 24, anchor: 'middle' });
+    label(L, 250, 356, '（K 转置）', { size: 12.5, cls: 'sans ink3', anchor: 'middle' });
+    this.sLab = el('g', null, L);
+    this.sNote = el('g', null, L);
+    this.callout = el('g', null, L);
+    this.itNote = el('g', null, L);
+
+    const R = riseG(g, 380);
+    para(R, '为什么要除以 {m:\\sqrt{d_k}}？', { x: 880, y: 272, size: 22, weight: 700 });
+    para(R, '设 {m:q}、{m:k} 的各分量相互独立、均值为 0、方差为 1，则点积 {m:q \\cdot k = \\sum_i q_i k_i} 的均值为 0、方差为 {m:d_k}（论文 §3.2.1 脚注）。{m:d_k} 越大，点积的绝对值越大，softmax 被推向「几乎只剩一个 1」的区域，梯度变得极小。', { x: 880, y: 310, w: 648, size: 16, lh: 26, cls: 'sans ink2' });
+    this.dk = 64;
+    this.slider = Slider(R, {
+      x: 886, y: 456, w: 330, steps: DK_STEPS, value: 64, label: '维度 {m:d_k}（随机实验）',
+      fmt: (v) => 'd_k = ' + v, onInput: (v) => { this.dk = v; this.updateExp(); },
+    });
+    this.tog = Toggle(R, { x: 1284, y: 456, label: '除以 {m:\\sqrt{d_k}}', value: ST.scale, onChange: (v) => { ST.scale = v; this.update(); } });
+    // chart A: histogram
+    this.histT = el('g', null, R);
+    this.stdT = el('g', null, R);
+    this.hist = [];
+    const nb = 48;
+    for (let b = 0; b < nb; b++) this.hist.push(el('rect', { x: 880 + b * (628 / nb) + 1, y: 614, width: 628 / nb - 2, height: 0, rx: 1.5, fill: C.ink, opacity: 0.78 }, R));
+    el('line', { x1: 880, x2: 1508, y1: 614.5, y2: 614.5, class: 'axis' }, R);
+    for (let v = -60; v <= 60; v += 20) {
+      const x = 880 + ((v + 60) / 120) * 628;
+      el('line', { x1: x, x2: x, y1: 615, y2: 620, class: 'axis' }, R);
+      label(R, x, 634, String(v), { size: 11, cls: 'mono ink3', anchor: 'middle' });
+    }
+    // chart B: softmax of one query against 11 keys
+    para(R, '一个 query 对 11 个随机 key 的 softmax 权重', { x: 880, y: 664, size: 14, cls: 'sans ink2' });
+    this.sbars = []; this.snums = [];
+    for (let j = 0; j < 11; j++) {
+      const x = 886 + j * 37;
+      this.sbars.push(el('rect', { x, y: 780, width: 26, height: 0, rx: 3, fill: C.k, opacity: 0.85 }, R));
+      this.snums.push(label(R, x + 13, 780, '', { size: 10.5, cls: 'mono ink2', anchor: 'middle' }));
+    }
+    el('line', { x1: 880, x2: 1290, y1: 780.5, y2: 780.5, class: 'axis' }, R);
+    label(R, 1322, 690, '最大权重', { size: 13, cls: 'sans ink3' });
+    this.maxT = label(R, 1322, 728, '', { size: 30, cls: 'mono', weight: 700 });
+    label(R, 1322, 758, 'softmax 梯度强度', { size: 13, cls: 'sans ink3' });
+    this.jT = label(R, 1508, 758, '', { size: 13, cls: 'mono', anchor: 'end', weight: 700 });
+    el('rect', { x: 1322, y: 768, width: 186, height: 9, rx: 4.5, fill: C.paper2, stroke: C.rule }, R);
+    this.jBar = el('rect', { x: 1322, y: 768, width: 0, height: 9, rx: 4.5, fill: C.q }, R);
+    label(R, 1322, 796, '雅可比范数 ‖∂a/∂s‖，上限约 0.5', { size: 11.5, cls: 'sans ink3' });
+    para(R, '除以 {m:\\sqrt{d_k}} 后，分数的方差回到 1：无论 {m:d_k} 多大，softmax 都不会过早饱和，梯度保持在正常范围。', { x: 880, y: 842, w: 648, size: 16, lh: 26 });
+    this.sel = [IT, ANIMAL];
+  },
+  update() {
+    this.tog.set(ST.scale, false);
+    const att = this.att = Model.single({ scale: ST.scale });
+    this.mS.set(att.S, this.rawMax);
+    this.sLab.textContent = '';
+    formula(this.sLab, ST.scale ? '\\q{Q}\\k{K}^T / \\sqrt{d_k}' : '\\q{Q}\\k{K}^T', { x: 590, y: 768, size: 22, anchor: 'middle' });
+    this.sNote.textContent = '';
+    para(this.sNote, ST.scale ? '本例 {m:d_k = 4}：每个分数都除以 {m:\\sqrt{4} = 2}' : '缩放已关闭：直接使用点积', { x: 590, y: 794, size: 13.5, cls: 'sans ink3', anchor: 'middle' });
+    this.pick(this.sel[0], this.sel[1], false, true);
+    this.updateExp();
+  },
+  pick(i, j, click, silent) {
+    if (click) userAct();
+    this.sel = [i, j];
+    const att = this.att;
+    this.mQ.unmarkAll(); this.mKT.unmarkAll(); this.mS.unmarkAll();
+    this.mQ.mark('r', i, 0, i, 3);
+    this.mKT.mark('c', 0, j, 3, j, 'k');
+    this.mS.mark('c', i, j, i, j, 'ink');
+    const qi = TOK[i].replace("'", '’'), kj = TOK[j].replace("'", '’');
+    this.callout.textContent = '';
+    const raw = att.raw[i][j];
+    const txt = ST.scale
+      ? `{m:\\q{q_{${qi}}} \\cdot \\k{k_{${kj}}}} = ${fx(raw)}　→　÷ {m:\\sqrt{4}}　→　{b:${fx(raw / 2)}}`
+      : `{m:\\q{q_{${qi}}} \\cdot \\k{k_{${kj}}}} = {b:${fx(raw)}}（未缩放）`;
+    para(this.callout, '例：' + txt, { x: 170, y: 846, size: 16 });
+    const r = att.A[i], m = argmax(r);
+    this.itNote.textContent = '';
+    para(this.itNote, `softmax 之后，{t:${TOK[i]}} 这一行最大的权重是 {b:${r[m].toFixed(2)}}（给 {t:${TOK[m]}}）`, { x: 170, y: 878, size: 14, cls: 'sans ink2' });
+  },
+  updateExp() {
+    if (!EXP) EXP = buildExperiment();
+    const d = this.dk, c = ST.scale ? 1 / Math.sqrt(d) : 1;
+    const dots = EXP.dots[d];
+    const nb = this.hist.length, bw = 120 / nb, counts = new Array(nb).fill(0);
+    let s1 = 0, s2 = 0;
+    for (let s = 0; s < dots.length; s++) {
+      const v = dots[s] * c;
+      s1 += v; s2 += v * v;
+      const b = Math.floor((v + 60) / bw);
+      if (b >= 0 && b < nb) counts[b]++;
+    }
+    const mean = s1 / dots.length, std = Math.sqrt(s2 / dots.length - mean * mean);
+    const mc = Math.max(...counts);
+    counts.forEach((n, b) => {
+      const h = (n / mc) * 90;
+      this.hist[b].setAttribute('y', (614 - h).toFixed(1));
+      this.hist[b].setAttribute('height', h.toFixed(1));
+    });
+    this.histT.textContent = '';
+    para(this.histT, ST.scale ? '1500 对随机向量，缩放后分数 {m:q \\cdot k / \\sqrt{d_k}} 的分布' : '1500 对随机向量，点积 {m:q \\cdot k} 的分布（未缩放）', { x: 880, y: 512, size: 14, cls: 'sans ink2' });
+    this.stdT.textContent = '';
+    para(this.stdT, `标准差 {b:${std.toFixed(2)}}（理论 ${ST.scale ? '1' : '{m:\\sqrt{' + d + '}} = ' + Math.sqrt(d).toFixed(2)}）`, { x: 1508, y: 512, size: 13.5, cls: 'sans', anchor: 'end' });
+    const a = LA.softmax(EXP.logits[d].map((v) => v * c));
+    a.forEach((w, j) => {
+      const h = 84 * w;
+      this.sbars[j].setAttribute('y', (780 - h).toFixed(1));
+      this.sbars[j].setAttribute('height', h.toFixed(1));
+      this.snums[j].setAttribute('y', (780 - h - 5).toFixed(1));
+      this.snums[j].textContent = w.toFixed(2);
+    });
+    const mx = Math.max(...a), J = LA.jacNorm(a);
+    this.maxT.textContent = mx.toFixed(3);
+    this.maxT.setAttribute('fill', mx > 0.9 ? C.qd : C.ink);
+    this.jT.textContent = J.toFixed(3);
+    this.jBar.setAttribute('width', (186 * clamp(J / 0.5, 0, 1)).toFixed(1));
+  },
+  enter(tl) {
+    this.update();
+    this.mS.hideAll();
+    this.pick(IT, ANIMAL, false, true);
+    this.mS.reveal(tl, (i, j) => (i === IT && j === ANIMAL ? -1 : i + j + 0.01 * i), 1300, 1300);
+  },
+  key(k) {
+    if (k === 's' || k === 'S') { ST.scale = !ST.scale; this.update(); return true; }
+    if (k === 'ArrowUp' || k === 'ArrowDown') { this.slider.nudge(k === 'ArrowUp' ? 1 : -1); return true; }
+    return false;
+  },
+  auto(tl) {
+    tl.at(3800, () => { ST.scale = false; this.update(); });
+    [128, 256, 512].forEach((d, k) => tl.at(5200 + k * 800, () => this.slider.set(d, true)));
+    tl.at(9000, () => { ST.scale = true; this.update(); });
+    tl.at(11200, () => this.slider.set(64, true));
+    return 13200;
+  },
+});
+
+// ---------------------------------------------------------------- step 5
+SC.push({
+  kicker: 'STEP 5 · 论文 §3.2.1 式 (1)', short: 'softmax 与加权求和',
+  title: 'softmax 与加权求和',
+  lead: 'softmax 把每一行分数变成正数，并且每行加起来等于 1；再用这一行权重对 value 加权求和，就得到这个词的输出。',
+  keys: '↑↓ 换词 · [ ] 温度 · S 缩放',
+  build(g) {
+    header(g, this);
+    formula(riseG(g, 100), 'Attention(\\q{Q}, \\k{K}, \\v{V}) = softmax\\big{\\frac{\\q{Q}\\k{K}^T}{\\sqrt{d_k}}}\\v{V}', { x: 72, y: 238, size: 28 });
+    const L = riseG(g, 180);
+    this.mA = Matrix(L, {
+      x: 184, y: 330, rows: 11, cols: 11, cw: 36, ch: 30, kind: 'a', fs: 11.5, fmt: (v) => v.toFixed(2),
+      rowLabels: TOK, colLabels: TOK, lfs: 14,
+      onCell: (i, j, click) => { if (click) { userAct(); this.select(i); } },
+      onRow: (i) => { userAct(); this.select(i); },
+    });
+    label(L, 620, 318, '行和', { size: 13, cls: 'sans ink3', anchor: 'middle' });
+    this.rs = TOK.map((_, i) => label(L, 620, 330 + 30 * i + 19.5, '', { size: 12, cls: 'mono ink3', anchor: 'middle' }));
+    label(L, 184, 692, '行 = query（谁在看），列 = key（被看的词）；颜色越深，权重越大', { size: 13, cls: 'sans ink3' });
+    this.tau = Slider(L, {
+      x: 188, y: 752, w: 296, min: 0.25, max: 4, log: true, value: ST.tau, nudge: 0.08,
+      ticks: [[0.25, '0.25'], [1, '1'], [4, '4']],
+      label: '温度 {m:\\tau}（教学旋钮）', fmt: (v) => 'τ = ' + v.toFixed(2),
+      onInput: (v) => { ST.tau = v; this.update(); },
+    });
+    this.tog = Toggle(L, { x: 524, y: 752, label: '除以 {m:\\sqrt{d_k}}', value: ST.scale, onChange: (v) => { ST.scale = v; this.update(); } });
+    para(L, '分数再除以 {m:\\tau} 后做 softmax：{m:\\tau < 1} 分布更尖，{m:\\tau > 1} 更平。{m:\\tau = 1} 就是论文公式——论文里没有 {m:\\tau}，这里只用它演示 softmax 的形状。', { x: 184, y: 812, w: 500, size: 13.5, lh: 22, cls: 'sans ink3' });
+
+    const R = riseG(g, 320);
+    const att = Model.single();
+    this.vmax = Math.max(...att.V.flat().map(Math.abs));
+    this.wHead = label(R, 752, 318, '', { size: 13.5, cls: 'sans cq', anchor: 'middle', weight: 700 });
+    TOK.forEach((t, j) => label(R, 712, 330 + 30 * j + 19.5, t, { size: 13, cls: 'tok-t ink2', anchor: 'end' }));
+    this.wg = el('g', null, R);
+    this.wCells = TOK.map((_, j) => {
+      const r = el('rect', { x: 723, y: 330 + 30 * j + 1, width: 58, height: 28, rx: 5, fill: C.paper2 }, this.wg);
+      const t = el('text', { x: 752, y: 330 + 30 * j + 19.5, 'text-anchor': 'middle', class: 'mono', 'font-size': 12.5 }, this.wg);
+      return { r, t };
+    });
+    label(R, 800, 506, '×', { size: 24, cls: 'sans ink3', anchor: 'middle' });
+    this.mV = Matrix(R, { x: 818, y: 330, rows: 11, cols: 4, cw: 44, ch: 30, kind: 'v' });
+    this.mV.set(att.V, this.vmax);
+    formula(R, '\\v{V}', { x: 906, y: 318, size: 19, anchor: 'middle' });
+    label(R, 1012, 506, '=', { size: 24, cls: 'sans ink3', anchor: 'middle' });
+    this.mWV = Matrix(R, { x: 1030, y: 330, rows: 11, cols: 4, cw: 44, ch: 30, kind: 'v' });
+    formula(R, 'a_j \\v{v_j}', { x: 1118, y: 318, size: 18, anchor: 'middle' });
+    el('line', { x1: 1026, x2: 1210, y1: 670, y2: 670, stroke: C.ink, 'stroke-width': 1.4 }, R);
+    label(R, 1016, 704, 'Σ', { size: 22, cls: 'serif ink2', anchor: 'end' });
+    this.mZ1 = Matrix(R, { x: 1030, y: 680, rows: 1, cols: 4, cw: 44, ch: 34, kind: 'v', fs: 13 });
+    this.zForm = el('g', null, R);
+    this.mZ = Matrix(R, { x: 1300, y: 330, rows: 11, cols: 4, cw: 44, ch: 30, kind: 'v', rowLabels: TOK, lfs: 13, onRow: (i) => { userAct(); this.select(i); } });
+    formula(R, 'Z = A\\v{V}', { x: 1388, y: 318, size: 18, anchor: 'middle' });
+    label(R, 1388, 690, '每个词都这样算一遍', { size: 13, cls: 'sans ink3', anchor: 'middle' });
+    this.note = el('g', null, R);
+    this.sel = IT;
+  },
+  update() {
+    this.tog.set(ST.scale, false);
+    this.tau.set(ST.tau, false);
+    const att = this.att = Model.single({ scale: ST.scale, tau: ST.tau });
+    this.mA.set(att.A, 1);
+    att.A.forEach((r, i) => { this.rs[i].textContent = sum(r).toFixed(2); });
+    const zmax = this.vmax;
+    this.mZ.set(att.Z, zmax);
+    this.updateSel();
+  },
+  updateSel() {
+    const i = this.sel, att = this.att, w = att.A[i];
+    this.mA.unmarkAll(); this.mZ.unmarkAll(); this.mZ1.unmarkAll();
+    this.mA.mark('r', i, 0, i, 10);
+    this.mZ.mark('r', i, 0, i, 3);
+    this.mZ1.mark('r', 0, 0, 0, 3);
+    this.wHead.textContent = `${TOK[i]} 的权重`;
+    w.forEach((v, j) => {
+      const [f, tf] = cellStyle('a', v);
+      this.wCells[j].r.setAttribute('fill', f);
+      this.wCells[j].t.setAttribute('fill', tf);
+      this.wCells[j].t.textContent = v.toFixed(2);
+    });
+    this.mWV.set(att.V.map((row, j) => row.map((v) => v * w[j])), this.vmax);
+    this.mZ1.set([att.Z[i]], this.vmax);
+    const name = TOK[i].replace("'", '’');
+    this.zForm.textContent = '';
+    formula(this.zForm, `z_{${name}} = \\sum_j a_{${name},j} \\v{v_j}`, { x: 1118, y: 750, size: 17, anchor: 'middle' });
+    const m = argmax(w);
+    this.note.textContent = '';
+    para(this.note, `每行权重都为正、和为 1，所以输出是各个 value 的{b:加权平均}：{t:${TOK[i]}} 的输出里，{t:${TOK[m]}} 的 value 占了 {b:${Math.round(w[m] * 100)}%}。`, { x: 722, y: 812, w: 806, size: 16, lh: 26 });
+  },
+  select(i, instant) {
+    const from = this.sel;
+    this.sel = i;
+    if (instant || FLUSH) { this.updateSel(); return; }
+    // the chosen heatmap row flies over and turns into the weight column
+    const att = this.att, row = att.A[i];
+    const fg = el('g', { 'pointer-events': 'none' }, this.wg.parentNode);
+    const parts = row.map((v, j) => {
+      const [f, tf] = cellStyle('a', v);
+      const r = el('rect', { rx: 5, fill: f }, fg);
+      const t = el('text', { 'text-anchor': 'middle', class: 'mono', 'font-size': 12, fill: tf }, fg, v.toFixed(2));
+      return { r, t, x0: 184 + 36 * j + 1, y0: 330 + 30 * i + 1, x1: 723, y1: 330 + 30 * j + 1 };
+    });
+    this.wg.setAttribute('opacity', 0.15);
+    this.mA.unmarkAll(); this.mA.mark('r', i, 0, i, 10);
+    tween(700, (p) => {
+      parts.forEach((pt, j) => {
+        const q = clamp(p * 1.25 - j * 0.025, 0, 1), e = EASE.io(q);
+        const x = lerp(pt.x0, pt.x1, e), y = lerp(pt.y0, pt.y1, e), w = lerp(34, 58, e);
+        pt.r.setAttribute('x', x.toFixed(1)); pt.r.setAttribute('y', y.toFixed(1));
+        pt.r.setAttribute('width', w.toFixed(1)); pt.r.setAttribute('height', 28);
+        pt.t.setAttribute('x', (x + w / 2).toFixed(1)); pt.t.setAttribute('y', (y + 18.5).toFixed(1));
+      });
+    }, EASE.lin, () => { fg.remove(); this.wg.setAttribute('opacity', 1); this.updateSel(); });
+    if (from === i) this.updateSel();
+  },
+  enter() { this.update(); },
+  key(k) {
+    if (k === 'ArrowUp' || k === 'ArrowDown') { this.select((this.sel + (k === 'ArrowDown' ? 1 : 10)) % 11); return true; }
+    if (k === '[' || k === ']') { this.tau.nudge(k === ']' ? 1 : -1); return true; }
+    if (k === 's' || k === 'S') { ST.scale = !ST.scale; this.update(); return true; }
+    return false;
+  },
+  auto(tl) {
+    tl.at(1600, () => this.select(10));
+    tl.at(3600, () => this.select(IT));
+    const taus = [[5600, 0.6], [6200, 0.35], [7800, 1.8], [8400, 3.5], [10000, 1]];
+    taus.forEach(([t, v]) => tl.at(t, () => { ST.tau = v; this.update(); }));
+    tl.at(11600, () => this.select(9));
+    return 13800;
+  },
+});
+
+// ---------------------------------------------------------------- step 6
+const HEAD_NAMES = ['头 1 · 指代', '头 2 · 动词↔名词', '头 3 · 修饰'];
+SC.push({
+  kicker: 'STEP 6 · 论文 §3.2.2', short: '多头注意力',
+  title: '多头注意力：同时从几个角度看',
+  lead: '同样的注意力计算并行做 h 次：每个头有自己的投影矩阵、在更小的维度里计算，因而能关注不同的关系；最后拼接各头输出，再乘 {m:W^O}。',
+  leadW: 1456,
+  keys: '1 2 3 切换头 · ↑↓ 换词',
+  build(g) {
+    header(g, this);
+    const mh = this.mh = Model.multi();
+    const F = riseG(g, 100);
+    formula(F, 'MultiHead(Q, K, V) = Concat(head_1, \\dots, head_h)W^O', { x: 72, y: 242, size: 24 });
+    formula(F, 'head_i = Attention(Q\\q{W_i^Q}, K\\k{W_i^K}, V\\v{W_i^V})', { x: 72, y: 292, size: 24 });
+    el('rect', { x: 900, y: 200, width: 628, height: 106, rx: 10, class: 'panel' }, F);
+    [
+      '演示：{b:h = 3}，每个头 {m:d_k = d_v = d_{model} / h = 2}',
+      '原论文 base：{m:h = 8}，{m:d_k = d_v = 512 / 8 = 64}',
+      '自注意力里，MultiHead 的三个输入 {m:Q}、{m:K}、{m:V} 都是同一个 {m:X}',
+      '每个头维度变小，总计算量与全维度的单头注意力相近',
+    ].forEach((s, k) => para(F, s, { x: 918, y: 226 + k * 23, size: 14, cls: 'sans ink2' }));
+    // tabs
+    const T = riseG(g, 200);
+    let tx = 236;
+    this.tabs = HEAD_NAMES.map((s, h) => {
+      const b = Button(T, { x: tx, y: 322, h: 32, size: 14.5, label: s, kind: 'chip', onClick: () => { userAct(); this.setHead(h); } });
+      tx += b.w + 10;
+      return b;
+    });
+    label(T, tx + 8, 343, '头的名字只是我们对这组演示参数的解读', { size: 13, cls: 'sans ink3' });
+    // fan
+    const R = riseG(g, 260);
+    const rl = (y, s) => label(R, 208, y, s, { size: 14, cls: 'sans ink3', anchor: 'end' });
+    rl(413, 'query'); rl(553, 'key'); rl(583, '权重');
+    this.head = 0;
+    this.fan = Fan(R, {
+      x0: 236, x1: 1492, yTop: 408, yBot: 548, size: 22, numSize: 14, numGap: 25,
+      getW: (i) => this.mh.hs[this.head].A[i],
+      onPick: (i) => { userAct(); this.select(i); },
+    });
+    // mini heatmaps
+    const B = riseG(g, 380);
+    this.minis = [150, 330, 510].map((x, h) => {
+      label(B, x + 71.5, 650, HEAD_NAMES[h], { size: 13.5, weight: 700, anchor: 'middle' });
+      const m = Matrix(B, {
+        x, y: 662, rows: 11, cols: 11, cw: 13, ch: 13, gap: 1, kind: 'a', numbers: false, bracket: false,
+        rowLabels: h === 0 ? TOK : null, lfs: 10.5,
+        onCell: (i, j, click) => { if (click) { userAct(); this.setHead(h); } },
+      });
+      m.set(mh.hs[h].A, 1);
+      return m;
+    });
+    this.outline = el('rect', { width: 153, height: 153, rx: 6, fill: 'none', stroke: C.ink, 'stroke-width': 2 }, B);
+    label(B, 150, 830, '行 = query，列 = key；点击切换头', { size: 12.5, cls: 'sans ink3' });
+    label(B, 150, 852, '论文 §4：不同的头明显学会了不同的任务，许多与句子的句法、语义结构有关。', { size: 12.5, cls: 'sans ink3' });
+    // pipeline: heads -> concat -> x W^O -> output
+    const P = riseG(g, 480);
+    this.P = P;
+    const hx = [720, 766, 812];
+    const hmax = Math.max(...mh.concat.flat().map(Math.abs));
+    const omax = Math.max(...mh.out.flat().map(Math.abs));
+    this.hM = hx.map((x, h) => {
+      const m = Matrix(P, { x, y: 662, rows: 11, cols: 2, cw: 18, ch: 13, gap: 1.5, kind: 'ink', numbers: false });
+      m.set(mh.hs[h].Z, hmax);
+      formula(P, `head_${h + 1}`, { x: x + 18, y: 826, size: 13, anchor: 'middle' });
+      return m;
+    });
+    arrow(P, 'M852,733 H894', { w: 1.2 });
+    label(P, 873, 722, '拼接', { size: 12, cls: 'sans ink3', anchor: 'middle' });
+    this.cM = Matrix(P, { x: 906, y: 662, rows: 11, cols: 6, cw: 18, ch: 13, gap: 1.5, kind: 'ink', numbers: false });
+    this.cM.set(mh.concat, hmax);
+    [1, 2].forEach((k) => el('line', { x1: 906 + 36 * k, x2: 906 + 36 * k, y1: 658, y2: 809, stroke: C.ink3, 'stroke-width': 1, 'stroke-dasharray': '3 3' }, P));
+    label(P, 960, 826, 'Concat · 11 × 6', { size: 12.5, cls: 'sans ink2', anchor: 'middle' });
+    label(P, 1033, 739, '×', { size: 20, cls: 'sans ink3', anchor: 'middle' });
+    this.oG = el('g', null, P);
+    this.wo = Matrix(this.oG, { x: 1052, y: 680, rows: 6, cols: 6, cw: 18, ch: 18, gap: 1.5, kind: 'ink', numbers: false });
+    this.wo.set(PARAMS.Wo);
+    formula(this.oG, 'W^O', { x: 1100, y: 826, size: 14, anchor: 'end' });
+    label(this.oG, 1104, 826, '· 6 × 6', { size: 12.5, cls: 'sans ink2' });
+    label(this.oG, 1178, 739, '=', { size: 20, cls: 'sans ink3', anchor: 'middle' });
+    this.oM = Matrix(this.oG, { x: 1196, y: 662, rows: 11, cols: 6, cw: 18, ch: 13, gap: 1.5, kind: 'ink', numbers: false });
+    this.oM.set(mh.out, omax);
+    label(this.oG, 1250, 826, '输出 · 11 × 6', { size: 12.5, cls: 'sans ink2', anchor: 'middle' });
+    this.roT = label(this.oG, 1340, 676, '', { size: 13.5, weight: 700 });
+    this.roV = [0, 1, 2, 3, 4, 5].map((k) => label(this.oG, 1340 + (k % 2) * 92, 704 + Math.floor(k / 2) * 24, '', { size: 13.5, cls: 'mono' }));
+    label(this.oG, 1340, 788, '与输入同为 6 维，', { size: 12.5, cls: 'sans ink3' });
+    label(this.oG, 1340, 808, '可以继续送入下一层', { size: 12.5, cls: 'sans ink3' });
+    this.hx = hx;
+  },
+  setHead(h) {
+    this.head = h;
+    this.tabs.forEach((b, k) => b.setOn(k === h));
+    const m = this.minis[h];
+    this.outline.setAttribute('x', m.x - 5); this.outline.setAttribute('y', m.y - 5);
+    this.fan.refresh();
+  },
+  select(i) {
+    this.fan.select(i);
+    this.markRow(i);
+  },
+  markRow(i) {
+    this.minis.forEach((m) => { m.unmarkAll(); m.mark('r', i, 0, i, 10); });
+    this.hM.forEach((m) => { m.unmarkAll(); m.mark('r', i, 0, i, 1); });
+    this.cM.unmarkAll(); this.cM.mark('r', i, 0, i, 5);
+    this.oM.unmarkAll(); this.oM.mark('r', i, 0, i, 5);
+    this.roT.textContent = `${TOK[i]} 的输出行：`;
+    this.mh.out[i].forEach((v, k) => { this.roV[k].textContent = fsig(v); });
+  },
+  enter(tl) {
+    this.setHead(this.head);
+    this.fan.select(this.fan.sel, true);
+    this.markRow(this.fan.sel);
+    // head outputs slide into the concatenated matrix, then W^O and the output appear
+    this.cM.g.setAttribute('opacity', 0);
+    this.oG.setAttribute('opacity', 0);
+    const clones = this.hM.map((m) => { const c = m.g.cloneNode(true); c.setAttribute('pointer-events', 'none'); this.P.appendChild(c); return c; });
+    tl.at(1300, () => tl.tween(900, (p) => {
+      clones.forEach((c, h) => {
+        const x = lerp(this.hx[h], 906 + 36 * h, p);
+        c.setAttribute('transform', `translate(${x.toFixed(1)},662)`);
+        c.setAttribute('opacity', (1 - p * 0.7).toFixed(2));
+      });
+      this.cM.g.setAttribute('opacity', p.toFixed(2));
+    }, EASE.io, () => clones.forEach((c) => c.remove())));
+    tl.at(2400, () => tl.tween(600, (p) => this.oG.setAttribute('opacity', p.toFixed(2)), EASE.out));
+    if (FLUSH) clones.forEach((c) => c.remove());
+  },
+  leave() { this.P.querySelectorAll(':scope > g.mat[pointer-events]').forEach((c) => c.remove()); },
+  key(k) {
+    if (k === '1' || k === '2' || k === '3') { this.setHead(Number(k) - 1); return true; }
+    if (k === 'h' || k === 'H') { this.setHead((this.head + 1) % 3); return true; }
+    if (k === 'ArrowUp' || k === 'ArrowDown') { this.select((this.fan.sel + (k === 'ArrowDown' ? 1 : 10)) % 11); return true; }
+    return false;
+  },
+  auto(tl) {
+    tl.at(1800, () => { this.setHead(0); this.select(IT); });
+    tl.at(4400, () => { this.setHead(1); this.select(3); });
+    tl.at(6900, () => this.select(5));
+    tl.at(9000, () => { this.setHead(2); this.select(9); });
+    tl.at(11500, () => this.select(0));
+    tl.at(13600, () => { this.setHead(0); this.select(IT); });
+    return 15800;
+  },
+});
+
+// ===================================================================
+//  Scenes 7–8: positional encoding, summary
+// ===================================================================
+const PE_DIMS = [0, 1, 64, 128, 256];
+const pe = (pos, d, dm) => {
+  const f = Math.pow(10000, -(d - (d % 2)) / (dm || 512));
+  return d % 2 ? Math.cos(pos * f) : Math.sin(pos * f);
+};
+// ---------------------------------------------------------------- step 7
+SC.push({
+  kicker: 'STEP 7 · 论文 §3.5', short: '位置编码',
+  title: '位置编码：注意力本身不知道词序',
+  lead: '注意力只比较内容、不看位置：把句子打乱，每一对词之间的权重都不变。所以论文给每个位置加上一个随位置变化的正弦 / 余弦信号——位置编码。',
+  leadW: 1456,
+  keys: 'R 打乱 / 还原 · ↑↓ 换词 · [ ] 移动位置',
+  build(g) {
+    header(g, this);
+    const L = riseG(g, 150);
+    label(L, 72, 240, '打乱词序试试', { size: 20, weight: 700 });
+    label(L, 262, 274, 'query', { size: 13, cls: 'sans ink3', anchor: 'end' });
+    label(L, 520, 274, 'key', { size: 13, cls: 'sans ink3' });
+    label(L, 700, 274, '权重', { size: 13, cls: 'sans ink3', anchor: 'end' });
+    const lg = el('linearGradient', { id: 'vfGrad', gradientUnits: 'userSpaceOnUse', x1: 272, y1: 0, x2: 510, y2: 0 }, el('defs', null, L));
+    el('stop', { offset: '0', 'stop-color': C.q }, lg);
+    el('stop', { offset: '1', 'stop-color': C.k }, lg);
+    const lineG = el('g', null, L);
+    this.lines = TOK.map(() => el('path', { fill: 'none', stroke: 'url(#vfGrad)', 'stroke-linecap': 'round' }, lineG));
+    const fs = 17;
+    this.rq = TOK.map((t, i) => {
+      const w = measure(t, 'tok-t', fs);
+      const tg = el('g', { class: 'tok' }, L);
+      el('rect', { class: 'pill', x: -w - 8, y: -fs * 0.95, width: w + 16, height: fs * 1.4, rx: 7 }, tg);
+      el('text', { class: 'tok-t', 'text-anchor': 'end', 'font-size': fs }, tg, t);
+      tg.addEventListener('click', () => { userAct(); this.select(i); });
+      return tg;
+    });
+    this.rk = TOK.map((t) => {
+      const w = measure(t, 'tok-t', fs);
+      const tg = el('g', { class: 'keytok' }, L);
+      const pill = el('rect', { x: -8, y: -fs * 0.95, width: w + 16, height: fs * 1.4, rx: 7, fill: 'transparent' }, tg);
+      el('text', { class: 'tok-t', 'font-size': fs }, tg, t);
+      const num = el('text', { class: 'mono wlab', 'text-anchor': 'end', 'font-size': 14, x: 180 }, tg);
+      return { g: tg, pill, num };
+    });
+    const bx = Button(L, { x: 96, y: 666, h: 36, label: '打乱词序', kind: 'primary', onClick: () => { userAct(); this.shuffle(); } });
+    this.bRestore = Button(L, { x: 96 + bx.w + 12, y: 666, h: 36, label: '还原', onClick: () => { userAct(); this.restore(); } });
+    this.cap = el('g', null, L);
+    para(L, '注意力只看内容。演示里两个 the 是同一个词向量，所以它们得到的注意力也完全相同——模型分不出谁在前、谁在后。', { x: 72, y: 818, w: 660, size: 14.5, lh: 23, cls: 'sans ink2' });
+    this.perm = TOK.map((_, i) => i);
+    this.sel = IT;
+    this.rng = mulberry32(1706);
+    this.base = Model.single();
+
+    // right: sinusoidal encoding
+    const R = riseG(g, 330);
+    formula(R, 'PE_{(pos, 2i)} = sin(pos / 10000^{2i/d_{model}})', { x: 820, y: 240, size: 21 });
+    formula(R, 'PE_{(pos, 2i+1)} = cos(pos / 10000^{2i/d_{model}})', { x: 820, y: 286, size: 21 });
+    para(R, '原论文设定 {m:d_{model} = 512}', { x: 1528, y: 240, size: 12.5, cls: 'sans ink3', anchor: 'end' });
+    const X0c = 930, W = 500, xOf = (p) => X0c + (p / 63) * W;
+    this.xOf = xOf;
+    this.lanes = PE_DIMS.map((d, k) => {
+      const yc = 344 + 48 * k;
+      label(R, 918, yc + 4.5, `维度 ${d} · ${d % 2 ? 'cos' : 'sin'}`, { size: 13, cls: 'sans ink2', anchor: 'end' });
+      el('line', { x1: X0c, x2: X0c + W, y1: yc, y2: yc, stroke: C.rule, 'stroke-width': 1 }, R);
+      let dpath = '';
+      for (let s = 0; s <= 252; s++) {
+        const p = (s / 252) * 63;
+        dpath += (s ? 'L' : 'M') + xOf(p).toFixed(1) + ',' + (yc - 17 * pe(p, d)).toFixed(1);
+      }
+      el('path', { d: dpath, fill: 'none', stroke: C.ink2, 'stroke-width': 1.6 }, R);
+      return { yc, d, dot: null, val: label(R, 1444, yc + 4.5, '', { size: 13, cls: 'mono' }) };
+    });
+    el('line', { x1: X0c, x2: X0c + W, y1: 562, y2: 562, class: 'axis' }, R);
+    for (let p = 0; p <= 60; p += 10) {
+      el('line', { x1: xOf(p), x2: xOf(p), y1: 562, y2: 567, class: 'axis' }, R);
+      label(R, xOf(p), 580, String(p), { size: 11, cls: 'mono ink3', anchor: 'middle' });
+    }
+    label(R, X0c + W, 598, '位置 pos', { size: 12, cls: 'sans ink3', anchor: 'end' });
+    this.cursor = el('line', { y1: 318, y2: 556, stroke: C.q, 'stroke-width': 1.6 }, R);
+    this.lanes.forEach((ln) => { ln.dot = el('circle', { r: 4.5, fill: C.q }, R); });
+    this.posS = Slider(R, {
+      x: 934, y: 644, w: 492, min: 0, max: 63, value: 17, round: Math.round, nudge: 1 / 63,
+      label: '位置 {m:pos}（拖动）', fmt: (v) => 'pos = ' + v, onInput: (v) => this.setPos(v),
+    });
+    this.barLab = el('g', null, R);
+    this.bars = [];
+    for (let d = 0; d < 128; d++) this.bars.push(el('rect', { x: X0c + d * (W / 128), y: 692, width: W / 128 - 0.6, height: 22, fill: C.ink }, R));
+    const notes = [
+      '① 位置编码与词向量维度相同（都是 {m:d_{model}}），两者{b:直接相加}后送入第一层。',
+      '② 各维波长从 {m:2π} 到 {m:10000 \\cdot 2π} 呈几何级数；对任意固定偏移 {m:k}，{m:PE_{pos+k}} 都能写成 {m:PE_{pos}} 的线性函数——论文推测这让模型更容易学会按相对位置关注。',
+      '③ 论文也试过可学习的位置嵌入，结果几乎相同（表 3 (E)）；选正弦版本是因为它可能外推到比训练时更长的句子。',
+    ];
+    let ny = 752;
+    notes.forEach((s) => { const p = para(R, s, { x: 820, y: ny, w: 708, size: 14.5, lh: 22, cls: 'sans ink2' }); ny += p.h + 6; });
+  },
+  yOf(p) { return 304 + 34 * p; },
+  layout(posOf) {
+    this.rq.forEach((tg, t) => tg.setAttribute('transform', `translate(262,${this.yOf(posOf[t]).toFixed(1)})`));
+    this.rk.forEach((r, t) => r.g.setAttribute('transform', `translate(520,${this.yOf(posOf[t]).toFixed(1)})`));
+    const s = this.sel, ys = this.yOf(posOf[s]) - 5.5;
+    const w = this.w;
+    this.lines.forEach((p, t) => {
+      const yt = this.yOf(posOf[t]) - 5.5;
+      p.setAttribute('d', `M272,${ys.toFixed(1)} C390,${ys.toFixed(1)} 392,${yt.toFixed(1)} 510,${yt.toFixed(1)}`);
+      p.setAttribute('stroke-width', (0.8 + 15 * w[t]).toFixed(2));
+      p.setAttribute('stroke-opacity', (0.1 + 0.9 * Math.min(1, w[t] * 1.2)).toFixed(3));
+    });
+  },
+  compute() {
+    // recompute attention on the permuted sentence from scratch
+    const perm = this.perm;
+    const posOf = []; perm.forEach((t, p) => { posOf[t] = p; });
+    const att = Model.single({}, perm.map((t) => X0[t]));
+    const s = this.sel;
+    this.w = TOK.map((_, t) => att.A[posOf[s]][posOf[t]]);
+    let diff = 0;
+    for (let a = 0; a < 11; a++) for (let b = 0; b < 11; b++) diff = Math.max(diff, Math.abs(att.A[posOf[a]][posOf[b]] - this.base.A[a][b]));
+    this.diff = diff;
+    this.posOf = posOf;
+    const mx = argmax(this.w);
+    this.rq.forEach((tg, t) => tg.classList.toggle('sel', t === s));
+    this.rk.forEach((r, t) => {
+      r.pill.setAttribute('fill', rgba(RGB.k, Math.min(0.6, this.w[t] * 0.75)));
+      r.num.textContent = this.w[t].toFixed(2);
+      r.num.setAttribute('fill', t === mx ? C.kd : this.w[t] >= 0.1 ? C.ink : C.ink3);
+    });
+    const shuffled = perm.some((t, p) => t !== p);
+    const orig = this.base.A[s][mx];
+    this.cap.textContent = '';
+    const head = `{t:${TOK[s]}} → {t:${TOK[mx]}} = {b:${this.w[mx].toFixed(2)}}`;
+    const txt = shuffled
+      ? `打乱后重新计算：${head}（打乱前 ${orig.toFixed(2)}）。逐对比较所有 121 个权重，最大差异 = {b:${diff.toFixed(6)}}——只是跟着换了位置。`
+      : `原始顺序：${head}。点「打乱词序」，页面会对打乱后的句子从头重算一遍注意力。`;
+    para(this.cap, txt, { x: 72, y: 742, w: 660, size: 16, lh: 26 });
+    this.bRestore.setDisabled(!shuffled);
+  },
+  moveTo(newPerm) {
+    const oldPos = this.posOf.slice();
+    this.perm = newPerm;
+    this.compute();
+    const target = this.posOf;
+    tween(FLUSH ? 0 : 750, (p) => {
+      this.layout(oldPos.map((o, t) => lerp(o, target[t], p)));
+    }, EASE.io);
+  },
+  shuffle() {
+    let perm;
+    do {
+      perm = TOK.map((_, i) => i);
+      for (let i = perm.length - 1; i > 0; i--) { const j = Math.floor(this.rng() * (i + 1)); [perm[i], perm[j]] = [perm[j], perm[i]]; }
+    } while (perm.filter((t, p) => t === p).length > 2);
+    this.moveTo(perm);
+  },
+  restore() { this.moveTo(TOK.map((_, i) => i)); },
+  select(i) {
+    this.sel = i;
+    this.compute();
+    this.layout(this.posOf);
+  },
+  setPos(v) {
+    const x = this.xOf(v);
+    this.cursor.setAttribute('x1', x); this.cursor.setAttribute('x2', x);
+    this.lanes.forEach((ln) => {
+      const val = pe(v, ln.d);
+      ln.dot.setAttribute('cx', x); ln.dot.setAttribute('cy', (ln.yc - 17 * val).toFixed(1));
+      ln.val.textContent = fsig(val);
+    });
+    this.bars.forEach((b, d) => {
+      const val = pe(v, d);
+      b.setAttribute('fill', val >= 0 ? rgba(RGB.ink, 0.1 + 0.8 * val) : rgba(RGB.gray, 0.08 + 0.25 * -val));
+    });
+    this.barLab.textContent = '';
+    para(this.barLab, `pos = ${v} 的位置编码向量（前 128 维；深 = 正，浅 = 负）`, { x: 930, y: 684, size: 12.5, cls: 'sans ink3' });
+  },
+  enter() {
+    this.compute();
+    this.layout(this.posOf);
+    this.setPos(this.posS.v);
+  },
+  key(k) {
+    if (k === 'r' || k === 'R') { if (this.perm.some((t, p) => t !== p)) this.restore(); else this.shuffle(); return true; }
+    if (k === 'ArrowUp' || k === 'ArrowDown') { this.select((this.sel + (k === 'ArrowDown' ? 1 : 10)) % 11); return true; }
+    if (k === '[' || k === ']') { this.posS.nudge(k === ']' ? 1 : -1); return true; }
+    return false;
+  },
+  auto(tl) {
+    tl.at(1600, () => this.shuffle());
+    tl.at(4600, () => this.shuffle());
+    tl.at(7400, () => this.restore());
+    tl.at(8400, () => tl.tween(3000, (p) => this.posS.set(Math.round(lerp(17, 52, p)), true), EASE.io));
+    return 12800;
+  },
+});
+
+// ---------------------------------------------------------------- step 8
+function drawTransformer(g, self) {
+  const ex = 270, dx = 610, bw = 206, hw = bw / 2;
+  const FILL = { attn: '#FBE6D2', ff: '#E4EDF6', norm: '#F4EFDC', emb: '#F0E8DC', lin: C.paper2 };
+  const blk = (cx, y, h, txt, fill, size) => {
+    box(g, cx - hw, y, bw, h, { rx: 6, fill, stroke: C.ink2, sw: 1.1 });
+    label(g, cx, y + h / 2 + (size || 14) * 0.36, txt, { size: size || 14, anchor: 'middle', weight: 600, cls: 'serif' });
+  };
+  const plus = (cx, cy) => {
+    el('circle', { cx, cy, r: 11, fill: C.paper, stroke: C.ink2, 'stroke-width': 1.3 }, g);
+    el('path', { d: `M${cx - 6},${cy} H${cx + 6} M${cx},${cy - 6} V${cy + 6}`, stroke: C.ink2, 'stroke-width': 1.5 }, g);
+  };
+  const peIcon = (cx, cy) => {
+    el('circle', { cx, cy, r: 15, fill: C.paper, stroke: C.ink2, 'stroke-width': 1.2 }, g);
+    el('path', { d: `M${cx - 10},${cy} C${cx - 6},${cy - 12} ${cx - 3},${cy - 12} ${cx},${cy} S${cx + 6},${cy + 12} ${cx + 10},${cy}`, fill: 'none', stroke: C.ink2, 'stroke-width': 1.4 }, g);
+  };
+  const qkv = (cx, y0, y1) => {
+    el('path', { d: `M${cx - 44},${y0} H${cx + 44}`, stroke: C.ink2, 'stroke-width': 1.3 }, g);
+    arrow(g, `M${cx - 44},${y0} V${y1}`, { stroke: C.q, marker: 'arrQ', w: 1.6 });
+    arrow(g, `M${cx},${y0} V${y1}`, { stroke: C.k, marker: 'arrK', w: 1.6 });
+    arrow(g, `M${cx + 44},${y0} V${y1}`, { stroke: C.v, marker: 'arrV', w: 1.6 });
+  };
+  // stacked "cards" behind the N× frames
+  const gh = el('g', null, g);
+  self.ghosts = [];
+  for (let k = 5; k >= 1; k--) {
+    self.ghosts.push([k, el('rect', { x: ex - 125, y: 480, width: 250, height: 258, rx: 12, fill: C.paper, stroke: '#CFC5B3' }, gh)]);
+    self.ghosts.push([k, el('rect', { x: dx - 125, y: 344, width: 250, height: 394, rx: 12, fill: C.paper, stroke: '#CFC5B3' }, gh)]);
+  }
+  el('rect', { x: ex - 125, y: 480, width: 250, height: 258, rx: 12, fill: '#F4EFE5', stroke: C.ink3, 'stroke-width': 1.2 }, g);
+  el('rect', { x: dx - 125, y: 344, width: 250, height: 394, rx: 12, fill: '#F4EFE5', stroke: C.ink3, 'stroke-width': 1.2 }, g);
+  self.nx = [label(g, ex - 140, 616, 'N×', { size: 21, weight: 700, anchor: 'end', cls: 'serif' }),
+    label(g, dx + 166, 548, 'N×', { size: 21, weight: 700, cls: 'serif' })];
+  label(g, ex, 422, '编码器', { size: 18, weight: 700, anchor: 'middle' });
+  label(g, ex, 443, 'Encoder', { size: 13, cls: 'serif ink3', anchor: 'middle' });
+  label(g, dx + 128, 280, '解码器', { size: 18, weight: 700 });
+  label(g, dx + 128, 301, 'Decoder', { size: 13, cls: 'serif ink3' });
+
+  // encoder
+  label(g, ex, 878, 'Inputs', { size: 14, anchor: 'middle', cls: 'serif' });
+  arrow(g, `M${ex},862 V840`);
+  blk(ex, 802, 34, 'Input Embedding', FILL.emb);
+  arrow(g, `M${ex},802 V786`);
+  plus(ex, 772); peIcon(ex - 62, 772);
+  el('line', { x1: ex - 47, x2: ex - 11, y1: 772, y2: 772, stroke: C.ink2, 'stroke-width': 1.2 }, g);
+  label(g, ex - 84, 768, 'Positional', { size: 12, cls: 'serif ink2', anchor: 'end' });
+  label(g, ex - 84, 783, 'Encoding', { size: 12, cls: 'serif ink2', anchor: 'end' });
+  el('path', { d: `M${ex},761 V718`, stroke: C.ink2, 'stroke-width': 1.3, fill: 'none' }, g);
+  qkv(ex, 718, 702);
+  blk(ex, 656, 44, 'Multi-Head Attention', FILL.attn);
+  arrow(g, `M${ex},656 V640`);
+  blk(ex, 608, 28, 'Add & Norm', FILL.norm, 13);
+  arrow(g, `M${ex},608 V596`);
+  blk(ex, 548, 44, 'Feed Forward', FILL.ff);
+  arrow(g, `M${ex},548 V528`);
+  blk(ex, 496, 28, 'Add & Norm', FILL.norm, 13);
+  arrow(g, `M${ex},730 H${ex - 116} V622 H${ex - hw - 2}`, { w: 1.2 });
+  arrow(g, `M${ex},602 H${ex - 116} V510 H${ex - hw - 2}`, { w: 1.2 });
+  // encoder output -> decoder cross-attention (K, V)
+  el('path', { d: `M${ex},496 V466 H440 V588 H${dx}`, stroke: C.ink2, 'stroke-width': 1.4, fill: 'none' }, g);
+  arrow(g, `M${dx - 44},588 V568`, { stroke: C.k, marker: 'arrK', w: 1.6 });
+  arrow(g, `M${dx},588 V568`, { stroke: C.v, marker: 'arrV', w: 1.6 });
+
+  // decoder
+  label(g, dx, 878, 'Outputs (shifted right)', { size: 14, anchor: 'middle', cls: 'serif' });
+  arrow(g, `M${dx},862 V840`);
+  blk(dx, 802, 34, 'Output Embedding', FILL.emb);
+  arrow(g, `M${dx},802 V786`);
+  plus(dx, 772); peIcon(dx + 62, 772);
+  el('line', { x1: dx + 11, x2: dx + 47, y1: 772, y2: 772, stroke: C.ink2, 'stroke-width': 1.2 }, g);
+  label(g, dx + 84, 768, 'Positional', { size: 12, cls: 'serif ink2' });
+  label(g, dx + 84, 783, 'Encoding', { size: 12, cls: 'serif ink2' });
+  el('path', { d: `M${dx},761 V718`, stroke: C.ink2, 'stroke-width': 1.3, fill: 'none' }, g);
+  qkv(dx, 718, 702);
+  blk(dx, 656, 44, 'Masked Multi-Head Attention', FILL.attn, 13);
+  arrow(g, `M${dx},656 V640`);
+  blk(dx, 608, 28, 'Add & Norm', FILL.norm, 13);
+  arrow(g, `M${dx + 44},608 V568`, { stroke: C.q, marker: 'arrQ', w: 1.6 });
+  blk(dx, 520, 44, 'Multi-Head Attention', FILL.attn);
+  arrow(g, `M${dx},520 V504`);
+  blk(dx, 472, 28, 'Add & Norm', FILL.norm, 13);
+  arrow(g, `M${dx},472 V456`);
+  blk(dx, 408, 44, 'Feed Forward', FILL.ff);
+  arrow(g, `M${dx},408 V392`);
+  blk(dx, 360, 28, 'Add & Norm', FILL.norm, 13);
+  arrow(g, `M${dx},730 H${dx + 116} V622 H${dx + hw + 2}`, { w: 1.2 });
+  arrow(g, `M${dx + 44},598 H${dx + 116} V486 H${dx + hw + 2}`, { w: 1.2 });
+  arrow(g, `M${dx},462 H${dx + 116} V374 H${dx + hw + 2}`, { w: 1.2 });
+  arrow(g, `M${dx},360 V336`);
+  blk(dx, 304, 28, 'Linear', FILL.lin, 13);
+  arrow(g, `M${dx},304 V290`);
+  blk(dx, 258, 28, 'Softmax', FILL.lin, 13);
+  arrow(g, `M${dx},258 V240`);
+  label(g, dx, 230, 'Output Probabilities', { size: 14, anchor: 'middle', cls: 'serif' });
+  label(g, 90, 236, '结构示意，按论文图 1 重绘', { size: 13, cls: 'sans ink3' });
+  para(g, '彩色箭头：{q:Q} 橙　{k:K} 蓝　{v:V} 绿', { x: 90, y: 258, size: 13, cls: 'sans ink3' });
+}
+SC.push({
+  kicker: 'STEP 8 · 论文 §3.1 / §4', short: '小结',
+  title: '小结：把注意力堆起来，就是 Transformer',
+  lead: '编码器和解码器各由 {m:N = 6} 个相同的层堆叠而成。每层的核心是多头注意力，外加逐位置的前馈网络；每个子层外面都有残差连接和层归一化。',
+  build(g) {
+    header(g, this);
+    drawTransformer(riseG(g, 150), this);
+    const R = riseG(g, 380);
+    label(R, 850, 238, '为什么重要', { size: 22, weight: 700 });
+    const cards = [
+      ['并行', '一层之内所有位置同时计算：顺序操作 {m:O(1)}，RNN 为 {m:O(n)}。训练时可以大规模并行。'],
+      ['长距离依赖', '任意两个位置之间的路径长度 {m:O(1)}，RNN 为 {m:O(n)}：animal 和 it 直接相连。'],
+      ['多个角度', '多头注意力在不同的表示子空间里，同时关注不同位置、不同关系。'],
+      ['代价', '每层计算量 {m:O(n^2 \\cdot d)}，随句子长度平方增长（论文表 1）。'],
+    ];
+    let y = 282;
+    cards.forEach(([t, s], k) => {
+      const cg = riseG(R, 460 + k * 110);
+      el('circle', { cx: 866, cy: y - 6, r: 14, fill: k === 3 ? C.ink3 : C.ink }, cg);
+      label(cg, 866, y - 1, String(k + 1), { size: 14, weight: 700, anchor: 'middle', fill: C.paper, cls: 'mono' });
+      label(cg, 892, y, t, { size: 18, weight: 700 });
+      const p = para(cg, s, { x: 892, y: y + 28, w: 636, size: 15.5, lh: 25, cls: 'sans ink2' });
+      y += 28 + p.h + 22;
+    });
+    const F = riseG(g, 900);
+    el('rect', { x: 850, y: 652, width: 678, height: 106, rx: 10, class: 'panel' }, F);
+    label(F, 870, 681, '原论文 base 模型', { size: 15, weight: 700 });
+    para(F, '{m:N = 6}　　{m:d_{model} = 512}　　{m:h = 8}　　{m:d_k = d_v = 64}　　{m:d_{ff} = 2048}', { x: 870, y: 712, size: 16 });
+    para(F, '论文报告：WMT 2014 英→德翻译 {b:28.4 BLEU}（Transformer big，见论文摘要）', { x: 870, y: 742, size: 14, cls: 'sans ink2' });
+    const C8 = riseG(g, 1000);
+    label(C8, 850, 802, '回顾', { size: 14, cls: 'sans ink3' });
+    let cx = 900, cy = 784;
+    SC.slice(1).forEach((s, k) => {
+      const w = Math.ceil(measure(`${k + 1} ${s.short}`, 'sans', 14, 600) + 28);
+      if (cx + w > 1528) { cx = 900; cy += 40; }
+      Button(C8, { x: cx, y: cy, h: 30, size: 14, label: `${k + 1} ${s.short}`, kind: 'chip', onClick: () => go(k + 1) });
+      cx += w + 8;
+    });
+  },
+  enter(tl) {
+    this.ghosts.forEach(([, r]) => r.setAttribute('transform', 'translate(0,0)'));
+    this.nx.forEach((t) => { t.textContent = 'N×'; });
+    tl.at(900, () => tl.tween(1100, (p) => {
+      this.ghosts.forEach(([k, r]) => r.setAttribute('transform', `translate(${(4 * k * p).toFixed(1)},${(-4 * k * p).toFixed(1)})`));
+    }, EASE.out, () => this.nx.forEach((t) => { t.textContent = '6×'; })));
+  },
+  dwell: 9000,
+});
+
+// ===================================================================
+//  Navigation, autoplay, keyboard
+// ===================================================================
+const stage = document.getElementById('stage');
+const chrome = document.getElementById('chrome');
+const scenes = SC.map((def, i) => {
+  const g = el('g', { class: 'scene', id: 'scene-' + i, 'data-step': i }, stage);
+  def.g = g; def.index = i;
+  def.build(g);
+  return def;
+});
+const LAST = scenes.length - 1;
+let cur = -1, autoplay = false, autoTL = null;
+const ui = {};
+
+function userAct() { if (autoplay) stopAuto(); }
+
+function buildChrome() {
+  el('line', { x1: 72, x2: 1528, y1: 914, y2: 914, class: 'rule' }, chrome);
+  ui.prog = el('line', { x1: 72, x2: 72, y1: 914, y2: 914, stroke: C.q, 'stroke-width': 3, 'stroke-linecap': 'round' }, chrome);
+  ui.prev = Button(chrome, { x: 72, y: 932, h: 36, label: '‹ 上一步', onClick: () => go(cur - 1) });
+  ui.next = Button(chrome, { x: 72 + ui.prev.w + 10, y: 932, h: 36, label: '下一步 ›', kind: 'primary', onClick: () => go(cur + 1) });
+  // autoplay button with drawn play / pause icon
+  const ax = 72 + ui.prev.w + ui.next.w + 20, aw = 132;
+  const ag = el('g', { class: 'btn', transform: `translate(${ax},932)`, role: 'button' }, chrome);
+  el('rect', { x: 0, y: 0, width: aw, height: 36, rx: 18 }, ag);
+  ui.playIcon = el('path', { d: 'M20,11 L31,18 L20,25 Z', fill: C.ink }, ag);
+  ui.pauseIcon = el('path', { d: 'M19,11 h4 v14 h-4 z M27,11 h4 v14 h-4 z', fill: C.ink, style: 'display:none' }, ag);
+  ui.autoT = el('text', { x: 40, y: 23.4, 'font-size': 15, class: 'sans' }, ag, '自动播放');
+  ag.addEventListener('click', (e) => { e.stopPropagation(); toggleAuto(); });
+  ui.autoBtn = ag;
+  // progress dots
+  const n = scenes.length, gap = 22, x0 = 800 - ((n - 1) * gap) / 2;
+  ui.dots = scenes.map((s, i) => {
+    const dg = el('g', { class: 'dot' }, chrome);
+    el('rect', { x: x0 + i * gap - 12, y: 936, width: 24, height: 24, fill: 'transparent' }, dg);
+    const r = el('rect', { class: 'dr', x: x0 + i * gap - 4, y: 944, width: 8, height: 8, rx: 4 }, dg);
+    dg.addEventListener('click', () => go(i));
+    const tt = el('title', null, dg, i === 0 ? '封面' : `第 ${i} 步：${s.short}`);
+    return { dg, r, cx: x0 + i * gap, tt };
+  });
+  ui.hint = label(chrome, 1440, 955, '', { size: 13, cls: 'sans ink3', anchor: 'end' });
+  ui.page = label(chrome, 1528, 957, '', { size: 18, cls: 'mono', anchor: 'end', weight: 700 });
+}
+
+function updateChrome() {
+  ui.prev.setDisabled(cur === 0);
+  ui.next.setDisabled(cur === LAST);
+  ui.dots.forEach((d, i) => {
+    const on = i === cur;
+    d.dg.classList.toggle('cur', on);
+    d.r.setAttribute('width', on ? 22 : 8);
+    d.r.setAttribute('x', d.cx - (on ? 11 : 4));
+  });
+  const sc = scenes[cur];
+  ui.page.textContent = cur === 0 ? '封面' : `${cur} / ${LAST}`;
+  ui.hint.textContent = '← → 翻页 · 空格 自动播放' + (sc.keys ? ' · ' + sc.keys : '');
+}
+
+function go(i, fromAuto) {
+  i = clamp(i, 0, LAST);
+  if (i === cur) return;
+  if (!fromAuto && autoplay) stopAuto();
+  const dir = i > cur ? 1 : -1;
+  const prev = scenes[cur], next = scenes[i];
+  if (prev) {
+    if (prev.tl) prev.tl.kill();
+    if (prev.leave) prev.leave();
+    const pg = prev.g;
+    pg.classList.remove('on', 'from-left', 'from-right');
+    pg.classList.add(dir > 0 ? 'to-left' : 'to-right');
+    setTimeout(() => { if (!pg.classList.contains('on')) pg.classList.remove('play'); }, 700);
+  }
+  const ng = next.g;
+  ng.style.transition = 'none';
+  ng.classList.remove('on', 'to-left', 'to-right', 'play');
+  ng.classList.add(dir > 0 ? 'from-right' : 'from-left');
+  void ng.getBoundingClientRect();
+  ng.style.transition = '';
+  ng.classList.remove('from-right', 'from-left');
+  ng.classList.add('on', 'play');
+  cur = i;
+  next.tl = new Timeline();
+  if (next.enter) next.enter(next.tl);
+  updateChrome();
+  if (autoplay) scheduleAuto();
+}
+
+function setAutoUI() {
+  ui.playIcon.style.display = autoplay ? 'none' : '';
+  ui.pauseIcon.style.display = autoplay ? '' : 'none';
+  ui.autoT.textContent = autoplay ? '暂停播放' : '自动播放';
+  ui.autoBtn.classList.toggle('on', false);
+}
+function scheduleAuto() {
+  if (autoTL) autoTL.kill();
+  autoTL = new Timeline();
+  const sc = scenes[cur];
+  const dwell = (sc.auto ? sc.auto(autoTL) : 0) || sc.dwell || 7000;
+  autoTL.tween(dwell, (p) => ui.prog.setAttribute('x2', (72 + 1456 * p).toFixed(1)), EASE.lin);
+  autoTL.at(dwell, () => { if (cur < LAST) go(cur + 1, true); else stopAuto(); });
+}
+function startAuto() {
+  autoplay = true;
+  setAutoUI();
+  if (cur >= LAST) go(1, true); else scheduleAuto();
+}
+function stopAuto() {
+  autoplay = false;
+  if (autoTL) autoTL.kill();
+  autoTL = null;
+  ui.prog.setAttribute('x2', 72);
+  setAutoUI();
+}
+function toggleAuto() { if (autoplay) stopAuto(); else startAuto(); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  const k = e.key;
+  if (k === 'ArrowRight' || k === 'PageDown') { go(cur + 1); e.preventDefault(); }
+  else if (k === 'ArrowLeft' || k === 'PageUp') { go(cur - 1); e.preventDefault(); }
+  else if (k === 'Home') { go(0); e.preventDefault(); }
+  else if (k === 'End') { go(LAST); e.preventDefault(); }
+  else if (k === ' ' || k === 'p' || k === 'P') { toggleAuto(); e.preventDefault(); }
+  else if (k === 'Enter' && cur === 0) { go(1); e.preventDefault(); }
+  else {
+    const sc = scenes[cur];
+    if (sc.key && sc.key(k)) { userAct(); e.preventDefault(); }
+  }
+});
+
+buildChrome();
+const startAt = parseInt(String(location.hash || '').replace(/[^0-9]/g, ''), 10);
+go(Number.isFinite(startAt) ? clamp(startAt, 0, LAST) : 0);
+
+// hooks for automated checks
+window.__attn = {
+  go: (i) => go(i),
+  get cur() { return cur; },
+  get autoplay() { return autoplay; },
+  flush: () => { const s = scenes[cur]; if (s.tl) s.tl.flush(); if (s.freeze) s.freeze(); },
+  scenes, state: ST, model: Model, params: PARAMS, tokens: TOK,
+};
+
+})();
+]]></script>
+</svg>

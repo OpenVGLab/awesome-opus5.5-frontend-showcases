@@ -1,0 +1,108 @@
+---
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '../../../styles/tokens.css';
+import '../../../styles/base.css';
+import '../styles/blog.css';
+import serifItalicWoff2 from '@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url';
+import serifWoff2 from '@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url';
+import sansWoff2 from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE, absolute } from '../lib/site';
+
+const {
+  title,
+  description,
+  path,
+  image = SITE.ogImage,
+  imageAlt = 'Mara Ellison — creative frontend developer',
+  imageWidth = 1200,
+  imageHeight = 630,
+  type = 'website',
+  jsonLd = [],
+  noindex = false,
+  prev,
+  next,
+  article,
+  newsKeywords,
+  amp,
+  current = 'blog',
+} = Astro.props;
+
+const canonical = absolute(Astro.site, path);
+const ogImage = absolute(Astro.site, image);
+const themeScript = `(function(){var d=document.documentElement;d.classList.add('js');try{var s=localStorage.getItem('me-theme');var dark=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;d.setAttribute('data-theme',dark?'dark':'light');}catch(e){}})();`;
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline set:html={themeScript} />
+    <link rel="preload" href={serifWoff2} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={serifItalicWoff2} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={sansWoff2} as="font" type="font/woff2" crossorigin />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+    {newsKeywords && <meta name="news_keywords" content={newsKeywords} />}
+    {newsKeywords && <meta name="keywords" content={newsKeywords} />}
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+    {prev && <link rel="prev" href={prev} />}
+    {next && <link rel="next" href={next} />}
+    {amp && <link rel="amphtml" href={absolute(Astro.site, amp)} />}
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/blog/rss.xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#F4F1EA" />
+    <meta name="color-scheme" content="light dark" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content={String(imageWidth)} />
+    <meta property="og:image:height" content={String(imageHeight)} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:locale" content="en_US" />
+    {
+      article && (
+        <>
+          <meta property="article:published_time" content={article.published} />
+          {article.modified && <meta property="article:modified_time" content={article.modified} />}
+          <meta property="article:author" content={SITE.author} />
+          <meta property="article:section" content={article.section} />
+          {article.tags.map((t) => <meta property="article:tag" content={t} />)}
+        </>
+      )
+    }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={SITE.twitter} />
+    <meta name="twitter:creator" content={SITE.twitter} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    {jsonLd.length > 0 && <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': jsonLd }).replace(/</g, '\\u003c')} />}
+    <slot name="head" />
+  </head>
+  <body class="blog-body">
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <Header current={current} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

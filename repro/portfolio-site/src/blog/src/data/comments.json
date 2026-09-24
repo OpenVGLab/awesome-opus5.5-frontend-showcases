@@ -1,0 +1,27 @@
+{
+  "webgl-page-transitions-with-threejs": [
+    { "author": "jonas-kl", "date": "2026-08-19", "body": "The `uCover` trick finally fixed my stretched thumbnails. Did you try a `sampler2DArray` for the texture cache?", "reactions": 12 },
+    { "author": "amina.codes", "date": "2026-08-21", "body": "Love that the reduced-motion fallback is part of the article and not an afterthought. **More of this please.**", "reactions": 8 },
+    { "author": "maraellison", "date": "2026-08-21", "body": "@jonas-kl not yet — the cache rarely holds more than three textures, so separate samplers are simpler. Might be worth it for a gallery though!", "reactions": 5, "owner": true }
+  ],
+  "core-web-vitals-for-creative-websites": [
+    { "author": "pedro.dev", "date": "2026-07-23", "body": "The Lighthouse CI budget snippet is going straight into our repo. Do you run it on every preview deploy?", "reactions": 9 },
+    { "author": "maraellison", "date": "2026-07-24", "body": "Yes — on every PR preview, plus a nightly run against production with field data from `web-vitals`.", "reactions": 4, "owner": true }
+  ],
+  "designing-a-motion-system": [
+    { "author": "lena.motion", "date": "2026-07-01", "body": "Four durations and three curves is such a good constraint. We had **nineteen** easing curves in Figma before this.", "reactions": 15 },
+    { "author": "rafa_ui", "date": "2026-07-03", "body": "The video breakdown makes the spring vs. ease-out difference really obvious. Great player, too!", "reactions": 6 }
+  ],
+  "astro-or-nextjs-for-content-sites": [
+    { "author": "kai.builds", "date": "2026-05-15", "body": "\"Split by section, not by page\" is the clearest framing of this debate I've read.", "reactions": 11 }
+  ],
+  "generative-music-with-the-web-audio-api": [
+    { "author": "synthwave_sam", "date": "2026-04-03", "body": "Decaying noise as an impulse response is such a neat hack. Tried it — sounds lovely with a low-pass on the wet signal.", "reactions": 7 }
+  ],
+  "json-ld-structured-data-recipes": [
+    { "author": "seo-nora", "date": "2026-02-20", "body": "Stable `@id`s saved me from so many duplicate-entity warnings. Bookmarked.", "reactions": 10 }
+  ],
+  "accessible-custom-cursors": [
+    { "author": "ada.a11y", "date": "2026-01-09", "body": "Thank you for the *never hide the cursor over text inputs* rule. So many portfolios get this wrong.", "reactions": 14 }
+  ]
+}

@@ -1,0 +1,42 @@
+---
+// "Time to read" progress bar: fills as you read and counts down the remaining minutes.
+const { minutes } = Astro.props;
+---
+
+<div class="read-progress" data-read-progress data-minutes={minutes} aria-hidden="true">
+  <span class="read-progress-bar" data-read-bar></span>
+</div>
+<div class="read-left" data-read-left aria-hidden="true">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>
+  <span data-read-text>{minutes} min left</span>
+</div>
+
+<script>
+  const box = document.querySelector('[data-read-progress]');
+  const bar = document.querySelector('[data-read-bar]');
+  const pill = document.querySelector('[data-read-left]');
+  const label = document.querySelector('[data-read-text]');
+  const body = document.querySelector('[data-post-body]');
+  if (box && body) {
+    const minutes = Number(box.dataset.minutes) || 1;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = body.getBoundingClientRect();
+      const total = Math.max(1, r.height - window.innerHeight * 0.5);
+      const done = Math.min(1, Math.max(0, (window.innerHeight * 0.3 - r.top) / total));
+      bar.style.transform = `scaleX(${done.toFixed(4)})`;
+      const left = Math.max(1, Math.ceil(minutes * (1 - done)));
+      label.textContent = done >= 0.995 ? 'Done — thanks for reading!' : `${left} min left`;
+      // Visible while the article body is on screen, so it never covers comments or the footer.
+      pill.classList.toggle('is-visible', done > 0.01 && r.bottom > window.innerHeight * 0.25);
+      pill.classList.toggle('is-done', done >= 0.995);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+  }
+</script>

@@ -1,0 +1,75 @@
+---
+import Blockquote from '../../components/Blockquote.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Newsletter from '../../components/Newsletter.astro';
+import PostCard from '../../components/PostCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { breadcrumbJsonLd, blogJsonLd, personJsonLd } from '../../lib/seo';
+import { SITE, fromGlob, tagLabel, tagPath } from '../../lib/site';
+
+// Post lists on the index and archive pages come from Astro.glob() over the Markdown files.
+const modules = await Astro.glob('../../content/blog/*.md');
+const posts = modules.map(fromGlob).sort((a, b) => b.pubDate - a.pubDate);
+const [hero, ...rest] = posts;
+const tagCounts = Object.entries(
+  posts.flatMap((p) => p.tags).reduce((acc, t) => ({ ...acc, [t]: (acc[t] || 0) + 1 }), {}),
+).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Blog', path: '/blog/' },
+];
+const jsonLd = [blogJsonLd(Astro.site, posts), breadcrumbJsonLd(Astro.site, crumbs), personJsonLd(Astro.site)];
+---
+
+<BaseLayout title="Blog — WebGL, performance & motion design articles | Mara Ellison" description={SITE.description} path="/blog/" jsonLd={jsonLd}>
+  <section class="blog-hero container">
+    <Breadcrumbs items={crumbs} />
+    <p class="kicker">The blog</p>
+    <h1 class="blog-hero-title">Notes on <em>craft</em>, code and motion.</h1>
+    <div class="blog-hero-row">
+      <p class="blog-hero-intro">
+        Practical, long-form articles about building fast, accessible and delightful interfaces — WebGL transitions, Core Web Vitals, motion systems and the rest of the
+        <a href="/#skills">creative frontend toolkit</a>.
+      </p>
+      <Blockquote variant="quote" cite="Mara, on why this blog exists" size="sm">
+        Write the article you needed six months ago.
+      </Blockquote>
+    </div>
+  </section>
+
+  <section class="container blog-featured" aria-labelledby="latest-title">
+    <h2 id="latest-title" class="sr-only">Latest article</h2>
+    <PostCard post={hero} size="hero" headingLevel={2} eager />
+  </section>
+
+  <section class="container blog-list-section" aria-labelledby="all-title">
+    <div class="blog-list-head">
+      <h2 id="all-title" class="blog-list-title">More articles</h2>
+      <a class="link-arrow" href="/blog/archive/">Browse the archive
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+    </div>
+    <div class="post-grid">
+      {rest.map((p) => <PostCard post={p} />)}
+    </div>
+  </section>
+
+  <section class="container blog-topics" aria-labelledby="topics-title">
+    <h2 id="topics-title" class="blog-list-title">Topics</h2>
+    <ul class="topic-cloud">
+      {
+        tagCounts.map(([t, n]) => (
+          <li>
+            <a href={tagPath(t)} class="topic" style={`--w:${n}`}>
+              {tagLabel(t)} <span>{n}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <div class="container">
+    <Newsletter />
+  </div>
+</BaseLayout>

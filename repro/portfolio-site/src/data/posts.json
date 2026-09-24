@@ -1,0 +1,121 @@
+[
+  {
+    "slug": "webgl-page-transitions-with-threejs",
+    "title": "Building Buttery WebGL Page Transitions with Three.js",
+    "description": "A step-by-step guide to shader-based image transitions in Three.js — texture loading, a displacement shader, GSAP timing and graceful fallbacks.",
+    "pubDate": "2026-08-18",
+    "updatedDate": "2026-09-10",
+    "tags": [
+      "webgl",
+      "threejs",
+      "animation"
+    ],
+    "cover": "images/blog/webgl-page-transitions-with-threejs.webp",
+    "coverAlt": "Two abstract gradient images dissolving into each other through a noisy displacement pattern",
+    "featured": true,
+    "hasVideo": false,
+    "minutes": 4
+  },
+  {
+    "slug": "core-web-vitals-for-creative-websites",
+    "title": "Core Web Vitals for Creative Websites: A Practical Playbook",
+    "description": "How to keep LCP, INP and CLS green on sites full of WebGL, video and animation — with budgets, lazy loading and real-user measurements.",
+    "pubDate": "2026-07-22",
+    "updatedDate": "2026-08-30",
+    "tags": [
+      "performance",
+      "seo",
+      "nextjs"
+    ],
+    "cover": "images/blog/core-web-vitals-for-creative-websites.webp",
+    "coverAlt": "Three circular gauges in green, amber and red representing Core Web Vitals scores",
+    "featured": true,
+    "hasVideo": false,
+    "minutes": 3
+  },
+  {
+    "slug": "designing-a-motion-system",
+    "title": "Designing a Motion System: Principles for Meaningful UI Animation",
+    "description": "Tokens for duration and easing, choreography rules and reduced-motion fallbacks — how to turn one-off animations into a coherent motion system.",
+    "pubDate": "2026-06-30",
+    "updatedDate": "2026-09-02",
+    "tags": [
+      "motion",
+      "design",
+      "react"
+    ],
+    "cover": "images/blog/designing-a-motion-system.webp",
+    "coverAlt": "Colourful easing curves drawn on a grid with dots travelling along them",
+    "featured": true,
+    "hasVideo": true,
+    "minutes": 3
+  },
+  {
+    "slug": "astro-or-nextjs-for-content-sites",
+    "title": "Astro or Next.js? Choosing a Stack for Content-Heavy Sites",
+    "description": "Why this portfolio uses Next.js for the interactive homepage and Astro for the blog — and a checklist for deciding on your own project.",
+    "pubDate": "2026-05-14",
+    "updatedDate": null,
+    "tags": [
+      "astro",
+      "nextjs",
+      "architecture"
+    ],
+    "cover": "images/blog/astro-or-nextjs-for-content-sites.webp",
+    "coverAlt": "Two stylised planets, one orange and one indigo, orbiting a shared sun",
+    "featured": false,
+    "hasVideo": false,
+    "minutes": 2
+  },
+  {
+    "slug": "generative-music-with-the-web-audio-api",
+    "title": "Generative Music in the Browser with the Web Audio API",
+    "description": "Build a tiny lo-fi generator with oscillators, filters, a lookahead scheduler and a convolution reverb — the same engine behind this site's music player.",
+    "pubDate": "2026-04-02",
+    "updatedDate": null,
+    "tags": [
+      "web-audio",
+      "creative-coding",
+      "javascript"
+    ],
+    "cover": "images/blog/generative-music-with-the-web-audio-api.webp",
+    "coverAlt": "Layered sine waves in violet and coral forming a soft sound wave pattern",
+    "featured": false,
+    "hasVideo": false,
+    "minutes": 2
+  },
+  {
+    "slug": "json-ld-structured-data-recipes",
+    "title": "JSON-LD Recipes: Structured Data That Actually Ships",
+    "description": "Copy-paste JSON-LD for Person, FAQ, Product, Review, Event and Breadcrumb markup — plus how to test it before search engines do.",
+    "pubDate": "2026-02-19",
+    "updatedDate": "2026-03-04",
+    "tags": [
+      "seo",
+      "json-ld",
+      "javascript"
+    ],
+    "cover": "images/blog/json-ld-structured-data-recipes.webp",
+    "coverAlt": "Curly braces connected by lines into a network of nodes on a dark background",
+    "featured": false,
+    "hasVideo": false,
+    "minutes": 2
+  },
+  {
+    "slug": "accessible-custom-cursors",
+    "title": "Accessible Custom Cursors and Pointer Effects",
+    "description": "Custom cursors and mouse trails can delight — or exclude. How to build them so they respect touch devices, reduced motion and assistive technology.",
+    "pubDate": "2026-01-08",
+    "updatedDate": null,
+    "tags": [
+      "accessibility",
+      "css",
+      "react"
+    ],
+    "cover": "images/blog/accessible-custom-cursors.webp",
+    "coverAlt": "A small coral dot inside a larger ring cursor, surrounded by fading particle trails",
+    "featured": false,
+    "hasVideo": false,
+    "minutes": 2
+  }
+]

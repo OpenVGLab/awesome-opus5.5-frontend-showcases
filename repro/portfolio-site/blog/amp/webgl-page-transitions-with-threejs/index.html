@@ -1,0 +1,117 @@
+<!DOCTYPE html><html amp lang="en"> <head><meta charset="utf-8"><script>(function(){var m=document.createElement('meta');m.name='runtime-host';m.content=new URL('../../../amp',location.href).href.replace(/\/$/,'');document.head.appendChild(m);})();</script><script async src="../../../amp/v0.js"></script><title>Building Buttery WebGL Page Transitions with Three.js | Mara Ellison (AMP)</title><link rel="canonical" href="https://maraellison.dev/blog/webgl-page-transitions-with-threejs/"><link rel="icon" href="../../../favicon.svg" type="image/svg+xml"><meta name="viewport" content="width=device-width"><meta name="description" content="A step-by-step guide to shader-based image transitions in Three.js — texture loading, a displacement shader, GSAP timing and graceful fallbacks."><meta name="news_keywords" content="WebGL, Three.js, page transitions, GLSL shaders, GSAP, creative development"><meta name="robots" content="index, follow, max-image-preview:large"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","@id":"https://maraellison.dev/blog/webgl-page-transitions-with-threejs/#article","mainEntityOfPage":{"@type":"WebPage","@id":"https://maraellison.dev/blog/webgl-page-transitions-with-threejs/"},"url":"https://maraellison.dev/blog/webgl-page-transitions-with-threejs/","headline":"Building Buttery WebGL Page Transitions with Three.js","description":"A step-by-step guide to shader-based image transitions in Three.js — texture loading, a displacement shader, GSAP timing and graceful fallbacks.","image":["https://maraellison.dev/images/blog/webgl-page-transitions-with-threejs-1600.webp","https://maraellison.dev/images/blog/webgl-page-transitions-with-threejs-og.jpg"],"datePublished":"2026-08-18T00:00:00.000Z","dateModified":"2026-09-10T00:00:00.000Z","author":{"@id":"https://maraellison.dev/#person"},"publisher":{"@id":"https://maraellison.dev/#person"},"isPartOf":{"@id":"https://maraellison.dev/blog/#blog"},"inLanguage":"en","keywords":"WebGL, Three.js, page transitions, GLSL shaders, GSAP, creative development","articleSection":"webgl","wordCount":723,"timeRequired":"PT4M"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://maraellison.dev/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://maraellison.dev/blog/"},{"@type":"ListItem","position":3,"name":"Building Buttery WebGL Page Transitions with Three.js","item":"https://maraellison.dev/blog/webgl-page-transitions-with-threejs/"}]},{"@type":"Person","@id":"https://maraellison.dev/#person","name":"Mara Ellison","url":"https://maraellison.dev/","jobTitle":"Creative Frontend Developer","image":"https://maraellison.dev/images/mara-ellison-creative-frontend-developer-headshot-256.webp","sameAs":["https://github.com/maraellison","https://www.linkedin.com/in/maraellison","https://x.com/maraellison"]}]}</script><style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript><style amp-custom>
+:root{--bg:#f4f1ea;--ink:#141414;--muted:#67645e;--line:rgba(20,20,20,.12);--accent:#e83a1c;--surface:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--ink:#f2f0ea;--muted:#9d9a93;--line:rgba(242,240,234,.12);--accent:#ff6a4d;--surface:#17171b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 Georgia,'Times New Roman',serif}
+a{color:var(--accent)}header,article,footer{max-width:720px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px;border-bottom:1px solid var(--line);font:600 15px/1.2 system-ui,sans-serif}
+header a{color:var(--ink);text-decoration:none}.dot{display:inline-block;width:26px;height:26px;margin-right:8px;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font:italic 18px/26px Georgia,serif;vertical-align:middle}
+.kicker{margin:32px 0 8px;font:12px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0 0 12px;font-size:40px;line-height:1.1;font-weight:400}
+.meta{margin:0 0 24px;color:var(--muted);font:14px/1.5 system-ui,sans-serif}
+.cover{margin:0 0 28px;border-radius:14px;overflow:hidden}
+h2{margin:40px 0 12px;font-size:28px;font-weight:400;line-height:1.2}h3{margin:28px 0 8px;font-size:22px;font-weight:400}
+pre{overflow-x:auto;padding:16px;border-radius:12px;background:#161618;color:#e8e6e1;font:13px/1.6 ui-monospace,monospace}
+code{font-family:ui-monospace,monospace;font-size:.88em}p code,li code{padding:1px 5px;border-radius:5px;background:var(--line)}
+.code-bar{display:flex;justify-content:space-between;padding:6px 14px;border-radius:12px 12px 0 0;background:#222226;color:#aaa;font:12px ui-monospace,monospace}.code-bar+pre{border-radius:0 0 12px 12px;margin-top:0}
+table{width:100%;border-collapse:collapse;font:14px/1.5 system-ui,sans-serif}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+.bq{margin:28px 0;padding:16px 20px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;background:var(--surface)}
+.bq-title{margin:0 0 4px;font:700 12px/1.4 system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.bq-body{margin:0}.bq-body p{margin:0}.bq--quote{border:0;background:none;padding:0 0 0 20px;border-left:2px solid var(--accent);font-size:24px;line-height:1.35}.bq-cite{margin-top:8px;font:14px system-ui,sans-serif;color:var(--muted)}
+footer{margin-top:48px;padding-top:24px;padding-bottom:48px;border-top:1px solid var(--line);font:14px/1.6 system-ui,sans-serif;color:var(--muted)}
+kbd{padding:1px 6px;border:1px solid var(--line);border-radius:5px;font:12px ui-monospace,monospace}
+</style></head> <body> <header> <a href="../../../"><span class="dot">M</span>Mara Ellison</a> <a href="../../../blog/webgl-page-transitions-with-threejs/">Full version →</a> </header> <article> <p class="kicker">WebGL · Three.js · Animation</p> <h1>Building Buttery WebGL Page Transitions with Three.js</h1> <p class="meta">
+By Mara Ellison · <time datetime="2026-08-18T00:00:00.000Z">18 August 2026</time> · 4 min read
+<span> · Updated 10 September 2026</span> </p> <div class="cover"> <amp-img src="../../../images/blog/webgl-page-transitions-with-threejs-1200.webp" width="1600" height="840" layout="responsive" alt="Two abstract gradient images dissolving into each other through a noisy displacement pattern" data-amp-auto-lightbox-disable="true"></amp-img> </div> <p>The project viewer on my <a href="../../../#work">portfolio homepage</a> switches between case studies with a noisy, liquid dissolve. It looks expensive, but the whole effect is one plane, two textures and about forty lines of GLSL. This article walks through the exact technique, including the parts most tutorials skip: timing, disposal and what to do when WebGL is not an option.</p>
+<h2 id="why-webgl-for-transitions">Why WebGL for transitions?</h2>
+<p>CSS can crossfade two images, and <code>clip-path</code> can wipe between them. What CSS cannot do is treat an image as <em>data</em> — sampling pixels from one image based on the brightness of another. That is what makes a displacement transition feel physical: pixels flow along a noise field instead of fading in place.</p>
+<p>WebGL also keeps the main thread free. Once the textures are uploaded, the GPU does all the work, so the transition stays smooth even while React is re-rendering the case-study text next to it.</p>
+<h2 id="the-setup-one-plane-two-textures">The setup: one plane, two textures</h2>
+<p>We only need an orthographic camera and a plane that fills the canvas. Everything interesting happens in the material.</p>
+<div class="code-block" data-lang="ts"><div class="code-bar"><span class="code-lang">ts</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="ts"><code><span class="line"><span>import</span><span> *</span><span> as</span><span> THREE </span><span>from</span><span> 'three'</span><span>;</span></span>
+<span class="line"></span>
+<span class="line"><span>const</span><span> renderer</span><span> =</span><span> new</span><span> THREE</span><span>.</span><span>WebGLRenderer</span><span>({ canvas, antialias: </span><span>false</span><span>, alpha: </span><span>true</span><span> });</span></span>
+<span class="line"><span>renderer.</span><span>setPixelRatio</span><span>(Math.</span><span>min</span><span>(window.devicePixelRatio, </span><span>2</span><span>));</span></span>
+<span class="line"></span>
+<span class="line"><span>const</span><span> scene</span><span> =</span><span> new</span><span> THREE</span><span>.</span><span>Scene</span><span>();</span></span>
+<span class="line"><span>const</span><span> camera</span><span> =</span><span> new</span><span> THREE</span><span>.</span><span>OrthographicCamera</span><span>(</span><span>-</span><span>1</span><span>, </span><span>1</span><span>, </span><span>1</span><span>, </span><span>-</span><span>1</span><span>, </span><span>0</span><span>, </span><span>1</span><span>);</span></span>
+<span class="line"></span>
+<span class="line"><span>const</span><span> material</span><span> =</span><span> new</span><span> THREE</span><span>.</span><span>ShaderMaterial</span><span>({</span></span>
+<span class="line"><span>  uniforms: {</span></span>
+<span class="line"><span>    uFrom: { value: </span><span>null</span><span> },</span></span>
+<span class="line"><span>    uTo: { value: </span><span>null</span><span> },</span></span>
+<span class="line"><span>    uProgress: { value: </span><span>0</span><span> },</span></span>
+<span class="line"><span>    uCover: { value: </span><span>new</span><span> THREE</span><span>.</span><span>Vector4</span><span>(</span><span>1</span><span>, </span><span>1</span><span>, </span><span>0</span><span>, </span><span>0</span><span>) },</span></span>
+<span class="line"><span>  },</span></span>
+<span class="line"><span>  vertexShader,</span></span>
+<span class="line"><span>  fragmentShader,</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"></span>
+<span class="line"><span>scene.</span><span>add</span><span>(</span><span>new</span><span> THREE</span><span>.</span><span>Mesh</span><span>(</span><span>new</span><span> THREE</span><span>.</span><span>PlaneGeometry</span><span>(</span><span>2</span><span>, </span><span>2</span><span>), material));</span></span></code></pre></div>
+<p>The <code>uCover</code> uniform handles <code>object-fit: cover</code> maths so images of any aspect ratio fill the canvas without stretching.</p>
+<h2 id="writing-the-displacement-shader">Writing the displacement shader</h2>
+<p>The fragment shader mixes the two textures, but first it pushes each texture’s UVs in opposite directions using a cheap value-noise function. As <code>uProgress</code> goes from 0 to 1, the outgoing image is pulled away while the incoming one settles into place.</p>
+<div class="code-block" data-lang="glsl"><div class="code-bar"><span class="code-lang">glsl</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="glsl"><code><span class="line"><span>uniform</span><span> sampler2D</span><span> uFrom;</span></span>
+<span class="line"><span>uniform</span><span> sampler2D</span><span> uTo;</span></span>
+<span class="line"><span>uniform</span><span> float</span><span> uProgress;</span></span>
+<span class="line"><span>varying</span><span> vec2</span><span> vUv;</span></span>
+<span class="line"></span>
+<span class="line"><span>float</span><span> hash</span><span>(vec2 </span><span>p</span><span>) { </span><span>return</span><span> fract</span><span>(</span><span>sin</span><span>(</span><span>dot</span><span>(p, </span><span>vec2</span><span>(</span><span>127.1</span><span>, </span><span>311.7</span><span>))) </span><span>*</span><span> 43758.5453</span><span>); }</span></span>
+<span class="line"></span>
+<span class="line"><span>float</span><span> noise</span><span>(vec2 </span><span>p</span><span>) {</span></span>
+<span class="line"><span>  vec2 i </span><span>=</span><span> floor</span><span>(p), f </span><span>=</span><span> fract</span><span>(p);</span></span>
+<span class="line"><span>  vec2 u </span><span>=</span><span> f </span><span>*</span><span> f </span><span>*</span><span> (</span><span>3.0</span><span> -</span><span> 2.0</span><span> *</span><span> f);</span></span>
+<span class="line"><span>  return</span><span> mix</span><span>(</span><span>mix</span><span>(</span><span>hash</span><span>(i), </span><span>hash</span><span>(i </span><span>+</span><span> vec2</span><span>(</span><span>1</span><span>, </span><span>0</span><span>)), u.x),</span></span>
+<span class="line"><span>             mix</span><span>(</span><span>hash</span><span>(i </span><span>+</span><span> vec2</span><span>(</span><span>0</span><span>, </span><span>1</span><span>)), </span><span>hash</span><span>(i </span><span>+</span><span> vec2</span><span>(</span><span>1</span><span>, </span><span>1</span><span>)), u.x), u.y);</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"></span>
+<span class="line"><span>void</span><span> main</span><span>() {</span></span>
+<span class="line"><span>  float</span><span> n </span><span>=</span><span> noise</span><span>(vUv </span><span>*</span><span> 6.0</span><span>);</span></span>
+<span class="line"><span>  float</span><span> p </span><span>=</span><span> smoothstep</span><span>(</span><span>0.0</span><span>, </span><span>1.0</span><span>, uProgress);</span></span>
+<span class="line"><span>  vec2 fromUv </span><span>=</span><span> vUv </span><span>+</span><span> vec2</span><span>(n </span><span>*</span><span> p </span><span>*</span><span> 0.35</span><span>, </span><span>0.0</span><span>);</span></span>
+<span class="line"><span>  vec2 toUv </span><span>=</span><span> vUv </span><span>-</span><span> vec2</span><span>(n </span><span>*</span><span> (</span><span>1.0</span><span> -</span><span> p) </span><span>*</span><span> 0.35</span><span>, </span><span>0.0</span><span>);</span></span>
+<span class="line"><span>  float</span><span> edge </span><span>=</span><span> smoothstep</span><span>(p </span><span>-</span><span> 0.2</span><span>, p </span><span>+</span><span> 0.2</span><span>, n);</span></span>
+<span class="line"><span>  gl_FragColor </span><span>=</span><span> mix</span><span>(</span><span>texture2D</span><span>(uTo, toUv), </span><span>texture2D</span><span>(uFrom, fromUv), edge);</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<aside class="bq bq--tip" data-variant="tip" role="note">
+<p class="bq-title">Tip</p>
+<div class="bq-body">
+<p>Multiply the noise by a second, larger-scale noise to break up the grid pattern. Two octaves are usually enough; more rarely reads as “better” at transition speed.</p>
+</div>
+</aside>
+<h2 id="timing-the-transition-with-gsap">Timing the transition with GSAP</h2>
+<p>Shaders give you the look; timing gives you the feel. I tween a plain object with GSAP and copy the value into the uniform on every update, which keeps the render loop idle when nothing is moving.</p>
+<div class="code-block" data-lang="ts"><div class="code-bar"><span class="code-lang">ts</span></div><pre class="astro-code astro-code-themes github-light-high-contrast github-dark-dimmed" data-language="ts"><code><span class="line"><span>import</span><span> { gsap } </span><span>from</span><span> 'gsap'</span><span>;</span></span>
+<span class="line"></span>
+<span class="line"><span>function</span><span> transitionTo</span><span>(</span><span>nextTexture</span><span>:</span><span> THREE</span><span>.</span><span>Texture</span><span>) {</span></span>
+<span class="line"><span>  material.uniforms.uTo.value </span><span>=</span><span> nextTexture;</span></span>
+<span class="line"><span>  gsap.</span><span>fromTo</span><span>(</span></span>
+<span class="line"><span>    material.uniforms.uProgress,</span></span>
+<span class="line"><span>    { value: </span><span>0</span><span> },</span></span>
+<span class="line"><span>    {</span></span>
+<span class="line"><span>      value: </span><span>1</span><span>,</span></span>
+<span class="line"><span>      duration: </span><span>1.2</span><span>,</span></span>
+<span class="line"><span>      ease: </span><span>'power3.inOut'</span><span>,</span></span>
+<span class="line"><span>      onUpdate: render,</span></span>
+<span class="line"><span>      onComplete</span><span>: () </span><span>=></span><span> {</span></span>
+<span class="line"><span>        material.uniforms.uFrom.value </span><span>=</span><span> nextTexture;</span></span>
+<span class="line"><span>        material.uniforms.uProgress.value </span><span>=</span><span> 0</span><span>;</span></span>
+<span class="line"><span>      },</span></span>
+<span class="line"><span>    },</span></span>
+<span class="line"><span>  );</span></span>
+<span class="line"><span>}</span></span></code></pre></div>
+<p>A duration between 0.9 and 1.4 seconds works for full-width images. Anything shorter feels like a glitch; anything longer makes people wait.</p>
+<h2 id="keeping-it-accessible-and-fast">Keeping it accessible and fast</h2>
+<p>A beautiful transition that blocks reading is a bug. Three rules keep this effect honest:</p>
+<ol>
+<li><strong>Respect <code>prefers-reduced-motion</code>.</strong> When it is set, skip the shader and swap images with a 200 ms opacity fade.</li>
+<li><strong>Dispose what you load.</strong> Keep a small texture cache and call <code>texture.dispose()</code> when the viewer closes, or mobile Safari will eventually reload the tab.</li>
+<li><strong>Cap the pixel ratio.</strong> A ratio of 2 is indistinguishable from 3 during motion and saves more than half the fragment work.</li>
+</ol>
+<aside class="bq bq--warning" data-variant="warning" role="note">
+<p class="bq-title">Warning</p>
+<div class="bq-body">
+<p>Never make the transition the only way to reach content. Keyboard users should be able to move between projects with arrow keys, and screen readers should get the new title announced through a live region.</p>
+</div>
+</aside>
+<h2 id="putting-it-together">Putting it together</h2>
+<p>The finished viewer lazy-loads Three.js only when a project is opened, keeps the render loop paused between transitions and falls back to a crossfade when WebGL is unavailable. The same careful budgeting is what keeps the rest of the site fast — I wrote about that in <a href="../../../blog/core-web-vitals-for-creative-websites/">my Core Web Vitals playbook for creative websites</a>.</p> </article> <footer> <p>© 2026 Mara Ellison · <a href="../../../blog/">More articles</a> · <a href="../../../">Portfolio</a></p> </footer> </body> </html>

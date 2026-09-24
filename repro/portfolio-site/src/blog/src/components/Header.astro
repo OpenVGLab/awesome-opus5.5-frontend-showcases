@@ -1,0 +1,101 @@
+---
+const { current = 'blog' } = Astro.props;
+const links = [
+  { href: '/#about', label: 'About', id: 'about' },
+  { href: '/#work', label: 'Work', id: 'work' },
+  { href: '/#experience', label: 'Experience', id: 'experience' },
+  { href: '/blog/', label: 'Blog', id: 'blog' },
+  { href: '/blog/tags/', label: 'Topics', id: 'tags' },
+  { href: '/#contact', label: 'Contact', id: 'contact' },
+];
+---
+
+<header class="site-header blog-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span class="brand-name">Mara Ellison</span>
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <ul>
+        {
+          links.map((l) => (
+            <li>
+              <a class="nav-link" href={l.href} aria-current={current === l.id ? 'page' : undefined}>
+                <span>{l.label}</span>
+                <span class="nav-underline" aria-hidden="true" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <a class="icon-btn" href="/blog/rss.xml" aria-label="RSS feed" title="RSS feed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 11a8 8 0 0 1 8 8M5 5a14 14 0 0 1 14 14"></path><circle cx="6" cy="18" r="1.4" fill="currentColor"></circle></svg>
+      </a>
+      <button class="icon-btn theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode" aria-pressed="false">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"></circle><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"></path></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"></path></svg>
+      </button>
+      <a class="btn btn--primary btn--sm header-cta" href="/#contact">Let’s talk
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+      <button class="icon-btn hamburger" type="button" data-menu-toggle aria-expanded="false" aria-controls="blog-menu" aria-label="Open menu">
+        <span class="hamburger-box" aria-hidden="true"><span class="hamburger-line"></span><span class="hamburger-line"></span><span class="hamburger-line"></span></span>
+      </button>
+    </div>
+  </div>
+  <nav class="blog-menu" id="blog-menu" aria-label="Primary" hidden>
+    <ul class="container">
+      {links.map((l, i) => <li><a href={l.href}><span>0{i + 1}</span>{l.label}</a></li>)}
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const root = document.documentElement;
+  const header = document.querySelector('[data-header]');
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 12);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Dark mode shares the portfolio's localStorage key, so the choice follows you across the site.
+  const toggle = document.querySelector('[data-theme-toggle]');
+  const sync = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    toggle?.setAttribute('aria-pressed', String(dark));
+    toggle?.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0E0E10' : '#F4F1EA');
+  };
+  sync();
+  toggle?.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.classList.add('theme-transition');
+    root.setAttribute('data-theme', next);
+    try {
+      localStorage.setItem('me-theme', next);
+    } catch {}
+    sync();
+    setTimeout(() => root.classList.remove('theme-transition'), 450);
+  });
+
+  const menuBtn = document.querySelector('[data-menu-toggle]');
+  const menu = document.getElementById('blog-menu');
+  const setMenu = (open) => {
+    menuBtn?.setAttribute('aria-expanded', String(open));
+    menuBtn?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    header?.classList.toggle('menu-open', open);
+    if (menu) menu.hidden = !open;
+    root.style.overflow = open ? 'hidden' : '';
+    if (open) menu?.querySelector('a')?.focus();
+  };
+  menuBtn?.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+  menu?.addEventListener('click', (e) => e.target.closest('a') && setMenu(false));
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menuBtn?.getAttribute('aria-expanded') === 'true') {
+      setMenu(false);
+      menuBtn.focus();
+    }
+  });
+</script>

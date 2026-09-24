@@ -1,0 +1,109 @@
+---
+// AMP version of each article, linked from the canonical page via rel="amphtml". The AMP runtime and
+// the extensions it auto-installs are self-hosted under public/amp/ (see runtimeHost below),
+// because this build may not reference external CDNs.
+import { getCollection, render } from 'astro:content';
+import { breadcrumbJsonLd, personJsonLd, postingJsonLd } from '../../../lib/seo';
+import { SITE, absolute, coverSrc, formatDate, postPath, sortByDate, tagLabel } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = sortByDate(await getCollection('blog'));
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { remarkPluginFrontmatter } = await render(post);
+const d = post.data;
+const canonical = absolute(Astro.site, postPath(post.id));
+const meta = { minutesRead: remarkPluginFrontmatter.minutesRead, words: remarkPluginFrontmatter.words };
+
+// AMP disallows inline style attributes and custom interactive controls from the regular page.
+const body = (post.rendered?.html || '')
+  .replace(/<button[\s\S]*?<\/button>/g, '')
+  .replace(/\sstyle="[^"]*"/g, '')
+  .replace(/\stabindex="0"/g, '');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    postingJsonLd(Astro.site, post, meta),
+    breadcrumbJsonLd(Astro.site, [
+      { name: 'Home', path: '/' },
+      { name: 'Blog', path: '/blog/' },
+      { name: d.title, path: postPath(post.id) },
+    ]),
+    personJsonLd(Astro.site),
+  ],
+};
+
+// The runtime builds extension URLs with `new URL(runtimeHost)`, so the host must be absolute; it is
+// derived from the page URL because the site can be served from any sub-folder.
+const runtimeHost = `(function(){var m=document.createElement('meta');m.name='runtime-host';m.content=new URL('../../../amp',location.href).href.replace(/\\/$/,'');document.head.appendChild(m);})();`;
+
+const boilerplate =
+  'body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}';
+const noscriptBoilerplate = 'body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}';
+const css = `
+:root{--bg:#f4f1ea;--ink:#141414;--muted:#67645e;--line:rgba(20,20,20,.12);--accent:#e83a1c;--surface:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0e10;--ink:#f2f0ea;--muted:#9d9a93;--line:rgba(242,240,234,.12);--accent:#ff6a4d;--surface:#17171b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 Georgia,'Times New Roman',serif}
+a{color:var(--accent)}header,article,footer{max-width:720px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px;border-bottom:1px solid var(--line);font:600 15px/1.2 system-ui,sans-serif}
+header a{color:var(--ink);text-decoration:none}.dot{display:inline-block;width:26px;height:26px;margin-right:8px;border-radius:50%;background:var(--accent);color:#fff;text-align:center;font:italic 18px/26px Georgia,serif;vertical-align:middle}
+.kicker{margin:32px 0 8px;font:12px/1 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{margin:0 0 12px;font-size:40px;line-height:1.1;font-weight:400}
+.meta{margin:0 0 24px;color:var(--muted);font:14px/1.5 system-ui,sans-serif}
+.cover{margin:0 0 28px;border-radius:14px;overflow:hidden}
+h2{margin:40px 0 12px;font-size:28px;font-weight:400;line-height:1.2}h3{margin:28px 0 8px;font-size:22px;font-weight:400}
+pre{overflow-x:auto;padding:16px;border-radius:12px;background:#161618;color:#e8e6e1;font:13px/1.6 ui-monospace,monospace}
+code{font-family:ui-monospace,monospace;font-size:.88em}p code,li code{padding:1px 5px;border-radius:5px;background:var(--line)}
+.code-bar{display:flex;justify-content:space-between;padding:6px 14px;border-radius:12px 12px 0 0;background:#222226;color:#aaa;font:12px ui-monospace,monospace}.code-bar+pre{border-radius:0 0 12px 12px;margin-top:0}
+table{width:100%;border-collapse:collapse;font:14px/1.5 system-ui,sans-serif}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+.bq{margin:28px 0;padding:16px 20px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;background:var(--surface)}
+.bq-title{margin:0 0 4px;font:700 12px/1.4 system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.bq-body{margin:0}.bq-body p{margin:0}.bq--quote{border:0;background:none;padding:0 0 0 20px;border-left:2px solid var(--accent);font-size:24px;line-height:1.35}.bq-cite{margin-top:8px;font:14px system-ui,sans-serif;color:var(--muted)}
+footer{margin-top:48px;padding-top:24px;padding-bottom:48px;border-top:1px solid var(--line);font:14px/1.6 system-ui,sans-serif;color:var(--muted)}
+kbd{padding:1px 6px;border:1px solid var(--line);border-radius:5px;font:12px ui-monospace,monospace}
+`;
+---
+
+<!doctype html>
+<html amp lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline set:html={runtimeHost} />
+    <script is:inline async src="/amp/v0.js"></script>
+    <title>{d.title} | Mara Ellison (AMP)</title>
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={d.description} />
+    {d.keywords && <meta name="news_keywords" content={d.keywords} />}
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
+    <style is:inline amp-boilerplate set:html={boilerplate} />
+    <noscript><style is:inline amp-boilerplate set:html={noscriptBoilerplate} /></noscript>
+    <style is:inline amp-custom set:html={css} />
+  </head>
+  <body>
+    <header>
+      <a href="/"><span class="dot">M</span>Mara Ellison</a>
+      <a href={postPath(post.id)}>Full version →</a>
+    </header>
+    <article>
+      <p class="kicker">{d.tags.map(tagLabel).join(' · ')}</p>
+      <h1>{d.title}</h1>
+      <p class="meta">
+        By {SITE.author} · <time datetime={d.pubDate.toISOString()}>{formatDate(d.pubDate)}</time> · {meta.minutesRead} min read
+        {d.updatedDate && <span> · Updated {formatDate(d.updatedDate)}</span>}
+      </p>
+      <div class="cover">
+        <amp-img src={coverSrc(d.cover, 1200)} width="1600" height="840" layout="responsive" alt={d.coverAlt} data-amp-auto-lightbox-disable></amp-img>
+      </div>
+      <Fragment set:html={body} />
+    </article>
+    <footer>
+      <p>© 2026 Mara Ellison · <a href="/blog/">More articles</a> · <a href="/">Portfolio</a></p>
+    </footer>
+  </body>
+</html>

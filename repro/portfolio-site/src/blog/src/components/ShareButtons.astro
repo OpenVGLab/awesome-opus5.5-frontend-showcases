@@ -1,0 +1,64 @@
+---
+// Social sharing: plain links to each network's share endpoint (nothing third-party is loaded),
+// plus copy-link and the native Web Share sheet where available.
+const { url, title, layout = 'row' } = Astro.props;
+const u = encodeURIComponent(url);
+const t = encodeURIComponent(title);
+const networks = [
+  { id: 'x', label: 'Share on X', href: `https://x.com/intent/post?text=${t}&url=${u}`, icon: '<path d="M4 4h4.6L20 20h-4.6L4 4Z"/><path d="M19.5 4 13.3 11M4.5 20l6.3-7"/>' },
+  { id: 'linkedin', label: 'Share on LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`, icon: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6Z"/><path d="M2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/>' },
+  { id: 'facebook', label: 'Share on Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}`, icon: '<path d="M15 3h-2.5A4.5 4.5 0 0 0 8 7.5V10H5.5v4H8v7h4v-7h3l.5-4H12V7.5A1 1 0 0 1 13 6.5h2Z"/>' },
+  { id: 'reddit', label: 'Share on Reddit', href: `https://www.reddit.com/submit?url=${u}&title=${t}`, icon: '<circle cx="12" cy="14" r="6.5"/><circle cx="18.5" cy="6.5" r="1.5"/><path d="m12 7.5 1.4-4.5 5.1 3.5"/><path d="M9.5 16.5c1.4 1 3.6 1 5 0"/><circle cx="9.5" cy="13" r=".8" fill="currentColor"/><circle cx="14.5" cy="13" r=".8" fill="currentColor"/>' },
+  { id: 'hn', label: 'Share on Hacker News', href: `https://news.ycombinator.com/submitlink?u=${u}&t=${t}`, icon: '<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="m8 7.5 4 6 4-6M12 13.5V17"/>' },
+  { id: 'email', label: 'Share by email', href: `mailto:?subject=${t}&body=${u}`, icon: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/>' },
+];
+---
+
+<div class={`share share--${layout}`} data-share data-url={url} data-title={title}>
+  <span class="share-label">Share</span>
+  <ul>
+    {
+      networks.map((n) => (
+        <li>
+          <a class={`share-btn share-btn--${n.id}`} href={n.href} target={n.id === 'email' ? undefined : '_blank'} rel="noopener noreferrer" aria-label={n.label} title={n.label}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={n.icon} />
+          </a>
+        </li>
+      ))
+    }
+    <li>
+      <button class="share-btn" type="button" data-copy-link aria-label="Copy link" title="Copy link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"></path><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"></path></svg>
+      </button>
+    </li>
+    <li class="share-native" hidden>
+      <button class="share-btn" type="button" data-native-share aria-label="More sharing options" title="More options">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"></path><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"></path></svg>
+      </button>
+    </li>
+  </ul>
+  <span class="share-status" role="status" aria-live="polite"></span>
+</div>
+
+<script>
+  import { copyText } from '../scripts/clipboard.js';
+
+  document.querySelectorAll('[data-share]').forEach((box) => {
+    const url = box.dataset.url;
+    const status = box.querySelector('.share-status');
+    box.querySelector('[data-copy-link]')?.addEventListener('click', async () => {
+      const ok = await copyText(url);
+      status.textContent = ok ? 'Link copied!' : 'Copy failed';
+      box.classList.add('is-copied');
+      setTimeout(() => {
+        status.textContent = '';
+        box.classList.remove('is-copied');
+      }, 1800);
+    });
+    const native = box.querySelector('.share-native');
+    if (navigator.share && native) {
+      native.hidden = false;
+      native.querySelector('button').addEventListener('click', () => navigator.share({ title: box.dataset.title, url }).catch(() => {}));
+    }
+  });
+</script>

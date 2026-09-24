@@ -1,0 +1,17 @@
+---
+const { page } = Astro.props;
+const pages = Array.from({ length: page.lastPage }, (_, i) => i + 1);
+const hrefFor = (n) => (n === 1 ? '/blog/archive/' : `/blog/archive/${n}/`);
+---
+
+<nav class="pagination" aria-label="Archive pages">
+  {page.url.prev ? <a class="pagination-step" href={page.url.prev} rel="prev">← Newer</a> : <span class="pagination-step is-disabled">← Newer</span>}
+  <ol>
+    {
+      pages.map((n) => (
+        <li>{n === page.currentPage ? <span aria-current="page">{n}</span> : <a href={hrefFor(n)}>{n}</a>}</li>
+      ))
+    }
+  </ol>
+  {page.url.next ? <a class="pagination-step" href={page.url.next} rel="next">Older →</a> : <span class="pagination-step is-disabled">Older →</span>}
+</nav>

@@ -1,0 +1,4 @@
+http://maraellison.dev/*  https://maraellison.dev/:splat  301!
+/blog/feed  /blog/rss.xml  301
+/feed.xml   /blog/rss.xml  301
+/*          /404.html      404

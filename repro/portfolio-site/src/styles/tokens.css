@@ -1,0 +1,82 @@
+/* Design tokens shared by the Next.js portfolio and the Astro blog. */
+:root {
+  --ff-serif: var(--font-serif, 'Instrument Serif'), 'Noto Serif SC', 'Songti SC', Georgia, serif;
+  --ff-sans: var(--font-sans, 'Geist Variable'), 'Geist', system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif;
+  --ff-mono: var(--font-mono, 'Geist Mono Variable'), ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --bg: #f4f1ea;
+  --bg-2: #ebe6da;
+  --surface: #ffffff;
+  --surface-2: #faf8f3;
+  --ink: #141414;
+  --ink-2: #3a3835;
+  --muted: #67645e;
+  --line: rgba(20, 20, 20, 0.1);
+  --line-2: rgba(20, 20, 20, 0.2);
+  --accent: #ff4d2e;
+  --accent-strong: #d2381d;
+  --accent-deep: #b42d14;
+  --accent-text: #b42d14;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(255, 77, 46, 0.12);
+  --blue: #3d5afe;
+  --teal: #2a9d8f;
+  --gold: #e9a23b;
+  --blue-text: #2d44c4;
+  --teal-text: #1b6c62;
+  --gold-text: #86570f;
+  --ok: #2a9d8f;
+  --danger: #d63b2a;
+  --glass: rgba(244, 241, 234, 0.72);
+
+  --shadow-sm: 0 1px 2px rgba(20, 20, 20, 0.06), 0 4px 12px rgba(20, 20, 20, 0.05);
+  --shadow-md: 0 18px 40px -18px rgba(20, 20, 20, 0.28);
+  --shadow-lg: 0 40px 90px -30px rgba(20, 20, 20, 0.38);
+
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 28px;
+  --header-h: 72px;
+  --container: 1240px;
+  --gutter: clamp(20px, 4vw, 48px);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-quick: 180ms;
+  --dur-moderate: 320ms;
+
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg: #0e0e10;
+  --bg-2: #141417;
+  --surface: #17171b;
+  --surface-2: #1c1c21;
+  --ink: #f2f0ea;
+  --ink-2: #d6d3cc;
+  --muted: #9d9a93;
+  --line: rgba(242, 240, 234, 0.1);
+  --line-2: rgba(242, 240, 234, 0.2);
+  --accent: #ff6a4d;
+  --accent-strong: #ff6a4d;
+  --accent-deep: #ff8066;
+  --accent-text: #ff8066;
+  --accent-ink: #140c0a;
+  --accent-soft: rgba(255, 106, 77, 0.15);
+  --blue: #7c93ff;
+  --teal: #4fd1c5;
+  --gold: #f2c14e;
+  --blue-text: #9fb0ff;
+  --teal-text: #6fe0d5;
+  --gold-text: #f6cf6f;
+  --ok: #4fd1c5;
+  --danger: #ff6b5b;
+  --glass: rgba(14, 14, 16, 0.72);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 40px 90px -30px rgba(0, 0, 0, 0.8);
+
+  color-scheme: dark;
+}

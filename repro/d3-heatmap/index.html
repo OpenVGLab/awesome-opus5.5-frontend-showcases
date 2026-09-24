@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scatter → Heatmap · binning a large [x, y, value] dataset with d3.js</title>
+  <meta name="description" content="Interactive d3.js heatmap that aggregates a million scattered [x, y, value] points into square or hexagonal cells, with zoomable re-binning, contours, profiles and CSV / JSON import.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230b0f15'/%3E%3Crect x='2' y='2' width='4' height='4' fill='%23440154'/%3E%3Crect x='6' y='2' width='4' height='4' fill='%233b528b'/%3E%3Crect x='10' y='2' width='4' height='4' fill='%2321918c'/%3E%3Crect x='2' y='6' width='4' height='4' fill='%2321918c'/%3E%3Crect x='6' y='6' width='4' height='4' fill='%235ec962'/%3E%3Crect x='10' y='6' width='4' height='4' fill='%23fde725'/%3E%3Crect x='2' y='10' width='4' height='4' fill='%233b528b'/%3E%3Crect x='6' y='10' width='4' height='4' fill='%2321918c'/%3E%3Crect x='10' y='10' width='4' height='4' fill='%235ec962'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="lib/d3.v7.9.0.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <div class="titles">
+          <h1>Scatter <span class="arrow">→</span> Heatmap</h1>
+          <p id="subtitle">Binning scattered <code>[x, y, value]</code> points into cells with d3.js</p>
+        </div>
+      </div>
+      <dl class="stats">
+        <div><dt>Points</dt><dd id="st-points">—</dd></div>
+        <div><dt>In view</dt><dd id="st-view">—</dd></div>
+        <div><dt>Cells filled</dt><dd id="st-cells">—</dd></div>
+        <div><dt>Bin · render</dt><dd id="st-time">—</dd></div>
+      </dl>
+    </header>
+
+    <aside class="panel" aria-label="Heatmap settings">
+      <section>
+        <h2>Data</h2>
+        <div class="field">
+          <label for="dataset">Dataset</label>
+          <select id="dataset"></select>
+        </div>
+        <p class="desc" id="dataset-desc"></p>
+        <div class="field">
+          <label for="npoints">Points</label>
+          <div class="inline">
+            <select id="npoints">
+              <option value="100000">100,000</option>
+              <option value="250000">250,000</option>
+              <option value="500000">500,000</option>
+              <option value="1000000">1,000,000</option>
+              <option value="2000000">2,000,000</option>
+            </select>
+            <button id="regen" class="icon-btn" type="button" title="Draw a new random sample (next seed)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="seed">#1</span></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button id="import" class="btn" type="button" title="CSV, TSV or JSON with x, y, value columns (or drop a file on the page)">Import CSV / JSON…</button>
+          <button id="sample" class="btn ghost" type="button" title="Download 50,000 rows of the current dataset in the import format">Sample file</button>
+        </div>
+        <input type="file" id="file" accept=".csv,.tsv,.txt,.dat,.json,.geojson,text/csv,application/json" hidden>
+      </section>
+
+      <section>
+        <h2>Binning</h2>
+        <div class="field">
+          <span class="label">Grid</span>
+          <div class="seg" data-key="grid" role="group" aria-label="Cell shape">
+            <button type="button" data-v="rect">Square</button>
+            <button type="button" data-v="hex">Hexagon</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="cell">Cell size</label>
+          <div class="range"><input type="range" id="cell" min="2" max="40" step="1"><output id="cell-out" for="cell"></output></div>
+        </div>
+        <div class="field">
+          <label for="agg">Aggregate</label>
+          <select id="agg"></select>
+        </div>
+        <div class="field">
+          <label for="minc">Min points</label>
+          <div class="range"><input type="range" id="minc" min="1" max="30" step="1"><output id="minc-out" for="minc"></output></div>
+        </div>
+        <div class="field">
+          <label for="sigma">Smoothing</label>
+          <div class="range"><input type="range" id="sigma" min="0" max="5" step="0.5"><output id="sigma-out" for="sigma"></output></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Colour</h2>
+        <div class="field">
+          <label for="scheme">Scheme</label>
+          <select id="scheme" class="scheme-select"></select>
+        </div>
+        <div class="field">
+          <span class="label">Scale</span>
+          <div class="seg" data-key="scale" role="group" aria-label="Colour scale">
+            <button type="button" data-v="linear">Linear</button>
+            <button type="button" data-v="sqrt">Sqrt</button>
+            <button type="button" data-v="log">Log</button>
+            <button type="button" data-v="quantile">Quantile</button>
+          </div>
+        </div>
+        <div class="checks">
+          <label class="chk" title="Flip the colour scheme"><input type="checkbox" id="reverse"><span>Reverse</span></label>
+          <label class="chk" title="Stretch colours over the 1st–99th percentile of cell values so outliers don't wash out the map"><input type="checkbox" id="clip"><span>Clip 1–99%</span></label>
+        </div>
+      </section>
+
+      <section>
+        <h2>Layers</h2>
+        <div class="field">
+          <label class="chk" title="Isolines traced with d3.contours on the binned field"><input type="checkbox" id="contours"><span>Contours</span></label>
+          <div class="range"><input type="range" id="levels" min="4" max="30" step="1" aria-label="Contour levels"><output id="levels-out" for="levels"></output></div>
+        </div>
+        <div class="checks three">
+          <label class="chk" title="Overlay a random sample of up to 6,000 raw points from the current view"><input type="checkbox" id="points"><span>Raw points</span></label>
+          <label class="chk" title="Column and row profiles aggregated from the points in view"><input type="checkbox" id="marginals"><span>Profiles</span></label>
+          <label class="chk" title="Bilinear blending between neighbouring square cells"><input type="checkbox" id="bilinear"><span>Blend</span></label>
+        </div>
+      </section>
+
+      <section class="about">
+        <h2>How it works</h2>
+        <ol>
+          <li><b>Bin.</b> One pass over typed arrays drops every point into a cell and accumulates count, Σv, Σv², min and max.</li>
+          <li><b>Aggregate.</b> The chosen statistic becomes the cell value; cells with too few points stay empty (hatched).</li>
+          <li><b>Colour.</b> A d3 sequential or diverging scale maps values to colours; <code>d3.contours</code> traces the isolines.</li>
+          <li><b>Zoom.</b> <code>d3.zoom</code> re-bins the visible window from the raw points on every frame.</li>
+        </ol>
+      </section>
+
+      <footer class="keys">
+        <span><kbd>+</kbd><kbd>−</kbd> zoom</span>
+        <span><kbd>0</kbd> reset</span>
+        <span><kbd>←↑→↓</kbd> pan</span>
+        <span><kbd>H</kbd> hexagons</span>
+        <span><kbd>C</kbd> contours</span>
+        <span><kbd>P</kbd> points</span>
+      </footer>
+    </aside>
+
+    <main class="stage">
+      <div class="stage-head">
+        <div class="stage-title">
+          <h2 id="chart-title">Loading…</h2>
+          <p id="chart-sub">&nbsp;</p>
+        </div>
+        <div class="tools">
+          <span class="chip" id="filter-chip" hidden><span class="chip-k">Filter</span><span id="filter-range"></span><button id="filter-clear" type="button" aria-label="Clear colour filter">×</button></span>
+          <span class="zoom" title="Zoom level"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span id="zoom-level">1.00×</span></span>
+          <button class="btn small" id="reset" type="button" disabled>Reset view</button>
+          <button class="btn small" id="png" type="button" title="Download the current view as PNG">PNG</button>
+          <button class="btn small" id="csv" type="button" title="Download the aggregated cells as CSV">Grid CSV</button>
+        </div>
+      </div>
+      <div class="chart" id="chart">
+        <canvas id="heat"></canvas>
+        <svg id="svg" role="img" aria-label="Heatmap of the binned scatter data"></svg>
+        <div class="tooltip" id="tip" hidden></div>
+        <div class="loading" id="loading" hidden>
+          <div class="loading-card">
+            <div class="spinner"></div>
+            <div id="loading-text">Generating…</div>
+            <div class="bar"><i id="loading-bar"></i></div>
+          </div>
+        </div>
+        <div class="dropzone" id="dropzone" hidden>
+          <div>Drop a CSV / TSV / JSON file with <b>x, y, value</b> columns</div>
+        </div>
+      </div>
+      <div class="stage-foot">
+        <span><b>Scroll</b> zoom &amp; re-bin</span>
+        <span><b>Drag</b> pan</span>
+        <span><b>Shift + drag</b> box zoom</span>
+        <span><b>Double-click</b> zoom in</span>
+        <span><b>Hover</b> cell statistics</span>
+        <span><b>Drag the colour bar</b> to filter values</span>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
