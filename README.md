@@ -4,7 +4,7 @@
 
 > 收集 Claude Opus 5.5（2026-09-22 发布）做出来的前端作品：SVG 游戏与动画、「鹈鹕骑自行车」系列、Lottie、Three.js / WebGL、代码逐帧动画、网页与 UI——凡是模型写代码、在浏览器里跑出来的，都在这里。
 
-**在线试玩：** [总览](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/)
+**在线试玩：** [总览](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/) · [Voxel](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/voxel/)
 
 ## 目录
 

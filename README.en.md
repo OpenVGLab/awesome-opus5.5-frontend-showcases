@@ -4,7 +4,7 @@
 
 > A curated list of frontend work made by Claude Opus 5.5 (released 2026-09-22): SVG games and animation, the pelican-on-a-bicycle family, Lottie, Three.js / WebGL, code-drawn video, websites and UI — anything the model wrote as code and that runs in a browser.
 
-**Play online:** [Overview](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/)
+**Play online:** [Overview](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/) · [Voxel](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/voxel/)
 
 ## Contents
 
