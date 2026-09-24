@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 800 600" width="800" height="600">
+  <title>A pelican riding a bicycle</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7cc8f0"/>
+      <stop offset="1" stop-color="#e2f5ff"/>
+    </linearGradient>
+    <g id="wheel">
+      <circle r="90" fill="none" stroke="#23262b" stroke-width="10"/>
+      <circle r="83" fill="none" stroke="#a7b0b9" stroke-width="3"/>
+      <g stroke="#c9ced4" stroke-width="1.6">
+        <line x1="-81" y1="0" x2="81" y2="0"/>
+        <line x1="-70.1" y1="-40.5" x2="70.1" y2="40.5"/>
+        <line x1="-40.5" y1="-70.1" x2="40.5" y2="70.1"/>
+        <line x1="0" y1="-81" x2="0" y2="81"/>
+        <line x1="40.5" y1="-70.1" x2="-40.5" y2="70.1"/>
+        <line x1="70.1" y1="-40.5" x2="-70.1" y2="40.5"/>
+      </g>
+      <circle r="8" fill="#6c737b" stroke="#3b3f45" stroke-width="2"/>
+    </g>
+  </defs>
+
+  <!-- sky, sun, clouds -->
+  <rect width="800" height="600" fill="url(#sky)"/>
+  <circle cx="680" cy="95" r="62" fill="#fff4c2" opacity="0.6"/>
+  <circle cx="680" cy="95" r="42" fill="#ffd54f"/>
+  <g fill="#ffffff" opacity="0.9">
+    <ellipse cx="160" cy="100" rx="55" ry="20"/>
+    <ellipse cx="195" cy="88" rx="38" ry="22"/>
+    <ellipse cx="128" cy="92" rx="30" ry="16"/>
+    <ellipse cx="455" cy="58" rx="45" ry="14"/>
+    <ellipse cx="485" cy="48" rx="30" ry="15"/>
+  </g>
+
+  <!-- hills and road -->
+  <path d="M0,455 Q120,395 250,440 T520,430 T800,425 L800,500 L0,500 Z" fill="#a3d68f"/>
+  <path d="M0,482 Q200,448 400,472 T800,466 L800,500 L0,500 Z" fill="#82c06c"/>
+  <rect y="490" width="800" height="110" fill="#8cc56d"/>
+  <rect y="496" width="800" height="62" fill="#5d636b"/>
+  <line x1="0" y1="527" x2="800" y2="527" stroke="#f1f1f1" stroke-width="4" stroke-dasharray="36 28"/>
+  <ellipse cx="400" cy="502" rx="210" ry="9" fill="#000000" opacity="0.22"/>
+
+  <!-- speed lines -->
+  <g stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.75">
+    <line x1="70" y1="330" x2="140" y2="330"/>
+    <line x1="40" y1="380" x2="135" y2="380"/>
+    <line x1="85" y1="430" x2="140" y2="430"/>
+  </g>
+
+  <!-- far leg and far crank (behind the bike) -->
+  <polyline points="374,279 456,337 362,372" fill="none" stroke="#c9661a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="390" y1="420" x2="362" y2="372" stroke="#4a4f56" stroke-width="7" stroke-linecap="round"/>
+  <rect x="348" y="367" width="28" height="8" rx="2" fill="#2f3338"/>
+  <path d="M346,366 Q362,356 380,362 Q373,368 381,374 Q362,374 346,371 Z" fill="#c9661a"/>
+
+  <!-- wheels -->
+  <use xlink:href="#wheel" x="250" y="410"/>
+  <use xlink:href="#wheel" x="550" y="410"/>
+
+  <!-- drivetrain -->
+  <g fill="none" stroke="#3a3f45" stroke-width="3">
+    <line x1="390" y1="397" x2="250" y2="399"/>
+    <line x1="390" y1="443" x2="250" y2="421"/>
+    <circle cx="250" cy="410" r="11" stroke-width="4"/>
+  </g>
+  <circle cx="390" cy="420" r="23" fill="#b8bfc6" stroke="#3a3f45" stroke-width="3"/>
+  <circle cx="390" cy="420" r="15" fill="none" stroke="#7d858d" stroke-width="2" stroke-dasharray="4 3"/>
+
+  <!-- frame -->
+  <g fill="none" stroke="#e63946" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="390,420 250,410 348,305" stroke-width="6"/>
+    <line x1="390" y1="420" x2="348" y2="305" stroke-width="9"/>
+    <line x1="348" y1="305" x2="508" y2="285" stroke-width="9"/>
+    <line x1="390" y1="420" x2="518" y2="315" stroke-width="9"/>
+    <line x1="508" y1="282" x2="520" y2="318" stroke-width="12"/>
+  </g>
+  <line x1="520" y1="316" x2="550" y2="410" stroke="#c22f3b" stroke-width="7" stroke-linecap="round"/>
+  <line x1="348" y1="305" x2="343" y2="292" stroke="#9aa1a8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M318,291 Q344,281 373,289 Q372,298 350,298 Q329,299 318,291 Z" fill="#26292e"/>
+
+  <!-- handlebar -->
+  <line x1="508" y1="283" x2="503" y2="254" stroke="#4a4f56" stroke-width="6" stroke-linecap="round"/>
+  <path d="M503,254 Q499,243 482,245" fill="none" stroke="#4a4f56" stroke-width="5" stroke-linecap="round"/>
+  <line x1="484" y1="245" x2="471" y2="247" stroke="#1f2226" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- near crank, pedal, leg and webbed foot -->
+  <line x1="390" y1="420" x2="422" y2="468" stroke="#4a4f56" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="390" cy="420" r="5" fill="#2f3338"/>
+  <rect x="406" y="464" width="32" height="9" rx="2" fill="#2f3338"/>
+  <polyline points="388,282 440,368 422,466" fill="none" stroke="#f08a24" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M404,463 Q423,451 445,458 Q437,465 447,472 Q424,473 404,469 Z" fill="#f08a24" stroke="#c9661a" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- pelican -->
+  <g transform="translate(0,-8)" stroke-linejoin="round">
+    <path d="M302,256 L260,262 L272,271 L256,282 L304,284 Z" fill="#f5f7f9" stroke="#8a939b" stroke-width="2.5"/>
+    <path d="M422,224 C456,196 420,160 450,128" fill="none" stroke="#8a939b" stroke-width="33" stroke-linecap="round"/>
+    <ellipse cx="368" cy="245" rx="82" ry="50" transform="rotate(-18 368 245)" fill="#f5f7f9" stroke="#8a939b" stroke-width="2.5"/>
+    <ellipse cx="462" cy="121" rx="29" ry="23" fill="#f5f7f9" stroke="#8a939b" stroke-width="2.5"/>
+    <path d="M422,224 C456,196 420,160 450,128" fill="none" stroke="#f5f7f9" stroke-width="28" stroke-linecap="round"/>
+    <path d="M440,104 C436,95 443,90 450,97 C451,89 459,89 460,98" fill="none" stroke="#f2c94c" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="469" cy="114" r="6.5" fill="#ffe07a"/>
+    <circle cx="469" cy="114" r="4" fill="#1b1d21"/>
+    <circle cx="470.5" cy="112.5" r="1.4" fill="#ffffff"/>
+    <path d="M482,131 C525,137 570,143 609,148 C596,171 560,193 521,187 C498,183 485,166 482,131 Z" fill="#f9c46b" stroke="#c77a1c" stroke-width="2"/>
+    <path d="M478,110 C522,117 570,129 607,138 Q618,142 610,150 C571,144 523,138 482,133 Z" fill="#f4a340" stroke="#b86b12" stroke-width="2"/>
+    <path d="M488,120 C530,127 575,136 603,143" fill="none" stroke="#d9862a" stroke-width="1.5"/>
+    <path d="M296,240 C320,206 380,194 416,204 C446,213 470,234 492,250 C480,259 456,259 433,253 C400,263 344,262 296,240 Z" fill="#eef1f4" stroke="#8a939b" stroke-width="2.5"/>
+    <path d="M300,240 C288,240 274,246 260,256 C279,258 297,255 312,248 Z" fill="#2b2e33"/>
+    <g fill="none" stroke="#b4bcc4" stroke-width="1.6" stroke-linecap="round">
+      <path d="M350,222 C380,228 410,228 440,224"/>
+      <path d="M330,238 C360,248 395,249 425,240"/>
+      <path d="M318,250 C345,256 372,257 398,254"/>
+    </g>
+    <g fill="#2b2e33">
+      <ellipse cx="484" cy="249" rx="7" ry="3.6" transform="rotate(35 484 249)"/>
+      <ellipse cx="489" cy="254" rx="7" ry="3.6" transform="rotate(35 489 254)"/>
+    </g>
+  </g>
+</svg>

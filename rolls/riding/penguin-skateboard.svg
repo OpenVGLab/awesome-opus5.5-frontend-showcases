@@ -1,0 +1,294 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 800 600">
+  <title>A penguin riding a skateboard</title>
+  <defs>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b2658"/>
+      <stop offset="0.55" stop-color="#5d4c8e"/>
+      <stop offset="1" stop-color="#f6a48f"/>
+    </linearGradient>
+    <linearGradient id="aurora" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7dffc6" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#7dffc6" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f1f6ff"/>
+      <stop offset="1" stop-color="#d3e2f6"/>
+    </linearGradient>
+    <linearGradient id="deck" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff7b54"/>
+      <stop offset="0.5" stop-color="#ffb347"/>
+      <stop offset="1" stop-color="#ff7b54"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fffbe8" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#fffbe8" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- far icebergs, 800 wide, sitting on the sea line y=392 -->
+    <g id="bergs">
+      <path d="M 20 392 L 70 330 L 110 350 L 150 300 L 210 392 Z" fill="#c9d4f1"/>
+      <path d="M 70 330 L 60 392 L 20 392 Z M 150 300 L 128 392 L 110 350 Z" fill="#e6ecfd"/>
+      <path d="M 260 392 L 300 360 L 340 372 L 380 340 L 420 392 Z" fill="#c2cdef"/>
+      <path d="M 300 360 L 292 392 L 260 392 Z M 380 340 L 366 392 L 340 372 Z" fill="#e2e9fc"/>
+      <path d="M 470 392 L 520 320 L 560 345 L 590 310 L 660 392 Z" fill="#c9d4f1"/>
+      <path d="M 520 320 L 506 392 L 470 392 Z M 590 310 L 574 392 L 560 345 Z" fill="#e6ecfd"/>
+      <path d="M 690 392 L 730 355 L 780 392 Z" fill="#c2cdef"/>
+      <path d="M 730 355 L 722 392 L 690 392 Z" fill="#e2e9fc"/>
+    </g>
+
+    <!-- mid snow drifts, 400 wide -->
+    <g id="drifts" fill="#ffffff">
+      <ellipse cx="60" cy="412" rx="70" ry="14"/>
+      <ellipse cx="250" cy="418" rx="90" ry="12"/>
+      <path d="M 330 430 L 336 420 L 342 430 Z M 348 430 L 352 423 L 356 430 Z" fill="#a9c2e6"/>
+    </g>
+
+    <!-- foreground snow mounds, 400 wide -->
+    <g id="mounds">
+      <path d="M -20 600 C 20 548 90 540 140 570 C 170 552 210 556 230 600 Z" fill="#f7faff"/>
+      <path d="M 40 566 C 60 556 90 556 110 566" stroke="#d4e2f6" stroke-width="3" fill="none"/>
+      <path d="M 280 600 C 300 574 350 570 380 600 Z" fill="#eef4ff"/>
+      <g fill="#bcd4f2">
+        <path d="M 330 560 L 333 552 L 336 560 L 344 563 L 336 566 L 333 574 L 330 566 L 322 563 Z"/>
+      </g>
+    </g>
+  </defs>
+
+  <!-- ===== twilight sky ===== -->
+  <rect x="0" y="0" width="800" height="600" fill="url(#dusk)"/>
+
+  <!-- stars -->
+  <g fill="#ffffff">
+    <circle cx="60" cy="40" r="1.6"/>
+    <circle cx="140" cy="90" r="1.2"/>
+    <circle cx="230" cy="36" r="1.8">
+      <animate attributeName="opacity" values="1;0.2;1" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="310" cy="70" r="1.2"/>
+    <circle cx="380" cy="28" r="1.5"/>
+    <circle cx="455" cy="60" r="1.9">
+      <animate attributeName="opacity" values="0.3;1;0.3" dur="3.1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="520" cy="24" r="1.3"/>
+    <circle cx="590" cy="170" r="1.1"/>
+    <circle cx="745" cy="48" r="1.7">
+      <animate attributeName="opacity" values="1;0.25;1" dur="1.9s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="770" cy="150" r="1.2"/>
+    <circle cx="36" cy="160" r="1.3"/>
+    <circle cx="180" cy="190" r="1"/>
+  </g>
+
+  <!-- aurora ribbon -->
+  <path d="M 0 130 C 150 80 300 170 450 110 C 580 60 700 140 800 100 L 800 170 C 700 210 580 130 450 180 C 300 240 150 150 0 200 Z" fill="url(#aurora)" opacity="0.6">
+    <animate attributeName="opacity" values="0.35;0.75;0.35" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="d" dur="9s" repeatCount="indefinite"
+      values="M 0 130 C 150 80 300 170 450 110 C 580 60 700 140 800 100 L 800 170 C 700 210 580 130 450 180 C 300 240 150 150 0 200 Z;
+              M 0 110 C 160 150 290 90 450 130 C 590 170 690 80 800 120 L 800 190 C 690 150 590 240 450 200 C 290 160 160 220 0 180 Z;
+              M 0 130 C 150 80 300 170 450 110 C 580 60 700 140 800 100 L 800 170 C 700 210 580 130 450 180 C 300 240 150 150 0 200 Z"/>
+  </path>
+
+  <!-- moon -->
+  <circle cx="660" cy="96" r="80" fill="url(#moonGlow)"/>
+  <circle cx="660" cy="96" r="32" fill="#fff6d9"/>
+  <circle cx="650" cy="88" r="6" fill="#efe3bd"/>
+  <circle cx="672" cy="106" r="4" fill="#efe3bd"/>
+
+  <!-- ===== sea line and far icebergs (slow) ===== -->
+  <rect x="0" y="384" width="800" height="16" fill="#6b7ab5"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-800 0" dur="32s" repeatCount="indefinite"/>
+    <use xlink:href="#bergs" x="0" y="0"/>
+    <use xlink:href="#bergs" x="800" y="0"/>
+  </g>
+
+  <!-- ===== snowfield ===== -->
+  <rect x="0" y="398" width="800" height="202" fill="url(#snow)"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-400 0" dur="4s" repeatCount="indefinite"/>
+    <use xlink:href="#drifts" x="0" y="0"/>
+    <use xlink:href="#drifts" x="400" y="0"/>
+    <use xlink:href="#drifts" x="800" y="0"/>
+  </g>
+
+  <!-- ice track -->
+  <rect x="0" y="462" width="800" height="42" fill="#bcd7f4"/>
+  <rect x="0" y="462" width="800" height="3" fill="#e9f3ff"/>
+  <rect x="0" y="502" width="800" height="3" fill="#9dbde6"/>
+  <g stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.85">
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-100 0" dur="0.4s" repeatCount="indefinite"/>
+    <line x1="0" y1="474" x2="26" y2="474"/>
+    <line x1="60" y1="494" x2="74" y2="494"/>
+    <line x1="100" y1="474" x2="126" y2="474"/>
+    <line x1="160" y1="494" x2="174" y2="494"/>
+    <line x1="200" y1="474" x2="226" y2="474"/>
+    <line x1="260" y1="494" x2="274" y2="494"/>
+    <line x1="300" y1="474" x2="326" y2="474"/>
+    <line x1="360" y1="494" x2="374" y2="494"/>
+    <line x1="400" y1="474" x2="426" y2="474"/>
+    <line x1="460" y1="494" x2="474" y2="494"/>
+    <line x1="500" y1="474" x2="526" y2="474"/>
+    <line x1="560" y1="494" x2="574" y2="494"/>
+    <line x1="600" y1="474" x2="626" y2="474"/>
+    <line x1="660" y1="494" x2="674" y2="494"/>
+    <line x1="700" y1="474" x2="726" y2="474"/>
+    <line x1="760" y1="494" x2="774" y2="494"/>
+    <line x1="800" y1="474" x2="826" y2="474"/>
+    <line x1="860" y1="494" x2="874" y2="494"/>
+  </g>
+
+  <!-- speed lines -->
+  <g stroke="#ffffff" stroke-width="3" stroke-linecap="round">
+    <line x1="230" y1="330" x2="268" y2="330" opacity="0">
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="-60 0" dur="0.7s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.8;0" dur="0.7s" repeatCount="indefinite"/>
+    </line>
+    <line x1="210" y1="376" x2="258" y2="376" opacity="0">
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="-60 0" dur="0.7s" begin="0.25s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.8;0" dur="0.7s" begin="0.25s" repeatCount="indefinite"/>
+    </line>
+    <line x1="236" y1="420" x2="270" y2="420" opacity="0">
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="-60 0" dur="0.7s" begin="0.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.8;0" dur="0.7s" begin="0.5s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- shadow (shrinks during the ollie) -->
+  <ellipse cx="405" cy="485" rx="110" ry="6" fill="#4d6394" opacity="0.35">
+    <animate attributeName="rx" values="110;110;84;66;84;110;110" keyTimes="0;0.66;0.72;0.8;0.88;0.94;1" dur="3.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.35;0.35;0.22;0.15;0.22;0.35;0.35" keyTimes="0;0.66;0.72;0.8;0.88;0.94;1" dur="3.2s" repeatCount="indefinite"/>
+  </ellipse>
+
+  <!-- ===== skater: jump, tilt, bob ===== -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 0;0 -55;0 -80;0 -55;0 0;0 0" keyTimes="0;0.66;0.72;0.8;0.88;0.94;1" dur="3.2s" repeatCount="indefinite"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate" values="0 405 470;0 405 470;-10 405 470;-3 405 470;5 405 470;0 405 470;0 405 470" keyTimes="0;0.66;0.72;0.8;0.88;0.94;1" dur="3.2s" repeatCount="indefinite"/>
+
+      <!-- skateboard -->
+      <path d="M 326 460 L 354 460 L 348 468 L 332 468 Z" fill="#aab2bd"/>
+      <path d="M 456 460 L 484 460 L 478 468 L 462 468 Z" fill="#aab2bd"/>
+      <g transform="translate(340 471)">
+        <circle r="11" fill="#ffd166" stroke="#d9a93c" stroke-width="2"/>
+        <g>
+          <line x1="-6" y1="0" x2="6" y2="0" stroke="#c28f22" stroke-width="2.5" stroke-linecap="round"/>
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.3s" repeatCount="indefinite"/>
+        </g>
+        <circle r="3.5" fill="#8d99ae"/>
+      </g>
+      <g transform="translate(470 471)">
+        <circle r="11" fill="#ffd166" stroke="#d9a93c" stroke-width="2"/>
+        <g>
+          <line x1="-6" y1="0" x2="6" y2="0" stroke="#c28f22" stroke-width="2.5" stroke-linecap="round"/>
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.3s" repeatCount="indefinite"/>
+        </g>
+        <circle r="3.5" fill="#8d99ae"/>
+      </g>
+      <path d="M 288 440 Q 296 452 312 452 L 498 452 Q 514 452 522 440 L 525 445 Q 516 461 498 461 L 312 461 Q 294 461 285 445 Z" fill="url(#deck)" stroke="#b8502f" stroke-width="1.5"/>
+      <path d="M 300 450 Q 306 453 316 453 L 494 453 Q 504 453 510 450" stroke="#2b2d42" stroke-width="3" fill="none"/>
+
+      <!-- penguin (gentle ride bob) -->
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0 0;0 -2;0 0" dur="0.5s" repeatCount="indefinite"/>
+
+        <!-- far flipper -->
+        <path d="M 352 300 C 318 310 292 330 280 350 C 298 352 328 346 352 334 Z" fill="#1f2633">
+          <animateTransform attributeName="transform" type="rotate" values="-10 352 314;12 352 314;-10 352 314" dur="0.9s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- body -->
+        <path d="M 405 222 C 450 222 470 270 472 330 C 476 400 452 446 405 446 C 358 446 334 400 338 330 C 340 270 360 222 405 222 Z" fill="#1f2633"/>
+        <path d="M 360 260 C 350 300 348 360 360 400" stroke="#3a4458" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8"/>
+        <path d="M 418 285 C 450 290 460 340 458 380 C 456 420 438 440 412 440 C 386 440 370 420 372 380 C 372 330 386 285 418 285 Z" fill="#fafcff"/>
+        <path d="M 420 302 C 395 300 382 282 388 264 C 393 250 408 248 416 258 C 424 246 442 248 448 262 C 454 280 442 300 420 302 Z" fill="#fafcff"/>
+
+        <!-- feet on the deck -->
+        <ellipse cx="372" cy="447" rx="20" ry="7" fill="#ff9f1c" stroke="#e07a00" stroke-width="1.5"/>
+        <ellipse cx="438" cy="447" rx="21" ry="7" fill="#ff9f1c" stroke="#e07a00" stroke-width="1.5"/>
+
+        <!-- eyes (blink) -->
+        <ellipse cx="408" cy="270" rx="5.5" ry="5.5" fill="#141824">
+          <animate attributeName="ry" values="5.5;5.5;0.6;5.5" keyTimes="0;0.9;0.95;1" dur="3.7s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="434" cy="268" rx="5" ry="5" fill="#141824">
+          <animate attributeName="ry" values="5;5;0.6;5" keyTimes="0;0.9;0.95;1" dur="3.7s" repeatCount="indefinite"/>
+        </ellipse>
+        <circle cx="410" cy="268" r="1.8" fill="#ffffff"/>
+        <circle cx="436" cy="266" r="1.6" fill="#ffffff"/>
+
+        <!-- beak and cheeks -->
+        <ellipse cx="398" cy="287" rx="6" ry="3.5" fill="#ff8fa3" opacity="0.55"/>
+        <ellipse cx="451" cy="292" rx="5" ry="3" fill="#ff8fa3" opacity="0.55"/>
+        <path d="M 424 277 Q 448 277 464 286 Q 446 295 424 291 Z" fill="#ff9f1c" stroke="#e07a00" stroke-width="1.5"/>
+        <path d="M 427 285 Q 444 287 458 286" stroke="#c96a00" stroke-width="1.2" fill="none"/>
+
+        <!-- scarf: tail then band -->
+        <path d="M 346 304 C 320 302 300 312 280 306 C 268 302 262 308 254 314 L 258 324 C 268 318 276 320 286 322 C 306 326 324 318 346 318 Z" fill="#2ec4b6" stroke="#1f9e92" stroke-width="1.5">
+          <animate attributeName="d" dur="0.45s" repeatCount="indefinite"
+            values="M 346 304 C 320 302 300 312 280 306 C 268 302 262 308 254 314 L 258 324 C 268 318 276 320 286 322 C 306 326 324 318 346 318 Z;
+                    M 346 304 C 322 296 302 298 282 294 C 270 292 262 290 252 296 L 258 306 C 268 304 278 308 288 310 C 308 316 324 316 346 318 Z;
+                    M 346 304 C 320 302 300 312 280 306 C 268 302 262 308 254 314 L 258 324 C 268 318 276 320 286 322 C 306 326 324 318 346 318 Z"/>
+        </path>
+        <path d="M 342 298 Q 405 318 470 296 L 472 312 Q 405 336 340 314 Z" fill="#2ec4b6" stroke="#1f9e92" stroke-width="1.5"/>
+        <path d="M 360 308 L 362 318 M 384 314 L 385 324 M 450 310 L 449 320" stroke="#a8f0e8" stroke-width="2"/>
+
+        <!-- near flipper -->
+        <path d="M 460 300 C 494 310 520 330 532 350 C 514 352 484 346 458 334 Z" fill="#1f2633">
+          <animateTransform attributeName="transform" type="rotate" values="10 460 314;-12 460 314;10 460 314" dur="0.9s" repeatCount="indefinite"/>
+        </path>
+
+        <!-- beanie with bouncing pom-pom -->
+        <path d="M 362 246 C 360 206 382 190 406 190 C 432 190 452 206 450 246 Z" fill="#e63946"/>
+        <path d="M 386 240 L 390 198 M 406 238 L 406 192 M 426 240 L 422 198" stroke="#c22f3b" stroke-width="2.5" fill="none"/>
+        <path d="M 356 236 Q 406 222 456 236 L 456 252 Q 406 238 356 252 Z" fill="#f8f9fa" stroke="#dfe3e8" stroke-width="1.5"/>
+        <circle cx="406" cy="184" r="12" fill="#f8f9fa" stroke="#dfe3e8" stroke-width="1.5">
+          <animateTransform attributeName="transform" type="translate" values="0 0;-2 -4;0 0" dur="0.5s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===== foreground mounds (fast) ===== -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-400 0" dur="1.6s" repeatCount="indefinite"/>
+    <use xlink:href="#mounds" x="0" y="0"/>
+    <use xlink:href="#mounds" x="400" y="0"/>
+    <use xlink:href="#mounds" x="800" y="0"/>
+  </g>
+
+  <!-- ===== falling snow ===== -->
+  <g fill="#ffffff" opacity="0.9">
+    <circle cx="80" cy="-10" r="2.5">
+      <animate attributeName="cy" from="-10" to="610" dur="7s" begin="-1s" repeatCount="indefinite"/>
+      <animate attributeName="cx" values="80;60;80;50" dur="7s" begin="-1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="190" cy="-10" r="2">
+      <animate attributeName="cy" from="-10" to="610" dur="8.5s" begin="-5s" repeatCount="indefinite"/>
+      <animate attributeName="cx" values="190;170;185;150" dur="8.5s" begin="-5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="300" cy="-10" r="3">
+      <animate attributeName="cy" from="-10" to="610" dur="6.5s" begin="-3s" repeatCount="indefinite"/>
+      <animate attributeName="cx" values="300;280;295;260" dur="6.5s" begin="-3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="420" cy="-10" r="2">
+      <animate attributeName="cy" from="-10" to="610" dur="9s" begin="-7s" repeatCount="indefinite"/>
+      <animate attributeName="cx" values="420;400;415;380" dur="9s" begin="-7s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="530" cy="-10" r="2.6">
+      <animate attributeName="cy" from="-10" to="610" dur="7.5s" begin="-2s" repeatCount="indefinite"/>
+      <animate attributeName="cx" values="530;510;525;490" dur="7.5s" begin="-2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="640" cy="-10" r="2">
+      <animate attributeName="cy" from="-10" to="610" dur="8s" begin="-6s" repeatCount="indefinite"/>
+      <animate attributeName="cx" values="640;620;635;600" dur="8s" begin="-6s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="740" cy="-10" r="3">
+      <animate attributeName="cy" from="-10" to="610" dur="6.8s" begin="-4s" repeatCount="indefinite"/>
+      <animate attributeName="cx" values="740;720;735;700" dur="6.8s" begin="-4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="360" cy="-10" r="1.8">
+      <animate attributeName="cy" from="-10" to="610" dur="10s" begin="-8.5s" repeatCount="indefinite"/>
+      <animate attributeName="cx" values="360;345;358;330" dur="10s" begin="-8.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>

@@ -1,0 +1,246 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 800 600">
+  <title>A turtle riding a rocket</title>
+  <defs>
+    <radialGradient id="space" cx="0.6" cy="0.4" r="0.9">
+      <stop offset="0" stop-color="#2d1b5e"/>
+      <stop offset="0.6" stop-color="#140f3a"/>
+      <stop offset="1" stop-color="#070920"/>
+    </radialGradient>
+    <filter id="blur40" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+    <filter id="blur6" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <linearGradient id="hull" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.6" stop-color="#ece6da"/>
+      <stop offset="1" stop-color="#c9c0b1"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff5a5f"/>
+      <stop offset="1" stop-color="#b3161f"/>
+    </linearGradient>
+    <radialGradient id="glass" cx="0.35" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#9fe0ff"/>
+      <stop offset="1" stop-color="#1d4e89"/>
+    </radialGradient>
+    <radialGradient id="shellG" cx="0.45" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#5fcf7a"/>
+      <stop offset="1" stop-color="#1f7a44"/>
+    </radialGradient>
+    <radialGradient id="planet" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#5aa9f0"/>
+      <stop offset="1" stop-color="#1c3f8f"/>
+    </radialGradient>
+
+    <!-- far star tile with a ringed planet, 800 wide -->
+    <g id="farStars">
+      <g fill="#cfd8ff">
+        <circle cx="30" cy="40" r="1"/><circle cx="95" cy="160" r="1.2"/><circle cx="140" cy="60" r="0.8"/>
+        <circle cx="210" cy="250" r="1"/><circle cx="260" cy="110" r="1.3"/><circle cx="300" cy="30" r="0.9"/>
+        <circle cx="350" cy="190" r="1"/><circle cx="410" cy="70" r="1.1"/><circle cx="460" cy="280" r="0.8"/>
+        <circle cx="520" cy="150" r="1"/><circle cx="575" cy="40" r="1.2"/><circle cx="610" cy="230" r="0.9"/>
+        <circle cx="720" cy="300" r="1.1"/><circle cx="770" cy="180" r="0.8"/><circle cx="60" cy="330" r="1"/>
+        <circle cx="170" cy="400" r="0.9"/><circle cx="240" cy="480" r="1.1"/><circle cx="330" cy="360" r="0.8"/>
+        <circle cx="390" cy="520" r="1"/><circle cx="450" cy="430" r="1.2"/><circle cx="540" cy="380" r="0.9"/>
+        <circle cx="600" cy="500" r="1"/><circle cx="660" cy="420" r="0.8"/><circle cx="740" cy="540" r="1.1"/>
+        <circle cx="790" cy="380" r="1"/><circle cx="120" cy="560" r="0.9"/><circle cx="500" cy="570" r="1"/>
+        <circle cx="20" cy="470" r="1.2"/><circle cx="700" cy="20" r="0.9"/>
+      </g>
+      <g transform="translate(660 110) rotate(-15)">
+        <ellipse cx="0" cy="0" rx="62" ry="14" fill="none" stroke="#f7d59c" stroke-width="5" opacity="0.9"/>
+        <circle cx="0" cy="0" r="32" fill="#f2a65a"/>
+        <path d="M -30 -10 Q 0 -4 30 -10 M -32 4 Q 0 10 32 4" stroke="#d9823a" stroke-width="4" fill="none"/>
+        <path d="M -62 0 A 62 14 0 0 0 62 0" fill="none" stroke="#f7d59c" stroke-width="5"/>
+      </g>
+    </g>
+
+    <!-- mid star tile, 800 wide -->
+    <g id="midStars" fill="#ffffff">
+      <circle cx="80" cy="90" r="1.8"/><circle cx="190" cy="300" r="2"/><circle cx="280" cy="170" r="1.6"/>
+      <circle cx="370" cy="420" r="2.2"/><circle cx="430" cy="40" r="1.7"/><circle cx="510" cy="250" r="1.9"/>
+      <circle cx="590" cy="120" r="1.6"/><circle cx="650" cy="360" r="2"/><circle cx="730" cy="220" r="1.8"/>
+      <circle cx="760" cy="470" r="2.1"/><circle cx="150" cy="500" r="1.7"/><circle cx="330" cy="560" r="2"/>
+      <circle cx="560" cy="540" r="1.8"/><circle cx="40" cy="260" r="1.6"/>
+      <path d="M 470 330 L 473 337 L 480 340 L 473 343 L 470 350 L 467 343 L 460 340 L 467 337 Z" fill="#fff6c9"/>
+      <path d="M 120 200 L 122 205 L 127 207 L 122 209 L 120 214 L 118 209 L 113 207 L 118 205 Z" fill="#c9f1ff"/>
+    </g>
+
+    <!-- near speed streaks, 800 wide -->
+    <g id="streaks" stroke="#ffffff" stroke-linecap="round" stroke-width="2">
+      <line x1="100" y1="120" x2="170" y2="120" opacity="0.6"/>
+      <line x1="300" y1="60" x2="350" y2="60" opacity="0.4"/>
+      <line x1="520" y1="200" x2="600" y2="200" opacity="0.5"/>
+      <line x1="700" y1="90" x2="750" y2="90" opacity="0.4"/>
+      <line x1="160" y1="380" x2="230" y2="380" opacity="0.5"/>
+      <line x1="420" y1="470" x2="480" y2="470" opacity="0.6"/>
+      <line x1="640" y1="420" x2="720" y2="420" opacity="0.4"/>
+      <line x1="760" y1="300" x2="800" y2="300" opacity="0.5"/>
+      <line x1="250" y1="540" x2="320" y2="540" opacity="0.4"/>
+      <line x1="560" y1="330" x2="610" y2="330" opacity="0.3"/>
+    </g>
+  </defs>
+
+  <!-- ===== deep space ===== -->
+  <rect x="0" y="0" width="800" height="600" fill="url(#space)"/>
+  <ellipse cx="600" cy="450" rx="250" ry="120" fill="#7b2ff7" opacity="0.28" filter="url(#blur40)"/>
+  <ellipse cx="200" cy="150" rx="220" ry="100" fill="#00c2d1" opacity="0.16" filter="url(#blur40)"/>
+
+  <!-- star layers (parallax) -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-800 0" dur="40s" repeatCount="indefinite"/>
+    <use xlink:href="#farStars" x="0" y="0"/>
+    <use xlink:href="#farStars" x="800" y="0"/>
+  </g>
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-800 0" dur="12s" repeatCount="indefinite"/>
+    <use xlink:href="#midStars" x="0" y="0"/>
+    <use xlink:href="#midStars" x="800" y="0"/>
+  </g>
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-800 0" dur="1.4s" repeatCount="indefinite"/>
+    <use xlink:href="#streaks" x="0" y="0"/>
+    <use xlink:href="#streaks" x="800" y="0"/>
+  </g>
+
+  <!-- shooting star -->
+  <line x1="0" y1="0" x2="60" y2="-20" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0">
+    <animateTransform attributeName="transform" type="translate" values="760 60;520 140;520 140" keyTimes="0;0.12;1" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;1;0;0" keyTimes="0;0.04;0.12;1" dur="7s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- ===== home planet (launch site) ===== -->
+  <circle cx="60" cy="660" r="236" fill="#7fd6ff" opacity="0.35" filter="url(#blur6)"/>
+  <circle cx="60" cy="660" r="220" fill="url(#planet)"/>
+  <path d="M -60 470 C -20 452 40 456 70 480 C 96 500 60 520 20 516 C -10 512 -40 500 -60 470 Z" fill="#4caf50" opacity="0.9"/>
+  <path d="M 150 500 C 190 492 230 520 240 556 C 214 560 180 548 160 530 C 150 520 146 508 150 500 Z" fill="#4caf50" opacity="0.9"/>
+  <path d="M -40 540 C 20 528 90 534 150 552 M 60 460 C 110 462 170 480 210 510" stroke="#ffffff" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.55"/>
+
+  <!-- ===== rocket + turtle (tilted up, bobbing) ===== -->
+  <g transform="rotate(-12 400 330)">
+
+    <!-- smoke puffs trailing behind -->
+    <g fill="#e8e4f5">
+      <circle cx="100" cy="330" r="8" opacity="0">
+        <animate attributeName="cx" from="100" to="-80" dur="1.5s" repeatCount="indefinite"/>
+        <animate attributeName="r" from="8" to="30" dur="1.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;0" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="100" cy="330" r="8" opacity="0">
+        <animate attributeName="cx" from="100" to="-80" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+        <animate attributeName="cy" from="330" to="345" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+        <animate attributeName="r" from="8" to="30" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="100" cy="330" r="8" opacity="0">
+        <animate attributeName="cx" from="100" to="-80" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+        <animate attributeName="cy" from="330" to="316" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+        <animate attributeName="r" from="8" to="30" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.6;0" dur="1.5s" begin="1s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 0;0 -8;0 0" dur="2s" repeatCount="indefinite"/>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" values="-2 400 330;2 400 330;-2 400 330" dur="3s" repeatCount="indefinite"/>
+
+        <!-- flame (flickering) -->
+        <path d="M 215 300 C 170 295 120 315 80 330 C 120 345 170 365 215 360 Z" fill="#ff5a1f">
+          <animate attributeName="d" dur="0.24s" repeatCount="indefinite"
+            values="M 215 300 C 170 295 120 315 80 330 C 120 345 170 365 215 360 Z;M 215 300 C 165 290 105 312 58 330 C 105 348 165 370 215 360 Z;M 215 300 C 170 295 120 315 80 330 C 120 345 170 365 215 360 Z"/>
+        </path>
+        <path d="M 215 308 C 180 305 145 318 115 330 C 145 342 180 355 215 352 Z" fill="#ffa62b">
+          <animate attributeName="d" dur="0.18s" repeatCount="indefinite"
+            values="M 215 308 C 180 305 145 318 115 330 C 145 342 180 355 215 352 Z;M 215 308 C 176 302 135 316 98 330 C 135 344 176 358 215 352 Z;M 215 308 C 180 305 145 318 115 330 C 145 342 180 355 215 352 Z"/>
+        </path>
+        <path d="M 215 316 C 195 314 172 322 150 330 C 172 338 195 346 215 344 Z" fill="#ffe66d">
+          <animate attributeName="d" dur="0.14s" repeatCount="indefinite"
+            values="M 215 316 C 195 314 172 322 150 330 C 172 338 195 346 215 344 Z;M 215 316 C 192 312 164 320 138 330 C 164 340 192 348 215 344 Z;M 215 316 C 195 314 172 322 150 330 C 172 338 195 346 215 344 Z"/>
+        </path>
+        <ellipse cx="206" cy="330" rx="12" ry="8" fill="#fffbe6"/>
+
+        <!-- fins, nozzle, hull, nose -->
+        <path d="M 262 286 L 232 232 C 229 225 237 221 243 226 L 314 286 Z" fill="url(#red)" stroke="#8c1016" stroke-width="2"/>
+        <path d="M 262 374 L 232 428 C 229 435 237 439 243 434 L 314 374 Z" fill="url(#red)" stroke="#8c1016" stroke-width="2"/>
+        <path d="M 240 302 L 214 294 L 214 366 L 240 358 Z" fill="#7d8597" stroke="#545b6b" stroke-width="2"/>
+        <path d="M 238 300 C 238 290 246 285 256 285 L 520 285 L 520 375 L 256 375 C 246 375 238 370 238 360 Z" fill="url(#hull)" stroke="#b8b0a2" stroke-width="2"/>
+        <rect x="264" y="285" width="16" height="90" fill="url(#red)"/>
+        <rect x="506" y="285" width="10" height="90" fill="#d4a24c"/>
+        <path d="M 520 285 C 572 285 612 308 634 330 C 612 352 572 375 520 375 Z" fill="url(#red)" stroke="#8c1016" stroke-width="2"/>
+        <path d="M 540 296 C 570 300 596 312 612 324" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <g fill="#b8b0a2">
+          <circle cx="300" cy="293" r="2"/><circle cx="340" cy="293" r="2"/><circle cx="380" cy="293" r="2"/>
+          <circle cx="420" cy="293" r="2"/><circle cx="490" cy="293" r="2"/>
+          <circle cx="300" cy="367" r="2"/><circle cx="340" cy="367" r="2"/><circle cx="380" cy="367" r="2"/>
+          <circle cx="420" cy="367" r="2"/><circle cx="490" cy="367" r="2"/>
+        </g>
+        <circle cx="455" cy="330" r="22" fill="url(#glass)" stroke="#d4a24c" stroke-width="5"/>
+        <path d="M 441 322 A 16 16 0 0 1 455 314" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/>
+
+        <!-- ===== turtle ===== -->
+        <!-- far front flipper, waving -->
+        <path d="M 430 250 C 426 222 420 196 414 176 C 426 180 436 204 444 244 Z" fill="#7fc45c" stroke="#4f9a3a" stroke-width="1.5">
+          <animateTransform attributeName="transform" type="rotate" values="-15 436 248;18 436 248;-15 436 248" dur="0.8s" repeatCount="indefinite"/>
+        </path>
+        <path d="M 342 262 L 320 258 L 340 250 Z" fill="#8fd16a" stroke="#5fa845" stroke-width="1.5"/>
+        <ellipse cx="405" cy="277" rx="64" ry="10" fill="#8fd16a" stroke="#5fa845" stroke-width="1.5"/>
+        <line x1="452" y1="252" x2="486" y2="214" stroke="#8fd16a" stroke-width="20" stroke-linecap="round"/>
+
+        <!-- shell -->
+        <path d="M 338 266 C 342 216 376 194 405 194 C 438 194 470 216 474 266 Z" fill="url(#shellG)" stroke="#1b5e3a" stroke-width="2"/>
+        <path d="M 390 210 L 420 210 L 432 232 L 420 254 L 390 254 L 378 232 Z" fill="#4cb96c" stroke="#1b5e3a" stroke-width="2"/>
+        <path d="M 378 232 L 346 242 M 390 210 L 374 200 M 420 210 L 436 200 M 432 232 L 466 242 M 390 254 L 384 266 M 420 254 L 426 266" stroke="#1b5e3a" stroke-width="2" fill="none"/>
+        <ellipse cx="398" cy="222" rx="8" ry="4" fill="#ffffff" opacity="0.3"/>
+        <path d="M 332 264 L 480 264 Q 482 273 472 274 L 340 274 Q 330 273 332 264 Z" fill="#e0c068" stroke="#b8963f" stroke-width="1.5"/>
+        <path d="M 356 264 L 356 274 M 380 264 L 380 274 M 405 264 L 405 274 M 430 264 L 430 274 M 455 264 L 455 274" stroke="#b8963f" stroke-width="1.5"/>
+
+        <!-- near back flipper draped on the hull -->
+        <ellipse cx="356" cy="296" rx="10" ry="20" transform="rotate(20 356 296)" fill="#8fd16a" stroke="#5fa845" stroke-width="1.5"/>
+
+        <!-- scarf trailing over the shell -->
+        <path d="M 454 242 C 430 236 412 228 388 232 C 376 234 368 230 360 224 L 358 234 C 368 242 378 244 390 242 C 414 240 432 248 454 250 Z" fill="#ffd23f" stroke="#d9a90f" stroke-width="1.5">
+          <animate attributeName="d" dur="0.4s" repeatCount="indefinite"
+            values="M 454 242 C 430 236 412 228 388 232 C 376 234 368 230 360 224 L 358 234 C 368 242 378 244 390 242 C 414 240 432 248 454 250 Z;M 454 242 C 430 230 410 218 386 218 C 374 218 366 212 358 206 L 356 216 C 366 226 376 230 388 230 C 412 232 432 244 454 250 Z;M 454 242 C 430 236 412 228 388 232 C 376 234 368 230 360 224 L 358 234 C 368 242 378 244 390 242 C 414 240 432 248 454 250 Z"/>
+        </path>
+        <path d="M 452 238 Q 466 244 478 236 L 482 246 Q 468 256 450 248 Z" fill="#ffd23f" stroke="#d9a90f" stroke-width="1.5"/>
+
+        <!-- near front flipper holding the reins -->
+        <path d="M 486 264 Q 532 282 572 293" stroke="#8b5a2b" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="574" cy="294" r="4" fill="none" stroke="#d4a24c" stroke-width="2"/>
+        <path d="M 446 268 C 462 268 478 264 488 261 C 491 270 476 277 448 279 Z" fill="#8fd16a" stroke="#5fa845" stroke-width="1.5"/>
+
+        <!-- head -->
+        <circle cx="495" cy="200" r="22" fill="#8fd16a" stroke="#5fa845" stroke-width="1.5"/>
+        <ellipse cx="501" cy="193" rx="7" ry="7" fill="#ffffff">
+          <animate attributeName="ry" values="7;7;0.6;7" keyTimes="0;0.9;0.95;1" dur="3.5s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="503" cy="193" rx="4" ry="4" fill="#1b1b1f">
+          <animate attributeName="ry" values="4;4;0.4;4" keyTimes="0;0.9;0.95;1" dur="3.5s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="514" cy="190" rx="4.5" ry="5.5" fill="#ffffff">
+          <animate attributeName="ry" values="5.5;5.5;0.5;5.5" keyTimes="0;0.9;0.95;1" dur="3.5s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="515.5" cy="190" rx="2.6" ry="3.2" fill="#1b1b1f">
+          <animate attributeName="ry" values="3.2;3.2;0.3;3.2" keyTimes="0;0.9;0.95;1" dur="3.5s" repeatCount="indefinite"/>
+        </ellipse>
+        <circle cx="504.5" cy="191.5" r="1.3" fill="#ffffff"/>
+        <path d="M 502 207 Q 510 217 518 205 Z" fill="#7a2e3a"/>
+        <ellipse cx="490" cy="208" rx="5" ry="3" fill="#ff9aa8" opacity="0.6"/>
+
+        <!-- bubble helmet with antenna -->
+        <line x1="497" y1="162" x2="497" y2="148" stroke="#c0c6cc" stroke-width="2.5"/>
+        <circle cx="497" cy="145" r="4.5" fill="#ff3b3b">
+          <animate attributeName="opacity" values="1;0.3;1" dur="0.9s" repeatCount="indefinite"/>
+        </circle>
+        <ellipse cx="480" cy="232" rx="20" ry="7" transform="rotate(-35 480 232)" fill="#c0c6cc" stroke="#8d949e" stroke-width="1.5"/>
+        <circle cx="497" cy="198" r="36" fill="#bfe9ff" fill-opacity="0.2" stroke="#e8f7ff" stroke-width="3"/>
+        <path d="M 474 182 A 28 28 0 0 1 500 168" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.8"/>
+        <path d="M 518 176 L 520 181 L 525 183 L 520 185 L 518 190 L 516 185 L 511 183 L 516 181 Z" fill="#ffffff">
+          <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+        </path>
+      </g>
+    </g>
+  </g>
+</svg>

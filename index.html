@@ -129,6 +129,68 @@
     white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.85 var(--sans); color: #2f2a24;
   }
 
+  a.stat { text-decoration: none; border-color: var(--ink); font-weight: 800; }
+  a.stat:hover { background: var(--ink); color: #fff; }
+  .versus { margin-top: 72px; scroll-margin-top: 24px; }
+  .versus h2 { margin: 14px 0 12px; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.1; font-weight: 900; letter-spacing: -.01em; }
+  .versus .vs-lead { max-width: 860px; margin: 0; font-size: 15px; line-height: 1.8; color: #4a443c; }
+  .vs-list { display: grid; gap: 18px; margin-top: 28px; }
+  .vs-row {
+    display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr) minmax(0, 1fr); gap: 20px;
+    padding: 18px; background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--accent); border-radius: 20px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -26px rgba(60, 40, 10, .38);
+  }
+  .vs-game { display: flex; flex-direction: column; gap: 10px; padding: 4px 2px; }
+  .vs-game h3 { font-size: 22px; }
+  .vs-game .pitch { font-size: 13px; line-height: 1.65; color: #5a5249; }
+  .vs-prompt {
+    align-self: flex-start; margin-top: auto; padding: 7px 12px; cursor: pointer; font: 800 12px/1 var(--sans);
+    color: var(--accent-ink); background: #fff; border: 1.5px dashed #ddd2c0; border-radius: 999px;
+  }
+  .vs-prompt:hover, .vs-prompt:focus-visible { border-color: var(--accent); outline: none; }
+  .vs-cell { display: flex; flex-direction: column; gap: 10px; margin: 0; min-width: 0; }
+  .vs-cell .thumb { border-radius: 14px; border-bottom: 0; }
+  .vs-cap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .vs-model { font-size: 15px; font-weight: 900; }
+  .vs-model small { display: block; margin-top: 2px; font: 700 12px/1.4 var(--latin); color: var(--muted); }
+  .vs-cap .btn { margin-left: auto; padding: 8px 14px; font-size: 13px; }
+  .vs-qa { display: block; margin-top: 2px; font-size: 12px; font-weight: 700; color: #2d8539; }
+  .vs-qa.bad { color: #c0392b; }
+
+  @media (min-width: 1180px) {
+    .grid.three .card, .grid.three .card:nth-child(-n+2) { grid-column: span 2; }
+  }
+  .gal { margin-top: 72px; scroll-margin-top: 24px; }
+  .gal h2 { margin: 14px 0 12px; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.1; font-weight: 900; letter-spacing: -.01em; }
+  .gal .gal-lead { max-width: 860px; margin: 0; font-size: 15px; line-height: 1.8; color: #4a443c; }
+  .g-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min, 260px)), 1fr)); gap: 20px; margin-top: 26px; }
+  .g-item {
+    display: flex; flex-direction: column; overflow: hidden; background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -24px rgba(60, 40, 10, .38);
+  }
+  .g-media { position: relative; display: grid; place-items: center; aspect-ratio: var(--ratio, 4 / 3); background: #fff; border-bottom: 3px solid var(--accent); }
+  .g-media img, .g-media .lottie { width: 100%; height: 100%; object-fit: contain; }
+  .g-media .g-open { position: absolute; right: 10px; top: 10px; padding: 5px 10px; border-radius: 999px; font: 800 11px/1 var(--sans); color: #fff; background: rgba(29, 26, 22, .72); text-decoration: none; }
+  .g-body { display: flex; flex-direction: column; gap: 6px; flex: 1; padding: 14px 16px 16px; }
+  .g-body h3 { font-size: 17px; }
+  .g-body p { margin: 0; font-size: 13px; line-height: 1.65; color: #5a5249; }
+  .g-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 11px; color: var(--muted); }
+  .g-meta span { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; background: #fff; }
+  .g-body .vs-prompt { margin-top: auto; }
+  .gal-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .gal-nav a { text-decoration: none; font-size: 13px; font-weight: 800; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; background: #fff; }
+  .gal-nav a:hover { border-color: var(--ink); }
+  .vs-cell.pending .thumb {
+    display: grid; place-items: center; color: var(--muted); font-weight: 900; letter-spacing: .08em;
+    background: repeating-linear-gradient(45deg, #ece5d8 0 14px, #e5dccd 14px 28px);
+  }
+  @media (max-width: 1080px) {
+    .vs-row { grid-template-columns: 1fr 1fr; }
+    .vs-game { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .vs-row { grid-template-columns: 1fr; }
+  }
 
   .tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; margin-top: 56px; }
   .tip { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; font-size: 14px; line-height: 1.75; color: #4a443c; }
@@ -180,6 +242,47 @@
     </article>
   </main>
 
+
+  <!-- GALLERY:START -->
+  <section class="gal" id="pelican" aria-labelledby="gal-pelican" style="--accent:#1e9bf0;--accent-soft:#1e9bf01f;--accent-ink:#156fac"><div class="eyebrow">PELICAN · CLAUDE OPUS 5.5</div><h2 id="gal-pelican">🦩 鹈鹕骑自行车</h2><p class="gal-lead">Simon Willison 的经典测试：只给一句 prompt，不许看渲染结果，一次写成。这里是 Opus 5.5 默认档和 max 档各一份静态版、一份动画版。</p><div class="g-grid" style="--min: 260px"><article class="g-item" data-title="鹈鹕骑自行车（静态版）" data-no="P1"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/pelican/opus55-default/pelican-static.svg?v=1790218618" alt="鹈鹕骑自行车（静态版）" loading="lazy"><a class="g-open" href="rolls/pelican/opus55-default/pelican-static.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>鹈鹕骑自行车（静态版）</h3><p>晴空艳阳下的公路上，一只白鹈鹕叼着橙色大喙囊坐在红色自行车上，翅膀握住车把、橙色蹼脚踩着踏板，身后拖着几道速度线。</p><div class="g-meta"><span>Opus 5.5 默认档</span><span>盲画一次成稿</span><span>7 KB</span></div><button class="vs-prompt" type="button" data-prompt="pelican-pelican-opus55-default-pelican-static">查看 prompt</button></div></article><article class="g-item" data-title="鹈鹕骑自行车（动画版）" data-no="P2"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/pelican/opus55-default/pelican-animated.svg?v=1790218791" alt="鹈鹕骑自行车（动画版）" loading="lazy"><a class="g-open" href="rolls/pelican/opus55-default/pelican-animated.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>鹈鹕骑自行车（动画版）</h3><p>黄昏里系着红围巾的褐鹈鹕蹬着青绿色自行车：车轮与曲柄转动、双腿随踏板往复、身体随蹬踏起伏，围巾飘动、喉囊晃荡、偶尔眨眼，车筐里的鱼摆尾，远山、丘陵和路面分层视差滚动（纯 SMIL，无 JS）。</p><div class="g-meta"><span>Opus 5.5 默认档</span><span>盲画一次成稿</span><span>14 KB</span></div><button class="vs-prompt" type="button" data-prompt="pelican-pelican-opus55-default-pelican-animated">查看 prompt</button></div></article><article class="g-item" data-title="鹈鹕骑自行车（静态版）" data-no="P3"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/pelican/opus55-max/pelican-static.svg?v=1790218628" alt="鹈鹕骑自行车（静态版）" loading="lazy"><a class="g-open" href="rolls/pelican/opus55-max/pelican-static.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>鹈鹕骑自行车（静态版）</h3><p>晴空下的公路上，一只戴蓝色头盔、系红围巾的白鹈鹕坐在红色自行车上，黑色翼尖握着车把，橙色喉囊垂在长喙下，前车筐里装着两条鱼。</p><div class="g-meta"><span>Opus 5.5 max 档</span><span>盲画一次成稿</span><span>7 KB</span></div><button class="vs-prompt" type="button" data-prompt="pelican-pelican-opus55-max-pelican-static">查看 prompt</button></div></article><article class="g-item" data-title="鹈鹕骑自行车（动画版）" data-no="P4"><div class="g-media" style="--ratio: 640 / 480"><img src="rolls/pelican/opus55-max/pelican-animated.svg?v=1790218801" alt="鹈鹕骑自行车（动画版）" loading="lazy"><a class="g-open" href="rolls/pelican/opus55-max/pelican-animated.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>鹈鹕骑自行车（动画版）</h3><p>夕阳下一只棕鹈鹕骑着青绿色自行车：车轮和曲柄转动，双腿随踏板踩踏，身体轻颠，喉囊晃动，偶尔眨眼，后架小旗飘扬，远山、云和路面标线视差滚动（纯 SMIL，无脚本）。</p><div class="g-meta"><span>Opus 5.5 max 档</span><span>盲画一次成稿</span><span>12 KB</span></div><button class="vs-prompt" type="button" data-prompt="pelican-pelican-opus55-max-pelican-animated">查看 prompt</button></div></article></div></section>
+  <section class="gal" id="riders" aria-labelledby="gal-riders" style="--accent:#7b61ff;--accent-soft:#7b61ff1f;--accent-ink:#5845b7"><div class="eyebrow">RIDERS · CLAUDE OPUS 5.5</div><h2 id="gal-riders">🚲 更多骑行系列</h2><p class="gal-lead">把鹈鹕和自行车换成别的动物和交通工具，规则不变：一句英文 prompt，盲画一次成稿，只用 SMIL / CSS 动画。</p><div class="g-grid" style="--min: 240px"><article class="g-item" data-title="熊猫骑电动车送外卖" data-no="R1"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/riding/panda-scooter.svg?v=1790218675" alt="熊猫骑电动车送外卖" loading="lazy"><a class="g-open" href="rolls/riding/panda-scooter.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>熊猫骑电动车送外卖</h3><p>戴黄色头盔的熊猫骑着红色踏板车穿过城市街道，后座黄色外卖箱冒着热气；车轮转动、车身随减震轻颠、蓝围巾飘动，楼群、行道树和车道线分层向后滚动。</p><div class="g-meta"><span>盲画一次成稿</span><span>18 KB</span></div><button class="vs-prompt" type="button" data-prompt="riding-riding-panda-scooter">查看 prompt</button></div></article><article class="g-item" data-title="企鹅踩滑板" data-no="R2"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/riding/penguin-skateboard.svg?v=1790218730" alt="企鹅踩滑板" loading="lazy"><a class="g-open" href="rolls/riding/penguin-skateboard.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>企鹅踩滑板</h3><p>戴红色毛线帽、围青绿围巾的企鹅在极光下的冰道上滑行，张开鳍翅保持平衡；滑轮飞转，每隔几秒跳一次带倾斜的 ollie，冰山、雪堆与飘雪分层掠过。</p><div class="g-meta"><span>盲画一次成稿</span><span>16 KB</span></div><button class="vs-prompt" type="button" data-prompt="riding-riding-penguin-skateboard">查看 prompt</button></div></article><article class="g-item" data-title="章鱼骑独轮车杂耍" data-no="R3"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/riding/octopus-unicycle.svg?v=1790218816" alt="章鱼骑独轮车杂耍" loading="lazy"><a class="g-open" href="rolls/riding/octopus-unicycle.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>章鱼骑独轮车杂耍</h3><p>马戏团聚光灯下，系领结的粉色章鱼骑独轮车前后摇摆保持平衡，两条触手踩着随车轮转动的踏板，另两条触手抛接三只彩球，眼珠跟着球转，彩纸纷飞。</p><div class="g-meta"><span>盲画一次成稿</span><span>16 KB</span></div><button class="vs-prompt" type="button" data-prompt="riding-riding-octopus-unicycle">查看 prompt</button></div></article><article class="g-item" data-title="橘猫骑摩托" data-no="R4"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/riding/cat-motorcycle.svg?v=1790218879" alt="橘猫骑摩托" loading="lazy"><a class="g-open" href="rolls/riding/cat-motorcycle.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>橘猫骑摩托</h3><p>戴护目镜、系红头巾的橘猫骑着青蓝色巡航摩托驶过黄昏沙漠公路，条纹尾巴和头巾迎风飘动；辐条轮飞转、车身随引擎震动、排气冒烟，条纹夕阳前的台地、仙人掌和风滚草依次掠过。</p><div class="g-meta"><span>盲画一次成稿</span><span>18 KB</span></div><button class="vs-prompt" type="button" data-prompt="riding-riding-cat-motorcycle">查看 prompt</button></div></article><article class="g-item" data-title="柯基与鸭子骑双人自行车" data-no="R5"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/riding/corgi-duck-tandem.svg?v=1790219193" alt="柯基与鸭子骑双人自行车" loading="lazy"><a class="g-open" href="rolls/riding/corgi-duck-tandem.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>柯基与鸭子骑双人自行车</h3><p>柯基在前面掌把、吐着舌头，戴水手帽的鸭子在后座一翅扶把一翅挥手；两组曲柄同步转动、腿脚跟着踏板画圈、链条滚动，风车、栅栏与野花沿乡间小路向后流过，小爱心缓缓升起。</p><div class="g-meta"><span>盲画一次成稿</span><span>19 KB</span></div><button class="vs-prompt" type="button" data-prompt="riding-riding-corgi-duck-tandem">查看 prompt</button></div></article><article class="g-item" data-title="乌龟骑火箭" data-no="R6"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/riding/turtle-rocket.svg?v=1790219029" alt="乌龟骑火箭" loading="lazy"><a class="g-open" href="rolls/riding/turtle-rocket.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>乌龟骑火箭</h3><p>戴泡泡头盔、系黄围巾的乌龟骑在红白复古火箭上，一只前肢拉缰绳、一只挥舞；尾焰闪烁、烟团拖尾、火箭轻轻起伏，星空三层视差掠过，还有环状行星、流星和出发的蓝色星球。</p><div class="g-meta"><span>盲画一次成稿</span><span>16 KB</span></div><button class="vs-prompt" type="button" data-prompt="riding-riding-turtle-rocket">查看 prompt</button></div></article><article class="g-item" data-title="刺猬骑三轮车" data-no="R7"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/riding/hedgehog-tricycle.svg?v=1790219096" alt="刺猬骑三轮车" loading="lazy"><a class="g-open" href="rolls/riding/hedgehog-tricycle.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>刺猬骑三轮车</h3><p>背刺上插着苹果和枫叶的刺猬穿红色小球鞋，蹬着青绿色儿童三轮车的前轮脚踏在秋日公园小路上前进；前后轮各自转动、车把彩带飘舞，长椅、路灯和秋色树林后退，落叶打着旋飘下。</p><div class="g-meta"><span>盲画一次成稿</span><span>16 KB</span></div><button class="vs-prompt" type="button" data-prompt="riding-riding-hedgehog-tricycle">查看 prompt</button></div></article><article class="g-item" data-title="青蛙骑蜗牛" data-no="R8"><div class="g-media" style="--ratio: 800 / 600"><img src="rolls/riding/frog-snail.svg?v=1790219182" alt="青蛙骑蜗牛" loading="lazy"><a class="g-open" href="rolls/riding/frog-snail.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>青蛙骑蜗牛</h3><p>青蛙坐在蜗牛壳顶的小鞍毯上挥手，用树枝吊着一片生菜悬在蜗牛眼前；蜗牛一伸一缩、腹足波动地慢慢追赶，生菜来回晃荡，黏液痕闪着光，蘑菇林背景缓缓后移，萤火虫飘浮。</p><div class="g-meta"><span>盲画一次成稿</span><span>19 KB</span></div><button class="vs-prompt" type="button" data-prompt="riding-riding-frog-snail">查看 prompt</button></div></article></div></section>
+  <script type="text/plain" id="prompt-pelican-pelican-opus55-default-pelican-static">
+Generate an SVG of a pelican riding a bicycle
+</script>
+  <script type="text/plain" id="prompt-pelican-pelican-opus55-default-pelican-animated">
+Generate an animated SVG of a pelican riding a bicycle
+</script>
+  <script type="text/plain" id="prompt-pelican-pelican-opus55-max-pelican-static">
+Generate an SVG of a pelican riding a bicycle
+</script>
+  <script type="text/plain" id="prompt-pelican-pelican-opus55-max-pelican-animated">
+Generate an animated SVG of a pelican riding a bicycle
+</script>
+  <script type="text/plain" id="prompt-riding-riding-panda-scooter">
+Generate an animated SVG of a panda riding a scooter to deliver food
+</script>
+  <script type="text/plain" id="prompt-riding-riding-penguin-skateboard">
+Generate an animated SVG of a penguin riding a skateboard
+</script>
+  <script type="text/plain" id="prompt-riding-riding-octopus-unicycle">
+Generate an animated SVG of an octopus riding a unicycle while juggling
+</script>
+  <script type="text/plain" id="prompt-riding-riding-cat-motorcycle">
+Generate an animated SVG of a cat riding a motorcycle
+</script>
+  <script type="text/plain" id="prompt-riding-riding-corgi-duck-tandem">
+Generate an animated SVG of a corgi and a duck riding a tandem bicycle
+</script>
+  <script type="text/plain" id="prompt-riding-riding-turtle-rocket">
+Generate an animated SVG of a turtle riding a rocket
+</script>
+  <script type="text/plain" id="prompt-riding-riding-hedgehog-tricycle">
+Generate an animated SVG of a hedgehog riding a tricycle
+</script>
+  <script type="text/plain" id="prompt-riding-riding-frog-snail">
+Generate an animated SVG of a frog riding a snail
+</script>
+  <!-- GALLERY:END -->
 
   <section class="tips">
     <div class="tip"><b>怎么玩</b>点击封面或“开始游戏”，会在新标签页直接打开 SVG 文件本身。每个游戏都有标题页、难度选择、玩法说明（H）和暂停（P）。</div>
@@ -417,12 +520,12 @@
   const copyBtn = document.getElementById('pd-copy');
   document.querySelectorAll('[data-prompt]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const card = btn.closest('.card');
+      const card = btn.closest('.card, .vs-row, .g-item');
       const css = getComputedStyle(card);
       dlg.style.setProperty('--accent', css.getPropertyValue('--accent'));
       dlg.style.setProperty('--accent-ink', css.getPropertyValue('--accent-ink'));
-      document.getElementById('pd-no').textContent = card.querySelector('.no').textContent;
-      document.getElementById('pd-title').textContent = card.querySelector('h3').firstChild.textContent;
+      document.getElementById('pd-no').textContent = card.dataset.no || card.querySelector('.no').textContent;
+      document.getElementById('pd-title').textContent = card.dataset.title || card.querySelector('h3').firstChild.textContent;
       body.textContent = document.getElementById('prompt-' + btn.dataset.prompt).textContent.trim();
       copyBtn.textContent = '复制';
       dlg.showModal();

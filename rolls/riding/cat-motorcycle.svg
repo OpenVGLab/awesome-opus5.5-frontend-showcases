@@ -1,0 +1,319 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 800 600">
+  <title>A cat riding a motorcycle</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b1850"/>
+      <stop offset="0.45" stop-color="#7d2e7a"/>
+      <stop offset="0.8" stop-color="#ff6b5a"/>
+      <stop offset="1" stop-color="#ffb36b"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe66d"/>
+      <stop offset="1" stop-color="#ff6f69"/>
+    </linearGradient>
+    <mask id="sunBars">
+      <rect x="500" y="220" width="200" height="200" fill="#ffffff"/>
+      <rect x="500" y="328" width="200" height="4" fill="#000000"/>
+      <rect x="500" y="344" width="200" height="5" fill="#000000"/>
+      <rect x="500" y="358" width="200" height="6" fill="#000000"/>
+      <rect x="500" y="371" width="200" height="7" fill="#000000"/>
+    </mask>
+    <linearGradient id="desert" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d9795c"/>
+      <stop offset="1" stop-color="#8f4146"/>
+    </linearGradient>
+    <linearGradient id="tank" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3cc4d6"/>
+      <stop offset="1" stop-color="#137384"/>
+    </linearGradient>
+    <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f6f8"/>
+      <stop offset="0.5" stop-color="#aab2bc"/>
+      <stop offset="1" stop-color="#e3e7eb"/>
+    </linearGradient>
+    <linearGradient id="lens" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9be3ff"/>
+      <stop offset="1" stop-color="#2b6cb0"/>
+    </linearGradient>
+
+    <!-- mesas on the horizon, 800 wide -->
+    <g id="mesas">
+      <path d="M 0 381 L 30 340 L 150 340 L 175 381 Z" fill="#5b2448"/>
+      <path d="M 250 381 L 270 355 L 330 355 L 345 381 Z" fill="#6a2b4c"/>
+      <path d="M 430 381 L 460 320 L 520 320 L 560 381 Z" fill="#5b2448"/>
+      <path d="M 640 381 L 665 350 L 760 350 L 790 381 Z" fill="#6a2b4c"/>
+      <path d="M 30 340 L 150 340 M 460 320 L 520 320 M 665 350 L 760 350" stroke="#8a3d5e" stroke-width="3"/>
+    </g>
+
+    <!-- roadside cacti and rocks, 400 wide -->
+    <g id="cacti">
+      <rect x="100" y="380" width="20" height="73" rx="10" fill="#3a5a48"/>
+      <path d="M 102 422 L 88 422 Q 80 422 80 414 L 80 398 Q 80 391 86 391 Q 92 391 92 398 L 92 411 L 102 411 Z" fill="#3a5a48"/>
+      <path d="M 118 407 L 132 407 L 132 388 Q 132 381 138 381 Q 144 381 144 388 L 144 411 Q 144 418 137 418 L 118 418 Z" fill="#3a5a48"/>
+      <path d="M 106 388 L 106 448 M 114 388 L 114 448" stroke="#4f7a61" stroke-width="2"/>
+      <ellipse cx="230" cy="452" rx="16" ry="6" fill="#8a4a45"/>
+      <ellipse cx="248" cy="454" rx="8" ry="4" fill="#7a3f3c"/>
+      <ellipse cx="310" cy="442" rx="12" ry="13" fill="#44705a"/>
+      <path d="M 304 432 L 304 452 M 310 430 L 310 455 M 316 432 L 316 452" stroke="#5b8d72" stroke-width="1.5"/>
+      <circle cx="310" cy="428" r="4" fill="#ff7eb6"/>
+    </g>
+  </defs>
+
+  <!-- ===== sky, stars, striped sun ===== -->
+  <rect x="0" y="0" width="800" height="600" fill="url(#sky)"/>
+  <g fill="#ffffff">
+    <circle cx="70" cy="50" r="1.5"/>
+    <circle cx="190" cy="30" r="1.2"><animate attributeName="opacity" values="1;0.2;1" dur="2.2s" repeatCount="indefinite"/></circle>
+    <circle cx="330" cy="70" r="1.4"/>
+    <circle cx="470" cy="36" r="1.7"><animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/></circle>
+    <circle cx="610" cy="60" r="1.2"/>
+    <circle cx="730" cy="26" r="1.6"><animate attributeName="opacity" values="1;0.3;1" dur="2.6s" repeatCount="indefinite"/></circle>
+    <circle cx="760" cy="110" r="1.1"/>
+    <circle cx="120" cy="120" r="1"/>
+  </g>
+  <circle cx="600" cy="320" r="85" fill="url(#sun)" mask="url(#sunBars)"/>
+
+  <!-- ===== mesas (slow) ===== -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-800 0" dur="40s" repeatCount="indefinite"/>
+    <use xlink:href="#mesas" x="0" y="0"/>
+    <use xlink:href="#mesas" x="800" y="0"/>
+  </g>
+
+  <!-- ===== desert floor ===== -->
+  <rect x="0" y="380" width="800" height="220" fill="url(#desert)"/>
+  <rect x="0" y="380" width="800" height="6" fill="#ffb07a" opacity="0.5"/>
+
+  <!-- cacti (medium) -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-400 0" dur="1.43s" repeatCount="indefinite"/>
+    <use xlink:href="#cacti" x="0" y="0"/>
+    <use xlink:href="#cacti" x="400" y="0"/>
+    <use xlink:href="#cacti" x="800" y="0"/>
+  </g>
+
+  <!-- ===== road ===== -->
+  <rect x="0" y="455" width="800" height="90" fill="#2e2433"/>
+  <rect x="0" y="458" width="800" height="3" fill="#e9d8c4"/>
+  <rect x="0" y="540" width="800" height="3" fill="#e9d8c4"/>
+
+  <!-- headlight beam on the road -->
+  <path d="M 552 300 L 800 250 L 800 380 Z" fill="#fff2b0" opacity="0.18"/>
+
+  <!-- ===== exhaust puffs ===== -->
+  <g fill="#d9c7d6">
+    <circle cx="166" cy="456" r="5" opacity="0">
+      <animate attributeName="cx" from="166" to="90" dur="1s" repeatCount="indefinite"/>
+      <animate attributeName="cy" from="456" to="440" dur="1s" repeatCount="indefinite"/>
+      <animate attributeName="r" from="5" to="16" dur="1s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0" dur="1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="166" cy="456" r="5" opacity="0">
+      <animate attributeName="cx" from="166" to="90" dur="1s" begin="0.33s" repeatCount="indefinite"/>
+      <animate attributeName="cy" from="456" to="440" dur="1s" begin="0.33s" repeatCount="indefinite"/>
+      <animate attributeName="r" from="5" to="16" dur="1s" begin="0.33s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0" dur="1s" begin="0.33s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="166" cy="456" r="5" opacity="0">
+      <animate attributeName="cx" from="166" to="90" dur="1s" begin="0.66s" repeatCount="indefinite"/>
+      <animate attributeName="cy" from="456" to="440" dur="1s" begin="0.66s" repeatCount="indefinite"/>
+      <animate attributeName="r" from="5" to="16" dur="1s" begin="0.66s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0" dur="1s" begin="0.66s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- shadow -->
+  <ellipse cx="400" cy="492" rx="230" ry="8" fill="#140c18" opacity="0.4"/>
+
+  <!-- ===== wheels ===== -->
+  <g transform="translate(240 440)">
+    <circle r="50" fill="#1f1f24"/>
+    <circle r="41" fill="#2d2d35"/>
+    <circle r="40" fill="none" stroke="url(#chrome)" stroke-width="3"/>
+    <g stroke="#c9cfd6" stroke-width="1.5">
+      <line x1="39" y1="0" x2="-39" y2="0"/>
+      <line x1="36" y1="14.9" x2="-36" y2="-14.9"/>
+      <line x1="27.6" y1="27.6" x2="-27.6" y2="-27.6"/>
+      <line x1="14.9" y1="36" x2="-14.9" y2="-36"/>
+      <line x1="0" y1="39" x2="0" y2="-39"/>
+      <line x1="-14.9" y1="36" x2="14.9" y2="-36"/>
+      <line x1="-27.6" y1="27.6" x2="27.6" y2="-27.6"/>
+      <line x1="-36" y1="14.9" x2="36" y2="-14.9"/>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.56s" repeatCount="indefinite"/>
+    </g>
+    <circle r="10" fill="url(#chrome)" stroke="#7f8791" stroke-width="1.5"/>
+  </g>
+  <g transform="translate(560 440)">
+    <circle r="50" fill="#1f1f24"/>
+    <circle r="41" fill="#2d2d35"/>
+    <circle r="40" fill="none" stroke="url(#chrome)" stroke-width="3"/>
+    <g stroke="#c9cfd6" stroke-width="1.5">
+      <line x1="39" y1="0" x2="-39" y2="0"/>
+      <line x1="36" y1="14.9" x2="-36" y2="-14.9"/>
+      <line x1="27.6" y1="27.6" x2="-27.6" y2="-27.6"/>
+      <line x1="14.9" y1="36" x2="-14.9" y2="-36"/>
+      <line x1="0" y1="39" x2="0" y2="-39"/>
+      <line x1="-14.9" y1="36" x2="14.9" y2="-36"/>
+      <line x1="-27.6" y1="27.6" x2="27.6" y2="-27.6"/>
+      <line x1="-36" y1="14.9" x2="36" y2="-14.9"/>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.56s" repeatCount="indefinite"/>
+    </g>
+    <circle r="16" fill="none" stroke="#8d949e" stroke-width="3"/>
+    <circle r="10" fill="url(#chrome)" stroke="#7f8791" stroke-width="1.5"/>
+  </g>
+
+  <!-- ===== motorcycle body + cat (engine rumble) ===== -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 -2;0 0;0 -1;0 0" dur="0.3s" repeatCount="indefinite"/>
+
+    <!-- frame and swingarm -->
+    <g stroke="#1f1f24" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M 240 440 L 360 452"/>
+      <path d="M 240 440 L 310 360 L 420 350 L 520 302"/>
+      <path d="M 516 312 L 452 452 L 360 452"/>
+    </g>
+
+    <!-- rear fender and tail light -->
+    <path d="M 181 430 A 60 60 0 0 1 286 401" stroke="url(#tank)" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <rect x="170" y="418" width="12" height="10" rx="3" fill="#ff3b3b">
+      <animate attributeName="opacity" values="1;0.6;1" dur="1s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- V-twin engine -->
+    <g transform="rotate(-25 380 404)">
+      <rect x="367" y="380" width="26" height="48" rx="5" fill="url(#chrome)" stroke="#7f8791" stroke-width="1.5"/>
+      <path d="M 367 388 L 393 388 M 367 396 L 393 396 M 367 404 L 393 404 M 367 412 L 393 412" stroke="#7f8791" stroke-width="1.5"/>
+    </g>
+    <g transform="rotate(25 420 404)">
+      <rect x="407" y="380" width="26" height="48" rx="5" fill="url(#chrome)" stroke="#7f8791" stroke-width="1.5"/>
+      <path d="M 407 388 L 433 388 M 407 396 L 433 396 M 407 404 L 433 404 M 407 412 L 433 412" stroke="#7f8791" stroke-width="1.5"/>
+    </g>
+    <ellipse cx="400" cy="446" rx="40" ry="22" fill="#8d959f" stroke="#5f6670" stroke-width="2"/>
+    <circle cx="400" cy="446" r="11" fill="url(#chrome)" stroke="#5f6670" stroke-width="1.5"/>
+
+    <!-- exhaust pipes -->
+    <path d="M 380 432 C 360 458 320 458 250 456 L 172 450" stroke="url(#chrome)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M 420 440 C 400 472 330 470 250 468 L 168 462" stroke="url(#chrome)" stroke-width="9" fill="none" stroke-linecap="round"/>
+
+    <!-- front fork and fender -->
+    <line x1="514" y1="300" x2="556" y2="440" stroke="url(#chrome)" stroke-width="7" stroke-linecap="round"/>
+    <line x1="524" y1="298" x2="566" y2="438" stroke="#aab2bc" stroke-width="5" stroke-linecap="round"/>
+    <path d="M 505 420 A 58 58 0 0 1 615 420" stroke="url(#tank)" stroke-width="10" fill="none" stroke-linecap="round"/>
+
+    <!-- tank with stripe -->
+    <path d="M 408 332 C 428 312 490 310 516 320 L 518 346 C 482 356 430 358 408 350 Z" fill="url(#tank)" stroke="#0f5a67" stroke-width="2"/>
+    <path d="M 420 334 C 450 322 490 322 510 328" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.9"/>
+
+    <!-- seat -->
+    <path d="M 290 342 C 298 326 352 326 402 332 L 414 346 L 300 352 Z" fill="#3b2618"/>
+
+    <!-- footpeg -->
+    <line x1="390" y1="432" x2="416" y2="432" stroke="url(#chrome)" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- headlight and handlebar -->
+    <circle cx="542" cy="300" r="15" fill="url(#chrome)" stroke="#7f8791" stroke-width="2"/>
+    <circle cx="546" cy="300" r="10" fill="#fff6c9"/>
+    <path d="M 518 300 L 510 268 L 482 262" stroke="#1f1f24" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="478" y1="262" x2="494" y2="264" stroke="#111114" stroke-width="9" stroke-linecap="round"/>
+
+    <!-- ===== cat ===== -->
+    <!-- striped tail streaming back -->
+    <g stroke="#f4a340" stroke-width="16" stroke-linecap="round" fill="none">
+      <path id="catTail" d="M 306 318 C 270 310 250 280 220 286 C 200 290 190 280 184 268">
+        <animate attributeName="d" dur="0.8s" repeatCount="indefinite"
+          values="M 306 318 C 270 310 250 280 220 286 C 200 290 190 280 184 268;M 306 318 C 272 322 250 302 222 306 C 202 310 190 302 180 292;M 306 318 C 270 310 250 280 220 286 C 200 290 190 280 184 268"/>
+      </path>
+    </g>
+    <use xlink:href="#catTail" stroke="#c9701e" stroke-width="16" stroke-dasharray="9 13" fill="none"/>
+
+    <!-- far front leg -->
+    <path d="M 400 282 Q 446 286 474 258" stroke="#d98a2e" stroke-width="13" stroke-linecap="round" fill="none"/>
+
+    <!-- body -->
+    <ellipse cx="365" cy="300" rx="62" ry="36" transform="rotate(-22 365 300)" fill="#f4a340"/>
+    <path d="M 340 278 Q 347 292 339 306 M 360 270 Q 367 284 360 298 M 381 263 Q 387 276 382 290" stroke="#c9701e" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="412" cy="292" rx="15" ry="18" fill="#fff1dc"/>
+
+    <!-- near hind leg on the footpeg -->
+    <circle cx="338" cy="322" r="25" fill="#f0992f"/>
+    <path d="M 345 330 Q 392 350 398 420" stroke="#f4a340" stroke-width="18" stroke-linecap="round" fill="none"/>
+    <ellipse cx="405" cy="426" rx="13" ry="7" fill="#fff1dc"/>
+
+    <!-- near front leg to the grip -->
+    <path d="M 410 286 Q 448 304 480 268" stroke="#f4a340" stroke-width="15" stroke-linecap="round" fill="none"/>
+    <circle cx="484" cy="263" r="9" fill="#fff1dc"/>
+    <path d="M 482 257 L 486 268 M 488 256 L 491 266" stroke="#d9b894" stroke-width="1.2"/>
+
+    <!-- bandana: tail then knot band -->
+    <path d="M 402 254 C 380 250 364 262 340 254 C 328 250 320 256 312 262 L 316 272 C 326 266 334 268 344 270 C 368 274 384 266 402 266 Z" fill="#e63946" stroke="#b02433" stroke-width="1.5">
+      <animate attributeName="d" dur="0.35s" repeatCount="indefinite"
+        values="M 402 254 C 380 250 364 262 340 254 C 328 250 320 256 312 262 L 316 272 C 326 266 334 268 344 270 C 368 274 384 266 402 266 Z;M 402 254 C 380 246 362 248 342 242 C 330 238 320 238 310 244 L 316 254 C 326 252 336 256 346 258 C 368 264 384 262 402 266 Z;M 402 254 C 380 250 364 262 340 254 C 328 250 320 256 312 262 L 316 272 C 326 266 334 268 344 270 C 368 274 384 266 402 266 Z"/>
+    </path>
+    <path d="M 398 250 Q 420 264 442 256 L 444 267 Q 420 277 396 262 Z" fill="#e63946" stroke="#b02433" stroke-width="1.5"/>
+    <circle cx="410" cy="258" r="2" fill="#ffffff"/>
+    <circle cx="428" cy="262" r="2" fill="#ffffff"/>
+
+    <!-- head with goggles -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" values="-2 425 255;2 425 255;-2 425 255" dur="0.6s" repeatCount="indefinite"/>
+      <path d="M 412 202 L 418 166 L 438 190 Z" fill="#d98a2e"/>
+      <circle cx="440" cy="222" r="38" fill="#f4a340"/>
+      <path d="M 446 190 L 466 160 L 476 196 Z" fill="#f4a340"/>
+      <path d="M 452 188 L 465 170 L 470 192 Z" fill="#ff9bb0"/>
+      <path d="M 424 190 L 430 202 M 434 186 L 437 199 M 414 198 L 421 207" stroke="#c9701e" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="466" cy="238" rx="16" ry="11" fill="#fff1dc"/>
+      <path d="M 473 228 L 480 228 L 476.5 233 Z" fill="#ff7f9c"/>
+      <path d="M 476.5 233 L 476.5 239 M 470 241 Q 473 245 476.5 239 Q 480 245 483 241" stroke="#6b3a1c" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <g stroke="#fff8ee" stroke-width="1.4" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" values="-4 472 240;4 472 240;-4 472 240" dur="0.25s" repeatCount="indefinite"/>
+        <line x1="478" y1="236" x2="508" y2="229"/>
+        <line x1="479" y1="240" x2="510" y2="239"/>
+        <line x1="478" y1="244" x2="506" y2="249"/>
+      </g>
+      <ellipse cx="428" cy="238" rx="7" ry="4" fill="#ff8fa3" opacity="0.5"/>
+
+      <!-- goggles: strap, eyes seen through tinted lenses -->
+      <path d="M 403 214 Q 430 204 452 206" stroke="#5a3a22" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="451" cy="215" rx="6" ry="7" fill="#7bd389"/>
+      <ellipse cx="452" cy="215" rx="1.8" ry="5.5" fill="#111111"/>
+      <ellipse cx="474" cy="212" rx="4.5" ry="6" fill="#7bd389"/>
+      <ellipse cx="475" cy="212" rx="1.4" ry="4.6" fill="#111111"/>
+      <circle cx="451" cy="214" r="12" fill="url(#lens)" fill-opacity="0.45" stroke="#c0c6cc" stroke-width="3.5"/>
+      <circle cx="474" cy="211" r="9" fill="url(#lens)" fill-opacity="0.45" stroke="#c0c6cc" stroke-width="3"/>
+      <line x1="463" y1="213" x2="465" y2="212" stroke="#c0c6cc" stroke-width="3"/>
+      <path d="M 444 209 Q 447 205 452 204" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round">
+        <animate attributeName="opacity" values="0.2;1;0.2" dur="1.5s" repeatCount="indefinite"/>
+      </path>
+      <path d="M 469 207 Q 471 204 475 203" stroke="#ffffff" stroke-width="1.6" fill="none" stroke-linecap="round">
+        <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </g>
+
+  <!-- ===== lane dashes (fast) ===== -->
+  <g fill="#ffd166">
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-140 0" dur="0.25s" repeatCount="indefinite"/>
+    <rect x="0" y="514" width="60" height="6" rx="2"/>
+    <rect x="140" y="514" width="60" height="6" rx="2"/>
+    <rect x="280" y="514" width="60" height="6" rx="2"/>
+    <rect x="420" y="514" width="60" height="6" rx="2"/>
+    <rect x="560" y="514" width="60" height="6" rx="2"/>
+    <rect x="700" y="514" width="60" height="6" rx="2"/>
+    <rect x="840" y="514" width="60" height="6" rx="2"/>
+  </g>
+
+  <!-- ===== foreground tumbleweed ===== -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="900 568;-100 568;-100 568" keyTimes="0;0.4;1" dur="6s" repeatCount="indefinite"/>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0 0;0 -18;0 0" dur="0.6s" repeatCount="indefinite"/>
+      <g stroke="#b07a45" stroke-width="2" fill="none">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="0.8s" repeatCount="indefinite"/>
+        <circle r="18"/>
+        <ellipse rx="18" ry="9"/>
+        <ellipse rx="9" ry="18"/>
+        <path d="M -14 -8 Q 0 6 14 -10 M -12 10 Q 2 -4 12 12 M -6 -16 Q 6 0 -4 16"/>
+      </g>
+    </g>
+  </g>
+</svg>

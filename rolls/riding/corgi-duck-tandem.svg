@@ -1,0 +1,331 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 800 600">
+  <title>A corgi and a duck riding a tandem bicycle</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fd3ff"/>
+      <stop offset="1" stop-color="#e8f8ff"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#74c562"/>
+      <stop offset="1" stop-color="#4f9e43"/>
+    </linearGradient>
+
+    <g id="cloud" fill="#ffffff">
+      <ellipse cx="0" cy="0" rx="52" ry="18"/>
+      <circle cx="-20" cy="-10" r="20"/>
+      <circle cx="14" cy="-18" r="26"/>
+    </g>
+
+    <!-- far hills with a windmill, 800 wide -->
+    <g id="farHills">
+      <path d="M 582 352 L 586 292 L 594 292 L 598 352 Z" fill="#f4efe6" stroke="#cfc4b2" stroke-width="1.5"/>
+      <path d="M 582 294 L 590 280 L 598 294 Z" fill="#c95b4b"/>
+      <g transform="translate(590 290)">
+        <g fill="#fffdf8" stroke="#bfb4a2" stroke-width="1">
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="6s" repeatCount="indefinite"/>
+          <rect x="-3" y="-36" width="7" height="34"/>
+          <rect x="-3" y="-36" width="7" height="34" transform="rotate(90)"/>
+          <rect x="-3" y="-36" width="7" height="34" transform="rotate(180)"/>
+          <rect x="-3" y="-36" width="7" height="34" transform="rotate(270)"/>
+        </g>
+        <circle r="3.5" fill="#8a7f70"/>
+      </g>
+      <path d="M 0 400 C 120 330 260 340 380 380 C 480 410 560 330 680 336 C 740 340 780 380 800 400 L 800 470 L 0 470 Z" fill="#a8dc8f"/>
+    </g>
+
+    <!-- near hills, 800 wide -->
+    <path id="nearHills" d="M 0 440 C 100 385 200 385 300 420 C 380 448 450 368 560 374 C 660 380 720 430 800 440 L 800 470 L 0 470 Z" fill="#86cc6d"/>
+
+    <!-- fence, 200 wide -->
+    <g id="fence" fill="#fff6e5" stroke="#d9ccb4" stroke-width="1.5">
+      <rect x="0" y="426" width="200" height="5"/>
+      <rect x="0" y="442" width="200" height="5"/>
+      <rect x="20" y="416" width="9" height="44" rx="2"/>
+      <rect x="120" y="416" width="9" height="44" rx="2"/>
+    </g>
+
+    <!-- foreground flowers and path pebbles, 400 wide -->
+    <g id="flowers">
+      <g fill="#c9a36b">
+        <ellipse cx="30" cy="476" rx="4" ry="2"/>
+        <ellipse cx="140" cy="498" rx="5" ry="2"/>
+        <ellipse cx="250" cy="470" rx="3" ry="1.6"/>
+        <ellipse cx="330" cy="502" rx="4" ry="2"/>
+      </g>
+      <g stroke="#3f8a37" stroke-width="2.5" fill="none">
+        <path d="M 40 590 L 40 560 M 120 598 L 122 582 M 210 590 L 210 548 M 300 598 L 298 575 M 362 590 L 362 540"/>
+        <path d="M 70 598 L 66 580 M 74 598 L 78 582 M 250 598 L 246 582 M 254 598 L 258 584"/>
+      </g>
+      <g fill="#ff5d73"><circle cx="34" cy="556" r="5"/><circle cx="46" cy="556" r="5"/><circle cx="40" cy="550" r="5"/><circle cx="40" cy="562" r="5"/></g>
+      <circle cx="40" cy="556" r="3.5" fill="#ffd23f"/>
+      <g fill="#ffd23f"><circle cx="117" cy="580" r="4"/><circle cx="127" cy="580" r="4"/><circle cx="122" cy="575" r="4"/><circle cx="122" cy="585" r="4"/></g>
+      <circle cx="122" cy="580" r="2.8" fill="#e07a00"/>
+      <g fill="#a06cd5"><circle cx="204" cy="544" r="5"/><circle cx="216" cy="544" r="5"/><circle cx="210" cy="538" r="5"/><circle cx="210" cy="550" r="5"/></g>
+      <circle cx="210" cy="544" r="3.5" fill="#fff3b0"/>
+      <g fill="#ff9ec7"><circle cx="293" cy="573" r="4"/><circle cx="303" cy="573" r="4"/><circle cx="298" cy="568" r="4"/><circle cx="298" cy="578" r="4"/></g>
+      <circle cx="298" cy="573" r="2.8" fill="#ffffff"/>
+      <g fill="#ffffff"><circle cx="356" cy="536" r="5"/><circle cx="368" cy="536" r="5"/><circle cx="362" cy="530" r="5"/><circle cx="362" cy="542" r="5"/></g>
+      <circle cx="362" cy="536" r="3.5" fill="#ffc93c"/>
+    </g>
+  </defs>
+
+  <!-- ===== sky and clouds ===== -->
+  <rect x="0" y="0" width="800" height="600" fill="url(#sky)"/>
+  <circle cx="110" cy="90" r="36" fill="#fff4a8"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-800 0" dur="70s" repeatCount="indefinite"/>
+    <use xlink:href="#cloud" transform="translate(260 110)"/>
+    <use xlink:href="#cloud" transform="translate(560 70) scale(0.8)"/>
+    <use xlink:href="#cloud" transform="translate(760 150) scale(0.6)"/>
+    <use xlink:href="#cloud" transform="translate(1060 110)"/>
+    <use xlink:href="#cloud" transform="translate(1360 70) scale(0.8)"/>
+    <use xlink:href="#cloud" transform="translate(1560 150) scale(0.6)"/>
+  </g>
+
+  <!-- ===== hills (parallax) ===== -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-800 0" dur="32s" repeatCount="indefinite"/>
+    <use xlink:href="#farHills" x="0" y="0"/>
+    <use xlink:href="#farHills" x="800" y="0"/>
+  </g>
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-800 0" dur="13s" repeatCount="indefinite"/>
+    <use xlink:href="#nearHills" x="0" y="0"/>
+    <use xlink:href="#nearHills" x="800" y="0"/>
+  </g>
+
+  <!-- ===== meadow, fence, dirt path ===== -->
+  <rect x="0" y="440" width="800" height="160" fill="url(#grass)"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-200 0" dur="0.8s" repeatCount="indefinite"/>
+    <use xlink:href="#fence" x="0" y="0"/>
+    <use xlink:href="#fence" x="200" y="0"/>
+    <use xlink:href="#fence" x="400" y="0"/>
+    <use xlink:href="#fence" x="600" y="0"/>
+    <use xlink:href="#fence" x="800" y="0"/>
+  </g>
+  <rect x="0" y="462" width="800" height="48" fill="#e2c290"/>
+  <rect x="0" y="462" width="800" height="3" fill="#caa770"/>
+
+  <!-- shadow -->
+  <ellipse cx="405" cy="482" rx="260" ry="8" fill="#6b5330" opacity="0.28"/>
+
+  <!-- ===== far side: far cranks, far legs, far feet ===== -->
+  <g transform="translate(320 420)">
+    <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.2s" repeatCount="indefinite"/>
+      <line x1="0" y1="0" x2="-18" y2="0" stroke="#7a7f88" stroke-width="5" stroke-linecap="round"/></g>
+  </g>
+  <g transform="translate(505 420)">
+    <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.2s" repeatCount="indefinite"/>
+      <line x1="0" y1="0" x2="-18" y2="0" stroke="#7a7f88" stroke-width="5" stroke-linecap="round"/></g>
+  </g>
+
+  <!-- duck far leg -->
+  <path d="M 312 340 Q 334 383 302 420" stroke="#e08a12" stroke-width="6" stroke-linecap="round" fill="none">
+    <animate attributeName="d" dur="1.2s" repeatCount="indefinite"
+      values="M 312 340 Q 334 383 302 420;M 312 340 Q 334 383 307.3 407.3;M 312 340 Q 334 383 320 402;M 312 340 Q 334 383 332.7 407.3;M 312 340 Q 334 383 338 420;M 312 340 Q 334 383 332.7 432.7;M 312 340 Q 334 383 320 438;M 312 340 Q 334 383 307.3 432.7;M 312 340 Q 334 383 302 420"/>
+  </path>
+  <path d="M -4 -3 L 12 -2 L 10 4 L -4 3 Z" fill="#e08a12">
+    <animateMotion dur="1.2s" repeatCount="indefinite" path="M 302 420 A 18 18 0 1 1 338 420 A 18 18 0 1 1 302 420"/>
+  </path>
+
+  <!-- corgi far hind leg -->
+  <path d="M 478 362 Q 504 390 487 420" stroke="#c9772c" stroke-width="13" stroke-linecap="round" fill="none">
+    <animate attributeName="d" dur="1.2s" repeatCount="indefinite"
+      values="M 478 362 Q 504 390 487 420;M 478 362 Q 504 390 492.3 407.3;M 478 362 Q 504 390 505 402;M 478 362 Q 504 390 517.7 407.3;M 478 362 Q 504 390 523 420;M 478 362 Q 504 390 517.7 432.7;M 478 362 Q 504 390 505 438;M 478 362 Q 504 390 492.3 432.7;M 478 362 Q 504 390 487 420"/>
+  </path>
+  <ellipse cx="0" cy="0" rx="8" ry="5" fill="#e9e3da">
+    <animateMotion dur="1.2s" repeatCount="indefinite" path="M 487 420 A 18 18 0 1 1 523 420 A 18 18 0 1 1 487 420"/>
+  </ellipse>
+
+  <!-- ===== wheels ===== -->
+  <g transform="translate(170 428)">
+    <circle r="52" fill="none" stroke="#33343a" stroke-width="7"/>
+    <circle r="46" fill="none" stroke="#cfd3d9" stroke-width="2"/>
+    <g stroke="#b9bec6" stroke-width="1.3">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.8s" repeatCount="indefinite"/>
+      <line x1="45" y1="0" x2="-45" y2="0"/>
+      <line x1="39" y1="22.5" x2="-39" y2="-22.5"/>
+      <line x1="22.5" y1="39" x2="-22.5" y2="-39"/>
+      <line x1="0" y1="45" x2="0" y2="-45"/>
+      <line x1="-22.5" y1="39" x2="22.5" y2="-39"/>
+      <line x1="-39" y1="22.5" x2="39" y2="-22.5"/>
+      <rect x="26" y="-3" width="9" height="6" rx="1.5" fill="#ff8c1a" stroke="none"/>
+    </g>
+    <circle r="5" fill="#8d939c"/>
+    <circle r="8" fill="none" stroke="#8d939c" stroke-width="2"/>
+  </g>
+  <g transform="translate(640 428)">
+    <circle r="52" fill="none" stroke="#33343a" stroke-width="7"/>
+    <circle r="46" fill="none" stroke="#cfd3d9" stroke-width="2"/>
+    <g stroke="#b9bec6" stroke-width="1.3">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.8s" repeatCount="indefinite"/>
+      <line x1="45" y1="0" x2="-45" y2="0"/>
+      <line x1="39" y1="22.5" x2="-39" y2="-22.5"/>
+      <line x1="22.5" y1="39" x2="-22.5" y2="-39"/>
+      <line x1="0" y1="45" x2="0" y2="-45"/>
+      <line x1="-22.5" y1="39" x2="22.5" y2="-39"/>
+      <line x1="-39" y1="22.5" x2="39" y2="-22.5"/>
+      <rect x="26" y="-3" width="9" height="6" rx="1.5" fill="#ff8c1a" stroke="none"/>
+    </g>
+    <circle r="5" fill="#8d939c"/>
+  </g>
+
+  <!-- ===== tandem frame ===== -->
+  <g stroke="#e84a5f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M 170 428 L 320 420"/>
+    <path d="M 170 428 L 310 348"/>
+    <path d="M 320 420 L 308 344"/>
+    <path d="M 310 350 L 488 362 L 598 324"/>
+    <path d="M 505 420 L 486 356"/>
+    <path d="M 604 342 L 505 420"/>
+    <path d="M 320 420 L 505 420"/>
+    <path d="M 310 350 L 505 420"/>
+  </g>
+  <line x1="600" y1="318" x2="606" y2="344" stroke="#c7374b" stroke-width="9" stroke-linecap="round"/>
+  <line x1="603" y1="332" x2="640" y2="428" stroke="#e84a5f" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- chains (moving links) and chainrings -->
+  <path d="M 320 404 L 505 404 A 16 16 0 0 1 505 436 L 320 436 A 16 16 0 0 1 320 404 Z" stroke="#5b5f66" stroke-width="2.5" stroke-dasharray="4 3" fill="none">
+    <animate attributeName="stroke-dashoffset" from="0" to="-14" dur="0.3s" repeatCount="indefinite"/>
+  </path>
+  <path d="M 320 404 L 170 420 A 8 8 0 0 0 170 436 L 320 436" stroke="#5b5f66" stroke-width="2.5" stroke-dasharray="4 3" fill="none">
+    <animate attributeName="stroke-dashoffset" from="0" to="14" dur="0.3s" repeatCount="indefinite"/>
+  </path>
+  <circle cx="320" cy="420" r="15" fill="none" stroke="#8d939c" stroke-width="3"/>
+  <circle cx="505" cy="420" r="15" fill="none" stroke="#8d939c" stroke-width="3"/>
+
+  <!-- saddles -->
+  <path d="M 290 338 C 292 330 322 330 328 336 L 322 342 L 292 342 Z" fill="#4a3426"/>
+  <path d="M 466 350 C 468 342 496 342 502 348 L 496 354 L 468 354 Z" fill="#4a3426"/>
+
+  <!-- stoker bar on the captain's seat post -->
+  <path d="M 486 362 L 444 346 L 432 344" stroke="#3a3d44" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="426" y1="343" x2="438" y2="345" stroke="#222226" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- captain handlebar, bell, basket -->
+  <path d="M 600 318 L 607 304 L 592 300" stroke="#3a3d44" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="585" y1="300" x2="595" y2="301" stroke="#222226" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="603" cy="299" r="4" fill="#ffd23f" stroke="#c99a12" stroke-width="1"/>
+  <line x1="607" y1="306" x2="615" y2="312" stroke="#3a3d44" stroke-width="3"/>
+  <rect x="628" y="278" width="10" height="44" rx="5" fill="#e0a45e" stroke="#a8702f" stroke-width="1.5" transform="rotate(24 633 300)"/>
+  <path d="M 628 268 L 628 300 M 646 272 L 644 300" stroke="#3f8a37" stroke-width="2"/>
+  <circle cx="628" cy="266" r="5" fill="#ff5d73"/>
+  <circle cx="646" cy="270" r="5" fill="#ffffff"/>
+  <circle cx="646" cy="270" r="2" fill="#ffc93c"/>
+  <path d="M 612 302 L 664 302 L 657 338 L 619 338 Z" fill="#c68a4a" stroke="#8a5a2b" stroke-width="2"/>
+  <path d="M 614 314 L 662 314 M 616 326 L 660 326 M 626 302 L 628 338 M 640 302 L 640 338 M 652 302 L 650 338" stroke="#8a5a2b" stroke-width="1.5"/>
+
+  <!-- ===== duck (stoker) ===== -->
+  <!-- far wing holding the stoker bar -->
+  <path d="M 330 292 C 362 302 400 322 434 338 C 404 342 364 328 328 312 Z" fill="#e3e6ea" stroke="#c4c9d0" stroke-width="1.5"/>
+  <path d="M 274 296 L 252 276 L 262 292 L 248 290 L 276 308 Z" fill="#f4f5f7" stroke="#c4c9d0" stroke-width="1.5"/>
+  <path d="M 272 296 C 270 276 284 266 302 272 C 322 266 352 272 360 296 C 366 322 348 344 318 344 C 288 344 274 326 272 296 Z" fill="#ffffff" stroke="#c4c9d0" stroke-width="1.5"/>
+  <line x1="340" y1="286" x2="350" y2="248" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="352" cy="232" r="22" fill="#ffffff" stroke="#c4c9d0" stroke-width="1.5"/>
+  <line x1="341" y1="280" x2="349" y2="252" stroke="#ffffff" stroke-width="16" stroke-linecap="round"/>
+  <path d="M 370 228 C 386 226 396 232 394 238 C 388 244 374 242 368 238 Z" fill="#ff9f1c" stroke="#e07a00" stroke-width="1.5"/>
+  <path d="M 370 234 L 392 235" stroke="#e07a00" stroke-width="1.2"/>
+  <circle cx="358" cy="226" r="3.6" fill="#1b1b1f"/>
+  <circle cx="359.3" cy="224.8" r="1.2" fill="#ffffff"/>
+  <ellipse cx="352" cy="240" rx="6" ry="3" fill="#ffb3c1" opacity="0.6"/>
+  <g transform="rotate(-8 350 210)">
+    <path d="M 336 212 C 336 197 364 197 364 212 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <rect x="336" y="206" width="28" height="5" fill="#2b59c3"/>
+    <ellipse cx="350" cy="212" rx="18" ry="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+    <path d="M 334 210 L 324 219 L 329 221 L 336 213 Z" fill="#2b59c3"/>
+  </g>
+
+  <!-- ===== corgi (captain) ===== -->
+  <!-- far front leg -->
+  <path d="M 536 310 Q 562 318 584 300" stroke="#c9772c" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <!-- wagging tail nub -->
+  <ellipse cx="452" cy="318" rx="12" ry="9" fill="#e8923a">
+    <animateTransform attributeName="transform" type="rotate" values="-18 460 322;18 460 322;-18 460 322" dur="0.35s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="505" cy="318" rx="56" ry="30" transform="rotate(-12 505 318)" fill="#e8923a"/>
+  <ellipse cx="516" cy="334" rx="36" ry="13" transform="rotate(-12 516 334)" fill="#fbf6ee"/>
+  <ellipse cx="548" cy="304" rx="16" ry="20" fill="#fbf6ee"/>
+  <circle cx="484" cy="346" r="24" fill="#e8923a"/>
+
+  <!-- ===== near side: cranks, legs, feet ===== -->
+  <g transform="translate(320 420)">
+    <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.2s" repeatCount="indefinite"/>
+      <circle r="5" fill="#8d939c"/>
+      <line x1="0" y1="0" x2="18" y2="0" stroke="#b9bec6" stroke-width="5" stroke-linecap="round"/></g>
+  </g>
+  <g transform="translate(505 420)">
+    <g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.2s" repeatCount="indefinite"/>
+      <circle r="5" fill="#8d939c"/>
+      <line x1="0" y1="0" x2="18" y2="0" stroke="#b9bec6" stroke-width="5" stroke-linecap="round"/></g>
+  </g>
+
+  <!-- duck near leg -->
+  <path d="M 318 342 Q 340 385 338 420" stroke="#ff9f1c" stroke-width="6" stroke-linecap="round" fill="none">
+    <animate attributeName="d" dur="1.2s" repeatCount="indefinite"
+      values="M 318 342 Q 340 385 338 420;M 318 342 Q 340 385 332.7 432.7;M 318 342 Q 340 385 320 438;M 318 342 Q 340 385 307.3 432.7;M 318 342 Q 340 385 302 420;M 318 342 Q 340 385 307.3 407.3;M 318 342 Q 340 385 320 402;M 318 342 Q 340 385 332.7 407.3;M 318 342 Q 340 385 338 420"/>
+  </path>
+  <path d="M -4 -3 L 12 -2 L 10 4 L -4 3 Z" fill="#ff9f1c" stroke="#e07a00" stroke-width="1">
+    <animateMotion dur="1.2s" repeatCount="indefinite" path="M 338 420 A 18 18 0 1 1 302 420 A 18 18 0 1 1 338 420"/>
+  </path>
+
+  <!-- corgi near hind leg -->
+  <path d="M 484 364 Q 510 392 523 420" stroke="#e8923a" stroke-width="14" stroke-linecap="round" fill="none">
+    <animate attributeName="d" dur="1.2s" repeatCount="indefinite"
+      values="M 484 364 Q 510 392 523 420;M 484 364 Q 510 392 517.7 432.7;M 484 364 Q 510 392 505 438;M 484 364 Q 510 392 492.3 432.7;M 484 364 Q 510 392 487 420;M 484 364 Q 510 392 492.3 407.3;M 484 364 Q 510 392 505 402;M 484 364 Q 510 392 517.7 407.3;M 484 364 Q 510 392 523 420"/>
+  </path>
+  <ellipse cx="0" cy="0" rx="8.5" ry="5.5" fill="#fbf6ee" stroke="#d8cdbd" stroke-width="1">
+    <animateMotion dur="1.2s" repeatCount="indefinite" path="M 523 420 A 18 18 0 1 1 487 420 A 18 18 0 1 1 523 420"/>
+  </ellipse>
+
+  <!-- duck near wing, waving hello -->
+  <path d="M 316 286 C 292 256 272 226 270 202 C 290 222 318 254 334 290 Z" fill="#f4f5f7" stroke="#c4c9d0" stroke-width="1.5">
+    <animateTransform attributeName="transform" type="rotate" values="-15 322 290;20 322 290;-15 322 290" dur="0.9s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- corgi near front leg, bandana, head -->
+  <path d="M 542 314 Q 568 326 590 302" stroke="#e8923a" stroke-width="14" stroke-linecap="round" fill="none"/>
+  <circle cx="592" cy="300" r="7" fill="#fbf6ee" stroke="#d8cdbd" stroke-width="1"/>
+  <path d="M 548 282 L 584 290 L 563 310 Z" fill="#2a9d8f" stroke="#1e7a6f" stroke-width="1.5"/>
+  <g>
+    <animateTransform attributeName="transform" type="rotate" values="-5 548 234;3 548 234;-5 548 234" dur="0.5s" repeatCount="indefinite"/>
+    <path d="M 548 240 L 542 196 L 568 230 Z" fill="#d98232"/>
+  </g>
+  <circle cx="572" cy="256" r="30" fill="#e8923a"/>
+  <g>
+    <animateTransform attributeName="transform" type="rotate" values="4 580 234;-4 580 234;4 580 234" dur="0.5s" repeatCount="indefinite"/>
+    <path d="M 566 234 L 578 190 L 594 238 Z" fill="#e8923a"/>
+    <path d="M 572 232 L 579 202 L 588 236 Z" fill="#ffd9c2"/>
+  </g>
+  <path d="M 572 236 Q 580 250 590 260 L 582 264 Q 572 252 568 238 Z" fill="#fbf6ee"/>
+  <ellipse cx="596" cy="270" rx="19" ry="13" fill="#fbf6ee"/>
+  <circle cx="585" cy="249" r="4" fill="#1b1b1f"/>
+  <circle cx="586.3" cy="247.7" r="1.3" fill="#ffffff"/>
+  <ellipse cx="578" cy="242" rx="3" ry="2" fill="#f6b56e"/>
+  <ellipse cx="614" cy="263" rx="5.5" ry="4.2" fill="#1b1b1f"/>
+  <path d="M 612 268 Q 606 277 597 274" stroke="#5a3a22" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <ellipse cx="604" cy="281" rx="5" ry="7" fill="#ff7a93">
+    <animate attributeName="ry" values="7;9;7" dur="0.3s" repeatCount="indefinite"/>
+  </ellipse>
+  <ellipse cx="578" cy="272" rx="6" ry="3.5" fill="#ff9aa8" opacity="0.5"/>
+
+  <!-- floating hearts -->
+  <g fill="#ff6b8b">
+    <path d="M 460 240 C 460 232 450 230 448 238 C 446 230 436 232 436 240 C 436 248 448 254 448 258 C 448 254 460 248 460 240 Z" opacity="0">
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="0 -60" dur="2.6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0" dur="2.6s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 420 220 C 420 214 412 212 411 218 C 410 212 402 214 402 220 C 402 226 411 231 411 234 C 411 231 420 226 420 220 Z" opacity="0">
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="0 -60" dur="2.6s" begin="1.3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0" dur="2.6s" begin="1.3s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- ===== foreground flowers (fast) ===== -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-400 0" dur="0.98s" repeatCount="indefinite"/>
+    <use xlink:href="#flowers" x="0" y="0"/>
+    <use xlink:href="#flowers" x="400" y="0"/>
+    <use xlink:href="#flowers" x="800" y="0"/>
+  </g>
+</svg>

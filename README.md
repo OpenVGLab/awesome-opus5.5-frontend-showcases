@@ -11,8 +11,8 @@
 每个类别里，本仓库原创的作品排在前面并附完整 prompt，社区作品按发布时间倒序排列。
 
 - 🎮 [浏览器游戏 · Games](#-浏览器游戏--games) — 12 cases
-- 🦩 [鹈鹕骑自行车 · Pelican on a Bicycle](#-鹈鹕骑自行车--pelican-on-a-bicycle) — 3 cases
-- 🚲 [更多骑行系列 · More Riders](#-更多骑行系列--more-riders) — 1 cases
+- 🦩 [鹈鹕骑自行车 · Pelican on a Bicycle](#-鹈鹕骑自行车--pelican-on-a-bicycle) — 7 cases
+- 🚲 [更多骑行系列 · More Riders](#-更多骑行系列--more-riders) — 9 cases
 - ✨ [SVG 动画与插画 · SVG Animation](#-svg-动画与插画--svg-animation) — 2 cases
 - 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 8 cases
 - 🎬 [代码逐帧动画与视频 · Code-drawn Animation](#-代码逐帧动画与视频--code-drawn-animation) — 8 cases
@@ -355,7 +355,79 @@ Opus 5.5 复刻的经典 FPS 地图「运输船」，浏览器里直接打开就
 
 Simon Willison 发起的经典测试：只给一句 `Generate an SVG of a pelican riding a bicycle`，不许看渲染结果，车架怎么连、脚怎么踩踏板全靠模型“脑补”坐标。
 
-#### Case 1: [电影运镜的鹈鹕骑自行车](https://x.com/alin_zone/status/2102608618751508947)
+#### Case 1: [鹈鹕骑自行车（静态版） · Opus 5.5 默认档](rolls/pelican/opus55-default/pelican-static.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/pelican/opus55-default/pelican-static.svg`](rolls/pelican/opus55-default/pelican-static.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/pelican/opus55-default/pelican-static.svg" alt="鹈鹕骑自行车（静态版） · Opus 5.5 默认档" width="480" /></p>
+
+晴空艳阳下的公路上，一只白鹈鹕叼着橙色大喙囊坐在红色自行车上，翅膀握住车把、橙色蹼脚踩着踏板，身后拖着几道速度线。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an SVG of a pelican riding a bicycle
+```
+
+</details>
+
+#### Case 2: [鹈鹕骑自行车（动画版） · Opus 5.5 默认档](rolls/pelican/opus55-default/pelican-animated.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/pelican/opus55-default/pelican-animated.svg`](rolls/pelican/opus55-default/pelican-animated.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/pelican/opus55-default/pelican-animated.svg" alt="鹈鹕骑自行车（动画版） · Opus 5.5 默认档" width="480" /></p>
+
+黄昏里系着红围巾的褐鹈鹕蹬着青绿色自行车：车轮与曲柄转动、双腿随踏板往复、身体随蹬踏起伏，围巾飘动、喉囊晃荡、偶尔眨眼，车筐里的鱼摆尾，远山、丘陵和路面分层视差滚动（纯 SMIL，无 JS）。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a pelican riding a bicycle
+```
+
+</details>
+
+#### Case 3: [鹈鹕骑自行车（静态版） · Opus 5.5 max 档](rolls/pelican/opus55-max/pelican-static.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/pelican/opus55-max/pelican-static.svg`](rolls/pelican/opus55-max/pelican-static.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/pelican/opus55-max/pelican-static.svg" alt="鹈鹕骑自行车（静态版） · Opus 5.5 max 档" width="480" /></p>
+
+晴空下的公路上，一只戴蓝色头盔、系红围巾的白鹈鹕坐在红色自行车上，黑色翼尖握着车把，橙色喉囊垂在长喙下，前车筐里装着两条鱼。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an SVG of a pelican riding a bicycle
+```
+
+</details>
+
+#### Case 4: [鹈鹕骑自行车（动画版） · Opus 5.5 max 档](rolls/pelican/opus55-max/pelican-animated.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/pelican/opus55-max/pelican-animated.svg`](rolls/pelican/opus55-max/pelican-animated.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/pelican/opus55-max/pelican-animated.svg" alt="鹈鹕骑自行车（动画版） · Opus 5.5 max 档" width="480" /></p>
+
+夕阳下一只棕鹈鹕骑着青绿色自行车：车轮和曲柄转动，双腿随踏板踩踏，身体轻颠，喉囊晃动，偶尔眨眼，后架小旗飘扬，远山、云和路面标线视差滚动（纯 SMIL，无脚本）。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a pelican riding a bicycle
+```
+
+</details>
+
+#### Case 5: [电影运镜的鹈鹕骑自行车](https://x.com/alin_zone/status/2102608618751508947)
 
 **来源：** [阿蔺A-Lin (@alin_zone)](https://x.com/alin_zone)
 
@@ -363,7 +435,7 @@ Simon Willison 发起的经典测试：只给一句 `Generate an SVG of a pelica
 
 作者称 Opus 5.5 做的鹈鹕骑自行车用上了电影运镜，“说这是游戏都信”；帖子里附了在线链接。
 
-#### Case 2: [Claude Opus 5.5, GPT-6 Sol, GPT-6 Luna, and a new price war](https://simonwillison.net/2026/Sep/22/opus-and-sol-and-luna/)
+#### Case 6: [Claude Opus 5.5, GPT-6 Sol, GPT-6 Luna, and a new price war](https://simonwillison.net/2026/Sep/22/opus-and-sol-and-luna/)
 
 **来源：** [Simon Willison (@simonw)](https://x.com/simonw)
 
@@ -371,7 +443,7 @@ Simon Willison 发起的经典测试：只给一句 `Generate an SVG of a pelica
 
 Opus 5.5 在 low / medium / high / xhigh 四档都画出了结构正确的车架；max 档两次都把 128K 输出 token 全部用在思考上、没有交出 SVG，这是这个测试第一次出现这种情况。它的思考第一句是 “This is a classic test request”。
 
-#### Case 3: [Claude 鹈鹕对比网格](https://static.simonwillison.net/static/2026/claude-pelicans-grid.html)
+#### Case 7: [Claude 鹈鹕对比网格](https://static.simonwillison.net/static/2026/claude-pelicans-grid.html)
 
 **来源：** [Simon Willison (@simonw)](https://x.com/simonw)
 
@@ -393,7 +465,151 @@ Fable 5.1 / Opus 5.5 / Opus 5 / Sonnet 5 × 五档思考强度，附每张图的
 
 把鹈鹕和自行车换成别的动物和交通工具，规则相同：一句 prompt，盲画一次成稿。
 
-#### Case 1: [熊猫骑车送外卖](https://www.woshipm.com/evaluating/6469164.html)
+#### Case 1: [熊猫骑电动车送外卖](rolls/riding/panda-scooter.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/panda-scooter.svg`](rolls/riding/panda-scooter.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/riding/panda-scooter.svg" alt="熊猫骑电动车送外卖" width="480" /></p>
+
+戴黄色头盔的熊猫骑着红色踏板车穿过城市街道，后座黄色外卖箱冒着热气；车轮转动、车身随减震轻颠、蓝围巾飘动，楼群、行道树和车道线分层向后滚动。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a panda riding a scooter to deliver food
+```
+
+</details>
+
+#### Case 2: [企鹅踩滑板](rolls/riding/penguin-skateboard.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/penguin-skateboard.svg`](rolls/riding/penguin-skateboard.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/riding/penguin-skateboard.svg" alt="企鹅踩滑板" width="480" /></p>
+
+戴红色毛线帽、围青绿围巾的企鹅在极光下的冰道上滑行，张开鳍翅保持平衡；滑轮飞转，每隔几秒跳一次带倾斜的 ollie，冰山、雪堆与飘雪分层掠过。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a penguin riding a skateboard
+```
+
+</details>
+
+#### Case 3: [章鱼骑独轮车杂耍](rolls/riding/octopus-unicycle.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/octopus-unicycle.svg`](rolls/riding/octopus-unicycle.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/riding/octopus-unicycle.svg" alt="章鱼骑独轮车杂耍" width="480" /></p>
+
+马戏团聚光灯下，系领结的粉色章鱼骑独轮车前后摇摆保持平衡，两条触手踩着随车轮转动的踏板，另两条触手抛接三只彩球，眼珠跟着球转，彩纸纷飞。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of an octopus riding a unicycle while juggling
+```
+
+</details>
+
+#### Case 4: [橘猫骑摩托](rolls/riding/cat-motorcycle.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/cat-motorcycle.svg`](rolls/riding/cat-motorcycle.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/riding/cat-motorcycle.svg" alt="橘猫骑摩托" width="480" /></p>
+
+戴护目镜、系红头巾的橘猫骑着青蓝色巡航摩托驶过黄昏沙漠公路，条纹尾巴和头巾迎风飘动；辐条轮飞转、车身随引擎震动、排气冒烟，条纹夕阳前的台地、仙人掌和风滚草依次掠过。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a cat riding a motorcycle
+```
+
+</details>
+
+#### Case 5: [柯基与鸭子骑双人自行车](rolls/riding/corgi-duck-tandem.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/corgi-duck-tandem.svg`](rolls/riding/corgi-duck-tandem.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/riding/corgi-duck-tandem.svg" alt="柯基与鸭子骑双人自行车" width="480" /></p>
+
+柯基在前面掌把、吐着舌头，戴水手帽的鸭子在后座一翅扶把一翅挥手；两组曲柄同步转动、腿脚跟着踏板画圈、链条滚动，风车、栅栏与野花沿乡间小路向后流过，小爱心缓缓升起。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a corgi and a duck riding a tandem bicycle
+```
+
+</details>
+
+#### Case 6: [乌龟骑火箭](rolls/riding/turtle-rocket.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/turtle-rocket.svg`](rolls/riding/turtle-rocket.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/riding/turtle-rocket.svg" alt="乌龟骑火箭" width="480" /></p>
+
+戴泡泡头盔、系黄围巾的乌龟骑在红白复古火箭上，一只前肢拉缰绳、一只挥舞；尾焰闪烁、烟团拖尾、火箭轻轻起伏，星空三层视差掠过，还有环状行星、流星和出发的蓝色星球。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a turtle riding a rocket
+```
+
+</details>
+
+#### Case 7: [刺猬骑三轮车](rolls/riding/hedgehog-tricycle.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/hedgehog-tricycle.svg`](rolls/riding/hedgehog-tricycle.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/riding/hedgehog-tricycle.svg" alt="刺猬骑三轮车" width="480" /></p>
+
+背刺上插着苹果和枫叶的刺猬穿红色小球鞋，蹬着青绿色儿童三轮车的前轮脚踏在秋日公园小路上前进；前后轮各自转动、车把彩带飘舞，长椅、路灯和秋色树林后退，落叶打着旋飘下。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a hedgehog riding a tricycle
+```
+
+</details>
+
+#### Case 8: [青蛙骑蜗牛](rolls/riding/frog-snail.svg)
+
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/frog-snail.svg`](rolls/riding/frog-snail.svg)
+
+**发布：** 2026-09-24
+
+<p align="center"><img src="rolls/riding/frog-snail.svg" alt="青蛙骑蜗牛" width="480" /></p>
+
+青蛙坐在蜗牛壳顶的小鞍毯上挥手，用树枝吊着一片生菜悬在蜗牛眼前；蜗牛一伸一缩、腹足波动地慢慢追赶，生菜来回晃荡，黏液痕闪着光，蘑菇林背景缓缓后移，萤火虫飘浮。（盲画一次成稿）
+
+<details><summary>Prompt</summary>
+
+```text
+Generate an animated SVG of a frog riding a snail
+```
+
+</details>
+
+#### Case 9: [熊猫骑车送外卖](https://www.woshipm.com/evaluating/6469164.html)
 
 **来源：** 人人都是产品经理 · Opus 5.5 与 GPT-6 Sol 首发实测
 
