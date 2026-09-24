@@ -235,6 +235,15 @@
   .g-credit a { color: var(--accent-ink); font-weight: 700; }
   .g-media.dark { background: #16131a; }
   .toc { margin-top: 28px; }
+
+  .vox-live { overflow: hidden; background: #f4efe6; }
+  .vox-live canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; cursor: grab; opacity: 0; transition: opacity .4s; }
+  .vox-live .vox-poster { transition: opacity .4s; }
+  .vox-live.ready canvas { opacity: 1; }
+  .vox-live.ready .vox-poster { opacity: 0; }
+  .vox-bar { position: absolute; left: 10px; top: 10px; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px; }
+  .vox-bar button, .vox-bar a { padding: 6px 11px; border: 0; border-radius: 999px; font: 800 11px/1 var(--sans); color: #fff; background: #1d1a16cc; cursor: pointer; text-decoration: none; }
+  .vox-hint { position: absolute; left: 10px; bottom: 8px; z-index: 2; margin: 0; font-size: 11px; color: #6b645a; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -248,7 +257,7 @@
     </div>
   </header>
 
-  <section class="gal" id="midautumn" style="--accent:#e8483b;--accent-soft:#e8483b1f;--accent-ink:#a7332a"><div class="eyebrow">MID-AUTUMN · CLAUDE OPUS 5.5</div><h2>🥮 中秋专题<small>5 个</small></h2><p class="gal-lead">短片和小剧场点开是实时播放的网页（有声），不是视频文件；月夜的 Lottie 版在页面上实时播放。</p><div class="g-grid" style="--min: 420px"><article class="g-item" data-title="月圆" data-no="M1"><a class="g-media dark" style="--ratio: 16 / 9" href="short/" target="_blank" rel="noopener"><img src="_covers/short.jpg?v=1790244671" alt="月圆" loading="lazy"><span class="g-open">▶ 播放</span></a><div class="g-body"><h3>《月圆》<small> Full Moon, Full Table</small></h3><p>一支 59.5 秒的中秋拼贴动画短片，脚本、分镜、画面、纸张纹理、毛笔字、配乐和音效全部由代码生成：在异乡加班的她，中秋前夜收到妈妈的消息；月亮带她回到童年的院子和外婆讲过的玉兔、嫦娥；她坐上回家的高铁，一家人围着圆桌分月饼、放孔明灯，最后毛笔一笔一笔写下“中秋快乐”。剪纸、撕纸边、纸纹颗粒、网点和错版印刷，Canvas 2D 逐帧绘制；Web Audio 实时合成古筝、笙、笛子和纸张、铃铛、烟花音效，与画面同一条时间线；支持 1080×1920 竖版。</p><div class="g-meta"><span>拼贴风短片</span><span>59.5 秒</span><span>1920x1080（竖版 1080x1920）</span><span>画面、配乐、音效全部由代码生成</span></div><p class="g-note">操作：点击画面开始（有声）；空格 播放/暂停；← → 后退/前进 5 秒；Home 回到开头；拖动进度条跳转；F 全屏；M 静音；“竖版”按钮或 ?aspect=9:16 切换竖版；?t=秒数 跳到指定时刻</p><div class="g-actions"><a class="vs-prompt" href="short/SCRIPT.md" target="_blank" rel="noopener">分镜脚本</a><a class="btn primary" href="short/" target="_blank" rel="noopener">播放</a></div></div></article><article class="g-item" data-title="月宫小剧场 · 谁咬了月亮" data-no="M2"><a class="g-media dark" style="--ratio: 16 / 9" href="theater/" target="_blank" rel="noopener"><img src="_covers/theater.jpg?v=1790244675" alt="月宫小剧场 · 谁咬了月亮" loading="lazy"><span class="g-open">▶ 播放</span></a><div class="g-body"><h3>《月宫小剧场 · 谁咬了月亮》<small> Moon Palace Theater: Who Bit the Moon?</small></h3><p>中秋竖屏小剧场第 1 集。广寒宫里，嫦娥叮嘱玉兔团团“全人类都在看月亮，一口都不许吃”，团团嘴上说“对月饼毫无兴趣”，转身就把挂在天上的月亮（其实是一块巨型月饼）咬了一口；人间的豆豆第一个发现“月亮缺了一口”，还上了热搜。嫦娥补完妆回来当场破防，团团甩锅“是天狗”，一粒月饼渣从嘴边掉下来出卖了他；最后团团把自己团成一团塞进缺口，月亮重新变圆，人间欢呼“月亮上有只兔子！”。结尾打出“中秋快乐”，下集预告里背着大铁锅的天狗喊冤：“这锅我不背！”四个角色全部用 Canvas 2D 代码绘制，画面是时间 t 的纯函数（renderFrame(t)），对白气泡逐字弹出；五声音阶配乐、音效和每个角色的说话音都用 Web Audio 实时合成；对白字体是内嵌的霞鹜文楷子集，不联网、不用 CDN。</p><div class="g-meta"><span>竖屏小剧场</span><span>44.5 秒</span><span>画面、配乐、音效全部由代码生成</span></div><p class="g-note">操作：点击画面或中间的播放键开始；空格 / K 播放暂停，R 重播，← → 快退快进 2 秒，M 静音，H 隐藏界面；底部进度条可拖动。URL 加 ?t=秒数 停在指定时刻，加 ?clean 隐藏界面。</p><div class="g-actions"><a class="vs-prompt" href="theater/SCRIPT.md" target="_blank" rel="noopener">分镜脚本</a><a class="btn primary" href="theater/" target="_blank" rel="noopener">播放</a></div></div></article><article class="g-item" data-title="中秋月夜（SVG）" data-no="M3"><div class="g-media" style="--ratio: 1280 / 720"><img src="svg/midautumn.svg?v=1790238004" alt="中秋月夜 SVG" loading="lazy"><a class="g-open" href="svg/midautumn.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>中秋月夜（SVG 版）</h3><p>国潮扁平插画风的中秋月夜：靛蓝夜空里一轮大满月悬在描金祥云之上，满树桂花开成金色小簇、细碎花瓣随风飘落，玉兔在树下一下下捣药、药臼里溅起金色小星；屋檐下三盏红灯笼连着穗子与檐角风铃随风轻摆，远处月亮桥下每 6.7 秒漂出一盏莲花河灯，孔明灯从远山后缓缓升空；前景矮桌上摆着月饼（切开露出咸蛋黄）、柚子和青瓷茶具，茶气袅袅。20 秒一个循环：第 10–14 秒三层云带合拢遮月、夜色转暗，随后月亮从云层后升起、月光重新洒满湖面，「中秋快乐」随之逐笔写出并落下朱印。单文件 SMIL 动画，不写脚本、不引用外部资源和字体，放进 &lt;img&gt; 也能动。</p><div class="g-meta"><span>SVG</span><span>纯 SMIL 动画</span><span>20 秒循环</span><span>305 KB</span></div></div></article><article class="g-item" data-title="中秋月夜（Lottie）" data-no="M4"><div class="g-media dark" style="--ratio: 1280 / 720"><div class="lottie" data-src="lottie/midautumn.json?v=1790238004" role="img" aria-label="中秋月夜 Lottie"></div><a class="g-open" href="lottie/midautumn.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>中秋月夜（Lottie 版）</h3><p>与 SVG 版同一构图的原生 Lottie：靛蓝夜空、描金祥云上的大满月，开满金色小花的桂树与飘落的桂花，树下捣药的玉兔，屋檐下随风摆动的三盏红灯笼和风铃，月亮桥下漂出的莲花河灯、远山后升空的孔明灯，以及前景矮桌上的月饼、柚子、青瓷茶具与袅袅茶气。20 秒一个循环：云带合拢遮月、夜色转暗，月亮从云层后升起、月光洒满湖面。Lottie 特长：题字「中秋快乐」和云上祥云卷纹用 trim path 逐笔画出，茶气与水面月影用路径变形，玉兔手臂/耳朵和灯笼穗子用父子层级绑定，莲花灯与孔明灯做成局部矢量预合成复用，檐枋彩画用 repeater。只用形状图层、空对象、预合成、变换与关键帧，无表达式、无图片、无字体，未经 SVG 转换。</p><div class="g-meta"><span>Lottie</span><span>原生形状图层</span><span>20 秒循环</span><span>86 个顶层图层</span><span>1419 KB</span></div></div></article><article class="g-item" data-title="中秋赏月" data-no="M5"><a class="g-media" style="--ratio: 576 / 456" href="voxel/view.html" target="_blank" rel="noopener"><img src="voxel/animation.webp?v=1790238224" alt="中秋赏月" loading="lazy"><span class="g-open">3D 查看 ↗</span></a><div class="g-body"><h3>中秋赏月（体素）</h3><p>临水的六角赏月亭：青灰瓦顶飞檐翘角、朱红立柱、雕花栏杆，亭中石桌上摆着月饼、柚子和一套茶具；亭后桂花树枝干虬曲，层层树冠缀满金黄小花；岸边石上玉兔捣药，池中莲花河灯绕着荷叶小岛漂流，水面铺着满月的倒影与碎银般的月光；太湖石后悬着一轮有厚度的大满月。动画：亭檐与桂枝上的灯笼随风轻摆，玉兔抖耳捣药，河灯绕岛漂流，桂花从树冠飘落入土。</p><div class="g-meta"><span>256³ 体素</span><span>循环动画</span><span>455,544 体素</span><span>40 色</span></div><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="mid-voxel">查看 prompt</button><a class="btn primary" href="voxel/view.html" target="_blank" rel="noopener">3D 查看</a></div></div></article></div></section>
+  <section class="gal" id="midautumn" style="--accent:#e8483b;--accent-soft:#e8483b1f;--accent-ink:#a7332a"><div class="eyebrow">MID-AUTUMN · CLAUDE OPUS 5.5</div><h2>🥮 中秋专题<small>5 个</small></h2><p class="gal-lead">短片和小剧场点开是实时播放的网页（有声），不是视频文件；月夜的 Lottie 版在页面上实时播放；体素赏月亭可以直接在卡片里拖拽旋转。</p><div class="g-grid" style="--min: 420px"><article class="g-item" data-title="月圆" data-no="M1"><a class="g-media dark" style="--ratio: 16 / 9" href="short/" target="_blank" rel="noopener"><img src="_covers/short.jpg?v=1790244671" alt="月圆" loading="lazy"><span class="g-open">▶ 播放</span></a><div class="g-body"><h3>《月圆》<small> Full Moon, Full Table</small></h3><p>一支 59.5 秒的中秋拼贴动画短片，脚本、分镜、画面、纸张纹理、毛笔字、配乐和音效全部由代码生成：在异乡加班的她，中秋前夜收到妈妈的消息；月亮带她回到童年的院子和外婆讲过的玉兔、嫦娥；她坐上回家的高铁，一家人围着圆桌分月饼、放孔明灯，最后毛笔一笔一笔写下“中秋快乐”。剪纸、撕纸边、纸纹颗粒、网点和错版印刷，Canvas 2D 逐帧绘制；Web Audio 实时合成古筝、笙、笛子和纸张、铃铛、烟花音效，与画面同一条时间线；支持 1080×1920 竖版。</p><div class="g-meta"><span>拼贴风短片</span><span>59.5 秒</span><span>1920x1080（竖版 1080x1920）</span><span>画面、配乐、音效全部由代码生成</span></div><p class="g-note">操作：点击画面开始（有声）；空格 播放/暂停；← → 后退/前进 5 秒；Home 回到开头；拖动进度条跳转；F 全屏；M 静音；“竖版”按钮或 ?aspect=9:16 切换竖版；?t=秒数 跳到指定时刻</p><div class="g-actions"><a class="vs-prompt" href="short/SCRIPT.md" target="_blank" rel="noopener">分镜脚本</a><a class="btn primary" href="short/" target="_blank" rel="noopener">播放</a></div></div></article><article class="g-item" data-title="月宫小剧场 · 谁咬了月亮" data-no="M2"><a class="g-media dark" style="--ratio: 16 / 9" href="theater/" target="_blank" rel="noopener"><img src="_covers/theater.jpg?v=1790244675" alt="月宫小剧场 · 谁咬了月亮" loading="lazy"><span class="g-open">▶ 播放</span></a><div class="g-body"><h3>《月宫小剧场 · 谁咬了月亮》<small> Moon Palace Theater: Who Bit the Moon?</small></h3><p>中秋竖屏小剧场第 1 集。广寒宫里，嫦娥叮嘱玉兔团团“全人类都在看月亮，一口都不许吃”，团团嘴上说“对月饼毫无兴趣”，转身就把挂在天上的月亮（其实是一块巨型月饼）咬了一口；人间的豆豆第一个发现“月亮缺了一口”，还上了热搜。嫦娥补完妆回来当场破防，团团甩锅“是天狗”，一粒月饼渣从嘴边掉下来出卖了他；最后团团把自己团成一团塞进缺口，月亮重新变圆，人间欢呼“月亮上有只兔子！”。结尾打出“中秋快乐”，下集预告里背着大铁锅的天狗喊冤：“这锅我不背！”四个角色全部用 Canvas 2D 代码绘制，画面是时间 t 的纯函数（renderFrame(t)），对白气泡逐字弹出；五声音阶配乐、音效和每个角色的说话音都用 Web Audio 实时合成；对白字体是内嵌的霞鹜文楷子集，不联网、不用 CDN。</p><div class="g-meta"><span>竖屏小剧场</span><span>44.5 秒</span><span>画面、配乐、音效全部由代码生成</span></div><p class="g-note">操作：点击画面或中间的播放键开始；空格 / K 播放暂停，R 重播，← → 快退快进 2 秒，M 静音，H 隐藏界面；底部进度条可拖动。URL 加 ?t=秒数 停在指定时刻，加 ?clean 隐藏界面。</p><div class="g-actions"><a class="vs-prompt" href="theater/SCRIPT.md" target="_blank" rel="noopener">分镜脚本</a><a class="btn primary" href="theater/" target="_blank" rel="noopener">播放</a></div></div></article><article class="g-item" data-title="中秋月夜（SVG）" data-no="M3"><div class="g-media" style="--ratio: 1280 / 720"><img src="svg/midautumn.svg?v=1790238004" alt="中秋月夜 SVG" loading="lazy"><a class="g-open" href="svg/midautumn.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>中秋月夜（SVG 版）</h3><p>国潮扁平插画风的中秋月夜：靛蓝夜空里一轮大满月悬在描金祥云之上，满树桂花开成金色小簇、细碎花瓣随风飘落，玉兔在树下一下下捣药、药臼里溅起金色小星；屋檐下三盏红灯笼连着穗子与檐角风铃随风轻摆，远处月亮桥下每 6.7 秒漂出一盏莲花河灯，孔明灯从远山后缓缓升空；前景矮桌上摆着月饼（切开露出咸蛋黄）、柚子和青瓷茶具，茶气袅袅。20 秒一个循环：第 10–14 秒三层云带合拢遮月、夜色转暗，随后月亮从云层后升起、月光重新洒满湖面，「中秋快乐」随之逐笔写出并落下朱印。单文件 SMIL 动画，不写脚本、不引用外部资源和字体，放进 &lt;img&gt; 也能动。</p><div class="g-meta"><span>SVG</span><span>纯 SMIL 动画</span><span>20 秒循环</span><span>305 KB</span></div></div></article><article class="g-item" data-title="中秋月夜（Lottie）" data-no="M4"><div class="g-media dark" style="--ratio: 1280 / 720"><div class="lottie" data-src="lottie/midautumn.json?v=1790238004" role="img" aria-label="中秋月夜 Lottie"></div><a class="g-open" href="lottie/midautumn.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>中秋月夜（Lottie 版）</h3><p>与 SVG 版同一构图的原生 Lottie：靛蓝夜空、描金祥云上的大满月，开满金色小花的桂树与飘落的桂花，树下捣药的玉兔，屋檐下随风摆动的三盏红灯笼和风铃，月亮桥下漂出的莲花河灯、远山后升空的孔明灯，以及前景矮桌上的月饼、柚子、青瓷茶具与袅袅茶气。20 秒一个循环：云带合拢遮月、夜色转暗，月亮从云层后升起、月光洒满湖面。Lottie 特长：题字「中秋快乐」和云上祥云卷纹用 trim path 逐笔画出，茶气与水面月影用路径变形，玉兔手臂/耳朵和灯笼穗子用父子层级绑定，莲花灯与孔明灯做成局部矢量预合成复用，檐枋彩画用 repeater。只用形状图层、空对象、预合成、变换与关键帧，无表达式、无图片、无字体，未经 SVG 转换。</p><div class="g-meta"><span>Lottie</span><span>原生形状图层</span><span>20 秒循环</span><span>86 个顶层图层</span><span>1419 KB</span></div></div></article><article class="g-item" data-title="中秋赏月" data-no="M5"><div class="g-media vox-live" style="--ratio: 576 / 456" data-model="voxel/model.vox?v=1790238200" data-motion="voxel/motion.json?v=1790238191"><img class="vox-poster" src="voxel/animation.webp?v=1790238224" alt="中秋赏月" loading="lazy"><canvas tabindex="0" aria-label="中秋赏月，可拖拽旋转的 3D 体素"></canvas><div class="vox-bar"><button type="button" data-act="play">暂停</button><button type="button" data-act="view">换视角</button><button type="button" data-act="spin">自动旋转</button><a href="voxel/view.html" target="_blank" rel="noopener">全屏 ↗</a></div><p class="vox-hint">拖拽旋转 · 点一下后滚轮缩放 · 双击复位</p></div><div class="g-body"><h3>中秋赏月（体素）</h3><p>临水的六角赏月亭：青灰瓦顶飞檐翘角、朱红立柱、雕花栏杆，亭中石桌上摆着月饼、柚子和一套茶具；亭后桂花树枝干虬曲，层层树冠缀满金黄小花；岸边石上玉兔捣药，池中莲花河灯绕着荷叶小岛漂流，水面铺着满月的倒影与碎银般的月光；太湖石后悬着一轮有厚度的大满月。动画：亭檐与桂枝上的灯笼随风轻摆，玉兔抖耳捣药，河灯绕岛漂流，桂花从树冠飘落入土。</p><div class="g-meta"><span>256³ 体素</span><span>循环动画</span><span>455,544 体素</span><span>40 色</span></div><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="mid-voxel">查看 prompt</button><a class="btn primary" href="voxel/view.html" target="_blank" rel="noopener">全屏 3D 查看</a></div></div></article></div></section>
 
   <footer>
     <span>Generated by Claude Opus · 2026-09-24</span>
@@ -346,6 +355,41 @@ window.addEventListener('DOMContentLoaded', () => {
     players.set(e.target, lottie.loadAnimation({ container: e.target, renderer: 'svg', loop: true, autoplay: true, path: e.target.dataset.src }));
   }), { rootMargin: '200px' });
   document.querySelectorAll('.lottie[data-src]').forEach((el) => io.observe(el));
+});
+</script>
+<script src="voxel/runtime/renderer.js"></script>
+<script src="voxel/runtime/motion.js"></script>
+<script>
+document.querySelectorAll('.vox-live').forEach((box) => {
+  const canvas = box.querySelector('canvas');
+  let view = null;
+  let active = false;
+  // The renderer zooms on every wheel event; until the viewer is clicked, let the wheel scroll the page instead.
+  box.addEventListener('wheel', (e) => { if (!active) e.stopPropagation(); }, true);
+  box.addEventListener('pointerdown', () => { active = true; });
+  box.addEventListener('pointerleave', () => { active = false; });
+  const start = async () => {
+    const animated = Boolean(box.dataset.motion);
+    view = animated ? new MotionVoxelView(canvas) : new VoxelView(canvas);
+    box.voxView = view;
+    if (animated) await view.load(box.dataset.model, box.dataset.motion); else await view.load(box.dataset.model);
+    if (animated) view.setPlaying(true);
+    box.classList.add('ready');
+  };
+  new IntersectionObserver((entries, io) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    io.disconnect();
+    start().catch((err) => { box.querySelector('.vox-hint').textContent = '3D 加载失败：' + err.message; });
+  }, { rootMargin: '200px' }).observe(box);
+  const views = ['iso', 'front', 'side', 'back', 'top'];
+  let vi = 0;
+  box.querySelector('.vox-bar').addEventListener('click', (e) => {
+    const act = e.target.dataset && e.target.dataset.act;
+    if (!act || !view) return;
+    if (act === 'play') { view.setPlaying(!view.playing); e.target.textContent = view.playing ? '暂停' : '播放'; }
+    if (act === 'view') { vi = (vi + 1) % views.length; view.setView(views[vi]); }
+    if (act === 'spin') { view.toggleRotation(); e.target.textContent = view.auto ? '停止旋转' : '自动旋转'; }
+  });
 });
 </script>
 <script>
