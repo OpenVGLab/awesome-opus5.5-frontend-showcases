@@ -1,0 +1,5 @@
+{
+  "type": "module",
+  "private": true,
+  "description": "Marks viewer/*.js as ES modules so the Node harness can import voxel-core.js"
+}

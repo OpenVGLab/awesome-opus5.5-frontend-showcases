@@ -1,0 +1,44 @@
+{
+ "models": [
+  {
+   "slug": "great-wall",
+   "title": "云雾山间的长城",
+   "status": "ok",
+   "size": 256,
+   "blocks": 700631,
+   "programBytes": 11699,
+   "lods": 1,
+   "updatedAt": "2026-09-24T05:52:31.204Z"
+  },
+  {
+   "slug": "harbor-castle",
+   "title": "崖上城堡与港口小镇",
+   "status": "ok",
+   "size": 256,
+   "blocks": 944796,
+   "programBytes": 28102,
+   "lods": 1,
+   "updatedAt": "2026-09-24T05:52:28.577Z"
+  },
+  {
+   "slug": "nyc",
+   "title": "纽约城（2048³）",
+   "status": "ok",
+   "size": 2048,
+   "blocks": 20840473,
+   "programBytes": 81567,
+   "lods": 3,
+   "updatedAt": "2026-09-24T05:52:37.251Z"
+  },
+  {
+   "slug": "pelican-bicycle",
+   "title": "骑自行车的鹈鹕",
+   "status": "ok",
+   "size": 256,
+   "blocks": 243927,
+   "programBytes": 16954,
+   "lods": 1,
+   "updatedAt": "2026-09-24T05:52:26.277Z"
+  }
+ ]
+}

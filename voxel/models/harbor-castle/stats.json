@@ -1,0 +1,377 @@
+{
+  "format": "minebench-voxel/1",
+  "slug": "harbor-castle",
+  "title": "崖上城堡与港口小镇",
+  "prompt": "A medieval castle on a cliff above a harbor town",
+  "status": "ok",
+  "error": null,
+  "grid": {
+    "size": 256
+  },
+  "blocks": 944796,
+  "materials": {
+    "water": 209038,
+    "stone": 186443,
+    "light_gray": 97043,
+    "cobblestone": 90338,
+    "dirt": 82194,
+    "sand": 60794,
+    "sandstone": 35521,
+    "granite": 33306,
+    "roof": 32479,
+    "grass": 22681,
+    "gray": 15361,
+    "white": 14559,
+    "brick": 11657,
+    "planks": 10562,
+    "concrete": 10081,
+    "dark_gray": 9450,
+    "dark_brick": 7539,
+    "leaves": 4989,
+    "wood": 4227,
+    "brown": 2121,
+    "glass_dark": 1596,
+    "green": 793,
+    "black": 772,
+    "red": 556,
+    "blue": 180,
+    "glass_blue": 175,
+    "cyan": 116,
+    "yellow": 98,
+    "gold": 76,
+    "orange": 47,
+    "lime": 3,
+    "light_blue": 1
+  },
+  "bbox": {
+    "min": [
+      0,
+      0,
+      0
+    ],
+    "max": [
+      255,
+      231,
+      255
+    ]
+  },
+  "counters": {
+    "outOfBounds": 0,
+    "outOfBoundsByMethod": {
+      "set": 0,
+      "fill": 0,
+      "clear": 0,
+      "get": 0
+    },
+    "fillClipped": 0,
+    "unknownBlock": 0,
+    "unknownBlockNames": {},
+    "overLimit": 0,
+    "calls": {
+      "set": 1063962,
+      "fill": 276,
+      "clear": 2247,
+      "get": 6309
+    }
+  },
+  "limits": {
+    "maxBlocks": 60000000,
+    "timeoutSec": 600,
+    "lodTarget": 1500000
+  },
+  "timing": {
+    "importMs": 58,
+    "buildMs": 88,
+    "runMs": 146,
+    "postMs": 405,
+    "totalMs": 1266
+  },
+  "memory": {
+    "peakRssMB": 90,
+    "chunkStorageMB": 16,
+    "allocatedChunks": 184
+  },
+  "program": {
+    "file": "build.mjs",
+    "bytes": 28102,
+    "lines": 494,
+    "sha256": "7116d5d2b587c0d9e3d84cc456d3d48787819fdee02e2d4e8d6c7ce74797b1ea"
+  },
+  "lods": [
+    {
+      "level": 0,
+      "scale": 1,
+      "size": 256,
+      "blocks": 944796,
+      "chunks": 184,
+      "faces": 510978,
+      "quadsEst": 210784,
+      "greedyRatio": 0.4125,
+      "file": "lod0.bin",
+      "bytes": 192798,
+      "rawBytes": 750695,
+      "encodeMs": 183,
+      "downsampleMs": 0
+    }
+  ],
+  "json": {
+    "estimatedBytes": 39273284,
+    "format": "[{\"x\":0,\"y\":0,\"z\":0,\"block\":\"stone\"},...] (compact, one object per block)"
+  },
+  "palette": [
+    {
+      "id": 1,
+      "name": "white",
+      "color": "#f4f4f0",
+      "transparent": false
+    },
+    {
+      "id": 2,
+      "name": "light_gray",
+      "color": "#b8b8b4",
+      "transparent": false
+    },
+    {
+      "id": 3,
+      "name": "gray",
+      "color": "#7c7c78",
+      "transparent": false
+    },
+    {
+      "id": 4,
+      "name": "dark_gray",
+      "color": "#4a4a48",
+      "transparent": false
+    },
+    {
+      "id": 5,
+      "name": "black",
+      "color": "#1e1e20",
+      "transparent": false
+    },
+    {
+      "id": 6,
+      "name": "red",
+      "color": "#c8342c",
+      "transparent": false
+    },
+    {
+      "id": 7,
+      "name": "orange",
+      "color": "#e8792b",
+      "transparent": false
+    },
+    {
+      "id": 8,
+      "name": "yellow",
+      "color": "#f2c230",
+      "transparent": false
+    },
+    {
+      "id": 9,
+      "name": "lime",
+      "color": "#8cc63f",
+      "transparent": false
+    },
+    {
+      "id": 10,
+      "name": "green",
+      "color": "#3f8a3a",
+      "transparent": false
+    },
+    {
+      "id": 11,
+      "name": "cyan",
+      "color": "#2aa6b8",
+      "transparent": false
+    },
+    {
+      "id": 12,
+      "name": "light_blue",
+      "color": "#7ec3ec",
+      "transparent": false
+    },
+    {
+      "id": 13,
+      "name": "blue",
+      "color": "#2f5fb8",
+      "transparent": false
+    },
+    {
+      "id": 14,
+      "name": "purple",
+      "color": "#7a4bb0",
+      "transparent": false
+    },
+    {
+      "id": 15,
+      "name": "magenta",
+      "color": "#c24fa6",
+      "transparent": false
+    },
+    {
+      "id": 16,
+      "name": "pink",
+      "color": "#f09ab8",
+      "transparent": false
+    },
+    {
+      "id": 17,
+      "name": "brown",
+      "color": "#7a5232",
+      "transparent": false
+    },
+    {
+      "id": 18,
+      "name": "stone",
+      "color": "#8a8a86",
+      "transparent": false
+    },
+    {
+      "id": 19,
+      "name": "cobblestone",
+      "color": "#6f6d69",
+      "transparent": false
+    },
+    {
+      "id": 20,
+      "name": "granite",
+      "color": "#9c7e6e",
+      "transparent": false
+    },
+    {
+      "id": 21,
+      "name": "sandstone",
+      "color": "#d8c38a",
+      "transparent": false
+    },
+    {
+      "id": 22,
+      "name": "brick",
+      "color": "#a4513a",
+      "transparent": false
+    },
+    {
+      "id": 23,
+      "name": "dark_brick",
+      "color": "#6e3a2c",
+      "transparent": false
+    },
+    {
+      "id": 24,
+      "name": "concrete",
+      "color": "#c9c7c0",
+      "transparent": false
+    },
+    {
+      "id": 25,
+      "name": "glass",
+      "color": "#cfe8f0",
+      "transparent": true
+    },
+    {
+      "id": 26,
+      "name": "glass_blue",
+      "color": "#6aa6d4",
+      "transparent": true
+    },
+    {
+      "id": 27,
+      "name": "glass_dark",
+      "color": "#34495e",
+      "transparent": true
+    },
+    {
+      "id": 28,
+      "name": "steel",
+      "color": "#9aa4ad",
+      "transparent": false
+    },
+    {
+      "id": 29,
+      "name": "gold",
+      "color": "#e0b94a",
+      "transparent": false
+    },
+    {
+      "id": 30,
+      "name": "copper",
+      "color": "#b8733a",
+      "transparent": false
+    },
+    {
+      "id": 31,
+      "name": "wood",
+      "color": "#9b6b3d",
+      "transparent": false
+    },
+    {
+      "id": 32,
+      "name": "planks",
+      "color": "#c89a5c",
+      "transparent": false
+    },
+    {
+      "id": 33,
+      "name": "roof",
+      "color": "#8c3b30",
+      "transparent": false
+    },
+    {
+      "id": 34,
+      "name": "grass",
+      "color": "#5f9e3a",
+      "transparent": false
+    },
+    {
+      "id": 35,
+      "name": "dirt",
+      "color": "#7a5a3a",
+      "transparent": false
+    },
+    {
+      "id": 36,
+      "name": "sand",
+      "color": "#e2d29c",
+      "transparent": false
+    },
+    {
+      "id": 37,
+      "name": "water",
+      "color": "#3b7bbf",
+      "transparent": true
+    },
+    {
+      "id": 38,
+      "name": "snow",
+      "color": "#f2f6f8",
+      "transparent": false
+    },
+    {
+      "id": 39,
+      "name": "leaves",
+      "color": "#3e7a34",
+      "transparent": false
+    },
+    {
+      "id": 40,
+      "name": "asphalt",
+      "color": "#3a3a3c",
+      "transparent": false
+    }
+  ],
+  "encoding": {
+    "lodFile": "zlib(deflate) of: 32-byte header + chunk records (see README)",
+    "chunkSize": 32,
+    "paddedChunk": 34,
+    "regionChunks": 8,
+    "rle": "[material u8][run length LEB128]..."
+  },
+  "warnings": [],
+  "harness": {
+    "version": 1,
+    "node": "v20.20.2",
+    "host": "VM-130-36-tencentos",
+    "createdAt": "2026-09-24T05:52:28.577Z"
+  }
+}

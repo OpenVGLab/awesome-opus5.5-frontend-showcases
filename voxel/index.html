@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Opus Showcases · Claude Opus 5.5 作品合集</title>
+<title>Voxel 体素 · Opus Showcases</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='14' width='56' height='36' rx='14' fill='%231d1a16'/%3E%3Ccircle cx='22' cy='32' r='6' fill='%23ff9f1c'/%3E%3Ccircle cx='44' cy='28' r='4' fill='%233fb950'/%3E%3Ccircle cx='50' cy='36' r='4' fill='%231e9bf0'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -235,14 +235,14 @@
 <div class="wrap">
   <header>
     <div>
-      <div class="eyebrow">OPUS SHOWCASES · CLAUDE OPUS 5.5</div>
-      <h1>纯代码作品合集</h1>
-      <p class="lead">由 Claude Opus 5.5 写成的前端作品，按格式分页：SVG（游戏与动画）、Lottie 和 Voxel。每个作品都附完整 prompt。</p>
-      <nav class="site-nav"><a href="./" class="on">总览</a><a href="svg/">SVG</a><a href="lottie/">Lottie</a><a href="voxel/">Voxel</a></nav>
+      <div class="eyebrow">OPUS SHOWCASES · VOXEL</div>
+      <h1>体素作品</h1>
+      <p class="lead">4 个由 Claude Opus 5.5 写构建程序生成的体素作品，最大的是 2048³ 网格里的纽约城。点封面打开 3D 查看器，可以旋转、缩放、切换精细度。</p>
+      <nav class="site-nav"><a href="../">总览</a><a href="../svg/">SVG</a><a href="../lottie/">Lottie</a><a href="../voxel/" class="on">Voxel</a></nav>
     </div>
   </header>
 
-  <main class="hub-grid"><a class="hub-card" href="svg/" style="--accent:#e8483b"><div class="hub-media"><img src="svg/thumbs/kitchen-rush-title.jpg" alt="SVG" loading="lazy"></div><div class="hub-body"><div class="hub-sub">GAMES · PELICANS · RIDERS · ANIMATION</div><h2>SVG</h2><p>单个 .svg 文件里的小游戏、鹈鹕骑自行车、骑行系列和 SVG 动画，浏览器直接打开就能玩。</p><span class="hub-go">25 个作品 →</span></div></a><a class="hub-card" href="lottie/" style="--accent:#3fb950"><div class="hub-media"><img src="lottie/rolls/lottie/coffee-steam.gif" alt="Lottie" loading="lazy"></div><div class="hub-body"><div class="hub-sub">BODYMOVIN JSON</div><h2>Lottie</h2><p>只用形状图层的 Lottie 动画，用 lottie-web 实时播放。</p><span class="hub-go">5 个作品 →</span></div></a><a class="hub-card" href="voxel/" style="--accent:#1e9bf0"><div class="hub-media"><img src="voxel/previews/nyc.jpg" alt="Voxel" loading="lazy"></div><div class="hub-body"><div class="hub-sub">MINEBENCH-STYLE BUILDS</div><h2>Voxel</h2><p>模型写构建程序生成的体素作品，可以在 3D 查看器里旋转缩放。</p><span class="hub-go">4 个作品 →</span></div></a></main>
+  <section class="gal" id="voxel" style="--accent:#e8483b;--accent-soft:#e8483b1f;--accent-ink:#a7332a"><div class="eyebrow">MINEBENCH-STYLE VOXEL BUILDS · CLAUDE OPUS 5.5</div><h2>🧱 体素作品</h2><p class="gal-lead">按 MineBench 的方式：给模型一个网格和放方块的 API，模型写一个构建程序，程序跑出来的方块就是作品。程序都是盲写一次成稿，模型看不到渲染结果。</p><div class="g-grid" style="--min: 420px"><article class="g-item" data-title="纽约城（2048³）" data-no="V1"><a class="g-media" style="--ratio: 16 / 9" href="viewer/index.html?model=nyc" target="_blank" rel="noopener"><img src="previews/nyc.jpg?v=1790229280" alt="纽约城（2048³）" loading="lazy"><span class="g-open">3D 查看 ↗</span></a><div class="g-body"><h3>纽约城（2048³）</h3><p>按真实比例 1 格 = 12 米（水平与竖直一致），网格轴与曼哈顿街道网格对齐，覆盖约 24.6×24.6 公里：整个曼哈顿（炮台公园到斯派腾戴维尔），南至自由女神像的上湾港口，西侧新泽西黄金海岸与帕利塞兹悬崖，东侧布鲁克林北部、皇后区西部（长岛市、阿斯托里亚、拉瓜迪亚、法拉盛）和南布朗克斯。数据来自记忆中的经纬度与街道编号，包含 1811 年街道网格、百老汇斜街、中央公园（水库与湖泊）、各区街区肌理与分区高度，以及世贸一号楼、帝国大厦、克莱斯勒大厦、哈德逊园区、亿万富翁街、布鲁克林大桥、乔治·华盛顿大桥、洋基体育场等约百处地标。</p><div class="g-meta"><span>2048³ 网格</span><span>20,840,473 个方块</span><span>程序 80 KB</span><span>展开成 JSON 约 861 MB</span><span>盲写一次成稿</span></div><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="voxel-nyc">查看 prompt</button><a class="vs-prompt" href="builds/nyc/build.mjs" target="_blank" rel="noopener">构建程序</a><a class="btn primary" href="viewer/index.html?model=nyc" target="_blank" rel="noopener">打开 3D 查看器</a></div></div></article><article class="g-item" data-title="云雾山间的长城" data-no="V2"><a class="g-media" style="--ratio: 16 / 9" href="viewer/index.html?model=great-wall" target="_blank" rel="noopener"><img src="previews/great-wall.jpg?v=1790229279" alt="云雾山间的长城" loading="lazy"><span class="g-open">3D 查看 ↗</span></a><div class="g-body"><h3>云雾山间的长城</h3><p>长城沿一条蜿蜒的山脊从画面一端延伸到另一端，城墙随山势起伏成阶梯，外侧有垛口，内侧有矮墙，沿途设方形敌楼，部分敌楼顶上建有灰瓦铺房，最高一座插着红旗；背后是积雪的高峰，前方河谷里有一条河，松林和秋色树木散布在山坡上，云海填满山谷，薄雾缠绕着远山。</p><div class="g-meta"><span>256³ 网格</span><span>700,631 个方块</span><span>程序 11 KB</span><span>展开成 JSON 约 29 MB</span><span>盲写一次成稿</span></div><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="voxel-great-wall">查看 prompt</button><a class="vs-prompt" href="builds/great-wall/build.mjs" target="_blank" rel="noopener">构建程序</a><a class="btn primary" href="viewer/index.html?model=great-wall" target="_blank" rel="noopener">打开 3D 查看器</a></div></div></article><article class="g-item" data-title="崖上城堡与港口小镇" data-no="V3"><a class="g-media" style="--ratio: 16 / 9" href="viewer/index.html?model=harbor-castle" target="_blank" rel="noopener"><img src="previews/harbor-castle.jpg?v=1790229280" alt="崖上城堡与港口小镇" loading="lazy"><span class="g-open">3D 查看 ↗</span></a><div class="g-body"><h3>崖上城堡与港口小镇</h3><p>高耸的岩层悬崖顶上是一座中世纪城堡：垛口城墙、圆锥顶角楼、城门楼、主堡与挂旗高塔，内有大厅、礼拜堂和马厩；一条凿进崖壁的之字形坡道下到梯田式港口小镇，镇上有彩色山墙民居、尖顶教堂与喷泉广场、码头集市、木栈桥和渔船，港内泊着一艘柯克帆船，防波堤尽头立着烽火塔。</p><div class="g-meta"><span>256³ 网格</span><span>944,796 个方块</span><span>程序 27 KB</span><span>展开成 JSON 约 39 MB</span><span>盲写一次成稿</span></div><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="voxel-harbor-castle">查看 prompt</button><a class="vs-prompt" href="builds/harbor-castle/build.mjs" target="_blank" rel="noopener">构建程序</a><a class="btn primary" href="viewer/index.html?model=harbor-castle" target="_blank" rel="noopener">打开 3D 查看器</a></div></div></article><article class="g-item" data-title="骑自行车的鹈鹕" data-no="V4"><a class="g-media" style="--ratio: 16 / 9" href="viewer/index.html?model=pelican-bicycle" target="_blank" rel="noopener"><img src="previews/pelican-bicycle.jpg?v=1790229281" alt="骑自行车的鹈鹕" loading="lazy"><span class="g-open">3D 查看 ↗</span></a><div class="g-body"><h3>骑自行车的鹈鹕</h3><p>一只系着红白围巾的白鹈鹕骑在青色复古自行车上：双翼握住车把，橙色蹼足踩在踏板上，黄色长喙下垂着橙色喉囊，车前筐装满鲜鱼，脚下是开满野花的圆形草地和一段乡间公路。</p><div class="g-meta"><span>256³ 网格</span><span>243,927 个方块</span><span>程序 17 KB</span><span>展开成 JSON 约 10 MB</span><span>盲写一次成稿</span></div><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="voxel-pelican-bicycle">查看 prompt</button><a class="vs-prompt" href="builds/pelican-bicycle/build.mjs" target="_blank" rel="noopener">构建程序</a><a class="btn primary" href="viewer/index.html?model=pelican-bicycle" target="_blank" rel="noopener">打开 3D 查看器</a></div></div></article></div></section>
 
   <footer>
     <span>Generated by Claude Opus · 2026-09-24</span>
@@ -264,7 +264,18 @@
   <pre class="pd-body" id="pd-body"></pre>
 </dialog>
 
-
+<script type="text/plain" id="prompt-voxel-nyc">
+A full rendition of New York City, fully accurate, dense, and to scale
+</script>
+<script type="text/plain" id="prompt-voxel-great-wall">
+The Great Wall of China winding over misty mountains
+</script>
+<script type="text/plain" id="prompt-voxel-harbor-castle">
+A medieval castle on a cliff above a harbor town
+</script>
+<script type="text/plain" id="prompt-voxel-pelican-bicycle">
+A pelican riding a bicycle
+</script>
 
 
 <script>

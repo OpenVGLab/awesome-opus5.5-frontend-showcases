@@ -4,18 +4,19 @@
 
 > A curated list of frontend work made by Claude Opus 5.5 (released 2026-09-22): SVG games and animation, the pelican-on-a-bicycle family, Lottie, Three.js / WebGL, code-drawn video, websites and UI — anything the model wrote as code and that runs in a browser.
 
-**Play online:** [Overview](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/)
+**Play online:** [Overview](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/)
 
 ## Contents
 
 In each section, pieces made in this repo come first and include the full prompt. Community pieces are in a table, newest first.
 
-- 🎮 [Games](#-games) — 12 cases
+- 🎮 [Games](#-games) — 15 cases
 - 🦩 [Pelican on a Bicycle](#-pelican-on-a-bicycle) — 7 cases
 - 🚲 [More Riders](#-more-riders) — 9 cases
-- ✨ [SVG Animation](#-svg-animation) — 2 cases
+- ✨ [SVG Animation](#-svg-animation) — 7 cases
+- 🎞️ [Lottie](#-lottie) — 5 cases
 - 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 8 cases
-- 🎬 [Code-drawn Animation](#-code-drawn-animation) — 8 cases
+- 🎬 [Code-drawn Animation](#-code-drawn-animation) — 9 cases
 - 🖥️ [Web & UI](#-web--ui) — 9 cases
 - 📊 [Benchmarks & Tools](#-benchmarks--tools)
 - [Inclusion criteria & contributing](#inclusion-criteria--contributing)
@@ -297,6 +298,149 @@ Tower defense inspired by Plants vs. Zombies: collect sun, plant defenders, hold
 
 </details>
 
+#### Case 6: [BUBBLE REEF](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/bubble-reef.svg)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/bubble-reef.svg`](svg/bubble-reef.svg)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="svg/thumbs/bubble-reef-title.jpg" alt="BUBBLE REEF" width="720" /></p>
+
+泡泡射击 / 消除益智, inspired by 泡泡龙: 寄居蟹举着泡泡开火，打散的泡泡炸成水珠、掉落的泡泡变成小鱼游走，12 关冒险加无尽模式 纸张纹理上的水彩海底：晕染水色、晃动光斑、摇摆海草珊瑚，泡泡里藏着海洋生物剪影.A single 122 KB SVG.
+
+<details><summary>Prompt (agentic)</summary>
+
+```text
+你负责独立完成一款浏览器小游戏《泡泡海 BUBBLE REEF》：水彩海底风的泡泡射击，玩法借鉴《泡泡龙》，角色、名字和美术全部原创。
+
+【交付】
+- 只交付一个自包含文件 bubble-reef.svg，根元素为 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">，窗口缩放时 16:9 画面完整居中。
+- 画面、界面、游戏逻辑（内联脚本）和音效全部写在这一个文件里，不引用任何外部图片、字体、脚本或网络资源，浏览器直接打开就能玩。文件必须是合法的 UTF-8 XML。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次按键或点击后开始发声，M 键静音。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 底部发射器瞄准并发射彩色泡泡，泡泡粘在顶部的蜂窝格阵列上；同色泡泡连成 3 个及以上就消除，失去连接的泡泡整串掉落并得额外分数。
+- 泡泡可以碰左右墙壁反弹；显示瞄准虚线（包括第一次反弹后的路径）。
+- 显示当前泡泡和下一个泡泡，可以互换。
+- 每发射若干次，泡泡阵整体下降一行；泡泡压过底线就失败。
+- 特殊泡泡：彩虹泡（匹配任意颜色）、炸弹泡（炸掉周围一圈）、冰冻泡（先打一次解冻才能消除）、闪电泡（消除整行）。
+- 冒险模式 12 关，每关有不同的初始阵型；无尽模式不断从上方推进新行，按分数计。
+- 难度：简单（4 种颜色、下降慢）、普通（5 种）、困难（6 种、下降快）；用 localStorage 记录冒险进度和各模式最高分。
+
+【操作】鼠标移动瞄准、点击发射；键盘 ← → 调整角度、空格发射、↑ 交换当前和下一个泡泡；P 暂停，H 帮助，M 静音。
+
+【画面】
+- 水彩海底风：水面透下来的光斑轻轻晃动，珊瑚和海草随水流摆动，背景有纸张纹理和晕染。
+- 泡泡是带高光和折射感的水彩泡泡，每种颜色里有一只不同的小海洋生物剪影（小丑鱼、海星、水母、海龟、章鱼、海马），方便色弱玩家区分。
+- 消除时泡泡破裂成小水珠，掉落的泡泡变成小鱼游走；发射器是一只会跟着瞄准方向转身的寄居蟹。
+- HUD 显示分数、关卡、距离下降还有几步、下一个泡泡。
+
+【流程与界面】
+- 标题页：模式选择（冒险 / 无尽）、难度、开始、帮助、最高分。
+- 冒险模式有关卡选择页，显示已解锁关卡和每关星级。
+- 帮助页：操作和特殊泡泡说明。
+- 暂停菜单有继续、重新开始、返回标题；过关结算给 1～3 星；失败页和无尽模式结算页都可以再来一局。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开局并实际操作一局。要求 0 个 JS 报错、0 个 XML 解析错误、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+```
+
+</details>
+
+#### Case 7: [CANDY BREAKER](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/candy-breaker.svg)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/candy-breaker.svg`](svg/candy-breaker.svg)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="svg/thumbs/candy-breaker-title.jpg" alt="CANDY BREAKER" width="720" /></p>
+
+打砖块 / 街机休闲, inspired by 打砖块: 用会弹的彩虹棒棒糖挡板把拖着彩虹尾巴的糖豆打回去，跳跳糖连环爆炸、多球火球齐飞，8 个糖果图案关卡一路吃到生日蛋糕 粉色、薄荷绿、奶油黄的糖果果冻风，Q 弹半透明软糖砖块配棉花糖云和糖果山.A single 130 KB SVG.
+
+<details><summary>Prompt (agentic)</summary>
+
+```text
+你负责独立完成一款浏览器小游戏《糖果砖块 CANDY BREAKER》：糖果果冻风的打砖块，玩法借鉴《打砖块》，角色、名字和美术全部原创。
+
+【交付】
+- 只交付一个自包含文件 candy-breaker.svg，根元素为 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">，窗口缩放时 16:9 画面完整居中。
+- 画面、界面、游戏逻辑（内联脚本）和音效全部写在这一个文件里，不引用任何外部图片、字体、脚本或网络资源，浏览器直接打开就能玩。文件必须是合法的 UTF-8 XML。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次按键或点击后开始发声，M 键静音。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 用挡板把小球弹回去，打碎所有可破坏的砖块就过关；小球碰到挡板的位置决定反弹角度，越靠边角度越斜。
+- 砖块种类：普通糖块（1 击）；硬糖（2～3 击，每挨一下出现更深的裂纹）；巧克力块（打不碎）；跳跳糖（打碎时炸掉周围一圈）；礼物糖（打碎后掉落道具）。
+- 好道具：加长挡板、多球（分裂成 3 个）、慢速、激光（挡板 8 秒内可发射激光）、黏球（接住球再发射）、火球（穿透砖块）；坏道具：缩短挡板、加速。道具从砖块位置落下，用挡板接住才生效。
+- 共 8 关，每关砖块排成不同图案（爱心、城堡、棒棒糖、汉堡、小熊……），第 4 关和第 8 关有左右移动的砖块。
+- 3 条命，漏球扣命；不碰挡板连续打碎砖块形成连击，连击越高分数倍率越高。
+- 难度：简单（球慢、挡板长）、普通、困难（球快、坏道具更多）；用 localStorage 记录最高分。
+
+【操作】← → / A D 或鼠标移动挡板；空格 / 鼠标点击 发射小球或激光；P 暂停，H 帮助，M 静音。
+
+【画面】
+- 糖果果冻风：粉色、薄荷绿、奶油黄为主的柔和配色；砖块是带高光、半透明的糖块和果冻，被击中时 Q 弹形变，碎掉时迸出糖粒碎屑。
+- 背景是缓慢漂浮的棉花糖云和糖果山；挡板是一根有弹性的彩色棒棒糖；小球是一颗会拖出彩虹尾迹的糖豆。
+- HUD 显示分数、关卡、剩余命数、连击数和当前道具倒计时。
+
+【流程与界面】
+- 标题页：难度选择、开始、帮助、最高分，背景里有自动演示的打砖块画面。
+- 帮助页：操作说明，以及砖块和道具的图示。
+- 每关开始显示关卡名；暂停菜单有继续、重新开始、返回标题；过关结算显示连击奖励和剩余时间奖励；8 关全通显示结局，命用完显示游戏结束，都可以再来一局。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开局并实际操作一局。要求 0 个 JS 报错、0 个 XML 解析错误、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+```
+
+</details>
+
+#### Case 8: [COMIC STARFIGHTER](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/comic-starfighter.svg)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/comic-starfighter.svg`](svg/comic-starfighter.svg)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="svg/thumbs/comic-starfighter-title.jpg" alt="COMIC STARFIGHTER" width="720" /></p>
+
+竖版弹幕射击, inspired by 雷电: 漫画分格侧栏里的驾驶员会随战况变脸，擦弹蓄满能量后一发「星爆光束」贯穿三段式 Boss 弹幕 美式漫画：粗黑描边、网点纹理、高饱和平涂，爆炸配 BOOM!/ZAP!/POW! 拟声字.A single 139 KB SVG.
+
+<details><summary>Prompt (agentic)</summary>
+
+```text
+你负责独立完成一款浏览器小游戏《漫画星舰 COMIC STARFIGHTER》：美式漫画风的竖版弹幕射击，玩法借鉴《雷电》，角色、名字和美术全部原创。
+
+【交付】
+- 只交付一个自包含文件 comic-starfighter.svg，根元素为 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">，窗口缩放时 16:9 画面完整居中。
+- 画面、界面、游戏逻辑（内联脚本）和音效全部写在这一个文件里，不引用任何外部图片、字体、脚本或网络资源，浏览器直接打开就能玩。文件必须是合法的 UTF-8 XML。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次按键或点击后开始发声，M 键静音。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 画面中间是一条纵向战场（约 560×720），左右两侧是漫画分格的侧栏；玩家战机在战场里移动射击，敌机成队列从上方飞入，沿轨迹俯冲并发射子弹。
+- 武器升级：拾取 P 提升主炮等级（单发 → 双发 → 散射 → 激光），拾取 B 获得一颗炸弹（清屏并短暂无敌），拾取盾牌获得一次护盾。
+- 3 个关卡：城市上空、陨石带、敌方母舰；每关结尾有 Boss 战，Boss 有多阶段弹幕和血条。
+- 擦弹（子弹贴身擦过）会积累能量，能量满可以放一次必杀。
+- 3 条命；难度：简单（弹幕稀疏、判定点小）、普通、困难（弹幕更密、敌人更耐打）；用 localStorage 记录最高分。
+
+【操作】方向键 / WASD 移动；Z / 空格 射击（按住连发）；X 放炸弹；C 放必杀；Shift 低速精确移动并显示判定点；P 暂停，H 帮助，M 静音。
+
+【画面】
+- 美式漫画风：粗黑描边、网点纹理、平涂高饱和配色；爆炸是星形爆炸图案配“BOOM!”“ZAP!”“POW!”拟声字。
+- 侧栏像漫画分格：显示分数、剩余命数、炸弹数、武器等级、必杀能量和驾驶员头像，头像在受伤时表情会变。
+- Boss 登场前有漫画分镜式的警告画面；每关背景有不同的卷轴场景（城市楼顶、陨石、母舰甲板）。
+
+【流程与界面】
+- 标题页：难度、开始、帮助、最高分，标题做成漫画封面的样子。
+- 帮助页：操作和道具说明。
+- 每关开场有标题分格；暂停菜单有继续、重新开始、返回标题；过关结算显示击坠率、擦弹次数和无伤奖励；通关结局和游戏结束页都可以再来一局。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开局并实际操作一局。要求 0 个 JS 报错、0 个 XML 解析错误、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+```
+
+</details>
+
 ### Community
 
 | Piece | Source | Date | Notes |
@@ -561,10 +705,196 @@ Generate an animated SVG of a frog riding a snail
 
 SMIL / CSS animation only — no JavaScript — so it still moves inside an `<img>`.
 
+#### Case 1: [海边灯塔的日落](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/svg-anim/lighthouse-sunset.svg)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/svg-anim/lighthouse-sunset.svg`](svg/rolls/svg-anim/lighthouse-sunset.svg)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="svg/rolls/svg-anim/lighthouse-sunset.svg" alt="海边灯塔的日落" width="480" /></p>
+
+暖橙到紫蓝的天空下，夕阳从云底探出、压扁着沉入海平线，天色转入暮色、星星浮现；十一层海浪分层起伏，灯塔光束左右摆扫并在海面投下碎光，海鸥在远处绕圈，20 秒后太阳从云后再次探出，无缝衔接。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+夕阳缓缓落下，海浪一层层起伏，灯塔的光束来回扫过海面，海鸥在远处盘旋；天空是暖橙到紫蓝的渐变；20 秒无缝循环。交付一个自包含的 .svg 文件：根元素 viewBox="0 0 1280 720"，width="100%" height="100%"，preserveAspectRatio="xMidYMid meet"；只用 SMIL 或 CSS 动画，不用 JavaScript，放进 <img> 标签也能动；动画无缝循环；不引用任何外部图片、字体或网络资源；文件不超过 200 KB；必须是合法的 UTF-8 XML。
+```
+
+</details>
+
+#### Case 2: [机械钟的齿轮](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/svg-anim/clockwork.svg)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/svg-anim/clockwork.svg`](svg/rolls/svg-anim/clockwork.svg)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="svg/rolls/svg-anim/clockwork.svg" alt="机械钟的齿轮" width="480" /></p>
+
+后盖向左翻开的黄铜镂空怀表：发条盒→中心轮→三轮→四轮→擒纵轮按 2:1/2.5:1 啮合、相邻反转且齿多者慢，全轮系随擒纵每 0.5 秒同步跳一格，摆轮带游丝呼吸式往复摆动，擒纵叉左右拨动，宝玑蓝钢指针走时，表壳与后盖上周期性掠过金属高光。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+一只打开后盖的机械怀表：大小齿轮按正确的传动比联动旋转（相互啮合的齿轮转向相反、齿数多的转得慢），擒纵轮一跳一跳，摆轮来回摆动，表盘指针走动；黄铜与深蓝配色，带金属高光。交付一个自包含的 .svg 文件：根元素 viewBox="0 0 1280 720"，width="100%" height="100%"，preserveAspectRatio="xMidYMid meet"；只用 SMIL 或 CSS 动画，不用 JavaScript，放进 <img> 标签也能动；动画无缝循环；不引用任何外部图片、字体或网络资源；文件不超过 200 KB；必须是合法的 UTF-8 XML。
+```
+
+</details>
+
+#### Case 3: [太阳系](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/svg-anim/solar-system.svg)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/svg-anim/solar-system.svg`](svg/rolls/svg-anim/solar-system.svg)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="svg/rolls/svg-anim/solar-system.svg" alt="太阳系" width="480" /></p>
+
+倾斜视角的太阳系：光芒四射的太阳呼吸般脉动，八大行星以 4～480 秒的周期（由内到外递增）沿椭圆轨道匀角速公转并拖着淡尾迹，明暗交界线始终背向太阳，水星会绕到太阳背后，月球绕地球进出前后，土星带前后分层的环，银河与星空闪烁，每颗行星旁有中文小字。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+太阳居中发光并缓慢脉动，八大行星沿椭圆轨道以不同周期公转（内圈快、外圈慢，比例大致合理），土星带环，月球绕地球转，背景星空闪烁；每颗行星旁边有小小的中文名字。交付一个自包含的 .svg 文件：根元素 viewBox="0 0 1280 720"，width="100%" height="100%"，preserveAspectRatio="xMidYMid meet"；只用 SMIL 或 CSS 动画，不用 JavaScript，放进 <img> 标签也能动；动画无缝循环；不引用任何外部图片、字体或网络资源；文件不超过 200 KB；必须是合法的 UTF-8 XML。
+```
+
+</details>
+
+#### Case 4: [雨夜的城市窗景](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/svg-anim/rainy-city.svg)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/svg-anim/rainy-city.svg`](svg/rolls/svg-anim/rainy-city.svg)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="svg/rolls/svg-anim/rainy-city.svg" alt="雨夜的城市窗景" width="480" /></p>
+
+冷蓝与霓虹粉的雨夜窗景：窗外楼群灯火与“拉面/BAR/HOTEL”、爱心、跑马灯等霓虹各自闪烁，两条车道的车流带着车灯和湿地倒影往返流动，路灯光锥里雨丝更亮；玻璃上水珠停停走走地滑落并留下渐隐的水痕，窗台上的白瓷热茶升起缭绕热气，24 秒无缝循环。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+从室内窗户看出去的雨夜城市：雨滴沿玻璃滑落并留下水痕，远处霓虹招牌闪烁，车灯在街上流动，窗台上一杯热茶冒着热气；冷蓝与霓虹粉配色。交付一个自包含的 .svg 文件：根元素 viewBox="0 0 1280 720"，width="100%" height="100%"，preserveAspectRatio="xMidYMid meet"；只用 SMIL 或 CSS 动画，不用 JavaScript，放进 <img> 标签也能动；动画无缝循环；不引用任何外部图片、字体或网络资源；文件不超过 200 KB；必须是合法的 UTF-8 XML。
+```
+
+</details>
+
+#### Case 5: [一颗种子开花](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/svg-anim/seed-to-bloom.svg)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/svg-anim/seed-to-bloom.svg`](svg/rolls/svg-anim/seed-to-bloom.svg)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="svg/rolls/svg-anim/seed-to-bloom.svg" alt="一颗种子开花" width="480" /></p>
+
+水彩纸上的 16 秒生命循环：土中剖面的种子膨胀裂开、生根，嫩芽顶破土壤，茎叶逐节长出、结苞后粉色花瓣层层绽放，蓝蝴蝶飞来停在花上轻扇翅膀又飞走，随后花瓣一片片旋转飘落、植株枯黄淡去，花心落下一粒种子沉回土里，回到开头。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+土里的种子发芽、抽茎、长叶、结花苞、绽放，一只蝴蝶飞来停留，然后花瓣飘落、画面回到种子，16 秒一个循环；水彩纸质感。交付一个自包含的 .svg 文件：根元素 viewBox="0 0 1280 720"，width="100%" height="100%"，preserveAspectRatio="xMidYMid meet"；只用 SMIL 或 CSS 动画，不用 JavaScript，放进 <img> 标签也能动；动画无缝循环；不引用任何外部图片、字体或网络资源；文件不超过 200 KB；必须是合法的 UTF-8 XML。
+```
+
+</details>
+
+### Community
+
 | Piece | Source | Date | Notes |
 | --- | --- | --- | --- |
 | [New York skyline: the same prompt, one year later](https://x.com/chetaslua/status/2102678371281018916) | [Chetaslua (@chetaslua)](https://x.com/chetaslua) | 2026-09-23 | The same prompt (“SVG of NEW YORK SKYLINE … make sure I can paste it all into a single HTML file …”), comparing Gemini 3.0 Pro from a year ago with Opus 5.5 today. |
 | [A 3-minute SVG animation in one shot](https://x.com/AndrewOnXYZ/status/2102089270747886043) | [AndrewOnXYZ (@AndrewOnXYZ)](https://x.com/AndrewOnXYZ) | 2026-09-21 | Posted the day before the official launch. Reddit r/singularity shared it as “Impressive SVG animation made by Opus 5.5 (zero shot).” |
+
+## 🎞️ Lottie
+
+Bodymovin JSON, played with lottie-web. Shapes only — no images, no fonts.
+
+#### Case 1: [加载动画](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`lottie/rolls/lottie/loading-morph.json`](lottie/rolls/lottie/loading-morph.json)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="lottie/rolls/lottie/loading-morph.gif" alt="加载动画" width="360" /></p>
+
+珊瑚粉、琥珀黄、天蓝三个圆点带挤压拉伸依次弹跳，随后跃入环位、拖出尾迹拉长成三段彩色圆弧组成的旋转圆环，减速收拢回圆点后弹起落回一排。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+三个彩色圆点依次弹跳，然后变形为一个旋转的圆环，再散开回到三个圆点。交付一个 Lottie JSON（Bodymovin 5.7 格式，能被 lottie-web 5.13 的 SVG 渲染器正常播放）：画布 512×512，60 fps，2–4 秒无缝循环；只用形状图层（不用图片、字体、文字图层，不用表达式）；文件不超过 120 KB；配色明快、动作有缓动和弹性，不要生硬的线性运动。
+```
+
+</details>
+
+#### Case 2: [天气图标](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`lottie/rolls/lottie/weather-cycle.json`](lottie/rolls/lottie/weather-cycle.json)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="lottie/rolls/lottie/weather-cycle.gif" alt="天气图标" width="360" /></p>
+
+晴空下光芒旋转的太阳被飘来的双色白云遮住，天色和云一起变灰并落下蓝色雨滴，雨停后云变白、中间一团先“啵”地消失、两侧分散淡出，太阳弹性跃回并依次伸出光芒、闪出小星光。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+太阳被飘来的云遮住，开始下雨，雨停后云散去、太阳重新出现。交付一个 Lottie JSON（Bodymovin 5.7 格式，能被 lottie-web 5.13 的 SVG 渲染器正常播放）：画布 512×512，60 fps，2–4 秒无缝循环；只用形状图层（不用图片、字体、文字图层，不用表达式）；文件不超过 120 KB；配色明快、动作有缓动和弹性，不要生硬的线性运动。
+```
+
+</details>
+
+#### Case 3: [点赞](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`lottie/rolls/lottie/like-burst.json`](lottie/rolls/lottie/like-burst.json)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="lottie/rolls/lottie/like-burst.gif" alt="点赞" width="360" /></p>
+
+灰紫描边爱心先蓄力压扁，再弹性放大、红色从中心填满，伴随一圈冲击波、八组彩色粒子和旋转小星星迸出，心跳两下后红色缩回、描边变回灰色。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+爱心从描边状态弹性放大并填充成红色，周围迸出一圈彩色粒子和小星星，然后回到初始状态。交付一个 Lottie JSON（Bodymovin 5.7 格式，能被 lottie-web 5.13 的 SVG 渲染器正常播放）：画布 512×512，60 fps，2–4 秒无缝循环；只用形状图层（不用图片、字体、文字图层，不用表达式）；文件不超过 120 KB；配色明快、动作有缓动和弹性，不要生硬的线性运动。
+```
+
+</details>
+
+#### Case 4: [火箭发射](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`lottie/rolls/lottie/rocket-launch.json`](lottie/rolls/lottie/rocket-launch.json)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="lottie/rolls/lottie/rocket-launch.gif" alt="火箭发射" width="360" /></p>
+
+红白卡通火箭在发射台上越抖越烈，导流槽亮起橙光并点火，三层尾焰闪烁着加速冲出画面，地面烟团向两侧翻滚、身后留下随速度拉长的烟柱并渐渐消散，新火箭从发射井升起、轻弹落定。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+火箭轻微震动后点火，尾焰喷射，火箭向上飞出画面，底部烟雾散开，然后新的火箭从下方回到发射台，形成循环。交付一个 Lottie JSON（Bodymovin 5.7 格式，能被 lottie-web 5.13 的 SVG 渲染器正常播放）：画布 512×512，60 fps，2–4 秒无缝循环；只用形状图层（不用图片、字体、文字图层，不用表达式）；文件不超过 120 KB；配色明快、动作有缓动和弹性，不要生硬的线性运动。
+```
+
+</details>
+
+#### Case 5: [一杯咖啡](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/)
+
+**Source:** Original to this repo · Claude Opus 5.5 · [`lottie/rolls/lottie/coffee-steam.json`](lottie/rolls/lottie/coffee-steam.json)
+
+**Published:** 2026-09-24
+
+<p align="center"><img src="lottie/rolls/lottie/coffee-steam.gif" alt="一杯咖啡" width="360" /></p>
+
+暖橙背景里的薄荷绿咖啡杯冒出三缕向外散开、波纹不断上行并渐隐的热气，咖啡液面轻轻起伏泛出涟漪，桌上的银勺掠过一道高光并闪出星芒。 (可渲染自检)
+
+<details><summary>Prompt</summary>
+
+```text
+咖啡杯冒出三缕热气，热气蜿蜒上升并淡出，杯中液面轻微波动，杯旁的勺子反光一闪。交付一个 Lottie JSON（Bodymovin 5.7 格式，能被 lottie-web 5.13 的 SVG 渲染器正常播放）：画布 512×512，60 fps，2–4 秒无缝循环；只用形状图层（不用图片、字体、文字图层，不用表达式）；文件不超过 120 KB；配色明快、动作有缓动和弹性，不要生硬的线性运动。
+```
+
+</details>
 
 ## 🧊 3D · Three.js · WebGL
 
@@ -585,6 +915,7 @@ Animations where every frame is drawn by code, and videos rendered from them.
 
 | Piece | Source | Date | Notes |
 | --- | --- | --- | --- |
+| [An animated short Opus 5.5 made on its own terms](https://www.xiaohongshu.com/explore/6ab45d76000000000202be26?xsec_token=CBjc6DgxV29PzCmyBsUUBA6MoDnERoYo_3i5AdRNAl2tc=&xsec_source=pc_share) | 春和景明.LinxAI (Xiaohongshu) | 2026-09-24 | A 48-second vertical short; subject and visuals were left entirely to Opus 5.5. The post does not share the prompt. |
 | [The water cycle: a seamless one-shot loop](https://x.com/higgsfield_ai/status/2102781807179735211) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | Opus 5.5 and GPT-6 Sol together. Brief: “Create a seamless looping animation of the water cycle, entirely in code.” Environment, lighting, and character animation are built in code, rendered live in the browser, and packed into one HTML file with a timeline. |
 | [What is the purpose of life?](https://x.com/HarveenChadha/status/2102759892507398309) | [Harveen Singh Chadha (@HarveenChadha)](https://x.com/HarveenChadha) | 2026-09-23 | A one-shot pure-JavaScript animation in a whimsical hand-drawn collage style. Script and score by Opus too: 16 minutes, 19k tokens, $3.60. Prompt: “Create a pure javascript animation. 30s-60s whimsical hand drawn collage style with appropriate audio on the topic what is the purpose of life ?” |
 | [Ink-wash animation: Tadpoles Looking for Their Mother](https://x.com/akokoi1/status/2102699703309898026) | [WY (@akokoi1)](https://x.com/akokoi1) | 2026-09-23 | An ink-wash animation generated in pure code by Claude Opus 5.5. |
