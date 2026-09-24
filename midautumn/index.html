@@ -237,7 +237,7 @@
   .toc { margin-top: 28px; }
 
   .vox-live { overflow: hidden; background: #f4efe6; }
-  .vox-live canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; cursor: grab; opacity: 0; transition: opacity .4s; }
+  .vox-live canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: pan-y; cursor: grab; opacity: 0; transition: opacity .4s; }
   .vox-live .vox-poster { transition: opacity .4s; }
   .vox-live.ready canvas { opacity: 1; }
   .vox-live.ready .vox-poster { opacity: 0; }
@@ -360,37 +360,72 @@ window.addEventListener('DOMContentLoaded', () => {
 <script src="voxel/runtime/renderer.js"></script>
 <script src="voxel/runtime/motion.js"></script>
 <script>
-document.querySelectorAll('.vox-live').forEach((box) => {
-  const canvas = box.querySelector('canvas');
-  let view = null;
-  let active = false;
-  // The renderer zooms on every wheel event; until the viewer is clicked, let the wheel scroll the page instead.
-  box.addEventListener('wheel', (e) => { if (!active) e.stopPropagation(); }, true);
-  box.addEventListener('pointerdown', () => { active = true; });
-  box.addEventListener('pointerleave', () => { active = false; });
-  const start = async () => {
-    const animated = Boolean(box.dataset.motion);
-    view = animated ? new MotionVoxelView(canvas) : new VoxelView(canvas);
-    box.voxView = view;
-    if (animated) await view.load(box.dataset.model, box.dataset.motion); else await view.load(box.dataset.model);
-    if (animated) view.setPlaying(true);
-    box.classList.add('ready');
-  };
-  new IntersectionObserver((entries, io) => {
-    if (!entries.some((e) => e.isIntersecting)) return;
-    io.disconnect();
-    start().catch((err) => { box.querySelector('.vox-hint').textContent = '3D 加载失败：' + err.message; });
-  }, { rootMargin: '200px' }).observe(box);
+(() => {
+  const MAX_LIVE = 8;
+  const live = [];  // boxes with a running viewer, oldest first
   const views = ['iso', 'front', 'side', 'back', 'top'];
-  let vi = 0;
-  box.querySelector('.vox-bar').addEventListener('click', (e) => {
-    const act = e.target.dataset && e.target.dataset.act;
-    if (!act || !view) return;
-    if (act === 'play') { view.setPlaying(!view.playing); e.target.textContent = view.playing ? '暂停' : '播放'; }
-    if (act === 'view') { vi = (vi + 1) % views.length; view.setView(views[vi]); }
-    if (act === 'spin') { view.toggleRotation(); e.target.textContent = view.auto ? '停止旋转' : '自动旋转'; }
+  const stop = (box) => {
+    const v = box.voxView;
+    if (!v) return;
+    box.voxView = null;
+    box.classList.remove('ready');
+    live.splice(live.indexOf(box), 1);
+    try {
+      v.dispose();
+      const lose = v.gl && v.gl.getExtension('WEBGL_lose_context');
+      if (lose) lose.loseContext();
+    } catch (err) { /* already gone */ }
+    // A lost context cannot come back on the same canvas, so the next start gets a fresh one.
+    const old = box.querySelector('canvas');
+    old.replaceWith(old.cloneNode(false));
+  };
+  const start = async (box) => {
+    if (box.voxView) return;
+    while (live.length >= MAX_LIVE) stop(live.find((b) => !b.visible) || live[0]);
+    const animated = Boolean(box.dataset.motion);
+    const canvas = box.querySelector('canvas');
+    const v = animated ? new MotionVoxelView(canvas) : new VoxelView(canvas);
+    box.voxView = v;
+    live.push(box);
+    try {
+      if (animated) await v.load(box.dataset.model, box.dataset.motion); else await v.load(box.dataset.model);
+      if (box.voxView !== v) return;
+      if (animated) v.setPlaying(true);
+      box.classList.add('ready');
+      box.querySelector('.vox-hint').textContent = box.dataset.hint;
+      box.querySelectorAll('[data-act=play]').forEach((b) => { b.textContent = '暂停'; });
+      box.querySelectorAll('[data-act=spin]').forEach((b) => { b.textContent = '自动旋转'; });
+    } catch (err) {
+      // A card released while still loading loses its context mid-way; only the current viewer's errors count.
+      if (box.voxView === v) box.querySelector('.vox-hint').textContent = '3D 加载失败：' + err.message;
+    }
+  };
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+    const box = e.target;
+    box.visible = e.isIntersecting;
+    clearTimeout(box.idle);
+    if (e.isIntersecting) start(box);
+    else box.idle = setTimeout(() => { if (!box.visible) stop(box); }, 1500);
+  }), { rootMargin: '150px' });
+  document.querySelectorAll('.vox-live').forEach((box) => {
+    let active = false;
+    box.dataset.hint = box.querySelector('.vox-hint').textContent;
+    // The renderer zooms on every wheel event; until the card is clicked, the wheel scrolls the page instead.
+    box.addEventListener('wheel', (e) => { if (!active) e.stopPropagation(); }, true);
+    box.addEventListener('pointerdown', () => { active = true; });
+    box.addEventListener('pointerleave', () => { active = false; });
+    let vi = 0;
+    box.querySelector('.vox-bar').addEventListener('click', (e) => {
+      const act = e.target.dataset && e.target.dataset.act;
+      const v = box.voxView;
+      if (!act || !v) return;
+      if (act === 'play') { v.setPlaying(!v.playing); e.target.textContent = v.playing ? '暂停' : '播放'; }
+      if (act === 'view') { vi = (vi + 1) % views.length; v.setView(views[vi]); }
+      if (act === 'spin') { v.toggleRotation(); e.target.textContent = v.auto ? '停止旋转' : '自动旋转'; }
+    });
+    io.observe(box);
   });
-});
+})();
 </script>
 <script>
 (() => {

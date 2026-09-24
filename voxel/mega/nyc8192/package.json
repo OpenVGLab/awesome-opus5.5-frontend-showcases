@@ -1,9 +1,0 @@
-{
-  "name": "nyc8192",
-  "private": true,
-  "type": "module",
-  "description": "New York City voxel model, 8192^3 at 1 m per voxel. Generator + viewer, standard library only.",
-  "scripts": {
-    "build": "node --max-old-space-size=6000 src/gen.mjs"
-  }
-}

@@ -27,10 +27,15 @@
   const $ = (id) => document.getElementById(id);
   try {
     const job = await (async () => {
-      const id = new URLSearchParams(location.search).get('id') || '';
+      const q = new URLSearchParams(location.search);
+      const id = q.get('id') || '';
       if (!/^\d+$/.test(id)) throw Error('链接里缺少题号');
+      // dir= opens another model's answer to the same question (the intranet comparison page links those).
+      const dir = q.get('dir') || '';
+      const base = /^compare\/\d+\/[a-z0-9]+\/$/.test(dir) ? dir : `cases/${id}/opus/`;
       const pr = await (await fetch(`prompts/${id}.json`)).json();
-      return { title: `${pr.number}. ${pr.title}`, base: `cases/${id}/opus/`, animated: pr.mode === 'animated' };
+      const who = base.startsWith('compare/') ? ' · ' + base.split('/')[2] : '';
+      return { title: `${pr.number}. ${pr.title}${who}`, base, animated: pr.mode === 'animated' };
     })();
     const canvas = $('scene');
     const v = job.animated ? new MotionVoxelView(canvas) : new VoxelView(canvas);
