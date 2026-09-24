@@ -4,7 +4,7 @@
 
 > A curated list of frontend work made by Claude Opus 5.5 (released 2026-09-22): SVG games and animation, the pelican-on-a-bicycle family, Lottie, Three.js / WebGL, code-drawn video, websites and UI — anything the model wrote as code and that runs in a browser.
 
-**Play the pieces from this repo:** https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/
+**Play online:** [Overview](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/)
 
 ## Contents
 
@@ -24,13 +24,13 @@ In each section, pieces made in this repo come first and include the full prompt
 
 Games that run as pure SVG or in a web page. Each piece in this repo is one self-contained `.svg`: art, UI, logic, and synthesized audio live in the same file.
 
-#### Case 1: [Kitchen Rush](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/kitchen-rush.svg)
+#### Case 1: [Kitchen Rush](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/kitchen-rush.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`games/kitchen-rush.svg`](games/kitchen-rush.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/kitchen-rush.svg`](svg/kitchen-rush.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="thumbs/kitchen-rush-title.jpg" alt="Kitchen Rush" width="720" /></p>
+<p align="center"><img src="svg/thumbs/kitchen-rush-title.jpg" alt="Kitchen Rush" width="720" /></p>
 
 Top-down co-op cooking, inspired by Overcooked: chop, cook, plate, and serve before the ticket expires. Two chefs on one keyboard. Warm cartoon kitchen, thick outlines. A single 94 KB SVG. Headless Chrome playtest: 0 errors, 60 fps.
 
@@ -81,13 +81,13 @@ Top-down co-op cooking, inspired by Overcooked: chop, cook, plate, and serve bef
 
 </details>
 
-#### Case 2: [Sunny Kart](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/sunny-kart.svg)
+#### Case 2: [Sunny Kart](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/sunny-kart.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`games/sunny-kart.svg`](games/sunny-kart.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/sunny-kart.svg`](svg/sunny-kart.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="thumbs/sunny-kart-title.jpg" alt="Sunny Kart" width="720" /></p>
+<p align="center"><img src="svg/thumbs/sunny-kart-title.jpg" alt="Sunny Kart" width="720" /></p>
 
 Pseudo-3D kart racing, inspired by Mario Kart: three laps on a seaside track, drift for sparks, grab items, beat seven AI rivals to the podium. Bright low-poly coast at noon. A single 130 KB SVG. Headless Chrome playtest: 0 errors, 60 fps.
 
@@ -134,13 +134,13 @@ Pseudo-3D kart racing, inspired by Mario Kart: three laps on a seaside track, dr
 
 </details>
 
-#### Case 3: [Pixel Quest](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/pixel-quest.svg)
+#### Case 3: [Pixel Quest](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/pixel-quest.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`games/pixel-quest.svg`](games/pixel-quest.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/pixel-quest.svg`](svg/pixel-quest.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="thumbs/pixel-quest-title.jpg" alt="Pixel Quest" width="720" /></p>
+<p align="center"><img src="svg/thumbs/pixel-quest-title.jpg" alt="Pixel Quest" width="720" /></p>
 
 A side-scrolling platformer inspired by Super Mario: stomp enemies, bump bricks, eat fruit to grow, then run through meadow, cave, and cloud stages to the flag. 8/16-bit pixels and a hand-drawn pixel font. A single 145 KB SVG. Headless Chrome playtest: 0 errors, 60 fps.
 
@@ -188,13 +188,13 @@ A side-scrolling platformer inspired by Super Mario: stomp enemies, bump bricks,
 
 </details>
 
-#### Case 4: [Fruit Slash](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/fruit-slash.svg)
+#### Case 4: [Fruit Slash](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/fruit-slash.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`games/fruit-slash.svg`](games/fruit-slash.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/fruit-slash.svg`](svg/fruit-slash.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="thumbs/fruit-slash-title.jpg" alt="Fruit Slash" width="720" /></p>
+<p align="center"><img src="svg/thumbs/fruit-slash-title.jpg" alt="Fruit Slash" width="720" /></p>
 
 Swipe-to-slice, inspired by Fruit Ninja: turn the mouse into a blade, miss the bombs. Classic, 60-second arcade, and 90-second zen. Wood dojo, glossy fruit, juice spray. A single 159 KB SVG. Headless Chrome playtest: 0 errors, 60 fps.
 
@@ -241,13 +241,13 @@ Swipe-to-slice, inspired by Fruit Ninja: turn the mouse into a blade, miss the b
 
 </details>
 
-#### Case 5: [Garden Defense](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/garden-defense.svg)
+#### Case 5: [Garden Defense](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/garden-defense.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`games/garden-defense.svg`](games/garden-defense.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/garden-defense.svg`](svg/garden-defense.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="thumbs/garden-defense-title.jpg" alt="Garden Defense" width="720" /></p>
+<p align="center"><img src="svg/thumbs/garden-defense-title.jpg" alt="Garden Defense" width="720" /></p>
 
 Tower defense inspired by Plants vs. Zombies: collect sun, plant defenders, hold five lanes, keep the zombies out of the house. Soft cartoon backyard. A single 132 KB SVG. Headless Chrome playtest: 0 errors, 60 fps.
 
@@ -313,13 +313,13 @@ Tower defense inspired by Plants vs. Zombies: collect sun, plant defenders, hold
 
 Simon Willison’s classic test: one line, `Generate an SVG of a pelican riding a bicycle`, no peeking at the render. How the frame joins and where the feet meet the pedals is all inferred coordinates.
 
-#### Case 1: [Pelican on a Bicycle (static) · Opus 5.5 default](rolls/pelican/opus55-default/pelican-static.svg)
+#### Case 1: [Pelican on a Bicycle (static) · Opus 5.5 default](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/pelican/opus55-default/pelican-static.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/pelican/opus55-default/pelican-static.svg`](rolls/pelican/opus55-default/pelican-static.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/pelican/opus55-default/pelican-static.svg`](svg/rolls/pelican/opus55-default/pelican-static.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/pelican/opus55-default/pelican-static.svg" alt="Pelican on a Bicycle (static) · Opus 5.5 default" width="480" /></p>
+<p align="center"><img src="svg/rolls/pelican/opus55-default/pelican-static.svg" alt="Pelican on a Bicycle (static) · Opus 5.5 default" width="480" /></p>
 
 On a sunny highway, a white pelican with a big orange pouch sits on a red bicycle — wings on the handlebars, orange webbed feet on the pedals, speed lines behind. (drawn once, no preview)
 
@@ -331,13 +331,13 @@ Generate an SVG of a pelican riding a bicycle
 
 </details>
 
-#### Case 2: [Pelican on a Bicycle (animated) · Opus 5.5 default](rolls/pelican/opus55-default/pelican-animated.svg)
+#### Case 2: [Pelican on a Bicycle (animated) · Opus 5.5 default](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/pelican/opus55-default/pelican-animated.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/pelican/opus55-default/pelican-animated.svg`](rolls/pelican/opus55-default/pelican-animated.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/pelican/opus55-default/pelican-animated.svg`](svg/rolls/pelican/opus55-default/pelican-animated.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/pelican/opus55-default/pelican-animated.svg" alt="Pelican on a Bicycle (animated) · Opus 5.5 default" width="480" /></p>
+<p align="center"><img src="svg/rolls/pelican/opus55-default/pelican-animated.svg" alt="Pelican on a Bicycle (animated) · Opus 5.5 default" width="480" /></p>
 
 At dusk a brown pelican in a red scarf pedals a teal bicycle: wheels and cranks turn, legs follow the pedals, the body bobs, the scarf and pouch sway, it blinks, a fish in the basket flicks its tail, and hills and road scroll in layers (SMIL only, no JS). (drawn once, no preview)
 
@@ -349,13 +349,13 @@ Generate an animated SVG of a pelican riding a bicycle
 
 </details>
 
-#### Case 3: [Pelican on a Bicycle (static) · Opus 5.5 max](rolls/pelican/opus55-max/pelican-static.svg)
+#### Case 3: [Pelican on a Bicycle (static) · Opus 5.5 max](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/pelican/opus55-max/pelican-static.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/pelican/opus55-max/pelican-static.svg`](rolls/pelican/opus55-max/pelican-static.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/pelican/opus55-max/pelican-static.svg`](svg/rolls/pelican/opus55-max/pelican-static.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/pelican/opus55-max/pelican-static.svg" alt="Pelican on a Bicycle (static) · Opus 5.5 max" width="480" /></p>
+<p align="center"><img src="svg/rolls/pelican/opus55-max/pelican-static.svg" alt="Pelican on a Bicycle (static) · Opus 5.5 max" width="480" /></p>
 
 On a sunny highway, a white pelican with a big orange pouch sits on a red bicycle — wings on the handlebars, orange webbed feet on the pedals, speed lines behind. (drawn once, no preview)
 
@@ -367,13 +367,13 @@ Generate an SVG of a pelican riding a bicycle
 
 </details>
 
-#### Case 4: [Pelican on a Bicycle (animated) · Opus 5.5 max](rolls/pelican/opus55-max/pelican-animated.svg)
+#### Case 4: [Pelican on a Bicycle (animated) · Opus 5.5 max](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/pelican/opus55-max/pelican-animated.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/pelican/opus55-max/pelican-animated.svg`](rolls/pelican/opus55-max/pelican-animated.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/pelican/opus55-max/pelican-animated.svg`](svg/rolls/pelican/opus55-max/pelican-animated.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/pelican/opus55-max/pelican-animated.svg" alt="Pelican on a Bicycle (animated) · Opus 5.5 max" width="480" /></p>
+<p align="center"><img src="svg/rolls/pelican/opus55-max/pelican-animated.svg" alt="Pelican on a Bicycle (animated) · Opus 5.5 max" width="480" /></p>
 
 At dusk a brown pelican in a red scarf pedals a teal bicycle: wheels and cranks turn, legs follow the pedals, the body bobs, the scarf and pouch sway, it blinks, a fish in the basket flicks its tail, and hills and road scroll in layers (SMIL only, no JS). (drawn once, no preview)
 
@@ -407,13 +407,13 @@ Generate an animated SVG of a pelican riding a bicycle
 
 Swap the pelican and the bicycle for other animals and vehicles. Same rule: one prompt, drawn once, no preview.
 
-#### Case 1: [Panda on a scooter delivering food](rolls/riding/panda-scooter.svg)
+#### Case 1: [Panda on a scooter delivering food](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/panda-scooter.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/riding/panda-scooter.svg`](rolls/riding/panda-scooter.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/riding/panda-scooter.svg`](svg/rolls/riding/panda-scooter.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/riding/panda-scooter.svg" alt="Panda on a scooter delivering food" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/panda-scooter.svg" alt="Panda on a scooter delivering food" width="480" /></p>
 
 A yellow-helmeted panda rides a red scooter down a city street, steam rising from the yellow food box on the back. Wheels turn, the body bounces on the suspension, a blue scarf streams, and buildings, trees, and lane lines scroll away. (drawn once, no preview)
 
@@ -425,13 +425,13 @@ Generate an animated SVG of a panda riding a scooter to deliver food
 
 </details>
 
-#### Case 2: [Penguin on a skateboard](rolls/riding/penguin-skateboard.svg)
+#### Case 2: [Penguin on a skateboard](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/penguin-skateboard.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/riding/penguin-skateboard.svg`](rolls/riding/penguin-skateboard.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/riding/penguin-skateboard.svg`](svg/rolls/riding/penguin-skateboard.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/riding/penguin-skateboard.svg" alt="Penguin on a skateboard" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/penguin-skateboard.svg" alt="Penguin on a skateboard" width="480" /></p>
 
 A penguin in a red knit cap and teal scarf rides an icy path under the aurora, flippers out for balance. The wheels spin; every few seconds it pops a tilted ollie. Icebergs, snowbanks, and flakes slide past. (drawn once, no preview)
 
@@ -443,13 +443,13 @@ Generate an animated SVG of a penguin riding a skateboard
 
 </details>
 
-#### Case 3: [Octopus juggling on a unicycle](rolls/riding/octopus-unicycle.svg)
+#### Case 3: [Octopus juggling on a unicycle](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/octopus-unicycle.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/riding/octopus-unicycle.svg`](rolls/riding/octopus-unicycle.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/riding/octopus-unicycle.svg`](svg/rolls/riding/octopus-unicycle.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/riding/octopus-unicycle.svg" alt="Octopus juggling on a unicycle" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/octopus-unicycle.svg" alt="Octopus juggling on a unicycle" width="480" /></p>
 
 Under a circus spotlight a pink octopus in a bow tie rocks on a unicycle. Two arms work the pedals with the wheel; two more juggle three colored balls; the eyes track the balls; confetti falls. (drawn once, no preview)
 
@@ -461,13 +461,13 @@ Generate an animated SVG of an octopus riding a unicycle while juggling
 
 </details>
 
-#### Case 4: [Orange cat on a motorcycle](rolls/riding/cat-motorcycle.svg)
+#### Case 4: [Orange cat on a motorcycle](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/cat-motorcycle.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/riding/cat-motorcycle.svg`](rolls/riding/cat-motorcycle.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/riding/cat-motorcycle.svg`](svg/rolls/riding/cat-motorcycle.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/riding/cat-motorcycle.svg" alt="Orange cat on a motorcycle" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/cat-motorcycle.svg" alt="Orange cat on a motorcycle" width="480" /></p>
 
 An orange cat in goggles and a red bandana rides a teal cruiser down a dusk desert highway. Striped tail and bandana blow back; spokes spin; the bike shudders and smokes; mesas, cacti, and tumbleweed pass a striped sunset. (drawn once, no preview)
 
@@ -479,13 +479,13 @@ Generate an animated SVG of a cat riding a motorcycle
 
 </details>
 
-#### Case 5: [Corgi and duck on a tandem](rolls/riding/corgi-duck-tandem.svg)
+#### Case 5: [Corgi and duck on a tandem](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/corgi-duck-tandem.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/riding/corgi-duck-tandem.svg`](rolls/riding/corgi-duck-tandem.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/riding/corgi-duck-tandem.svg`](svg/rolls/riding/corgi-duck-tandem.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/riding/corgi-duck-tandem.svg" alt="Corgi and duck on a tandem" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/corgi-duck-tandem.svg" alt="Corgi and duck on a tandem" width="480" /></p>
 
 A corgi steers up front, tongue out; a duck in a sailor hat waves from the back. Both cranks turn together, feet circle the pedals, the chain runs, and windmills, fences, and wildflowers slide down a country lane while little hearts rise. (drawn once, no preview)
 
@@ -497,13 +497,13 @@ Generate an animated SVG of a corgi and a duck riding a tandem bicycle
 
 </details>
 
-#### Case 6: [Turtle riding a rocket](rolls/riding/turtle-rocket.svg)
+#### Case 6: [Turtle riding a rocket](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/turtle-rocket.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/riding/turtle-rocket.svg`](rolls/riding/turtle-rocket.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/riding/turtle-rocket.svg`](svg/rolls/riding/turtle-rocket.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/riding/turtle-rocket.svg" alt="Turtle riding a rocket" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/turtle-rocket.svg" alt="Turtle riding a rocket" width="480" /></p>
 
 A turtle in a bubble helmet and yellow scarf rides a red-and-white retro rocket — one flipper on the reins, one waving. The tail flame flickers, smoke trails, the rocket bobs, and a three-layer starfield, a ringed planet, meteors, and a blue home world scroll by. (drawn once, no preview)
 
@@ -515,13 +515,13 @@ Generate an animated SVG of a turtle riding a rocket
 
 </details>
 
-#### Case 7: [Hedgehog on a tricycle](rolls/riding/hedgehog-tricycle.svg)
+#### Case 7: [Hedgehog on a tricycle](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/hedgehog-tricycle.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/riding/hedgehog-tricycle.svg`](rolls/riding/hedgehog-tricycle.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/riding/hedgehog-tricycle.svg`](svg/rolls/riding/hedgehog-tricycle.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/riding/hedgehog-tricycle.svg" alt="Hedgehog on a tricycle" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/hedgehog-tricycle.svg" alt="Hedgehog on a tricycle" width="480" /></p>
 
 A hedgehog with an apple and a maple leaf in its spines, in tiny red sneakers, pedals a teal kids’ tricycle down an autumn park path. Front and rear wheels turn, handlebar streamers fly, benches and lamps and trees recede, leaves spin down. (drawn once, no preview)
 
@@ -533,13 +533,13 @@ Generate an animated SVG of a hedgehog riding a tricycle
 
 </details>
 
-#### Case 8: [Frog riding a snail](rolls/riding/frog-snail.svg)
+#### Case 8: [Frog riding a snail](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/frog-snail.svg)
 
-**Source:** Original to this repo · Claude Opus 5.5 · [`rolls/riding/frog-snail.svg`](rolls/riding/frog-snail.svg)
+**Source:** Original to this repo · Claude Opus 5.5 · [`svg/rolls/riding/frog-snail.svg`](svg/rolls/riding/frog-snail.svg)
 
 **Published:** 2026-09-24
 
-<p align="center"><img src="rolls/riding/frog-snail.svg" alt="Frog riding a snail" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/frog-snail.svg" alt="Frog riding a snail" width="480" /></p>
 
 A frog waves from a saddle blanket on a snail’s shell, dangling a lettuce leaf on a stick in front of the snail. The snail inch-crawls after it, slime shining, a mushroom forest drifting back, fireflies floating. (drawn once, no preview)
 

@@ -4,7 +4,7 @@
 
 > 收集 Claude Opus 5.5（2026-09-22 发布）做出来的前端作品：SVG 游戏与动画、「鹈鹕骑自行车」系列、Lottie、Three.js / WebGL、代码逐帧动画、网页与 UI——凡是模型写代码、在浏览器里跑出来的，都在这里。
 
-**在线游玩本仓库的作品：** https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/
+**在线试玩：** [总览](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/)
 
 ## 目录
 
@@ -24,13 +24,13 @@
 
 纯 SVG 或网页里跑的游戏。本仓库的每款都是一个自包含的 `.svg` 文件：画面、界面、逻辑和实时合成的音效都在同一个文件里。
 
-#### Case 1: [厨房大作战 KITCHEN RUSH](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/kitchen-rush.svg)
+#### Case 1: [厨房大作战 KITCHEN RUSH](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/kitchen-rush.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`games/kitchen-rush.svg`](games/kitchen-rush.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/kitchen-rush.svg`](svg/kitchen-rush.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="thumbs/kitchen-rush-title.jpg" alt="厨房大作战 KITCHEN RUSH" width="720" /></p>
+<p align="center"><img src="svg/thumbs/kitchen-rush-title.jpg" alt="厨房大作战 KITCHEN RUSH" width="720" /></p>
 
 俯视角合作烹饪，灵感来自《胡闹厨房》：切菜、下锅、装盘、出餐，在订单超时前把菜端上桌，支持同一键盘双人合作。俯视卡通、粗描边暖色调。单个 SVG 94 KB，无头 Chrome 自动试玩 0 报错、60 fps。
 
@@ -81,13 +81,13 @@
 
 </details>
 
-#### Case 2: [阳光卡丁车 SUNNY KART](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/sunny-kart.svg)
+#### Case 2: [阳光卡丁车 SUNNY KART](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/sunny-kart.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`games/sunny-kart.svg`](games/sunny-kart.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/sunny-kart.svg`](svg/sunny-kart.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="thumbs/sunny-kart-title.jpg" alt="阳光卡丁车 SUNNY KART" width="720" /></p>
+<p align="center"><img src="svg/thumbs/sunny-kart-title.jpg" alt="阳光卡丁车 SUNNY KART" width="720" /></p>
 
 伪 3D 卡丁车竞速，灵感来自《马力欧卡丁车》：海边赛道三圈定胜负，漂移攒火花、抢道具，和 7 位 AI 对手争夺领奖台。白天海岸、明亮低多边形。单个 SVG 130 KB，无头 Chrome 自动试玩 0 报错、60 fps。
 
@@ -134,13 +134,13 @@
 
 </details>
 
-#### Case 3: [像素大冒险 PIXEL QUEST](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/pixel-quest.svg)
+#### Case 3: [像素大冒险 PIXEL QUEST](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/pixel-quest.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`games/pixel-quest.svg`](games/pixel-quest.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/pixel-quest.svg`](svg/pixel-quest.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="thumbs/pixel-quest-title.jpg" alt="像素大冒险 PIXEL QUEST" width="720" /></p>
+<p align="center"><img src="svg/thumbs/pixel-quest-title.jpg" alt="像素大冒险 PIXEL QUEST" width="720" /></p>
 
 横版平台跳跃，灵感来自《超级马里奥》：踩怪、顶砖、吃果实变大，穿过草原、洞穴和云端三个关卡冲向终点旗。8/16-bit 像素风，自绘像素字体。单个 SVG 145 KB，无头 Chrome 自动试玩 0 报错、60 fps。
 
@@ -188,13 +188,13 @@
 
 </details>
 
-#### Case 4: [水果刀客 FRUIT SLASH](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/fruit-slash.svg)
+#### Case 4: [水果刀客 FRUIT SLASH](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/fruit-slash.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`games/fruit-slash.svg`](games/fruit-slash.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/fruit-slash.svg`](svg/fruit-slash.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="thumbs/fruit-slash-title.jpg" alt="水果刀客 FRUIT SLASH" width="720" /></p>
+<p align="center"><img src="svg/thumbs/fruit-slash-title.jpg" alt="水果刀客 FRUIT SLASH" width="720" /></p>
 
 划动切水果，灵感来自《水果忍者》：挥动鼠标化作刀光切开满天水果，别碰炸弹；经典 / 街机 60 秒 / 禅意 90 秒三种模式。木纹道场、光泽水果与果汁飞溅。单个 SVG 159 KB，无头 Chrome 自动试玩 0 报错、60 fps。
 
@@ -241,13 +241,13 @@
 
 </details>
 
-#### Case 5: [花园保卫战 GARDEN DEFENSE](https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/games/garden-defense.svg)
+#### Case 5: [花园保卫战 GARDEN DEFENSE](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/garden-defense.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`games/garden-defense.svg`](games/garden-defense.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/garden-defense.svg`](svg/garden-defense.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="thumbs/garden-defense-title.jpg" alt="花园保卫战 GARDEN DEFENSE" width="720" /></p>
+<p align="center"><img src="svg/thumbs/garden-defense-title.jpg" alt="花园保卫战 GARDEN DEFENSE" width="720" /></p>
 
 塔防，灵感来自《植物大战僵尸》：收集阳光、种下植物，守住 5 条路，别让僵尸闯进家门。柔和卡通、阳光后院。单个 SVG 132 KB，无头 Chrome 自动试玩 0 报错、60 fps。
 
@@ -313,13 +313,13 @@
 
 Simon Willison 发起的经典测试：只给一句 `Generate an SVG of a pelican riding a bicycle`，不许看渲染结果，车架怎么连、脚怎么踩踏板全靠模型“脑补”坐标。
 
-#### Case 1: [鹈鹕骑自行车（静态版） · Opus 5.5 默认档](rolls/pelican/opus55-default/pelican-static.svg)
+#### Case 1: [鹈鹕骑自行车（静态版） · Opus 5.5 默认档](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/pelican/opus55-default/pelican-static.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/pelican/opus55-default/pelican-static.svg`](rolls/pelican/opus55-default/pelican-static.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/pelican/opus55-default/pelican-static.svg`](svg/rolls/pelican/opus55-default/pelican-static.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/pelican/opus55-default/pelican-static.svg" alt="鹈鹕骑自行车（静态版） · Opus 5.5 默认档" width="480" /></p>
+<p align="center"><img src="svg/rolls/pelican/opus55-default/pelican-static.svg" alt="鹈鹕骑自行车（静态版） · Opus 5.5 默认档" width="480" /></p>
 
 晴空艳阳下的公路上，一只白鹈鹕叼着橙色大喙囊坐在红色自行车上，翅膀握住车把、橙色蹼脚踩着踏板，身后拖着几道速度线。（盲画一次成稿）
 
@@ -331,13 +331,13 @@ Generate an SVG of a pelican riding a bicycle
 
 </details>
 
-#### Case 2: [鹈鹕骑自行车（动画版） · Opus 5.5 默认档](rolls/pelican/opus55-default/pelican-animated.svg)
+#### Case 2: [鹈鹕骑自行车（动画版） · Opus 5.5 默认档](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/pelican/opus55-default/pelican-animated.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/pelican/opus55-default/pelican-animated.svg`](rolls/pelican/opus55-default/pelican-animated.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/pelican/opus55-default/pelican-animated.svg`](svg/rolls/pelican/opus55-default/pelican-animated.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/pelican/opus55-default/pelican-animated.svg" alt="鹈鹕骑自行车（动画版） · Opus 5.5 默认档" width="480" /></p>
+<p align="center"><img src="svg/rolls/pelican/opus55-default/pelican-animated.svg" alt="鹈鹕骑自行车（动画版） · Opus 5.5 默认档" width="480" /></p>
 
 黄昏里系着红围巾的褐鹈鹕蹬着青绿色自行车：车轮与曲柄转动、双腿随踏板往复、身体随蹬踏起伏，围巾飘动、喉囊晃荡、偶尔眨眼，车筐里的鱼摆尾，远山、丘陵和路面分层视差滚动（纯 SMIL，无 JS）。（盲画一次成稿）
 
@@ -349,13 +349,13 @@ Generate an animated SVG of a pelican riding a bicycle
 
 </details>
 
-#### Case 3: [鹈鹕骑自行车（静态版） · Opus 5.5 max 档](rolls/pelican/opus55-max/pelican-static.svg)
+#### Case 3: [鹈鹕骑自行车（静态版） · Opus 5.5 max 档](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/pelican/opus55-max/pelican-static.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/pelican/opus55-max/pelican-static.svg`](rolls/pelican/opus55-max/pelican-static.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/pelican/opus55-max/pelican-static.svg`](svg/rolls/pelican/opus55-max/pelican-static.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/pelican/opus55-max/pelican-static.svg" alt="鹈鹕骑自行车（静态版） · Opus 5.5 max 档" width="480" /></p>
+<p align="center"><img src="svg/rolls/pelican/opus55-max/pelican-static.svg" alt="鹈鹕骑自行车（静态版） · Opus 5.5 max 档" width="480" /></p>
 
 晴空艳阳下的公路上，一只白鹈鹕叼着橙色大喙囊坐在红色自行车上，翅膀握住车把、橙色蹼脚踩着踏板，身后拖着几道速度线。（盲画一次成稿）
 
@@ -367,13 +367,13 @@ Generate an SVG of a pelican riding a bicycle
 
 </details>
 
-#### Case 4: [鹈鹕骑自行车（动画版） · Opus 5.5 max 档](rolls/pelican/opus55-max/pelican-animated.svg)
+#### Case 4: [鹈鹕骑自行车（动画版） · Opus 5.5 max 档](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/pelican/opus55-max/pelican-animated.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/pelican/opus55-max/pelican-animated.svg`](rolls/pelican/opus55-max/pelican-animated.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/pelican/opus55-max/pelican-animated.svg`](svg/rolls/pelican/opus55-max/pelican-animated.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/pelican/opus55-max/pelican-animated.svg" alt="鹈鹕骑自行车（动画版） · Opus 5.5 max 档" width="480" /></p>
+<p align="center"><img src="svg/rolls/pelican/opus55-max/pelican-animated.svg" alt="鹈鹕骑自行车（动画版） · Opus 5.5 max 档" width="480" /></p>
 
 黄昏里系着红围巾的褐鹈鹕蹬着青绿色自行车：车轮与曲柄转动、双腿随踏板往复、身体随蹬踏起伏，围巾飘动、喉囊晃荡、偶尔眨眼，车筐里的鱼摆尾，远山、丘陵和路面分层视差滚动（纯 SMIL，无 JS）。（盲画一次成稿）
 
@@ -407,13 +407,13 @@ Generate an animated SVG of a pelican riding a bicycle
 
 把鹈鹕和自行车换成别的动物和交通工具，规则相同：一句 prompt，盲画一次成稿。
 
-#### Case 1: [熊猫骑电动车送外卖](rolls/riding/panda-scooter.svg)
+#### Case 1: [熊猫骑电动车送外卖](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/panda-scooter.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/panda-scooter.svg`](rolls/riding/panda-scooter.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/riding/panda-scooter.svg`](svg/rolls/riding/panda-scooter.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/riding/panda-scooter.svg" alt="熊猫骑电动车送外卖" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/panda-scooter.svg" alt="熊猫骑电动车送外卖" width="480" /></p>
 
 戴黄色头盔的熊猫骑着红色踏板车穿过城市街道，后座黄色外卖箱冒着热气；车轮转动、车身随减震轻颠、蓝围巾飘动，楼群、行道树和车道线分层向后滚动。（盲画一次成稿）
 
@@ -425,13 +425,13 @@ Generate an animated SVG of a panda riding a scooter to deliver food
 
 </details>
 
-#### Case 2: [企鹅踩滑板](rolls/riding/penguin-skateboard.svg)
+#### Case 2: [企鹅踩滑板](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/penguin-skateboard.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/penguin-skateboard.svg`](rolls/riding/penguin-skateboard.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/riding/penguin-skateboard.svg`](svg/rolls/riding/penguin-skateboard.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/riding/penguin-skateboard.svg" alt="企鹅踩滑板" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/penguin-skateboard.svg" alt="企鹅踩滑板" width="480" /></p>
 
 戴红色毛线帽、围青绿围巾的企鹅在极光下的冰道上滑行，张开鳍翅保持平衡；滑轮飞转，每隔几秒跳一次带倾斜的 ollie，冰山、雪堆与飘雪分层掠过。（盲画一次成稿）
 
@@ -443,13 +443,13 @@ Generate an animated SVG of a penguin riding a skateboard
 
 </details>
 
-#### Case 3: [章鱼骑独轮车杂耍](rolls/riding/octopus-unicycle.svg)
+#### Case 3: [章鱼骑独轮车杂耍](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/octopus-unicycle.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/octopus-unicycle.svg`](rolls/riding/octopus-unicycle.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/riding/octopus-unicycle.svg`](svg/rolls/riding/octopus-unicycle.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/riding/octopus-unicycle.svg" alt="章鱼骑独轮车杂耍" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/octopus-unicycle.svg" alt="章鱼骑独轮车杂耍" width="480" /></p>
 
 马戏团聚光灯下，系领结的粉色章鱼骑独轮车前后摇摆保持平衡，两条触手踩着随车轮转动的踏板，另两条触手抛接三只彩球，眼珠跟着球转，彩纸纷飞。（盲画一次成稿）
 
@@ -461,13 +461,13 @@ Generate an animated SVG of an octopus riding a unicycle while juggling
 
 </details>
 
-#### Case 4: [橘猫骑摩托](rolls/riding/cat-motorcycle.svg)
+#### Case 4: [橘猫骑摩托](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/cat-motorcycle.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/cat-motorcycle.svg`](rolls/riding/cat-motorcycle.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/riding/cat-motorcycle.svg`](svg/rolls/riding/cat-motorcycle.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/riding/cat-motorcycle.svg" alt="橘猫骑摩托" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/cat-motorcycle.svg" alt="橘猫骑摩托" width="480" /></p>
 
 戴护目镜、系红头巾的橘猫骑着青蓝色巡航摩托驶过黄昏沙漠公路，条纹尾巴和头巾迎风飘动；辐条轮飞转、车身随引擎震动、排气冒烟，条纹夕阳前的台地、仙人掌和风滚草依次掠过。（盲画一次成稿）
 
@@ -479,13 +479,13 @@ Generate an animated SVG of a cat riding a motorcycle
 
 </details>
 
-#### Case 5: [柯基与鸭子骑双人自行车](rolls/riding/corgi-duck-tandem.svg)
+#### Case 5: [柯基与鸭子骑双人自行车](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/corgi-duck-tandem.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/corgi-duck-tandem.svg`](rolls/riding/corgi-duck-tandem.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/riding/corgi-duck-tandem.svg`](svg/rolls/riding/corgi-duck-tandem.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/riding/corgi-duck-tandem.svg" alt="柯基与鸭子骑双人自行车" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/corgi-duck-tandem.svg" alt="柯基与鸭子骑双人自行车" width="480" /></p>
 
 柯基在前面掌把、吐着舌头，戴水手帽的鸭子在后座一翅扶把一翅挥手；两组曲柄同步转动、腿脚跟着踏板画圈、链条滚动，风车、栅栏与野花沿乡间小路向后流过，小爱心缓缓升起。（盲画一次成稿）
 
@@ -497,13 +497,13 @@ Generate an animated SVG of a corgi and a duck riding a tandem bicycle
 
 </details>
 
-#### Case 6: [乌龟骑火箭](rolls/riding/turtle-rocket.svg)
+#### Case 6: [乌龟骑火箭](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/turtle-rocket.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/turtle-rocket.svg`](rolls/riding/turtle-rocket.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/riding/turtle-rocket.svg`](svg/rolls/riding/turtle-rocket.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/riding/turtle-rocket.svg" alt="乌龟骑火箭" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/turtle-rocket.svg" alt="乌龟骑火箭" width="480" /></p>
 
 戴泡泡头盔、系黄围巾的乌龟骑在红白复古火箭上，一只前肢拉缰绳、一只挥舞；尾焰闪烁、烟团拖尾、火箭轻轻起伏，星空三层视差掠过，还有环状行星、流星和出发的蓝色星球。（盲画一次成稿）
 
@@ -515,13 +515,13 @@ Generate an animated SVG of a turtle riding a rocket
 
 </details>
 
-#### Case 7: [刺猬骑三轮车](rolls/riding/hedgehog-tricycle.svg)
+#### Case 7: [刺猬骑三轮车](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/hedgehog-tricycle.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/hedgehog-tricycle.svg`](rolls/riding/hedgehog-tricycle.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/riding/hedgehog-tricycle.svg`](svg/rolls/riding/hedgehog-tricycle.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/riding/hedgehog-tricycle.svg" alt="刺猬骑三轮车" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/hedgehog-tricycle.svg" alt="刺猬骑三轮车" width="480" /></p>
 
 背刺上插着苹果和枫叶的刺猬穿红色小球鞋，蹬着青绿色儿童三轮车的前轮脚踏在秋日公园小路上前进；前后轮各自转动、车把彩带飘舞，长椅、路灯和秋色树林后退，落叶打着旋飘下。（盲画一次成稿）
 
@@ -533,13 +533,13 @@ Generate an animated SVG of a hedgehog riding a tricycle
 
 </details>
 
-#### Case 8: [青蛙骑蜗牛](rolls/riding/frog-snail.svg)
+#### Case 8: [青蛙骑蜗牛](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/rolls/riding/frog-snail.svg)
 
-**来源：** 本仓库原创 · Claude Opus 5.5 · [`rolls/riding/frog-snail.svg`](rolls/riding/frog-snail.svg)
+**来源：** 本仓库原创 · Claude Opus 5.5 · [`svg/rolls/riding/frog-snail.svg`](svg/rolls/riding/frog-snail.svg)
 
 **发布：** 2026-09-24
 
-<p align="center"><img src="rolls/riding/frog-snail.svg" alt="青蛙骑蜗牛" width="480" /></p>
+<p align="center"><img src="svg/rolls/riding/frog-snail.svg" alt="青蛙骑蜗牛" width="480" /></p>
 
 青蛙坐在蜗牛壳顶的小鞍毯上挥手，用树枝吊着一片生菜悬在蜗牛眼前；蜗牛一伸一缩、腹足波动地慢慢追赶，生菜来回晃荡，黏液痕闪着光，蘑菇林背景缓缓后移，萤火虫飘浮。（盲画一次成稿）
 
