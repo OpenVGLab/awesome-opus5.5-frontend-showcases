@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[16],{4016:(e,s,t)=>{t.r(s),t.d(s,{default:()=>c});var a=t(7876),r=t(7576);function c({animationData:e}){return(0,a.jsx)(r.a,{src:e,autoplay:!0,loop:!0,rendererSettings:{preserveAspectRatio:"xMidYMid meet"},className:"lottie-canvas"})}}}]);

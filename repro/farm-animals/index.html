@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Tale of Bramblewick Farm</title>
+<link rel="preload" href="fonts/IMFellEnglish-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/IMFellEnglish-Italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "../vendor/three/build/three.module.js",
+    "three/addons/": "../vendor/three/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <div id="stage"></div>
+  <div id="labels" aria-live="polite"></div>
+
+  <section id="menu" class="page-ui" aria-label="Main menu">
+    <div class="page-inner">
+      <p class="kicker">~ a little storybook game ~</p>
+      <h1 class="title"><span class="t-small">The Tale of</span><span class="t-big">Bramblewick Farm</span></h1>
+      <p class="lede"><span class="dropcap">O</span>nce upon a time, on a quiet farm between the fells, there lived a very curious animal. Which one shall it be?</p>
+      <div id="picker" role="radiogroup" aria-label="Choose your animal"></div>
+      <p id="pickName" class="pick-name">&nbsp;</p>
+      <div class="menu-row">
+        <button id="menuSound" class="ink-btn sound-btn" aria-pressed="true"><span class="ico"></span><span class="lbl">Sounds on</span></button>
+        <button id="btnPlay" class="ink-btn primary">Begin the tale &rarr;</button>
+      </div>
+      <p class="controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> wander <i>&middot;</i> <kbd class="wide">Space</kbd> hop &amp; say hello <i>&middot;</i> <kbd class="wide">Shift</kbd> run <i>&middot;</i> <kbd class="wide">Esc</kbd> pause</p>
+    </div>
+  </section>
+
+  <section id="pause" class="page-ui hidden" aria-label="Paused">
+    <div class="page-inner">
+      <p class="kicker">~ a pause for breath ~</p>
+      <h2 class="title"><span class="t-big">Paused</span></h2>
+      <p class="lede" id="pauseLede">Our hero sits down in the soft grass for a moment.</p>
+      <div class="pause-list">
+        <button id="btnResume" class="ink-btn primary">Carry on playing</button>
+        <button id="btnRespawn" class="ink-btn">Back to the farmyard <small>(spawn)</small></button>
+        <button id="btnMenu" class="ink-btn">Main menu <small>(pick another animal)</small></button>
+        <button id="pauseSound" class="ink-btn sound-btn" aria-pressed="true"><span class="ico"></span><span class="lbl">Sounds on</span></button>
+      </div>
+      <p class="controls"><kbd class="wide">Esc</kbd> to carry on</p>
+    </div>
+  </section>
+
+  <section id="hud" class="hidden" aria-hidden="true">
+    <div id="jobs" class="note">
+      <button id="jobsHead" class="note-head" title="Show or hide (Tab)">Little jobs for today <span id="jobsCount"></span></button>
+      <ul id="jobsList"></ul>
+    </div>
+    <div id="corner">
+      <span id="hearts" class="note chip" title="Hearts from happy friends"><b>&#9829;</b> <span id="heartsN">0</span></span>
+      <button id="hudSound" class="note chip sound-btn" aria-pressed="true" title="Sounds on / off"><span class="ico"></span></button>
+      <button id="hudPause" class="note chip" title="Pause (Esc)"><span class="pause-ico"></span></button>
+    </div>
+    <div id="placeTitle"></div>
+    <div id="toast"></div>
+    <div id="hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> wander <i>&middot;</i> <kbd class="wide">Space</kbd> hop, or say hello when a friend is near <i>&middot;</i> <kbd class="wide">Shift</kbd> run <i>&middot;</i> <kbd class="wide">Esc</kbd> pause</div>
+  </section>
+
+  <div id="loading"><p><span class="ld-title">Bramblewick Farm</span><span class="ld-sub">painting the farm<span class="dots"></span></span></p></div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

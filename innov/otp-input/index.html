@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>验证码输入框 · OTP Input</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233B6CF6'/%3E%3Crect x='7' y='11' width='5' height='10' rx='1.5' fill='%23fff'/%3E%3Crect x='13.5' y='11' width='5' height='10' rx='1.5' fill='%23fff' opacity='.7'/%3E%3Crect x='20' y='11' width='5' height='10' rx='1.5' fill='%23fff' opacity='.45'/%3E%3C/svg%3E">
+<style>
+:root {
+  --blue: #3B6CF6;
+  --red: #E5484D;
+  --green: #30A46C;
+  --ink: #0F172A;
+  --ink-2: #475569;
+  --ink-3: #64748B;
+  --line: #E1E6EE;
+  --line-filled: #CAD2DF;
+  --cell-empty: #F6F8FB;
+  --red-ink: #CE2C31;
+  --green-ink: #18794E;
+  --stage-pad: 1.5rem;
+  --ease-out: cubic-bezier(.22, .8, .24, 1);
+  /* fallbacks for engines without linear() */
+  --ease-spring: cubic-bezier(.34, 1.4, .64, 1);
+  --ease-pop: cubic-bezier(.34, 1.56, .64, 1);
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    /* under-damped springs: ~9.5% / ~16% overshoot, landing exactly on 1 */
+    --ease-spring: linear(0, 0.008 1.3%, 0.029 2.6%, 0.069 4.1%, 0.124 5.7%, 0.18 7.1%, 0.247 8.6%, 0.527 14.4%, 0.647 17%, 0.758 19.7%, 0.847 22.2%, 0.921 24.7%, 0.981 27.2%, 1.027 29.8%, 1.061 32.5%, 1.077 34.4%, 1.089 36.5%, 1.094 38.7%, 1.094 41.1%, 1.081 46.3%, 1.02 60.6%, 1 68.8%, 0.994 73.9%, 0.992 79.7%, 1);
+    --ease-pop: linear(0, 0.002 0.6%, 0.009 1.3%, 0.034 2.6%, 0.076 4%, 0.14 5.6%, 0.201 6.9%, 0.278 8.4%, 0.595 14%, 0.718 16.3%, 0.834 18.7%, 0.886 19.9%, 0.93 21%, 1.005 23.2%, 1.065 25.4%, 1.089 26.5%, 1.111 27.7%, 1.141 30%, 1.155 31.8%, 1.162 33.7%, 1.162 35.7%, 1.154 37.8%, 1.129 41.6%, 1.051 50.2%, 1.018 54.4%, 0.992 59%, 0.977 63.8%, 0.973 67.6%, 0.973 71.8%, 0.995 89.5%, 1);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: clamp(14px, 2.25vmin, 22px); -webkit-text-size-adjust: 100%; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(64rem 32rem at 50% -10rem, rgba(59, 108, 246, .11), transparent 70%),
+    radial-gradient(44rem 26rem at 88% 112%, rgba(48, 164, 108, .08), transparent 70%),
+    #F2F4F8;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: var(--stage-pad);
+}
+
+.card {
+  --pad: 2.5rem;
+  --cw: min(3.5rem, calc((100vw - 2 * var(--pad) - 2 * var(--stage-pad)) / 7.3));
+  --ratio: 1.22;
+  --ch: calc(var(--cw) * var(--ratio));
+  --gap: calc(var(--cw) * .22);
+  --r: calc(var(--cw) * .24);
+  --row-w: calc(var(--cw) * 6 + var(--gap) * 5);
+  width: calc(var(--row-w) + var(--pad) * 2);
+  max-width: 100%;
+  padding: 2.25rem var(--pad) 2rem;
+  text-align: center;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, .06);
+  border-radius: 1.5rem;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, .04),
+    0 .75rem 2rem -.75rem rgba(15, 23, 42, .14),
+    0 2.5rem 5rem -2rem rgba(59, 108, 246, .18);
+}
+
+.mark {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  display: grid;
+  place-items: center;
+  border-radius: .95rem;
+  color: var(--blue);
+  background: #EEF3FE;
+}
+.mark svg { width: 1.55rem; height: 1.55rem; }
+
+h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.lead {
+  margin: .5rem 0 0;
+  font-size: .95rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.phone {
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- the code field ---------- */
+.otp {
+  position: relative;
+  width: var(--row-w);
+  height: var(--ch);
+  margin: 1.9rem auto 0;
+}
+.otp-row {
+  display: flex;
+  gap: var(--gap);
+  height: 100%;
+}
+.cell {
+  position: relative;
+  z-index: var(--z);
+  flex: none;
+  width: var(--cw);
+  height: var(--ch);
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  background-color: var(--cell-empty);
+  transition:
+    border-color .18s, background-color .18s, box-shadow .18s,
+    translate .42s var(--ease-out), scale .42s var(--ease-out), border-radius .42s var(--ease-out);
+}
+.cell:nth-child(1) { --i: 0; --z: 1; }
+.cell:nth-child(2) { --i: 1; --z: 2; }
+.cell:nth-child(3) { --i: 2; --z: 3; }
+.cell:nth-child(4) { --i: 3; --z: 3; }
+.cell:nth-child(5) { --i: 4; --z: 2; }
+.cell:nth-child(6) { --i: 5; --z: 1; }
+
+.otp[data-state="idle"]:hover .cell:not(.is-active):not(.is-filled) { border-color: #D3D9E4; }
+.cell.is-filled {
+  background-color: #fff;
+  border-color: var(--line-filled);
+}
+.cell.is-active {
+  background-color: #fff;
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 .5px var(--blue), 0 0 0 .25rem rgba(59, 108, 246, .15);
+}
+.cell.is-active.is-nope { border-color: var(--red); box-shadow: 0 0 0 .25rem rgba(229, 72, 77, .14); }
+
+.digit, .ghost {
+  grid-area: 1 / 1;
+  font-size: calc(var(--cw) * .56);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  transition: color .18s, opacity .18s, scale .18s;
+  pointer-events: none;
+}
+.caret {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: calc(var(--ch) * .42);
+  margin: calc(var(--ch) * -.21) 0 0 -1px;
+  border-radius: 1px;
+  background: var(--blue);
+  opacity: 0;
+}
+.cell.has-caret .caret { animation: caret-blink 1.1s linear infinite; }
+@keyframes caret-blink {
+  0%, 50% { opacity: 1; }
+  60%, 90% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* wrong code */
+.otp[data-state="error"] .cell { transition-duration: .1s, .1s, .1s, .42s, .42s, .42s; }
+.otp[data-state="error"] .cell.is-filled {
+  border-color: var(--red);
+  background-color: #FFF6F6;
+}
+.otp[data-state="error"] .digit,
+.otp[data-state="error"] .ghost { color: var(--red); }
+
+/* right code: six cells gather into one green circle */
+.otp[data-state="success"] .cell {
+  border-color: var(--green);
+  background-color: var(--green);
+  box-shadow: none;
+  translate: calc((2.5 - var(--i)) * (var(--cw) + var(--gap))) 0;
+  scale: var(--ratio) 1;
+  border-radius: 50%;
+  transition:
+    border-color .16s ease-out, background-color .16s ease-out,
+    translate .5s var(--ease-spring) .2s,
+    scale .34s var(--ease-out) .2s,
+    border-radius .34s var(--ease-out) .2s;
+}
+.otp[data-state="success"] .digit {
+  color: #fff;
+  opacity: 0;
+  scale: .4;
+  transition: color .12s, opacity .08s linear .15s, scale .14s ease-in .12s;
+}
+/* keyframes follow --ease-spring: cells cross the centre at ~28% and overshoot furthest at ~40% */
+.otp[data-state="success"] .otp-row { animation: squash .5s .2s; }
+@keyframes squash {
+  0%, 27% { scale: 1 1; animation-timing-function: ease-out; }
+  40% { scale: 1 .9; animation-timing-function: ease-in-out; }
+  60% { scale: 1 1.025; animation-timing-function: ease-in-out; }
+  78%, 100% { scale: 1 1; }
+}
+
+.otp-done {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 4;
+  width: var(--ch);
+  height: var(--ch);
+  margin-left: calc(var(--ch) / -2);
+  pointer-events: none;
+}
+.otp-done::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 .7rem 1.5rem -.6rem rgba(48, 164, 108, .65);
+  opacity: 0;
+  transition: opacity .15s;
+}
+.halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  opacity: 0;
+}
+.check {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity .12s;
+}
+.check path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 5.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset .15s;
+}
+.otp[data-state="success"] .otp-done::before { opacity: 1; transition: opacity .2s .56s; }
+.otp[data-state="success"] .halo { animation: halo .8s cubic-bezier(.2, .7, .3, 1) .44s; }
+.otp[data-state="success"] .check { opacity: 1; transition: opacity 0s .46s; }
+.otp[data-state="success"] .check path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset .34s cubic-bezier(.5, 0, .2, 1) .46s;
+}
+@keyframes halo {
+  from { opacity: .5; scale: 1; }
+  to { opacity: 0; scale: 1.8; }
+}
+
+/* the one real input, stretched invisibly over the cells */
+.otp-input {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r);
+  outline: none;
+  appearance: none;
+  background: transparent;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  caret-color: transparent;
+  font-size: 16px;
+  cursor: text;
+  -webkit-tap-highlight-color: transparent;
+}
+.otp-input::selection { background: transparent; }
+.otp-input:-webkit-autofill { opacity: 0; }
+.otp-input:autofill { opacity: 0; }
+.otp[data-state="success"] .otp-input { cursor: default; }
+
+/* ---------- status, actions ---------- */
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  min-height: 1.5rem;
+  margin: 1.1rem 0 0;
+  font-size: .92rem;
+  line-height: 1.5rem;
+  color: var(--ink-2);
+}
+.status:not(:empty) { animation: status-in .24s var(--ease-out); }
+.status[data-tone="error"] { color: var(--red-ink); --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM7.2 4.3h1.6v5H7.2zm0 6.3h1.6v1.6H7.2z'/%3E%3C/svg%3E"); }
+.status[data-tone="success"] { color: var(--green-ink); font-weight: 600; --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cmask id='m'%3E%3Crect width='16' height='16' fill='%23fff'/%3E%3Cpath d='M4.9 8.3l2.1 2.1 4.1-4.5' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/mask%3E%3Ccircle cx='8' cy='8' r='7' mask='url(%23m)'/%3E%3C/svg%3E"); }
+.status[data-tone="hint"] { color: var(--ink-2); --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM7.2 6.9h1.6v5H7.2zm0-3.1h1.6v1.6H7.2z'/%3E%3C/svg%3E"); }
+.status[data-tone]:not(:empty)::before {
+  content: "";
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+@keyframes status-in {
+  from { opacity: 0; translate: 0 -.3rem; }
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: 1.2rem;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  height: 2.5rem;
+  padding: 0 1.15rem;
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  background: #fff;
+  border: 1px solid #DAE0EA;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s, translate .15s;
+}
+.btn:hover { color: var(--ink); border-color: #C3CCDA; }
+.btn:active { translate: 0 1px; }
+.btn:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.btn svg { width: 1rem; height: 1rem; flex: none; }
+.btn-primary {
+  color: #fff;
+  background: var(--blue);
+  border-color: var(--blue);
+  box-shadow: 0 .45rem 1rem -.45rem rgba(59, 108, 246, .75);
+}
+.btn-primary:hover { color: #fff; background: #2F5FE8; border-color: #2F5FE8; }
+
+.hint {
+  margin: .95rem 0 0;
+  font-size: .8rem;
+  line-height: 1.6;
+  color: var(--ink-3);
+}
+.hint kbd {
+  display: inline-block;
+  padding: 0 .4rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  color: var(--ink-2);
+  background: #F1F4F9;
+  border: 1px solid #E2E7EF;
+  border-radius: .35rem;
+}
+
+@media (max-width: 520px) {
+  :root { --stage-pad: 1rem; }
+  .card { --pad: 1.5rem; }
+}
+@media (max-height: 460px) {
+  :root { --stage-pad: .75rem; }
+  .card { padding-top: 1.5rem; padding-bottom: 1.4rem; }
+  .mark { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell { transition: border-color .2s, background-color .2s, box-shadow .2s; }
+  .otp[data-state="success"] .cell {
+    translate: none;
+    scale: none;
+    border-radius: var(--r);
+    background-color: #EEF8F2;
+    transition: border-color .2s, background-color .2s;
+  }
+  .otp[data-state="success"] .digit { color: var(--green-ink); opacity: 1; scale: none; }
+  .otp[data-state="success"] .otp-row { animation: none; }
+  .otp-done { display: none; }
+  .status:not(:empty) { animation-name: status-fade; }
+  @keyframes status-fade { from { opacity: 0; } }
+}
+</style>
+</head>
+<body>
+<main class="stage">
+  <section class="card" aria-labelledby="title">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5.5 4.5h13a2 2 0 0 1 2 2V15a2 2 0 0 1-2 2H11l-4.5 3.5V17h-1a2 2 0 0 1-2-2V6.5a2 2 0 0 1 2-2z"/>
+        <path d="M8.5 10.75h.01M12 10.75h.01M15.5 10.75h.01" stroke-width="2.6"/>
+      </svg>
+    </div>
+    <h1 id="title">输入验证码</h1>
+    <p class="lead">6 位数字验证码已发送至 <span class="phone">138 **** 5270</span></p>
+
+    <div class="otp" id="otp" data-state="idle">
+      <div class="otp-row" aria-hidden="true">
+        <div class="cell"><span class="digit"></span><i class="caret"></i></div>
+        <div class="cell"><span class="digit"></span><i class="caret"></i></div>
+        <div class="cell"><span class="digit"></span><i class="caret"></i></div>
+        <div class="cell"><span class="digit"></span><i class="caret"></i></div>
+        <div class="cell"><span class="digit"></span><i class="caret"></i></div>
+        <div class="cell"><span class="digit"></span><i class="caret"></i></div>
+      </div>
+      <div class="otp-done" aria-hidden="true">
+        <span class="halo"></span>
+        <svg class="check" viewBox="0 0 64 64"><path pathLength="1" d="M19.5 33.5l8.5 8.5 16.5-18"/></svg>
+      </div>
+      <input id="otp-code" class="otp-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+             aria-label="验证码，6 位数字" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+    </div>
+
+    <p class="status" id="status" role="status" aria-live="polite" aria-atomic="true"></p>
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" id="demo" title="先演示输错，再演示输对">
+        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.7v8.6a.7.7 0 0 0 1.08.59l6.5-4.3a.7.7 0 0 0 0-1.17l-6.5-4.3A.7.7 0 0 0 5 3.7z"/></svg>
+        演示
+      </button>
+      <button type="button" class="btn" id="reset">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.9 8.6A5.2 5.2 0 1 0 4.4 4.3"/><path d="M4.6 1.9v2.6H2"/></svg>
+        重置
+      </button>
+    </div>
+    <p class="hint">演示用正确码 <kbd>246810</kbd> · 支持键入、退格、粘贴</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  'use strict';
+
+  const CODE = '246810';
+  const LEN = 6;
+  const STAGGER = 40;    // ms between digits landing when several arrive at once
+
+  const otp = document.getElementById('otp');
+  const input = document.getElementById('otp-code');
+  const row = otp.querySelector('.otp-row');
+  const cells = Array.from(row.children);
+  const digitEls = cells.map((cell) => cell.querySelector('.digit'));
+  const statusEl = document.getElementById('status');
+  const demoBtn = document.getElementById('demo');
+  const resetBtn = document.getElementById('reset');
+
+  const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
+  let reduced = motionQuery.matches;
+  const onMotionChange = (e) => { reduced = e.matches; };
+  if (motionQuery.addEventListener) motionQuery.addEventListener('change', onMotionChange);
+  else motionQuery.addListener(onMotionChange);
+
+  const cssEasing = (name, fallback) => {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    try {
+      new KeyframeEffect(null, null, { easing: value });
+      return value;
+    } catch (err) {
+      return fallback;
+    }
+  };
+  const EASE_POP = cssEasing('--ease-pop', 'cubic-bezier(.34, 1.56, .64, 1)');
+  const SINE_OUT = 'cubic-bezier(.61, 1, .88, 1)';
+  const SINE_IN_OUT = 'cubic-bezier(.37, 0, .63, 1)';
+  const SINE_IN = 'cubic-bezier(.12, 0, .39, 0)';
+
+  let value = '';        // accepted digits, mirrored into input.value
+  let shown = 0;         // how many of them are already drawn in the cells
+  let phase = 'idle';    // idle | verifying | error | rewind | success
+  let revealing = false;
+  let focused = false;
+  let lastPopAt = -Infinity;
+
+  const timers = new Set();
+  const later = (fn, ms) => {
+    const id = setTimeout(() => { timers.delete(id); fn(); }, ms);
+    timers.add(id);
+  };
+
+  const anims = new Set();
+  const own = new WeakMap();
+  function play(el, frames, options) {
+    const anim = el.animate(frames, options);
+    anims.add(anim);
+    if (!own.has(el)) own.set(el, new Set());
+    own.get(el).add(anim);
+    const done = () => { anims.delete(anim); own.get(el).delete(anim); };
+    anim.addEventListener('finish', done);
+    anim.addEventListener('cancel', done);
+    return anim;
+  }
+  const cancelOwn = (el) => { if (own.has(el)) own.get(el).forEach((a) => a.cancel()); };
+
+  const locked = () => phase !== 'idle' || value.length === LEN;
+  const recovering = () => phase === 'error' || phase === 'rewind';
+
+  function render() {
+    const at = focused && (phase === 'idle' || phase === 'rewind') && shown < LEN ? shown : -1;
+    cells.forEach((cell, i) => {
+      cell.classList.toggle('is-filled', i < shown);
+      cell.classList.toggle('is-active', i === at);
+      cell.classList.toggle('has-caret', i === at && phase === 'idle' && !revealing);
+    });
+  }
+
+  function caretToEnd() {
+    if (document.activeElement !== input) return;
+    const n = input.value.length;
+    if (input.selectionStart !== n || input.selectionEnd !== n) input.setSelectionRange(n, n);
+  }
+
+  function mirror() {
+    if (input.value !== value) input.value = value;
+    caretToEnd();
+  }
+
+  // ---------- status line (aria-live) ----------
+  let statusSeq = 0;
+  function say(text, tone, clearAfter) {
+    if (statusEl.textContent === text && statusEl.dataset.tone === tone && clearAfter) {
+      const seq = ++statusSeq;
+      setTimeout(() => { if (seq === statusSeq) clearStatus(); }, clearAfter);
+      return;
+    }
+    const seq = ++statusSeq;
+    statusEl.textContent = '';
+    statusEl.dataset.tone = tone;
+    // an empty beat first, so a repeated message is still announced
+    setTimeout(() => {
+      if (seq !== statusSeq) return;
+      statusEl.textContent = text;
+      if (clearAfter) setTimeout(() => { if (seq === statusSeq) clearStatus(); }, clearAfter);
+    }, 40);
+  }
+  function clearStatus() {
+    statusSeq += 1;
+    statusEl.textContent = '';
+    delete statusEl.dataset.tone;
+  }
+
+  // ---------- drawing digits ----------
+  function popIn(i) {
+    const el = digitEls[i];
+    cancelOwn(el);
+    el.textContent = value[i];
+    lastPopAt = performance.now();
+    if (reduced) {
+      play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 140, easing: 'ease-out' });
+      return;
+    }
+    play(el, [{ transform: 'translateY(38%) scale(.4)' }, { transform: 'none' }], { duration: 340, easing: EASE_POP });
+    play(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 130, easing: 'ease-out' });
+  }
+
+  function ghostOut(i, delay = 0) {
+    const el = digitEls[i];
+    const digit = el.textContent;
+    cancelOwn(el);
+    el.textContent = '';
+    if (!digit) return;
+    const ghost = document.createElement('span');
+    ghost.className = 'ghost';
+    ghost.textContent = digit;
+    cells[i].appendChild(ghost);
+    const frames = reduced
+      ? [{ opacity: 1 }, { opacity: 0 }]
+      : [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-28%) scale(.55)' }];
+    const anim = play(ghost, frames, { duration: reduced ? 120 : 180, delay, easing: 'cubic-bezier(.4, 0, 1, 1)', fill: 'backwards' });
+    const drop = () => ghost.remove();
+    anim.addEventListener('finish', drop);
+    anim.addEventListener('cancel', drop);
+  }
+
+  // digits that arrive together (paste, SMS autofill, a burst of key events) land one by one
+  function reveal() {
+    if (revealing) return;
+    revealing = true;
+    render();
+    const step = () => {
+      if (shown < value.length) {
+        popIn(shown);
+        shown += 1;
+        render();
+      }
+      if (shown < value.length) {
+        later(step, STAGGER);
+      } else {
+        revealing = false;
+        render();
+        settle();
+      }
+    };
+    const wait = lastPopAt + STAGGER - performance.now();
+    if (wait > 1) later(step, wait);
+    else step();
+  }
+
+  function setValue(next, mode) {
+    if (next === value) { mirror(); return; }
+    const prev = value;
+    let keep = 0;
+    while (keep < prev.length && keep < next.length && prev[keep] === next[keep]) keep += 1;
+    for (let i = shown - 1, n = 0; i >= keep; i -= 1, n += 1) ghostOut(i, n * 28);
+    shown = Math.min(shown, keep);
+    value = next;
+    mirror();
+    if (next.length > prev.length && statusEl.dataset.tone !== 'success') clearStatus();
+    if (value.length > shown) {
+      const calm = performance.now() - lastPopAt >= STAGGER;
+      if (mode === 'type' && calm && !revealing && value.length === shown + 1) {
+        popIn(shown);
+        shown += 1;
+      } else {
+        reveal();
+      }
+    }
+    render();
+    settle();
+  }
+
+  // ---------- rules ----------
+  const toAscii = (s) => s.replace(/[\uFF10-\uFF19]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+
+  function takeTyped(data) {
+    const text = toAscii(data);
+    const got = text.replace(/\D/g, '');
+    if (got) setValue((value + got).slice(0, LEN), got.length > 1 ? 'bulk' : 'type');
+    if (got.length !== text.length) rejectNonDigit();
+  }
+
+  function takePasted(data) {
+    const text = toAscii(data || '');
+    const run = text.match(/(?:^|\D)(\d{6})(?!\d)/);
+    const got = run ? run[1] : text.replace(/\D/g, '');
+    if (!got) { rejectNonDigit(); return; }
+    setValue(got.length >= LEN ? got.slice(0, LEN) : (value + got).slice(0, LEN), 'bulk');
+  }
+
+  function rejectNonDigit() {
+    if (locked()) return;
+    const cell = cells[Math.min(shown, LEN - 1)];
+    cancelOwn(cell);
+    if (reduced) {
+      cell.classList.add('is-nope');
+      setTimeout(() => cell.classList.remove('is-nope'), 360);
+    } else {
+      const a = cell.offsetWidth * 0.085;
+      const ease = 'ease-in-out';
+      play(cell, [
+        { transform: 'translateX(0)', easing: ease },
+        { transform: `translateX(${-a}px)`, offset: 0.18, easing: ease },
+        { transform: `translateX(${a * 0.8}px)`, offset: 0.42, easing: ease },
+        { transform: `translateX(${-a * 0.45}px)`, offset: 0.68, easing: ease },
+        { transform: `translateX(${a * 0.15}px)`, offset: 0.86, easing: ease },
+        { transform: 'translateX(0)' },
+      ], { duration: 280 });
+    }
+    say('只能输入数字', 'hint', 1600);
+  }
+
+  function settle() {
+    if (phase !== 'idle' || revealing || shown !== LEN || value.length !== LEN) return;
+    phase = 'verifying';
+    render();
+    later(verify, 300);
+  }
+
+  function verify() {
+    if (value === CODE) succeed();
+    else fail();
+  }
+
+  function shakeRow() {
+    const amp = cells[0].offsetWidth * 0.24;
+    const envelope = [1, 0.8, 0.6, 0.42, 0.26, 0.12];
+    const frames = [{ offset: 0, transform: 'translateX(0)', easing: SINE_OUT }];
+    envelope.forEach((k, n) => frames.push({
+      offset: (2 * n + 1) / 12,
+      transform: `translateX(${(n % 2 ? 1 : -1) * k * amp}px)`,
+      easing: n === envelope.length - 1 ? SINE_IN : SINE_IN_OUT,
+    }));
+    frames.push({ offset: 1, transform: 'translateX(0)' });
+    play(row, frames, { duration: 400 });
+  }
+
+  function fail() {
+    phase = 'error';
+    otp.dataset.state = 'error';
+    render();
+    say('验证码错误，请重新输入', 'error');
+    if (!reduced) shakeRow();
+    later(rewind, reduced ? 1000 : 640);
+  }
+
+  function rewind() {
+    phase = 'rewind';
+    const n = shown;
+    const gap = reduced ? 0 : 34;
+    value = '';
+    mirror();
+    for (let j = 0; j < n; j += 1) {
+      later(() => {
+        const i = n - 1 - j;
+        ghostOut(i);
+        shown = i;
+        render();
+      }, j * gap);
+    }
+    later(() => {
+      otp.dataset.state = 'idle';
+      phase = 'idle';
+      render();
+    }, reduced ? 0 : n * gap + 150);
+  }
+
+  // the user retypes or pastes while the wrong code is still on screen: clear it now, keep their input
+  function interrupt() {
+    timers.forEach(clearTimeout);
+    timers.clear();
+    anims.forEach((a) => { if (a.effect && a.effect.target === row) a.cancel(); });
+    for (let i = shown - 1; i >= 0; i -= 1) ghostOut(i);
+    value = '';
+    shown = 0;
+    mirror();
+    otp.dataset.state = 'idle';
+    phase = 'idle';
+    render();
+  }
+
+  function succeed() {
+    phase = 'success';
+    otp.dataset.state = 'success';
+    render();
+    say('验证成功', 'success');
+  }
+
+  function reset() {
+    timers.forEach(clearTimeout);
+    timers.clear();
+    anims.forEach((a) => a.cancel());
+    anims.clear();
+    row.querySelectorAll('.ghost').forEach((g) => g.remove());
+    cells.forEach((cell) => cell.classList.remove('is-nope'));
+    digitEls.forEach((el) => { el.textContent = ''; });
+    revealing = false;
+    lastPopAt = -Infinity;
+    phase = 'idle';
+    value = '';
+    shown = 0;
+    otp.dataset.state = 'idle';
+    mirror();
+    clearStatus();
+    render();
+  }
+
+  // ---------- events ----------
+  input.addEventListener('beforeinput', (e) => {
+    const type = e.inputType || '';
+    if (type === 'insertCompositionText') return;
+    if (recovering()) interrupt();
+    if (locked()) { e.preventDefault(); return; }
+    if (type.startsWith('insert')) {
+      const data = e.data != null ? e.data : (e.dataTransfer ? e.dataTransfer.getData('text/plain') : null);
+      if (data == null) return;
+      e.preventDefault();
+      if (type === 'insertText') takeTyped(data);
+      else takePasted(data);
+    } else if (type.startsWith('delete')) {
+      e.preventDefault();
+      if (!value) return;
+      const selected = input.selectionEnd - input.selectionStart;
+      if (selected > 0 || /Word|Line/.test(type)) setValue('', 'delete');
+      else if (type === 'deleteContentBackward') setValue(value.slice(0, -1), 'delete');
+    } else if (type.startsWith('history')) {
+      e.preventDefault();
+    }
+  });
+
+  // anything that slips past beforeinput (autofill, IME, older engines)
+  function reconcile() {
+    if (input.value === value) return;
+    const raw = toAscii(input.value);
+    if (recovering()) interrupt();
+    if (locked()) { mirror(); return; }
+    const next = raw.replace(/\D/g, '').slice(0, LEN);
+    const junk = /\D/.test(raw);
+    if (next === value) {
+      mirror();
+      if (junk) rejectNonDigit();
+      return;
+    }
+    setValue(next, next.length === value.length + 1 && next.startsWith(value) ? 'type' : 'bulk');
+    if (junk) rejectNonDigit();
+  }
+  input.addEventListener('input', (e) => { if (!e.isComposing) reconcile(); });
+  input.addEventListener('compositionend', () => setTimeout(reconcile, 0));
+
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    if (e.isTrusted) stopDemo();
+    if (recovering()) interrupt();
+    if (locked()) return;
+    const clip = e.clipboardData || window.clipboardData;
+    takePasted(clip ? clip.getData('text') : '');
+  });
+
+  const NAV_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown']);
+  input.addEventListener('keydown', (e) => {
+    if (e.isTrusted) stopDemo();
+    if (NAV_KEYS.has(e.key)) e.preventDefault();
+  });
+
+  input.addEventListener('focus', () => { focused = true; caretToEnd(); render(); });
+  input.addEventListener('blur', () => { focused = false; render(); });
+  input.addEventListener('select', caretToEnd);
+  input.addEventListener('pointerup', () => requestAnimationFrame(caretToEnd));
+  document.addEventListener('selectionchange', caretToEnd);
+
+  // ---------- demo ----------
+  let demoToken = 0;
+  const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  function stopDemo() { demoToken += 1; }
+
+  function fakeKey(key) {
+    if (key === 'Backspace') {
+      const before = new InputEvent('beforeinput', { inputType: 'deleteContentBackward', bubbles: true, cancelable: true });
+      if (input.dispatchEvent(before)) {
+        input.value = input.value.slice(0, -1);
+        input.dispatchEvent(new InputEvent('input', { inputType: 'deleteContentBackward', bubbles: true }));
+      }
+      return;
+    }
+    const before = new InputEvent('beforeinput', { inputType: 'insertText', data: key, bubbles: true, cancelable: true });
+    if (input.dispatchEvent(before) && input.value.length < LEN) {
+      input.value += key;
+      input.dispatchEvent(new InputEvent('input', { inputType: 'insertText', data: key, bubbles: true }));
+    }
+  }
+
+  function fakeAutofill(code) {
+    input.value = code;
+    input.dispatchEvent(new InputEvent('input', { inputType: 'insertReplacementText', data: code, bubbles: true }));
+  }
+
+  async function demo() {
+    const token = ++demoToken;
+    const alive = () => token === demoToken;
+    const wait = async (ms) => { await pause(ms); return alive(); };
+    const until = async (ok, limit = 4000) => {
+      const start = performance.now();
+      while (!ok()) {
+        if (!alive() || performance.now() - start > limit) return false;
+        await pause(30);
+      }
+      return alive();
+    };
+
+    reset();
+    input.focus({ preventScroll: true });
+    if (!(await wait(450))) return 'cancelled';
+
+    // 1) a wrong code typed by hand, with a stray letter and one correction
+    for (const key of ['1', '3', '5', 'a', '8', 'Backspace', '7', '9', '0']) {
+      fakeKey(key);
+      if (!(await wait(key === 'a' ? 460 : key === 'Backspace' ? 320 : 200))) return 'cancelled';
+    }
+    if (!(await until(() => phase === 'error'))) return 'cancelled';
+    if (!(await until(() => phase === 'idle' && !value))) return 'cancelled';
+    if (!(await wait(700))) return 'cancelled';
+
+    // 2) the right code arrives all at once, as SMS autofill would deliver it
+    fakeAutofill(CODE);
+    if (!(await until(() => phase === 'success'))) return 'cancelled';
+    if (!(await wait(900))) return 'cancelled';
+    return 'done';
+  }
+  window.__demo = demo;
+
+  demoBtn.addEventListener('click', () => { demo(); });
+  resetBtn.addEventListener('click', () => {
+    stopDemo();
+    reset();
+    input.focus({ preventScroll: true });
+  });
+
+  render();
+  input.focus({ preventScroll: true });
+})();
+</script>
+</body>
+</html>
