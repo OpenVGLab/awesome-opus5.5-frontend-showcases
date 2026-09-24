@@ -1,26 +1,26 @@
 # Awesome Opus 5.5 Frontend Showcases
 
+**中文** · [English](README.en.md)
+
 > 收集 Claude Opus 5.5（2026-09-22 发布）做出来的前端作品：SVG 游戏与动画、「鹈鹕骑自行车」系列、Lottie、Three.js / WebGL、代码逐帧动画、网页与 UI——凡是模型写代码、在浏览器里跑出来的，都在这里。
->
-> A curated list of frontend showcases built by Claude Opus 5.5 — SVG games and animation, the pelican-on-a-bicycle family, Lottie, Three.js / WebGL, code-drawn video, websites and UI.
 
-**在线游玩本仓库的作品 / Play online:** https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/
+**在线游玩本仓库的作品：** https://yiyingyang12.github.io/awesome-opus5.5-frontend-showcases/
 
-## Contents
+## 目录
 
-每个类别里，本仓库原创的作品排在前面并附完整 prompt，社区作品按发布时间倒序排列。
+每个类别里，本仓库原创的作品排在前面并附完整 prompt；社区作品收成表格，按发布时间倒序。
 
-- 🎮 [浏览器游戏 · Games](#-浏览器游戏--games) — 12 cases
-- 🦩 [鹈鹕骑自行车 · Pelican on a Bicycle](#-鹈鹕骑自行车--pelican-on-a-bicycle) — 7 cases
-- 🚲 [更多骑行系列 · More Riders](#-更多骑行系列--more-riders) — 9 cases
-- ✨ [SVG 动画与插画 · SVG Animation](#-svg-动画与插画--svg-animation) — 2 cases
-- 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 8 cases
-- 🎬 [代码逐帧动画与视频 · Code-drawn Animation](#-代码逐帧动画与视频--code-drawn-animation) — 8 cases
-- 🖥️ [网页、UI 与应用 · Web & UI](#-网页ui-与应用--web--ui) — 9 cases
-- 📊 [评测与工具 · Benchmarks & Tools](#-评测与工具--benchmarks--tools)
+- 🎮 [浏览器游戏](#-浏览器游戏) — 12 条
+- 🦩 [鹈鹕骑自行车](#-鹈鹕骑自行车) — 7 条
+- 🚲 [更多骑行系列](#-更多骑行系列) — 9 条
+- ✨ [SVG 动画与插画](#-svg-动画与插画) — 2 条
+- 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 8 条
+- 🎬 [代码逐帧动画与视频](#-代码逐帧动画与视频) — 8 条
+- 🖥️ [网页、UI 与应用](#-网页ui-与应用) — 9 条
+- 📊 [评测与工具](#-评测与工具)
 - [收录标准与贡献](#收录标准与贡献)
 
-## 🎮 浏览器游戏 · Games
+## 🎮 浏览器游戏
 
 纯 SVG 或网页里跑的游戏。本仓库的每款都是一个自包含的 `.svg` 文件：画面、界面、逻辑和实时合成的音效都在同一个文件里。
 
@@ -297,61 +297,19 @@
 
 </details>
 
-#### Case 6: [穿越火线「运输船」地图复刻](https://x.com/alin_zone/status/2102713879986131252)
+### 社区作品
 
-**来源：** [阿蔺A-Lin (@alin_zone)](https://x.com/alin_zone)
+| 作品 | 来源 | 日期 | 简介 |
+| --- | --- | --- | --- |
+| [穿越火线「运输船」地图复刻](https://x.com/alin_zone/status/2102713879986131252) | [阿蔺A-Lin (@alin_zone)](https://x.com/alin_zone) | 2026-09-23 | Opus 5.5 复刻的经典 FPS 地图「运输船」，浏览器里直接打开就能看：[在线体验](https://claude-opus-5-5-cf-transport-ship.pages.dev/)。 |
+| [霓虹街机厅：3 台弹珠台](https://x.com/haruka_apps/status/2102703140080673090) | [haruka_apps (@haruka_apps)](https://x.com/haruka_apps) | 2026-09-23 | 用 Opus 5.5 做的游戏厅，可以玩 3 台弹珠台（仅 PC 版）：[itch.io 试玩](https://haruka-apps-games.itch.io/neon-arcade-pinball-game-center-nova)。 |
+| [一条标准 prompt 做出的 FPS](https://x.com/superalesha/status/2102689172955783211) | [Alexey Fateev (@superalesha)](https://x.com/superalesha) | 2026-09-23 | 用给其他模型测试时的同一条射击游戏 prompt，一次生成、不追问；作者认为这是所有模型里做得最好的 FPS，试玩链接在帖子回复里。 |
+| [手绘风国际象棋](https://x.com/higgsfield_ai/status/2102534514228822197) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | 手绘质感的国际象棋，带走法分析。 |
+| [Halo 风格的纯代码 FPS](https://x.com/strawhatsu4/status/2102531820260819133) | [Hunter Su (@strawhatsu4)](https://x.com/strawhatsu4) | 2026-09-23 | 画面、物理、玩法和声音全部由代码实时生成，约 76 KB JavaScript；作者说用 GPT-6 Astra 没能做出接近的效果。 |
+| [Introducing Claude Opus 5.5](https://www.anthropic.com/claude-opus-5-5) | Anthropic 官方公告 | 2026-09-22 | 有测试者让多个 Claude 模型各用一句提示词做一个游戏，Opus 5.5 凭画面和完成度得分最高。 |
+| [一句话做高尔夫游戏](https://every.to/vibe-check/vibe-check-opus-5-5-is-pulling-our-codex-converts-back-to-claude) | Every · Vibe Check | — | 只给一句“做个高尔夫游戏”，Opus 5.5 自己组了代理团队：三个设计师出球洞、三个评委打分、一个架构师拆分实现，连续跑了 1 小时 52 分钟。 |
 
-**发布：** 2026-09-23
-
-Opus 5.5 复刻的经典 FPS 地图「运输船」，浏览器里直接打开就能看：[在线体验](https://claude-opus-5-5-cf-transport-ship.pages.dev/)。
-
-#### Case 7: [霓虹街机厅：3 台弹珠台](https://x.com/haruka_apps/status/2102703140080673090)
-
-**来源：** [haruka_apps (@haruka_apps)](https://x.com/haruka_apps)
-
-**发布：** 2026-09-23
-
-用 Opus 5.5 做的游戏厅，可以玩 3 台弹珠台（仅 PC 版）：[itch.io 试玩](https://haruka-apps-games.itch.io/neon-arcade-pinball-game-center-nova)。
-
-#### Case 8: [一条标准 prompt 做出的 FPS](https://x.com/superalesha/status/2102689172955783211)
-
-**来源：** [Alexey Fateev (@superalesha)](https://x.com/superalesha)
-
-**发布：** 2026-09-23
-
-用给其他模型测试时的同一条射击游戏 prompt，一次生成、不追问；作者认为这是所有模型里做得最好的 FPS，试玩链接在帖子回复里。
-
-#### Case 9: [手绘风国际象棋](https://x.com/higgsfield_ai/status/2102534514228822197)
-
-**来源：** [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai)
-
-**发布：** 2026-09-23
-
-手绘质感的国际象棋，带走法分析。
-
-#### Case 10: [Halo 风格的纯代码 FPS](https://x.com/strawhatsu4/status/2102531820260819133)
-
-**来源：** [Hunter Su (@strawhatsu4)](https://x.com/strawhatsu4)
-
-**发布：** 2026-09-23
-
-画面、物理、玩法和声音全部由代码实时生成，约 76 KB JavaScript；作者说用 GPT-6 Astra 没能做出接近的效果。
-
-#### Case 11: [Introducing Claude Opus 5.5](https://www.anthropic.com/claude-opus-5-5)
-
-**来源：** Anthropic 官方公告
-
-**发布：** 2026-09-22
-
-有测试者让多个 Claude 模型各用一句提示词做一个游戏，Opus 5.5 凭画面和完成度得分最高。
-
-#### Case 12: [一句话做高尔夫游戏](https://every.to/vibe-check/vibe-check-opus-5-5-is-pulling-our-codex-converts-back-to-claude)
-
-**来源：** Every · Vibe Check
-
-只给一句“做个高尔夫游戏”，Opus 5.5 自己组了代理团队：三个设计师出球洞、三个评委打分、一个架构师拆分实现，连续跑了 1 小时 52 分钟。
-
-## 🦩 鹈鹕骑自行车 · Pelican on a Bicycle
+## 🦩 鹈鹕骑自行车
 
 Simon Willison 发起的经典测试：只给一句 `Generate an SVG of a pelican riding a bicycle`，不许看渲染结果，车架怎么连、脚怎么踩踏板全靠模型“脑补”坐标。
 
@@ -399,7 +357,7 @@ Generate an animated SVG of a pelican riding a bicycle
 
 <p align="center"><img src="rolls/pelican/opus55-max/pelican-static.svg" alt="鹈鹕骑自行车（静态版） · Opus 5.5 max 档" width="480" /></p>
 
-晴空下的公路上，一只戴蓝色头盔、系红围巾的白鹈鹕坐在红色自行车上，黑色翼尖握着车把，橙色喉囊垂在长喙下，前车筐里装着两条鱼。（盲画一次成稿）
+晴空艳阳下的公路上，一只白鹈鹕叼着橙色大喙囊坐在红色自行车上，翅膀握住车把、橙色蹼脚踩着踏板，身后拖着几道速度线。（盲画一次成稿）
 
 <details><summary>Prompt</summary>
 
@@ -417,7 +375,7 @@ Generate an SVG of a pelican riding a bicycle
 
 <p align="center"><img src="rolls/pelican/opus55-max/pelican-animated.svg" alt="鹈鹕骑自行车（动画版） · Opus 5.5 max 档" width="480" /></p>
 
-夕阳下一只棕鹈鹕骑着青绿色自行车：车轮和曲柄转动，双腿随踏板踩踏，身体轻颠，喉囊晃动，偶尔眨眼，后架小旗飘扬，远山、云和路面标线视差滚动（纯 SMIL，无脚本）。（盲画一次成稿）
+黄昏里系着红围巾的褐鹈鹕蹬着青绿色自行车：车轮与曲柄转动、双腿随踏板往复、身体随蹬踏起伏，围巾飘动、喉囊晃荡、偶尔眨眼，车筐里的鱼摆尾，远山、丘陵和路面分层视差滚动（纯 SMIL，无 JS）。（盲画一次成稿）
 
 <details><summary>Prompt</summary>
 
@@ -427,29 +385,13 @@ Generate an animated SVG of a pelican riding a bicycle
 
 </details>
 
-#### Case 5: [电影运镜的鹈鹕骑自行车](https://x.com/alin_zone/status/2102608618751508947)
+### 社区作品
 
-**来源：** [阿蔺A-Lin (@alin_zone)](https://x.com/alin_zone)
-
-**发布：** 2026-09-23
-
-作者称 Opus 5.5 做的鹈鹕骑自行车用上了电影运镜，“说这是游戏都信”；帖子里附了在线链接。
-
-#### Case 6: [Claude Opus 5.5, GPT-6 Sol, GPT-6 Luna, and a new price war](https://simonwillison.net/2026/Sep/22/opus-and-sol-and-luna/)
-
-**来源：** [Simon Willison (@simonw)](https://x.com/simonw)
-
-**发布：** 2026-09-22
-
-Opus 5.5 在 low / medium / high / xhigh 四档都画出了结构正确的车架；max 档两次都把 128K 输出 token 全部用在思考上、没有交出 SVG，这是这个测试第一次出现这种情况。它的思考第一句是 “This is a classic test request”。
-
-#### Case 7: [Claude 鹈鹕对比网格](https://static.simonwillison.net/static/2026/claude-pelicans-grid.html)
-
-**来源：** [Simon Willison (@simonw)](https://x.com/simonw)
-
-**发布：** 2026-09-22
-
-Fable 5.1 / Opus 5.5 / Opus 5 / Sonnet 5 × 五档思考强度，附每张图的 token 数与成本。
+| 作品 | 来源 | 日期 | 简介 |
+| --- | --- | --- | --- |
+| [电影运镜的鹈鹕骑自行车](https://x.com/alin_zone/status/2102608618751508947) | [阿蔺A-Lin (@alin_zone)](https://x.com/alin_zone) | 2026-09-23 | 作者称 Opus 5.5 做的鹈鹕骑自行车用上了电影运镜，“说这是游戏都信”；帖子里附了在线链接。 |
+| [Claude Opus 5.5, GPT-6 Sol, GPT-6 Luna, and a new price war](https://simonwillison.net/2026/Sep/22/opus-and-sol-and-luna/) | [Simon Willison (@simonw)](https://x.com/simonw) | 2026-09-22 | Opus 5.5 在 low / medium / high / xhigh 四档都画出了结构正确的车架；max 档两次都把 128K 输出 token 全部用在思考上、没有交出 SVG，这是这个测试第一次出现这种情况。它的思考第一句是 “This is a classic test request”。 |
+| [Claude 鹈鹕对比网格](https://static.simonwillison.net/static/2026/claude-pelicans-grid.html) | [Simon Willison (@simonw)](https://x.com/simonw) | 2026-09-22 | Fable 5.1 / Opus 5.5 / Opus 5 / Sonnet 5 × 五档思考强度，附每张图的 token 数与成本。 |
 
 **延伸阅读**
 
@@ -461,7 +403,7 @@ Fable 5.1 / Opus 5.5 / Opus 5 / Sonnet 5 × 五档思考强度，附每张图的
 - [Pelicans on Bicycles: One Silly Benchmark, Sixty-Three Answers](https://nathanfennel.com/blog/pelicans-on-bicycles)（Nathan Fennel）— 在 Claude Code、Codex、Cursor 等真实编码工具里跑出的 63 张鹈鹕。
 - [PromptFrenzy: Pelican on a Bicycle](https://www.promptfrenzy.com/showdown/svg-pelican) — 静态图和纯 SVG 动画两轮对比。
 
-## 🚲 更多骑行系列 · More Riders
+## 🚲 更多骑行系列
 
 把鹈鹕和自行车换成别的动物和交通工具，规则相同：一句 prompt，盲画一次成稿。
 
@@ -609,235 +551,64 @@ Generate an animated SVG of a frog riding a snail
 
 </details>
 
-#### Case 9: [熊猫骑车送外卖](https://www.woshipm.com/evaluating/6469164.html)
+### 社区作品
 
-**来源：** 人人都是产品经理 · Opus 5.5 与 GPT-6 Sol 首发实测
+| 作品 | 来源 | 日期 | 简介 |
+| --- | --- | --- | --- |
+| [熊猫骑车送外卖](https://www.woshipm.com/evaluating/6469164.html) | 人人都是产品经理 · Opus 5.5 与 GPT-6 Sol 首发实测 | — | 把鹈鹕换成“熊猫骑车送外卖”：Opus 5.5 画出了牙盘、链条和踏板，还加了奶茶、车灯和“叮咚～外卖到啦！”气泡，轮子和链条是会转的动画 SVG。 |
 
-把鹈鹕换成“熊猫骑车送外卖”：Opus 5.5 画出了牙盘、链条和踏板，还加了奶茶、车灯和“叮咚～外卖到啦！”气泡，轮子和链条是会转的动画 SVG。
-
-## ✨ SVG 动画与插画 · SVG Animation
+## ✨ SVG 动画与插画
 
 只用 SVG 自带的 SMIL / CSS 动画，不写 JavaScript，放进 `<img>` 也能动。
 
-#### Case 1: [纽约天际线：同一条 prompt 的一年对比](https://x.com/chetaslua/status/2102678371281018916)
-
-**来源：** [Chetaslua (@chetaslua)](https://x.com/chetaslua)
-
-**发布：** 2026-09-23
-
-同一条 prompt（“SVG of NEW YORK SKYLINE … make sure I can paste it all into a single HTML file …”），把一年前 Gemini 3.0 Pro 的结果和今天 Opus 5.5 的结果放在一起对比。
-
-#### Case 2: [一次成型的 3 分钟 SVG 动画](https://x.com/AndrewOnXYZ/status/2102089270747886043)
-
-**来源：** [AndrewOnXYZ (@AndrewOnXYZ)](https://x.com/AndrewOnXYZ)
-
-**发布：** 2026-09-21
-
-发布于正式上线前一天；Reddit r/singularity 以 “Impressive SVG animation made by Opus 5.5 (zero shot)” 转发。
+| 作品 | 来源 | 日期 | 简介 |
+| --- | --- | --- | --- |
+| [纽约天际线：同一条 prompt 的一年对比](https://x.com/chetaslua/status/2102678371281018916) | [Chetaslua (@chetaslua)](https://x.com/chetaslua) | 2026-09-23 | 同一条 prompt（“SVG of NEW YORK SKYLINE … make sure I can paste it all into a single HTML file …”），把一年前 Gemini 3.0 Pro 的结果和今天 Opus 5.5 的结果放在一起对比。 |
+| [一次成型的 3 分钟 SVG 动画](https://x.com/AndrewOnXYZ/status/2102089270747886043) | [AndrewOnXYZ (@AndrewOnXYZ)](https://x.com/AndrewOnXYZ) | 2026-09-21 | 发布于正式上线前一天；Reddit r/singularity 以 “Impressive SVG animation made by Opus 5.5 (zero shot)” 转发。 |
 
 ## 🧊 3D · Three.js · WebGL
 
-#### Case 1: [数据中心内部的可交互 3D](https://x.com/RyanSael/status/2102740041621762166)
+| 作品 | 来源 | 日期 | 简介 |
+| --- | --- | --- | --- |
+| [数据中心内部的可交互 3D](https://x.com/RyanSael/status/2102740041621762166) | [Ryan Sael (@RyanSael)](https://x.com/RyanSael) | 2026-09-23 | 让 Opus 5.5 展示“它运行的楼里有什么”：让机架过载能看到 GPU 降频，再跟着热量从屋顶散出；一次生成用时 1 小时 53 分钟，API 成本 38.99 美元。[在线体验](https://datacenter.lab.sael.net) |
+| [同一条提示词的 3D 景观网页：Opus 5.5 / Astra / Sol](https://x.com/alin_zone/status/2102701111090008066) | [阿蔺A-Lin (@alin_zone)](https://x.com/alin_zone) | 2026-09-23 | 用同一条提示词做实时交互的 3D 景观网页，视频依次是 Opus 5.5、GPT-6 Astra、GPT-6 Sol 的结果。 |
+| [卡通生命：Opus 5.5 × Three.js](https://x.com/higgsfield_ai/status/2102618931622207535) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | 用 Three.js 让日常物品拥有卡通生命。 |
+| [交互式镜头实验室](https://x.com/RyanSael/status/2102591147927654847) | [Ryan Sael (@RyanSael)](https://x.com/RyanSael) | 2026-09-23 | 转动对焦环，能看到镜片移动、清晰的焦平面在场景里前后移动；一次生成用时 1 小时 26 分钟，API 成本 25.66 美元。[在线体验](https://lens.lab.sael.net) |
+| [清明上河图、魔尺与宜家说明书](https://x.com/nicekate8888/status/2102570558760337685) | [nicekate (@nicekate8888)](https://x.com/nicekate8888) | 2026-09-23 | 只开 Medium 档：清明上河图里的码头、商铺和船工，能折出不同造型的魔尺，把宜家说明书变成分步安装演示；另测了机械蝴蝶、3D 建模和动画。 |
+| [可以自由漫游的程序化无尽世界](https://x.com/argofowl/status/2102529695908806728) | [argofowl (@argofowl)](https://x.com/argofowl) | 2026-09-23 | Opus 5.5（extra high）用 Three.js 做的无尽世界，每个区域随机生成、处处有惊喜；帖子里附了完整 prompt。 |
+| [体素版的自画像](https://x.com/blueemi99/status/2102511304456212763) | [bluedev (@blueemi99)](https://x.com/blueemi99) | 2026-09-23 | Claude Opus 5.5 用体素画了自己，带动画和细节。 |
+| [3D 重庆城市生成器](https://www.woshipm.com/evaluating/6469164.html) | 人人都是产品经理 · Opus 5.5 与 GPT-6 Sol 首发实测 | — | 层叠立交、轻轨穿楼、依山而建的高差；另有 Opus 5.5 自主生成的 3D 网页动画《牛来骑车》。 |
 
-**来源：** [Ryan Sael (@RyanSael)](https://x.com/RyanSael)
-
-**发布：** 2026-09-23
-
-让 Opus 5.5 展示“它运行的楼里有什么”：让机架过载能看到 GPU 降频，再跟着热量从屋顶散出；一次生成用时 1 小时 53 分钟，API 成本 38.99 美元。[在线体验](https://datacenter.lab.sael.net)
-
-#### Case 2: [同一条提示词的 3D 景观网页：Opus 5.5 / Astra / Sol](https://x.com/alin_zone/status/2102701111090008066)
-
-**来源：** [阿蔺A-Lin (@alin_zone)](https://x.com/alin_zone)
-
-**发布：** 2026-09-23
-
-用同一条提示词做实时交互的 3D 景观网页，视频依次是 Opus 5.5、GPT-6 Astra、GPT-6 Sol 的结果。
-
-#### Case 3: [卡通生命：Opus 5.5 × Three.js](https://x.com/higgsfield_ai/status/2102618931622207535)
-
-**来源：** [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai)
-
-**发布：** 2026-09-23
-
-用 Three.js 让日常物品拥有卡通生命。
-
-#### Case 4: [交互式镜头实验室](https://x.com/RyanSael/status/2102591147927654847)
-
-**来源：** [Ryan Sael (@RyanSael)](https://x.com/RyanSael)
-
-**发布：** 2026-09-23
-
-转动对焦环，能看到镜片移动、清晰的焦平面在场景里前后移动；一次生成用时 1 小时 26 分钟，API 成本 25.66 美元。[在线体验](https://lens.lab.sael.net)
-
-#### Case 5: [清明上河图、魔尺与宜家说明书](https://x.com/nicekate8888/status/2102570558760337685)
-
-**来源：** [nicekate (@nicekate8888)](https://x.com/nicekate8888)
-
-**发布：** 2026-09-23
-
-只开 Medium 档：清明上河图里的码头、商铺和船工，能折出不同造型的魔尺，把宜家说明书变成分步安装演示；另测了机械蝴蝶、3D 建模和动画。
-
-#### Case 6: [可以自由漫游的程序化无尽世界](https://x.com/argofowl/status/2102529695908806728)
-
-**来源：** [argofowl (@argofowl)](https://x.com/argofowl)
-
-**发布：** 2026-09-23
-
-Opus 5.5（extra high）用 Three.js 做的无尽世界，每个区域随机生成、处处有惊喜；帖子里附了完整 prompt。
-
-#### Case 7: [体素版的自画像](https://x.com/blueemi99/status/2102511304456212763)
-
-**来源：** [bluedev (@blueemi99)](https://x.com/blueemi99)
-
-**发布：** 2026-09-23
-
-Claude Opus 5.5 用体素画了自己，带动画和细节。
-
-#### Case 8: [3D 重庆城市生成器](https://www.woshipm.com/evaluating/6469164.html)
-
-**来源：** 人人都是产品经理 · Opus 5.5 与 GPT-6 Sol 首发实测
-
-层叠立交、轻轨穿楼、依山而建的高差；另有 Opus 5.5 自主生成的 3D 网页动画《牛来骑车》。
-
-## 🎬 代码逐帧动画与视频 · Code-drawn Animation
+## 🎬 代码逐帧动画与视频
 
 每一帧都由代码画出来的动画，以及用它们渲染出的视频。
 
-#### Case 1: [水循环：一镜到底的无缝循环动画](https://x.com/higgsfield_ai/status/2102781807179735211)
-
-**来源：** [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai)
-
-**发布：** 2026-09-23
-
-Opus 5.5 与 GPT-6 Sol 合作完成。按 brief “Create a seamless looping animation of the water cycle, entirely in code.” 用代码搭建环境、光照和角色动画，在浏览器里实时渲染、首尾无缝衔接，最后打包成带时间轴控制的单个 HTML。
-
-#### Case 2: [人生的意义是什么？](https://x.com/HarveenChadha/status/2102759892507398309)
-
-**来源：** [Harveen Singh Chadha (@HarveenChadha)](https://x.com/HarveenChadha)
-
-**发布：** 2026-09-23
-
-一次生成的纯 JavaScript 手绘拼贴风动画，脚本和配乐也由 Opus 完成；用时 16 分钟、1.9 万 tokens、3.6 美元。Prompt：“Create a pure javascript animation. 30s-60s whimsical hand drawn collage style with appropriate audio on the topic what is the purpose of life ?”
-
-#### Case 3: [水墨动画《小蝌蚪找妈妈》](https://x.com/akokoi1/status/2102699703309898026)
-
-**来源：** [WY (@akokoi1)](https://x.com/akokoi1)
-
-**发布：** 2026-09-23
-
-Claude Opus 5.5 纯代码生成的水墨动画。
-
-#### Case 4: [中华上下五千年，2 分 38 秒](https://x.com/akokoi1/status/2102583898865873225)
-
-**来源：** [WY (@akokoi1)](https://x.com/akokoi1)
-
-**发布：** 2026-09-23
-
-知识科普视频；作者称只用了 Max（5x）周额度的约 1%。
-
-#### Case 5: [介绍 Opus 5.5 的 90 秒短片](https://x.com/nicekate8888/status/2102575622912631261)
-
-**来源：** [nicekate (@nicekate8888)](https://x.com/nicekate8888)
-
-**发布：** 2026-09-23
-
-由 Opus 5.5 生成、介绍 Opus 5.5 自己的短片。
-
-#### Case 6: [任意画风的可交互“视频”](https://x.com/chetaslua/status/2102501773705670994)
-
-**来源：** [Chetaslua (@chetaslua)](https://x.com/chetaslua)
-
-**发布：** 2026-09-23
-
-纯 JS 编写、不用任何素材，可以切换画风：[CodePen](https://codepen.io/editor/ChetasLua/pen/01a0cadf-5b81-756f-8647-8cf5a47e7adf)。
-
-#### Case 7: [透过 Claude 的眼睛看世界](https://x.com/devteamdrew/status/2102440077746188664)
-
-**来源：** [DreW (@devteamdrew)](https://x.com/devteamdrew)
-
-**发布：** 2026-09-23
-
-定格动画风短片，作者说视频里的一切都由 Opus 5.5 创作。
-
-#### Case 8: [What do you love?](https://x.com/kevin_t_ngo/status/2102437977435893771)
-
-**来源：** [Kevin Ngo (@kevin_t_ngo)](https://x.com/kevin_t_ngo)
-
-**发布：** 2026-09-22
-
-Claude Opus 5.5 用 JavaScript 画出每一帧的 28 秒动画故事：镇上所有人都给 Claude 发请求，只有一个女孩发来一个问题。
-
-## 🖥️ 网页、UI 与应用 · Web & UI
-
-#### Case 1: [复刻 3DS 和它的系统界面](https://x.com/blueemi99/status/2102776877458784289)
-
-**来源：** [bluedev (@blueemi99)](https://x.com/blueemi99)
-
-**发布：** 2026-09-23
-
-连系统动效和“笔”图标都做了出来。
-
-#### Case 2: [带 iPhone mockup 动效的网页](https://x.com/anxndsgn/status/2102722134330261794)
-
-**来源：** [XIN (@anxndsgn)](https://x.com/anxndsgn)
-
-**发布：** 2026-09-23
-
-网页和里面的 iPhone mockup、文件夹都由 Opus 生成；作者只描述了页面动效的大概想法，再加 2–3 轮微调。
-
-#### Case 3: [一次生成的模型对比网站](https://x.com/chetaslua/status/2102626285868720550)
-
-**来源：** [Chetaslua (@chetaslua)](https://x.com/chetaslua)
-
-**发布：** 2026-09-23
-
-只说了“画一个网站”，一次生成、细节丰富。
-
-#### Case 4: [浏览器里的室内设计应用](https://x.com/higgsfield_ai/status/2102618445489795448)
-
-**来源：** [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai)
-
-**发布：** 2026-09-23
-
-Opus 5.5 做了这个应用，又用它设计了一套公寓：家具照片转成 3D 模型摆进房间，任选视角后交给 Seedream 5.0 出效果图。
-
-#### Case 5: [Letters Abroad 语言学习应用](https://x.com/anshuc/status/2102519201554690273)
-
-**来源：** [Anshu (@anshuc)](https://x.com/anshuc)
-
-**发布：** 2026-09-23
-
-和 AI 笔友互相写信、在语境中学语言，应用和官网都由 Opus 5.5 构建；作者之前用 Astra 和 Fable 做过原型，对设计不满意。[lettersabroad.app](http://lettersabroad.app)
-
-#### Case 6: [CoAnimator 动画应用](https://x.com/rege_dev/status/2102498682931441977)
-
-**来源：** [rege (@rege_dev)](https://x.com/rege_dev)
-
-**发布：** 2026-09-23
-
-几轮 prompt 做出动画、时间轴、音效和环境音。
-
-#### Case 7: [个人网站多版重设计，再剪成预告片](https://x.com/trq212/status/2102477340920152162)
-
-**来源：** [trq212 (@trq212)](https://x.com/trq212)
-
-**发布：** 2026-09-23
-
-用 workflow 让 Opus 5.5 反复迭代、自我点评个人网站的多个设计方向，最后把所有迭代剪成一段预告片。
-
-#### Case 8: [复刻网页版 Cursor](https://www.woshipm.com/evaluating/6469164.html)
-
-**来源：** 人人都是产品经理 · Opus 5.5 与 GPT-6 Sol 首发实测
-
-在 VS Code 开源代码上复刻网页版 Cursor（Editor / Agents 双窗口）；先写一个简易画板网页，再操作浏览器花 1 小时 17 分钟画出 Q 版鲸鱼娘。
-
-#### Case 9: [仿 Origami Studio 的交互原型工具](https://every.to/vibe-check/vibe-check-opus-5-5-is-pulling-our-codex-converts-back-to-claude)
-
-**来源：** Every · Vibe Check
-
-两句提示词做出一个仿 Meta Origami Studio 的交互原型工具，能从代码导入设计并连线交互。
-
-## 📊 评测与工具 · Benchmarks & Tools
+| 作品 | 来源 | 日期 | 简介 |
+| --- | --- | --- | --- |
+| [水循环：一镜到底的无缝循环动画](https://x.com/higgsfield_ai/status/2102781807179735211) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | Opus 5.5 与 GPT-6 Sol 合作完成。按 brief “Create a seamless looping animation of the water cycle, entirely in code.” 用代码搭建环境、光照和角色动画，在浏览器里实时渲染、首尾无缝衔接，最后打包成带时间轴控制的单个 HTML。 |
+| [人生的意义是什么？](https://x.com/HarveenChadha/status/2102759892507398309) | [Harveen Singh Chadha (@HarveenChadha)](https://x.com/HarveenChadha) | 2026-09-23 | 一次生成的纯 JavaScript 手绘拼贴风动画，脚本和配乐也由 Opus 完成；用时 16 分钟、1.9 万 tokens、3.6 美元。Prompt：“Create a pure javascript animation. 30s-60s whimsical hand drawn collage style with appropriate audio on the topic what is the purpose of life ?” |
+| [水墨动画《小蝌蚪找妈妈》](https://x.com/akokoi1/status/2102699703309898026) | [WY (@akokoi1)](https://x.com/akokoi1) | 2026-09-23 | Claude Opus 5.5 纯代码生成的水墨动画。 |
+| [中华上下五千年，2 分 38 秒](https://x.com/akokoi1/status/2102583898865873225) | [WY (@akokoi1)](https://x.com/akokoi1) | 2026-09-23 | 知识科普视频；作者称只用了 Max（5x）周额度的约 1%。 |
+| [介绍 Opus 5.5 的 90 秒短片](https://x.com/nicekate8888/status/2102575622912631261) | [nicekate (@nicekate8888)](https://x.com/nicekate8888) | 2026-09-23 | 由 Opus 5.5 生成、介绍 Opus 5.5 自己的短片。 |
+| [任意画风的可交互“视频”](https://x.com/chetaslua/status/2102501773705670994) | [Chetaslua (@chetaslua)](https://x.com/chetaslua) | 2026-09-23 | 纯 JS 编写、不用任何素材，可以切换画风：[CodePen](https://codepen.io/editor/ChetasLua/pen/01a0cadf-5b81-756f-8647-8cf5a47e7adf)。 |
+| [透过 Claude 的眼睛看世界](https://x.com/devteamdrew/status/2102440077746188664) | [DreW (@devteamdrew)](https://x.com/devteamdrew) | 2026-09-23 | 定格动画风短片，作者说视频里的一切都由 Opus 5.5 创作。 |
+| [What do you love?](https://x.com/kevin_t_ngo/status/2102437977435893771) | [Kevin Ngo (@kevin_t_ngo)](https://x.com/kevin_t_ngo) | 2026-09-22 | Claude Opus 5.5 用 JavaScript 画出每一帧的 28 秒动画故事：镇上所有人都给 Claude 发请求，只有一个女孩发来一个问题。 |
+
+## 🖥️ 网页、UI 与应用
+
+| 作品 | 来源 | 日期 | 简介 |
+| --- | --- | --- | --- |
+| [复刻 3DS 和它的系统界面](https://x.com/blueemi99/status/2102776877458784289) | [bluedev (@blueemi99)](https://x.com/blueemi99) | 2026-09-23 | 连系统动效和“笔”图标都做了出来。 |
+| [带 iPhone mockup 动效的网页](https://x.com/anxndsgn/status/2102722134330261794) | [XIN (@anxndsgn)](https://x.com/anxndsgn) | 2026-09-23 | 网页和里面的 iPhone mockup、文件夹都由 Opus 生成；作者只描述了页面动效的大概想法，再加 2–3 轮微调。 |
+| [一次生成的模型对比网站](https://x.com/chetaslua/status/2102626285868720550) | [Chetaslua (@chetaslua)](https://x.com/chetaslua) | 2026-09-23 | 只说了“画一个网站”，一次生成、细节丰富。 |
+| [浏览器里的室内设计应用](https://x.com/higgsfield_ai/status/2102618445489795448) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | Opus 5.5 做了这个应用，又用它设计了一套公寓：家具照片转成 3D 模型摆进房间，任选视角后交给 Seedream 5.0 出效果图。 |
+| [Letters Abroad 语言学习应用](https://x.com/anshuc/status/2102519201554690273) | [Anshu (@anshuc)](https://x.com/anshuc) | 2026-09-23 | 和 AI 笔友互相写信、在语境中学语言，应用和官网都由 Opus 5.5 构建；作者之前用 Astra 和 Fable 做过原型，对设计不满意。[lettersabroad.app](http://lettersabroad.app) |
+| [CoAnimator 动画应用](https://x.com/rege_dev/status/2102498682931441977) | [rege (@rege_dev)](https://x.com/rege_dev) | 2026-09-23 | 几轮 prompt 做出动画、时间轴、音效和环境音。 |
+| [个人网站多版重设计，再剪成预告片](https://x.com/trq212/status/2102477340920152162) | [trq212 (@trq212)](https://x.com/trq212) | 2026-09-23 | 用 workflow 让 Opus 5.5 反复迭代、自我点评个人网站的多个设计方向，最后把所有迭代剪成一段预告片。 |
+| [复刻网页版 Cursor](https://www.woshipm.com/evaluating/6469164.html) | 人人都是产品经理 · Opus 5.5 与 GPT-6 Sol 首发实测 | — | 在 VS Code 开源代码上复刻网页版 Cursor（Editor / Agents 双窗口）；先写一个简易画板网页，再操作浏览器花 1 小时 17 分钟画出 Q 版鲸鱼娘。 |
+| [仿 Origami Studio 的交互原型工具](https://every.to/vibe-check/vibe-check-opus-5-5-is-pulling-our-codex-converts-back-to-claude) | Every · Vibe Check | — | 两句提示词做出一个仿 Meta Origami Studio 的交互原型工具，能从代码导入设计并连线交互。 |
+
+## 📊 评测与工具
 
 - [threejseval：Opus 5.5 High](https://threejseval.com/models/claude-opus-5-5-high) / [Opus 5.5 Medium](https://threejseval.com/models/claude-opus-5-5-medium) — Three.js 场景竞技场：埃菲尔铁塔、帆船、国际象棋、747、机械臂、猎鹰 9 号等 14 道题的实时场景、Elo 与单题成本（写作本文时 Medium 档的平均 Elo 略高于 High 档）。
 - [Tripo 的 Opus 5.5 3D prompt 库](https://x.com/tripoai/status/2102680029943791765) — 400 多条测试过的 3D prompt，可以并排对比输出：[tripo3d.ai/3d-prompts](http://tripo3d.ai/3d-prompts)。
