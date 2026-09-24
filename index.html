@@ -95,6 +95,41 @@
   }
   .card.pending .btn { pointer-events: none; opacity: .45; }
 
+  .prompt-peek {
+    display: block; width: 100%; margin-top: auto; padding: 12px 14px; text-align: left; cursor: pointer;
+    font: inherit; color: inherit; background: #faf6ee; border: 1.5px dashed #ddd2c0; border-radius: 14px;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .prompt-peek:hover, .prompt-peek:focus-visible { border-color: var(--accent); background: #fff; outline: none; }
+  .prompt-peek + .foot { margin-top: 0; }
+  .pp-head { display: flex; align-items: center; gap: 8px; }
+  .pp-label { font: 900 12px/1 var(--latin); letter-spacing: .16em; color: var(--accent-ink); }
+  .agentic { border-radius: 999px; padding: 4px 9px; font: 800 11px/1 var(--sans); color: #fff; background: var(--ink); white-space: nowrap; }
+  .pp-more { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--accent-ink); white-space: nowrap; }
+  .pp-text {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+    margin-top: 8px; font-size: 13px; line-height: 1.65; color: #5a5249;
+  }
+
+  .prompt-dialog {
+    --accent: var(--ink); --accent-ink: var(--ink);
+    width: min(880px, calc(100vw - 28px)); max-height: min(88vh, 960px); padding: 0; border: 0; border-radius: 22px;
+    overflow: hidden; color: var(--ink); background: var(--card); box-shadow: 0 40px 90px -30px rgba(20, 12, 4, .6);
+  }
+  .prompt-dialog[open] { display: flex; flex-direction: column; }
+  .prompt-dialog::backdrop { background: rgba(29, 26, 22, .55); backdrop-filter: blur(3px); }
+  .pd-head { display: flex; align-items: center; gap: 14px; padding: 18px 24px 16px; border-top: 6px solid var(--accent); border-bottom: 1px solid var(--line); }
+  .pd-meta { display: flex; align-items: center; gap: 8px; font: 900 12px/1 var(--latin); letter-spacing: .14em; color: var(--accent-ink); }
+  .pd-head h2 { margin: 8px 0 0; font-size: 24px; font-weight: 900; }
+  .pd-actions { display: flex; gap: 8px; margin-left: auto; }
+  .pd-actions button { font-family: inherit; cursor: pointer; }
+  .pd-actions .btn.primary { border: 0; }
+  .pd-body {
+    flex: 1 1 auto; min-height: 0; margin: 0; padding: 20px 24px 28px; overflow: auto;
+    white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.85 var(--sans); color: #2f2a24;
+  }
+
+
   .tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; margin-top: 56px; }
   .tip { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; font-size: 14px; line-height: 1.75; color: #4a443c; }
   .tip b { display: block; margin-bottom: 4px; color: var(--ink); }
@@ -103,6 +138,10 @@
     header { grid-template-columns: 1fr; }
     .strip { display: none; }
     .wrap { padding-top: 36px; }
+    .pd-head { flex-wrap: wrap; padding: 16px 18px 14px; }
+    .pd-actions { width: 100%; margin-left: 0; }
+    .pd-actions .btn { flex: 1; text-align: center; }
+    .pd-body { padding: 16px 18px 22px; }
   }
 </style>
 </head>
@@ -121,25 +160,26 @@
   <main class="grid">
     <article class="card" style="--accent:#e8483b;--accent-soft:#e8483b1f;--accent-ink:#a7332a">
       <a class="thumb" href="games/kitchen-rush.svg?v=1790166380" target="_blank" rel="noopener"><img src="thumbs/kitchen-rush-title.jpg?v=1790179460" alt="厨房大作战 标题画面" loading="lazy"><img class="alt" src="thumbs/kitchen-rush-play.jpg?v=1790179460" alt="厨房大作战 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
-      <div class="body"><div class="meta"><span class="no">01</span><span class="chip">合作烹饪</span><span class="insp">灵感 · 胡闹厨房</span></div><h3>厨房大作战<small>KITCHEN RUSH</small></h3><p class="pitch">切菜、下锅、装盘、出餐——在订单超时之前把菜端上桌！支持同一键盘双人合作。</p><div class="style"><b>画风</b> 俯视卡通 · 粗描边暖色调</div><div class="keys"><span><kbd>WASD</kbd>移动</span><span><kbd>空格</kbd>拿 / 放</span><span><kbd>K</kbd>切菜</span><span><kbd>Tab</kbd>换厨师</span></div><div class="foot"><span class="size">94 KB · 1,676 行</span><a class="btn ghost" href="games/kitchen-rush.svg" download>下载 .svg</a><a class="btn primary" href="games/kitchen-rush.svg?v=1790166380" target="_blank" rel="noopener">开始游戏</a></div></div>
+      <div class="body"><div class="meta"><span class="no">01</span><span class="chip">合作烹饪</span><span class="insp">灵感 · 胡闹厨房</span></div><h3>厨房大作战<small>KITCHEN RUSH</small></h3><p class="pitch">切菜、下锅、装盘、出餐——在订单超时之前把菜端上桌！支持同一键盘双人合作。</p><div class="style"><b>画风</b> 俯视卡通 · 粗描边暖色调</div><div class="keys"><span><kbd>WASD</kbd>移动</span><span><kbd>空格</kbd>拿 / 放</span><span><kbd>K</kbd>切菜</span><span><kbd>Tab</kbd>换厨师</span></div><button class="prompt-peek" type="button" data-prompt="kitchen-rush"><span class="pp-head"><span class="pp-label">PROMPT</span><span class="agentic">Agentic 生成</span><span class="pp-more">查看完整 →</span></span><span class="pp-text">你负责独立完成一款浏览器小游戏《厨房大作战 KITCHEN RUSH》：俯视角合作烹饪，玩法借鉴《胡闹厨房》，角色、名字和美术全部原创。</span></button><div class="foot"><span class="size">94 KB · 1,676 行</span><a class="btn ghost" href="games/kitchen-rush.svg" download>下载 .svg</a><a class="btn primary" href="games/kitchen-rush.svg?v=1790166380" target="_blank" rel="noopener">开始游戏</a></div></div>
     </article>
     <article class="card" style="--accent:#1e9bf0;--accent-soft:#1e9bf01f;--accent-ink:#156fac">
       <a class="thumb" href="games/sunny-kart.svg?v=1790166427" target="_blank" rel="noopener"><img src="thumbs/sunny-kart-title.jpg?v=1790179460" alt="阳光卡丁车 标题画面" loading="lazy"><img class="alt" src="thumbs/sunny-kart-play.jpg?v=1790179460" alt="阳光卡丁车 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
-      <div class="body"><div class="meta"><span class="no">02</span><span class="chip">竞速</span><span class="insp">灵感 · 马力欧卡丁车</span></div><h3>阳光卡丁车<small>SUNNY KART</small></h3><p class="pitch">海边赛道三圈定胜负，漂移攒火花、抢道具，和 7 位对手争夺领奖台！</p><div class="style"><b>画风</b> 白天海岸 · 明亮低多边形伪 3D</div><div class="keys"><span><kbd>↑</kbd>油门</span><span><kbd>← →</kbd>转向</span><span><kbd>Shift</kbd>漂移</span><span><kbd>X</kbd>道具</span></div><div class="foot"><span class="size">130 KB · 2,134 行</span><a class="btn ghost" href="games/sunny-kart.svg" download>下载 .svg</a><a class="btn primary" href="games/sunny-kart.svg?v=1790166427" target="_blank" rel="noopener">开始游戏</a></div></div>
+      <div class="body"><div class="meta"><span class="no">02</span><span class="chip">竞速</span><span class="insp">灵感 · 马力欧卡丁车</span></div><h3>阳光卡丁车<small>SUNNY KART</small></h3><p class="pitch">海边赛道三圈定胜负，漂移攒火花、抢道具，和 7 位对手争夺领奖台！</p><div class="style"><b>画风</b> 白天海岸 · 明亮低多边形伪 3D</div><div class="keys"><span><kbd>↑</kbd>油门</span><span><kbd>← →</kbd>转向</span><span><kbd>Shift</kbd>漂移</span><span><kbd>X</kbd>道具</span></div><button class="prompt-peek" type="button" data-prompt="sunny-kart"><span class="pp-head"><span class="pp-label">PROMPT</span><span class="agentic">Agentic 生成</span><span class="pp-more">查看完整 →</span></span><span class="pp-text">你负责独立完成一款浏览器小游戏《阳光卡丁车 SUNNY KART》：海边赛道上的伪 3D 卡丁车竞速，玩法借鉴《马力欧卡丁车》，角色、名字和美术全部原创。</span></button><div class="foot"><span class="size">130 KB · 2,134 行</span><a class="btn ghost" href="games/sunny-kart.svg" download>下载 .svg</a><a class="btn primary" href="games/sunny-kart.svg?v=1790166427" target="_blank" rel="noopener">开始游戏</a></div></div>
     </article>
     <article class="card" style="--accent:#7b61ff;--accent-soft:#7b61ff1f;--accent-ink:#5845b7">
       <a class="thumb" href="games/pixel-quest.svg?v=1790180043" target="_blank" rel="noopener"><img src="thumbs/pixel-quest-title.jpg?v=1790180025" alt="像素大冒险 标题画面" loading="lazy"><img class="alt" src="thumbs/pixel-quest-play.jpg?v=1790179461" alt="像素大冒险 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
-      <div class="body"><div class="meta"><span class="no">03</span><span class="chip">横版平台</span><span class="insp">灵感 · 超级马里奥</span></div><h3>像素大冒险<small>PIXEL QUEST</small></h3><p class="pitch">踩怪、顶砖、吃果实变大，穿过草原、洞穴和云端，一路冲向终点旗！</p><div class="style"><b>画风</b> 8/16-bit 像素风</div><div class="keys"><span><kbd>← →</kbd>移动</span><span><kbd>空格</kbd>跳跃</span><span><kbd>Shift</kbd>奔跑 / 投掷</span><span><kbd>↓</kbd>蹲下</span></div><div class="foot"><span class="size">145 KB · 3,786 行</span><a class="btn ghost" href="games/pixel-quest.svg" download>下载 .svg</a><a class="btn primary" href="games/pixel-quest.svg?v=1790180043" target="_blank" rel="noopener">开始游戏</a></div></div>
+      <div class="body"><div class="meta"><span class="no">03</span><span class="chip">横版平台</span><span class="insp">灵感 · 超级马里奥</span></div><h3>像素大冒险<small>PIXEL QUEST</small></h3><p class="pitch">踩怪、顶砖、吃果实变大，穿过草原、洞穴和云端，一路冲向终点旗！</p><div class="style"><b>画风</b> 8/16-bit 像素风</div><div class="keys"><span><kbd>← →</kbd>移动</span><span><kbd>空格</kbd>跳跃</span><span><kbd>Shift</kbd>奔跑 / 投掷</span><span><kbd>↓</kbd>蹲下</span></div><button class="prompt-peek" type="button" data-prompt="pixel-quest"><span class="pp-head"><span class="pp-label">PROMPT</span><span class="agentic">Agentic 生成</span><span class="pp-more">查看完整 →</span></span><span class="pp-text">你负责独立完成一款浏览器小游戏《像素大冒险 PIXEL QUEST》：8/16-bit 像素风横版平台跳跃，玩法借鉴《超级马里奥》，角色、名字和美术全部原创。</span></button><div class="foot"><span class="size">145 KB · 3,786 行</span><a class="btn ghost" href="games/pixel-quest.svg" download>下载 .svg</a><a class="btn primary" href="games/pixel-quest.svg?v=1790180043" target="_blank" rel="noopener">开始游戏</a></div></div>
     </article>
     <article class="card" style="--accent:#ff9f1c;--accent-soft:#ff9f1c1f;--accent-ink:#b77214">
       <a class="thumb" href="games/fruit-slash.svg?v=1790166424" target="_blank" rel="noopener"><img src="thumbs/fruit-slash-title.jpg?v=1790179461" alt="水果刀客 标题画面" loading="lazy"><img class="alt" src="thumbs/fruit-slash-play.jpg?v=1790179461" alt="水果刀客 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
-      <div class="body"><div class="meta"><span class="no">04</span><span class="chip">切水果</span><span class="insp">灵感 · 水果忍者</span></div><h3>水果刀客<small>FRUIT SLASH</small></h3><p class="pitch">挥动鼠标化作刀光，一刀切开满天水果——千万别碰炸弹！</p><div class="style"><b>画风</b> 木纹道场 · 光泽水果与果汁飞溅</div><div class="keys"><span><kbd>鼠标 / 触屏</kbd>划动切水果</span></div><div class="foot"><span class="size">159 KB · 1,741 行</span><a class="btn ghost" href="games/fruit-slash.svg" download>下载 .svg</a><a class="btn primary" href="games/fruit-slash.svg?v=1790166424" target="_blank" rel="noopener">开始游戏</a></div></div>
+      <div class="body"><div class="meta"><span class="no">04</span><span class="chip">切水果</span><span class="insp">灵感 · 水果忍者</span></div><h3>水果刀客<small>FRUIT SLASH</small></h3><p class="pitch">挥动鼠标化作刀光，一刀切开满天水果——千万别碰炸弹！</p><div class="style"><b>画风</b> 木纹道场 · 光泽水果与果汁飞溅</div><div class="keys"><span><kbd>鼠标 / 触屏</kbd>划动切水果</span></div><button class="prompt-peek" type="button" data-prompt="fruit-slash"><span class="pp-head"><span class="pp-label">PROMPT</span><span class="agentic">Agentic 生成</span><span class="pp-more">查看完整 →</span></span><span class="pp-text">你负责独立完成一款浏览器小游戏《水果刀客 FRUIT SLASH》：用鼠标或手指划动切水果，玩法借鉴《水果忍者》，角色、名字和美术全部原创。</span></button><div class="foot"><span class="size">159 KB · 1,741 行</span><a class="btn ghost" href="games/fruit-slash.svg" download>下载 .svg</a><a class="btn primary" href="games/fruit-slash.svg?v=1790166424" target="_blank" rel="noopener">开始游戏</a></div></div>
     </article>
     <article class="card" style="--accent:#3fb950;--accent-soft:#3fb9501f;--accent-ink:#2d8539">
       <a class="thumb" href="games/garden-defense.svg?v=1790166369" target="_blank" rel="noopener"><img src="thumbs/garden-defense-title.jpg?v=1790179461" alt="花园保卫战 标题画面" loading="lazy"><img class="alt" src="thumbs/garden-defense-play.jpg?v=1790179462" alt="花园保卫战 游戏画面" loading="lazy"><span class="go">▶ 开始游戏</span></a>
-      <div class="body"><div class="meta"><span class="no">05</span><span class="chip">塔防</span><span class="insp">灵感 · 植物大战僵尸</span></div><h3>花园保卫战<small>GARDEN DEFENSE</small></h3><p class="pitch">收集阳光、种下植物，守住后院，别让僵尸闯进家门！</p><div class="style"><b>画风</b> 柔和卡通 · 阳光后院</div><div class="keys"><span><kbd>鼠标</kbd>选卡 / 种植</span><span><kbd>1-6</kbd>选植物</span><span><kbd>S</kbd>铲子</span></div><div class="foot"><span class="size">132 KB · 1,831 行</span><a class="btn ghost" href="games/garden-defense.svg" download>下载 .svg</a><a class="btn primary" href="games/garden-defense.svg?v=1790166369" target="_blank" rel="noopener">开始游戏</a></div></div>
+      <div class="body"><div class="meta"><span class="no">05</span><span class="chip">塔防</span><span class="insp">灵感 · 植物大战僵尸</span></div><h3>花园保卫战<small>GARDEN DEFENSE</small></h3><p class="pitch">收集阳光、种下植物，守住后院，别让僵尸闯进家门！</p><div class="style"><b>画风</b> 柔和卡通 · 阳光后院</div><div class="keys"><span><kbd>鼠标</kbd>选卡 / 种植</span><span><kbd>1-6</kbd>选植物</span><span><kbd>S</kbd>铲子</span></div><button class="prompt-peek" type="button" data-prompt="garden-defense"><span class="pp-head"><span class="pp-label">PROMPT</span><span class="agentic">Agentic 生成</span><span class="pp-more">查看完整 →</span></span><span class="pp-text">你负责独立完成一款浏览器小游戏《花园保卫战 GARDEN DEFENSE》：收集阳光、种植物守住后院的塔防游戏，玩法借鉴《植物大战僵尸》，角色、名字和美术全部原创。</span></button><div class="foot"><span class="size">132 KB · 1,831 行</span><a class="btn ghost" href="games/garden-defense.svg" download>下载 .svg</a><a class="btn primary" href="games/garden-defense.svg?v=1790166369" target="_blank" rel="noopener">开始游戏</a></div></div>
     </article>
   </main>
+
 
   <section class="tips">
     <div class="tip"><b>怎么玩</b>点击封面或“开始游戏”，会在新标签页直接打开 SVG 文件本身。每个游戏都有标题页、难度选择、玩法说明（H）和暂停（P）。</div>
@@ -152,5 +192,261 @@
     <span><a href="https://github.com/YiyingYang12/awesome-opus5.5-frontend-showcases">github.com/YiyingYang12/awesome-opus5.5-frontend-showcases</a></span>
   </footer>
 </div>
+
+<dialog class="prompt-dialog" id="prompt-dialog" aria-labelledby="pd-title">
+  <div class="pd-head">
+    <div>
+      <div class="pd-meta"><span id="pd-no">01</span><span>PROMPT</span><span class="agentic">Agentic 生成</span></div>
+      <h2 id="pd-title"></h2>
+    </div>
+    <div class="pd-actions">
+      <button class="btn primary" type="button" id="pd-copy">复制</button>
+      <button class="btn ghost" type="button" id="pd-close">关闭</button>
+    </div>
+  </div>
+  <pre class="pd-body" id="pd-body"></pre>
+</dialog>
+
+<script type="text/plain" id="prompt-kitchen-rush">
+你负责独立完成一款浏览器小游戏《厨房大作战 KITCHEN RUSH》：俯视角合作烹饪，玩法借鉴《胡闹厨房》，角色、名字和美术全部原创。
+
+【交付】
+- 只交付一个自包含文件 kitchen-rush.svg，根元素为 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">，窗口缩放时 16:9 画面完整居中。
+- 画面、界面、游戏逻辑（内联脚本）和音效全部写在这一个文件里，不引用任何外部图片、字体、脚本或网络资源，浏览器直接打开就能玩。文件必须是合法的 UTF-8 XML。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次按键或点击后开始发声，M 键静音。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 每局营业 2 分 30 秒。订单小票依次出现在左上角，每张都有倒计时，要在超时前把菜做好送到出餐口。
+- 做菜流程：从食材箱拿食材 → 在砧板上按住切菜键切好 → 下锅煮或下锅煎 → 装进盘子 → 送到出餐口。
+- 三道菜：番茄汤（3 个切好的番茄放进锅里煮）；蔬菜沙拉（切好的生菜 + 切好的番茄）；汉堡（面包 + 煎好的肉饼 + 切好的生菜）。
+- 出餐越快小费越多；订单超时扣分；汤和肉饼放太久会烧焦，只能倒进垃圾桶；端错菜会被退回。每个无效操作都要有简短提示，比如“番茄要先切”“锅满了”“要先装盘”。
+- 单人模式同时拥有两位厨师，用 Tab 切换控制；双人模式两人在同一键盘上合作。
+- 营业结束按得分给 1～3 星，并用 localStorage 记录最佳成绩。
+
+【厨房（选厨房 = 选难度）】
+- 简单「街角小馆」：番茄汤、蔬菜沙拉，订单少、节奏慢。
+- 普通「汉堡快餐」：蔬菜沙拉、汉堡。
+- 困难「忙碌后厨」：三道菜全上，同时最多 5 张订单，食物更快烧焦，还有推车在过道里来回穿行挡路。
+
+【操作】
+- 单人：WASD / 方向键 移动，空格 / J 拿起或放下，按住 K 切菜，Shift 冲刺，Tab 换厨师。
+- 双人：1P 用 WASD 移动、F 拿放、G 切菜、左 Shift 冲刺；2P 用方向键移动、句号键拿放、斜杠键切菜、右 Shift 冲刺（也可以用小键盘 1 / 2 / 0）。
+- P / Esc 暂停，H 帮助，M 静音。
+
+【画面】
+- 俯视卡通厨房，粗描边、暖色调：红白格子桌布作背景，木质台面，米色棋盘格地砖，灶台上放着锅。
+- 两位原创厨师戴白色高帽，1P 系红围巾，2P 系蓝围巾，走路有弹跳感；当前控制的厨师脚下显示高亮圈和 1P / 2P 标签。
+- HUD：左上角是订单小票（菜品图示 + 剩余时间条），顶部中间是闹钟造型的营业倒计时，右上角是金币得分和星级进度，左侧一栏列出当前模式的按键。
+- 反馈：切菜进度条、锅里冒泡、快烧焦时闪烁警告、烧焦时震屏，出餐时飘出得分和小费。
+
+【流程与界面】
+- 标题页：左边选模式（单人 1P / 双人 2P），中间三张厨房卡片，右边“开始”和“帮助”按钮；方向键选择，Enter 开始，并显示最佳成绩。
+- 帮助页“怎么玩”：做菜流程、三道菜配方、单人和双人两套按键，以及计分规则。
+- 开局显示“准备…开工！”；暂停菜单有继续、重新开始、返回标题，暂停时锅里的菜也停住。
+- 结算页“打烊啦！”：出餐数、小费、超时、烧焦、端错次数，以及得分和星级，可以再来一局。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开局，实际做出至少一道菜并出餐。要求 0 个 JS 报错、0 个 XML 解析错误、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+</script>
+
+<script type="text/plain" id="prompt-sunny-kart">
+你负责独立完成一款浏览器小游戏《阳光卡丁车 SUNNY KART》：海边赛道上的伪 3D 卡丁车竞速，玩法借鉴《马力欧卡丁车》，角色、名字和美术全部原创。
+
+【交付】
+- 只交付一个自包含文件 sunny-kart.svg，根元素为 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">，窗口缩放时 16:9 画面完整居中。
+- 画面、界面、游戏逻辑（内联脚本）和音效全部写在这一个文件里，不引用任何外部图片、字体、脚本或网络资源，浏览器直接打开就能玩。文件必须是合法的 UTF-8 XML。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次按键或点击后开始发声，M 键静音。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 赛事叫「阳光杯」：玩家驾驶柴犬豆豆，在海边赛道上和 7 位 AI 对手跑 3 圈，按圈数和赛道进度实时排名，前三名登上领奖台。
+- 起跑：三盏红灯依次亮起，第三盏亮起时按住油门能获得起步加速，踩得太早会提示“油门踩太早啦”。
+- 漂移：转向时按住漂移键，车轮后的火花按蓝、橙、紫三级变亮，按得越久火花越亮，松开时获得对应强度的加速。
+- 道具：撞碎赛道上的彩虹道具箱，随机获得一种——火箭冲刺（瞬间冲刺，沙地也不减速）、香蕉皮（丢在身后，踩到的车打滑转圈）、泡泡护盾（挡下一次香蕉皮或弹弹球）、弹弹球（向前弹出，追着前车跑）。AI 对手也会用道具。
+- 赛道：压过橙色加速带会冲刺；开到沙地和草地会减速；开反方向时提示“逆行！”；进入最后一圈有提示。
+- 8 位原创动物车手：柴犬豆豆、橘猫阿橙、小鸭嘎嘎、青蛙呱呱、企鹅波波、兔子跳跳、小猪噜噜、熊猫团团。
+
+【难度】
+- 简单 50cc / 普通 100cc / 困难 150cc，cc 越高车速越快、对手越强。
+- 每档用 localStorage 记录最好名次和最佳用时。
+
+【操作】
+↑ / W 油门，↓ / S 刹车和倒车，← → / A D 转向，转向时按住 Shift 或空格漂移，X / J 使用道具，P 暂停，H 玩法，M 静音。
+
+【画面】
+- 白天海岸，明亮的低多边形伪 3D：公路按分段投影绘制，随弯道和坡度延伸到远处，两侧是红白路肩；路边有椰子树、观众看台、遮阳伞、灯塔和帆船，远景是海面、低多边形远山、太阳、白云和海鸥；起点是棋盘格拱门。
+- 从车后视角呈现玩家的卡丁车，转向时车身倾斜，漂移时车轮后冒出彩色火花。
+- HUD：左上角是道具槽、“LAP 1/3”圈数和用时；右侧是 8 位车手的实时名次表；左下角是赛道小地图；右下角用大字显示当前名次（如“8th 第8名”）；右上角有暂停和静音按钮。
+
+【流程与界面】
+- 标题页：棋盘格拱门下的赛道场景配大标题，左边选 cc，右边是“开始比赛”和“玩法”按钮，并显示该难度的最佳成绩。
+- 玩法说明：操作、漂移火花、道具图鉴和比赛规则。
+- 暂停菜单：继续比赛、重新开始、返回标题。
+- 比赛结果：名次表、总时间、★最快圈和最佳纪录；拿到冠军时显示“冠军！阳光杯归你啦！”，可以再来一局。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开赛，按住油门并转向跑完一段。要求 0 个 JS 报错、0 个 XML 解析错误、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+</script>
+
+<script type="text/plain" id="prompt-pixel-quest">
+你负责独立完成一款浏览器小游戏《像素大冒险 PIXEL QUEST》：8/16-bit 像素风横版平台跳跃，玩法借鉴《超级马里奥》，角色、名字和美术全部原创。
+
+【交付】
+- 只交付一个自包含文件 pixel-quest.svg，根元素为 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">，窗口缩放时 16:9 画面完整居中。
+- 画面、界面、游戏逻辑（内联脚本）和音效全部写在这一个文件里，不引用任何外部图片、字体、脚本或网络资源，浏览器直接打开就能玩。文件必须是合法的 UTF-8 XML。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次按键或点击后开始发声，M 键静音。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 主角是一只小狐狸，依次穿过 3 个关卡：晴空草原、幽光洞穴、秋枫天桥，最后找到天桥尽头的小屋。
+- 按住跳键跳得更高，按住奔跑键跑得更快、跳得更远。
+- 踩怪、顶砖：从下方顶星星砖会顶出宝物；吃到浆果会变大，变大后能顶碎砖块；拿到金叶后可以用 J / Shift 投掷叶镖。
+- 敌人：橡果兵（踩扁它）、刺猬（不能踩）、甲虫（踩成壳后可以踢出去）、蜜蜂（波浪飞行）、松果弹（可以踩）。
+- 收集金币，每 100 枚奖励 1 条命；下蹲能钻进树洞，通往秘密房间；关卡里设有存档点；时间快用完时给出提醒。
+- 终点旗抓得越高分越多，剩余时间换算成时间奖励；记录最高分，打破时提示“新纪录！”。
+
+【难度】
+- 简单：5 条命，限时 500，3 个存档点。
+- 普通：3 条命，限时 400，1 个存档点。
+- 困难：3 条命，限时 300，没有存档点，怪物更快。
+
+【操作】
+← → / A D 移动，空格 / W / K 跳跃（按住跳得更高），Shift / J 奔跑或投掷叶镖，↓ 下蹲或钻进树洞，P 暂停，H 帮助，M 静音。
+
+【画面】
+- 所有角色、图块和特效都按像素网格绘制，边缘保持锐利；界面文字也用自绘的像素字体。
+- 晴空草原：蓝天白云、圆润的绿色山丘、木栅栏和指路牌；幽光洞穴：幽暗的岩洞里有发光的元素；秋枫天桥：云端之上的红枫色调。
+- HUD：顶部一条像素信息栏，依次是 SCORE、金币数、WORLD 编号、TIME 倒计时和狐狸头像的剩余命数，右上角有暂停和静音按钮。
+
+【流程与界面】
+- 标题页：像素大标题配“PIXEL QUEST”红色横幅，三档难度按钮下方写明命数、限时和存档点，“开始冒险”（Enter）和“帮助”（H）按钮，左上角显示最高分；背景是草原，小狐狸和橡果兵站在地面上。
+- 帮助页“冒险指南”：操作、规则，以及每种敌人和道具的图示说明。
+- 暂停菜单：继续、帮助、返回标题。
+- 每关结束显示过关和时间奖励；三关全部打完显示“全部通关！”结局，失败显示“游戏结束”，两者都列出分数、金币、击败数、用时和最高分。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开始，向右跑、跳跃并踩扁至少一个敌人。要求 0 个 JS 报错、0 个 XML 解析错误、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、像素边缘清晰。
+</script>
+
+<script type="text/plain" id="prompt-fruit-slash">
+你负责独立完成一款浏览器小游戏《水果刀客 FRUIT SLASH》：用鼠标或手指划动切水果，玩法借鉴《水果忍者》，角色、名字和美术全部原创。
+
+【交付】
+- 只交付一个自包含文件 fruit-slash.svg，根元素为 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">，窗口缩放时 16:9 画面完整居中。
+- 画面、界面、游戏逻辑（内联脚本）和音效全部写在这一个文件里，不引用任何外部图片、字体、脚本或网络资源，浏览器直接打开就能玩。文件必须是合法的 UTF-8 XML。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次按键或点击后开始发声，M 键静音。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 水果从画面下方抛起，按住鼠标（或手指）快速划过就能切开；划得太慢切不开。
+- 一刀切开 3 个以上水果得连击奖励；从正中快速切开有机会暴击 +10；连续切中会累积“连斩”。
+- 千万别碰黑色炸弹。
+- 三种模式：
+  经典：3 条命，漏掉 3 个水果或碰到炸弹就结束。
+  街机 60 秒：会出现特殊香蕉，切开后分别触发冰冻减速、双倍得分、狂热果潮；碰到炸弹扣 10 分。
+  禅意 90 秒：没有炸弹，静心切果。
+- 三档难度（简单、普通、困难），每个模式用 localStorage 各自记录最高分。
+
+【操作】
+- 鼠标或触屏划动切水果；在标题页切开某个模式圆环里的水果，就直接开始该模式。
+- 键盘：← → 选模式，↑ ↓ 选难度，Enter 开始；P 暂停，R 重新开始，H 帮助，Esc 返回标题，M 静音。
+
+【画面】
+- 深色木纹道场：横向木板墙上有钉子和木节，上方挂着写有“切”“果”的红灯笼；标题是钉在木板上的宣纸牌匾，毛笔字“水果刀客”压着一道红色刀痕，旁边盖着“刀客”印章。
+- 西瓜、苹果、菠萝、桃子等水果有光泽和立体感，切开后分成两半，露出果肉截面；果汁四溅，在木板上留下果渍。
+- 刀光拖尾随划动速度变粗变亮，快速划动时有破空声；碰到炸弹有明显的爆炸效果。
+- HUD：左上角是西瓜图标、得分和最高分；顶部中间显示“模式 · 难度”；经典模式在右上角用 3 个 ✕ 记录失误；右下角有暂停和静音按钮。
+
+【流程与界面】
+- 标题页：三个模式各是一个圆环，环里放一个水果（经典是西瓜，街机是菠萝，禅意是桃子），下面写模式规则和最高分；底部是帮助按钮、难度选择和“开始”按钮。
+- 帮助页“刀客心法”：划切、连击、炸弹、失误、特殊香蕉和各模式说明。
+- 开局有“预备”倒计时；暂停菜单有继续游戏、重新开始、操作说明、返回标题。
+- 结算页：得分、切开水果数、最佳连击、最长连斩、命中率和本模式最高分，破纪录时提示“新纪录”。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开局，用模拟的鼠标划动切开水果。要求 0 个 JS 报错、0 个 XML 解析错误、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+</script>
+
+<script type="text/plain" id="prompt-garden-defense">
+你负责独立完成一款浏览器小游戏《花园保卫战 GARDEN DEFENSE》：收集阳光、种植物守住后院的塔防游戏，玩法借鉴《植物大战僵尸》，角色、名字和美术全部原创。
+
+【交付】
+- 只交付一个自包含文件 garden-defense.svg，根元素为 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">，窗口缩放时 16:9 画面完整居中。
+- 画面、界面、游戏逻辑（内联脚本）和音效全部写在这一个文件里，不引用任何外部图片、字体、脚本或网络资源，浏览器直接打开就能玩。文件必须是合法的 UTF-8 XML。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次按键或点击后开始发声，M 键静音。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 草坪是 5 行 × 9 列的格子。僵尸从右侧街道沿 5 条路走来，玩家要守住左边的家门。
+- 阳光：点击天上掉下来的阳光收集，暖阳葵也会定时产出。种植物要花阳光，种完后卡片进入冷却。
+- 6 种植物（数字键 1～6）：暖阳葵 50（定时产出阳光）、豌豆炮 100（朝前方逐颗发射豌豆）、连发豆 200（一次连射两颗）、霜冻豆 175（冰豆让僵尸变蓝、减速）、土豆盾 50（超级耐啃，越啃越破）、辣椒爆弹 150（种下即爆，炸飞周围 3×3）。铲子可以移除植物。
+- 5 种僵尸：普通僵尸（慢吞吞，见啥啃啥）、路锥僵尸（头顶路锥，更耐打）、水桶僵尸（铁皮水桶，超级硬）、跑跑僵尸（受伤后撒腿狂奔）、晾衣杆僵尸（撑杆跳过第一株植物）。僵尸会停下来啃挡路的植物。
+- 每行有一台小推车作为最后防线，僵尸碰到时推平整行，只能用一次；僵尸闯进家门就失败。
+- 僵尸分波次进攻，大波来袭前有提示，最后一波有警告；撑过所有波次就胜利。
+
+【难度】
+- 简单“阳光充足”：初始阳光 200，共 8 波。
+- 普通“标准挑战”：初始阳光 125，共 10 波。
+- 困难“僵尸凶猛”：初始阳光 75，共 12 波，僵尸更耐打、更快、来得更密。
+- 难度越高得分倍率越高，用 localStorage 记录最高分。
+
+【操作】
+- 鼠标或触屏：点卡片，再点草地格子种植；点击阳光收集；点铲子再点植物即可移除；右键或 Esc 取消。
+- 键盘：1～6 选卡，方向键移动光标，空格 / 回车 种植、铲除或收阳光；S 铲子，P 暂停，H 帮助，M 静音。
+
+【画面】
+- 柔和卡通的阳光后院：左边是带门牌号的浅色木屋，每行门前停着一台红色小推车；中间是深浅相间的草坪格子，镶着花丛边；上方是白色木栅栏和大树；右边是人行道、邮筒、消防栓和街道。
+- 植物圆润、有表情；僵尸滑稽不吓人，穿衬衫系领带，分别戴路锥、顶水桶，跑跑僵尸穿橙色运动服、系头带，晾衣杆僵尸扛着一根晾衣杆。
+- HUD：左上角是阳光数和 6 张植物卡（标价格和快捷键，冷却时盖上遮罩），旁边是铲子；右上角是难度、分数、暂停和静音；右下角是波次进度条，用僵尸头像和旗帜标出大波；选中的格子用虚线框高亮。
+
+【流程与界面】
+- 标题页：木牌大标题，中间是难度选择、“开始游戏”和“游戏帮助”按钮以及最高分，底部写着鼠标和键盘两种操作；背景里植物和僵尸已经就位。
+- 帮助页“怎么玩”：收集阳光、选卡种植、挡住僵尸、小推车、撑过所有波次，并附植物图鉴和僵尸档案（价格、冷却、特点）。
+- 开局显示“准备好了吗？开始守护！”；暂停菜单有继续游戏、重新开始、返回标题。
+- 结算页：胜利显示“花园守住啦！”，失败显示“僵尸闯进家门啦！”，列出本局得分、坚持到第几波、击败僵尸数、种下植物数、用时和剩余小推车。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开局，收集阳光并种下至少一株植物。要求 0 个 JS 报错、0 个 XML 解析错误、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+</script>
+
+<script>
+(() => {
+  const dlg = document.getElementById('prompt-dialog');
+  const body = document.getElementById('pd-body');
+  const copyBtn = document.getElementById('pd-copy');
+  document.querySelectorAll('[data-prompt]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.card');
+      const css = getComputedStyle(card);
+      dlg.style.setProperty('--accent', css.getPropertyValue('--accent'));
+      dlg.style.setProperty('--accent-ink', css.getPropertyValue('--accent-ink'));
+      document.getElementById('pd-no').textContent = card.querySelector('.no').textContent;
+      document.getElementById('pd-title').textContent = card.querySelector('h3').firstChild.textContent;
+      body.textContent = document.getElementById('prompt-' + btn.dataset.prompt).textContent.trim();
+      copyBtn.textContent = '复制';
+      dlg.showModal();
+      body.scrollTop = 0;
+    });
+  });
+  document.getElementById('pd-close').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(body.textContent);
+    } catch (err) {
+      // navigator.clipboard only exists in secure contexts; this page is served over plain http.
+      const range = document.createRange();
+      range.selectNodeContents(body);
+      const sel = getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+    }
+    copyBtn.textContent = '已复制';
+  });
+})();
+</script>
 </body>
 </html>
