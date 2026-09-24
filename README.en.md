@@ -4,7 +4,7 @@
 
 > A curated list of frontend work made by Claude Opus 5.5 (released 2026-09-22): SVG games and animation, the pelican-on-a-bicycle family, Lottie, Three.js / WebGL, code-drawn video, websites and UI — anything the model wrote as code and that runs in a browser.
 
-**Play online:** [Overview](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/) · [Voxel](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/voxel/)
+**Play online:** [Overview](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/) · [Voxel](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/voxel/) · [Re-creations](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/repro/) · [Mid-Autumn](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/midautumn/)
 
 ## Contents
 
@@ -15,8 +15,8 @@ In each section, pieces made in this repo come first and include the full prompt
 - 🚲 [More Riders](#-more-riders) — 9 cases
 - ✨ [SVG Animation](#-svg-animation) — 7 cases
 - 🎞️ [Lottie](#-lottie) — 5 cases
-- 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 8 cases
-- 🎬 [Code-drawn Animation](#-code-drawn-animation) — 9 cases
+- 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 10 cases
+- 🎬 [Code-drawn Animation](#-code-drawn-animation) — 10 cases
 - 🖥️ [Web & UI](#-web--ui) — 9 cases
 - 📊 [Benchmarks & Tools](#-benchmarks--tools)
 - [Inclusion criteria & contributing](#inclusion-criteria--contributing)
@@ -900,6 +900,8 @@ Bodymovin JSON, played with lottie-web. Shapes only — no images, no fonts.
 
 | Piece | Source | Date | Notes |
 | --- | --- | --- | --- |
+| [A road that forgets which way is down](https://x.com/chetanankola/status/2103001194696458512) | [Chetan Ankola (@chetanankola)](https://x.com/chetanankola) | 2026-09-24 | The author’s first Opus 5.5 vibe-coded Three.js experience: the road folds 90° up a yellow wall, runs upside down across a ceiling, then turns into sheet music you steer through to play each street’s melody. Watercolour, ink, and a radio on the roof. |
+| [Island railway “Pelagia”: Opus 5.5 vs GPT-6 Astra](https://x.com/vib3coded/status/2102672447405228135) | [Vib3Coded (@vib3coded)](https://x.com/vib3coded) | 2026-09-23 | One prompt, an island railway with cutaway water: Opus 5.5 built a coastal town and a striking red bridge for $2.65; Astra went tropical with an underwater tunnel for $8.49 (API pricing). An earlier post compared Opus 5 and 5.5 on a volcanic island, where 5.5 added sea life, mammoths and northern lights. |
 | [Interactive 3D inside a datacenter](https://x.com/RyanSael/status/2102740041621762166) | [Ryan Sael (@RyanSael)](https://x.com/RyanSael) | 2026-09-23 | Asked Opus 5.5 to show “what’s inside the building it runs in”: overload a rack and watch GPUs throttle, then follow the heat out the roof. One generation, 1 hour 53 minutes, $38.99 API. [Live demo](https://datacenter.lab.sael.net) |
 | [The same prompt, three 3D landscape sites: Opus 5.5 / Astra / Sol](https://x.com/alin_zone/status/2102701111090008066) | [A-Lin (@alin_zone)](https://x.com/alin_zone) | 2026-09-23 | The same prompt for a real-time interactive 3D landscape site. The video shows Opus 5.5, GPT-6 Astra, then GPT-6 Sol. |
 | [Cartoon life: Opus 5.5 × Three.js](https://x.com/higgsfield_ai/status/2102618931622207535) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | Everyday objects given cartoon life in Three.js. |
@@ -915,6 +917,7 @@ Animations where every frame is drawn by code, and videos rendered from them.
 
 | Piece | Source | Date | Notes |
 | --- | --- | --- | --- |
+| [A collage-style Mid-Autumn short](https://x.com/ring_hyacinth/status/2102986085328716066) | [Ring Hyacinth (@ring_hyacinth)](https://x.com/ring_hyacinth) | 2026-09-24 | A 40-second collage-style Mid-Autumn film. Opus 5.5 drew every frame in JavaScript (hand-drawn texture with p5.js + p5.brush) and synthesized the sound effects in Node.js; the author supplied script and music, and Nano Banana Pro made the background plates and paper textures. |
 | [An animated short Opus 5.5 made on its own terms](https://www.xiaohongshu.com/explore/6ab45d76000000000202be26?xsec_token=CBjc6DgxV29PzCmyBsUUBA6MoDnERoYo_3i5AdRNAl2tc=&xsec_source=pc_share) | 春和景明.LinxAI (Xiaohongshu) | 2026-09-24 | A 48-second vertical short; subject and visuals were left entirely to Opus 5.5. The post does not share the prompt. |
 | [The water cycle: a seamless one-shot loop](https://x.com/higgsfield_ai/status/2102781807179735211) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | Opus 5.5 and GPT-6 Sol together. Brief: “Create a seamless looping animation of the water cycle, entirely in code.” Environment, lighting, and character animation are built in code, rendered live in the browser, and packed into one HTML file with a timeline. |
 | [What is the purpose of life?](https://x.com/HarveenChadha/status/2102759892507398309) | [Harveen Singh Chadha (@HarveenChadha)](https://x.com/HarveenChadha) | 2026-09-23 | A one-shot pure-JavaScript animation in a whimsical hand-drawn collage style. Script and score by Opus too: 16 minutes, 19k tokens, $3.60. Prompt: “Create a pure javascript animation. 30s-60s whimsical hand drawn collage style with appropriate audio on the topic what is the purpose of life ?” |

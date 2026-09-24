@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>CatWalk — a night walk across the city</title>
+<meta name="description" content="CatWalk: a 3D side-scrolling cat game set in a nighttime city. One button, nine lives, four streets.">
+<style>
+  :root {
+    --ink: #f3e9d8;
+    --dim: rgba(243, 233, 216, 0.62);
+    --faint: rgba(243, 233, 216, 0.32);
+    --amber: #ffbe73;
+    --sans: "Helvetica Neue", "Avenir Next", "Segoe UI", "Montserrat", "DejaVu Sans", Arial, sans-serif;
+    /* Linux fontconfig maps "Helvetica Neue" to Liberation Sans, which has no light weight */
+    --thin: "Avenir Next", "Segoe UI Light", "DejaVu Sans", "Helvetica Neue", "Futura", "Segoe UI", Arial, sans-serif;
+    --serif: "Cormorant Garamond", "Playfair Display", "Didot", "Bodoni 72", "Iowan Old Style", Georgia, "DejaVu Serif", serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #04050a; overflow: hidden; color: var(--ink); font-family: var(--sans); }
+  #stage, #stage canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  #touch { position: fixed; inset: 0; z-index: 20; touch-action: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+  .overlay { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
+  .overlay.show { opacity: 1; }
+
+  /* title */
+  #title { display: flex; flex-direction: column; justify-content: center; padding: 0 0 0 clamp(28px, 7vw, 120px); background: linear-gradient(90deg, rgba(4, 5, 10, 0.62), rgba(4, 5, 10, 0.34) 38%, rgba(4, 5, 10, 0) 62%); }
+  #title .kicker { font: 500 clamp(10px, 0.95vw, 13px)/1 var(--sans); letter-spacing: 0.42em; text-transform: uppercase; color: var(--amber); opacity: 0.85; margin-bottom: 2.2vh; }
+  #title h1 { margin: 0; font: 200 clamp(54px, 9.6vw, 164px)/0.92 var(--thin); letter-spacing: 0.2em; margin-left: -0.06em; text-shadow: 0 0 40px rgba(255, 180, 110, 0.25); }
+  #title .line { position: relative; width: min(46vw, 640px); height: 1px; background: linear-gradient(90deg, rgba(255, 200, 140, 0.9), rgba(255, 200, 140, 0)); margin: 2.4vh 0 2.2vh; }
+  #title .line svg { position: absolute; bottom: 0; left: 0; width: 34px; height: 20px; fill: var(--ink); animation: stroll 9s linear infinite; }
+  @keyframes stroll { from { transform: translateX(0); opacity: 0; } 8% { opacity: 1; } 88% { opacity: 1; } to { transform: translateX(min(42vw, 600px)); opacity: 0; } }
+  #title .tag { font: italic 400 clamp(17px, 1.8vw, 26px)/1.35 var(--serif); color: var(--dim); max-width: 34em; }
+  #title .go { margin-top: 5vh; font: 500 clamp(12px, 1.1vw, 15px)/1 var(--sans); letter-spacing: 0.3em; text-transform: uppercase; animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+  #title .keys { margin-top: 3.2vh; font: 400 clamp(11px, 0.95vw, 13.5px)/1.9 var(--sans); color: rgba(243, 233, 216, 0.5); letter-spacing: 0.06em; text-shadow: 0 0 2px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 0.9), 0 0 14px rgba(0, 0, 0, 0.8); }
+  #title .keys b { color: var(--dim); font-weight: 500; }
+  #titleBest { margin-top: 2vh; font: 400 12px/1.4 var(--sans); letter-spacing: 0.12em; color: var(--amber); opacity: 0.7; }
+
+  /* hud */
+  #hud { position: fixed; inset: 0; z-index: 8; pointer-events: none; opacity: 0; transition: opacity 0.6s ease; text-shadow: 0 0 2px rgba(0, 0, 0, 0.7), 0 0 10px rgba(0, 0, 0, 0.85); }
+  #hud.show { opacity: 1; }
+  #hud .tl { position: absolute; top: clamp(14px, 2.6vh, 28px); left: clamp(16px, 2.4vw, 36px); }
+  #secName { font: 500 11px/1 var(--sans); letter-spacing: 0.34em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+  #lives { display: flex; gap: 5px; }
+  #lives i { width: 19px; height: 16px; display: block; transition: opacity 0.4s, transform 0.4s; }
+  #lives svg { width: 100%; height: 100%; fill: #f3e9d8; }
+  #lives svg .e { fill: #ffbe4a; }
+  #lives i.lost { opacity: 0.16; transform: scale(0.82); }
+  #lives i.lost svg .e { fill: #000; }
+  #hud .tc { position: absolute; top: clamp(20px, 3.4vh, 34px); left: 50%; transform: translateX(-50%); width: min(34vw, 420px); }
+  #rail { position: relative; height: 1px; background: rgba(243, 233, 216, 0.25); }
+  #rail b { position: absolute; top: -3px; width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%; background: rgba(255, 150, 90, 0.8); box-shadow: 0 0 8px rgba(255, 140, 70, 0.8); }
+  #rail u { position: absolute; top: -5px; width: 1px; height: 11px; background: rgba(243, 233, 216, 0.4); }
+  #rail::after { content: ""; position: absolute; right: -7px; top: -6px; width: 13px; height: 13px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #fff9ea, #d9d0bc 60%, rgba(0, 0, 0, 0) 62%); box-shadow: 0 0 12px rgba(220, 225, 255, 0.7); }
+  #cursor { position: absolute; top: -9px; width: 20px; height: 12px; margin-left: -10px; transition: left 0.12s linear; }
+  #cursor svg { width: 100%; height: 100%; fill: var(--ink); }
+  #hud .tr { position: absolute; top: clamp(14px, 2.6vh, 28px); right: clamp(16px, 2.4vw, 36px); text-align: right; }
+  #fishRow { font: 300 20px/1 var(--thin); letter-spacing: 0.08em; display: flex; align-items: center; gap: 9px; justify-content: flex-end; }
+  #fishRow svg { width: 26px; height: 14px; fill: var(--amber); filter: drop-shadow(0 0 6px rgba(255, 170, 70, 0.8)); }
+  #fishRow small { font-size: 13px; color: rgba(243, 233, 216, 0.5); }
+  #timer { margin-top: 8px; font: 400 12px/1 var(--sans); letter-spacing: 0.2em; color: var(--dim); font-variant-numeric: tabular-nums; }
+  #btns { position: fixed; z-index: 30; right: clamp(14px, 2vw, 30px); bottom: clamp(14px, 2.4vh, 26px); display: flex; gap: 10px; }
+  #btns button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(243, 233, 216, 0.25); background: rgba(8, 9, 16, 0.35); color: var(--dim); cursor: pointer; padding: 0; display: grid; place-items: center; backdrop-filter: blur(4px); }
+  #btns button svg { width: 15px; height: 15px; fill: currentColor; }
+  #muteBtn .x { display: none; }
+  #muteBtn.off .x { display: block; }
+  #muteBtn.off .w { display: none; }
+
+  #toast { position: fixed; z-index: 9; left: 50%; top: 23%; transform: translate(-50%, 6px); font: 500 13px/1 var(--sans); letter-spacing: 0.26em; text-transform: uppercase; opacity: 0; transition: opacity 0.35s, transform 0.35s; pointer-events: none; white-space: nowrap; text-shadow: 0 0 18px rgba(0, 0, 0, 0.9); }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  #toast.bad { color: #ffb09a; }
+  #toast.soft { color: var(--amber); }
+  #card { position: fixed; z-index: 9; left: clamp(22px, 4vw, 70px); bottom: clamp(72px, 13vh, 132px); pointer-events: none; opacity: 0; text-shadow: 0 0 18px rgba(0, 0, 0, 0.8); }
+  #card.show { animation: card 4.2s ease forwards; }
+  @keyframes card { 0% { opacity: 0; transform: translateY(10px); } 14% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; } }
+  #cardNum { font: italic 400 clamp(26px, 3vw, 44px)/1 var(--serif); color: var(--amber); }
+  #cardName { font: 200 clamp(26px, 3.4vw, 52px)/1.1 var(--thin); letter-spacing: 0.22em; text-transform: uppercase; margin-top: 4px; }
+  #hint { position: fixed; z-index: 9; left: 50%; bottom: clamp(24px, 7vh, 70px); transform: translateX(-50%); font: 400 13px/1 var(--sans); letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim); opacity: 0; transition: opacity 0.8s; pointer-events: none; white-space: nowrap; }
+  #hint.show { opacity: 1; }
+
+  /* result screens */
+  .panel { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: radial-gradient(ellipse at center, rgba(4, 5, 12, 0.72), rgba(4, 5, 12, 0.18) 70%); }
+  .panel .kicker { font: 500 12px/1 var(--sans); letter-spacing: 0.5em; text-transform: uppercase; color: var(--amber); text-shadow: 0 0 8px rgba(0, 0, 0, 0.95), 0 0 16px rgba(0, 0, 0, 0.7); }
+  .panel h2 { margin: 2.2vh 0 1vh; font: 200 clamp(38px, 5.6vw, 88px)/1 var(--thin); letter-spacing: 0.22em; margin-right: -0.22em; text-shadow: 0 0 22px rgba(0, 0, 0, 0.75); }
+  .panel .sub { font: italic 400 clamp(17px, 1.7vw, 24px)/1.4 var(--serif); color: var(--dim); text-shadow: 0 0 12px rgba(0, 0, 0, 0.9); }
+  .stats { display: grid; grid-template-columns: repeat(4, auto); gap: 0 clamp(22px, 3.6vw, 56px); margin: 4.6vh 0 3.4vh; }
+  .stats div span { display: block; font: 500 10px/1 var(--sans); letter-spacing: 0.34em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px; }
+  .stats div strong { font: 200 clamp(22px, 2.4vw, 34px)/1 var(--thin); letter-spacing: 0.06em; font-variant-numeric: tabular-nums; }
+  .rank { display: flex; align-items: baseline; gap: 16px; }
+  .rank strong { font: italic 400 clamp(46px, 5vw, 74px)/1 var(--serif); color: var(--amber); text-shadow: 0 0 30px rgba(255, 170, 80, 0.5); }
+  .rank span { font: 300 clamp(15px, 1.5vw, 20px)/1 var(--thin); letter-spacing: 0.3em; text-transform: uppercase; }
+  #rBest { margin-top: 2vh; font: 400 12px/1 var(--sans); letter-spacing: 0.16em; color: var(--dim); }
+  .panel .go { margin-top: 5vh; font: 500 13px/1 var(--sans); letter-spacing: 0.3em; text-transform: uppercase; animation: pulse 2.4s ease-in-out infinite; text-shadow: 0 0 3px rgba(0, 0, 0, 0.95), 0 0 12px rgba(0, 0, 0, 0.8); }
+  #pause h2 { font-size: clamp(30px, 4vw, 60px); }
+  #gameover h2 { font-size: clamp(28px, 4.2vw, 70px); padding: 0 4vw; }
+  #results { background: radial-gradient(ellipse 58% 62% at 50% 46%, rgba(4, 5, 12, 0.78), rgba(4, 5, 12, 0.5) 55%, rgba(4, 5, 12, 0.14) 100%); }
+
+  #loading { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: #04050a; font: italic 400 20px/1 var(--serif); color: var(--dim); transition: opacity 0.9s ease; }
+  #loading.done { opacity: 0; pointer-events: none; }
+  #noscript { position: fixed; inset: 0; display: grid; place-items: center; z-index: 60; background: #04050a; }
+
+  @media (max-width: 720px) {
+    #title { padding: 0 24px; justify-content: flex-end; padding-bottom: 12vh; }
+    #title .keys { display: none; }
+    .stats { grid-template-columns: repeat(2, auto); gap: 18px 40px; }
+    #hud .tc { top: 64px; width: 60vw; }
+    #hint { white-space: normal; width: 86vw; text-align: center; line-height: 1.7; }
+  }
+</style>
+<script type="importmap">
+{ "imports": { "three": "../vendor/three/build/three.module.js", "three/addons/": "../vendor/three/jsm/" } }
+</script>
+</head>
+<body>
+<div id="stage"></div>
+<div id="touch" aria-label="Tap to jump"></div>
+
+<div id="hud">
+  <div class="tl"><div id="secName">I · Gaslight Lane</div><div id="lives"></div></div>
+  <div class="tc"><div id="rail"><div id="cursor"><svg viewBox="0 0 40 24"><path d="M2 14 Q9 12 12 13 Q18 7 26 9 L30 5 L31 9 L34 7 L34 12 Q35 16 31 17 L33 23 L30 23 L28 18 L18 18 L16 23 L13 23 L13 17 Q7 17 2 14 Z"/></svg></div></div></div>
+  <div class="tr">
+    <div id="fishRow"><svg viewBox="0 0 30 16"><path d="M29 8 Q24 1 13 2.5 Q7 3.5 4 7 L0 2 L1.5 8 L0 14 L4 9 Q7 12.5 13 13.5 Q24 15 29 8 Z"/></svg><span id="fishN">0</span><small>/ <span id="fishT">0</span></small></div>
+    <div id="timer">0:00.0</div>
+  </div>
+</div>
+
+<div id="card"><div id="cardNum">I</div><div id="cardName">Gaslight Lane</div></div>
+<div id="toast"></div>
+<div id="hint">Space · Click · Tap — jump &nbsp;·&nbsp; hold to leap higher</div>
+
+<div id="title" class="overlay">
+  <div class="kicker">A night walk in four streets</div>
+  <h1>CATWALK</h1>
+  <div class="line"><svg viewBox="0 0 40 24"><path d="M2 14 Q9 12 12 13 Q18 7 26 9 L30 5 L31 9 L34 7 L34 12 Q35 16 31 17 L33 23 L30 23 L28 18 L18 18 L16 23 L13 23 L13 17 Q7 17 2 14 Z"/></svg></div>
+  <div class="tag">One black cat, nine lives, and the whole city after dark.<br>The street scrolls on — keep pace with the night.</div>
+  <div class="go">Press Space · Click · Tap to begin</div>
+  <div class="keys">
+    <b>Jump</b> &nbsp;Space · W · ↑ · Click / Tap &nbsp;—&nbsp; <b>hold</b> for a higher leap<br>
+    Clear gaps, hop the pots, mind the low lanterns and the steam. Don't fall behind the screen.<br>
+    <b>P</b> pause &nbsp;·&nbsp; <b>M</b> sound
+  </div>
+  <div id="titleBest"></div>
+</div>
+
+<div id="pause" class="overlay panel">
+  <div class="kicker">Paused</div>
+  <h2>A QUIET MOMENT</h2>
+  <div class="go">Press P · Space · Click to resume</div>
+</div>
+
+<div id="results" class="overlay panel">
+  <div class="kicker">Stage clear</div>
+  <h2>MOONRISE</h2>
+  <div class="sub">The clock tower at midnight, and the moon all to yourself.</div>
+  <div class="stats">
+    <div><span>Time</span><strong id="rTime">0:00.0</strong></div>
+    <div><span>Fish</span><strong id="rFish">0</strong></div>
+    <div><span>Lives</span><strong id="rLives">9</strong></div>
+    <div><span>Jumps</span><strong id="rJumps">0</strong></div>
+  </div>
+  <div class="rank"><strong id="rRank">A</strong><span id="rTitle">Night Prowler</span></div>
+  <div id="rBest"></div>
+  <div class="go">Press Space · Click to walk again</div>
+</div>
+
+<div id="gameover" class="overlay panel">
+  <div class="kicker">Nine lives spent</div>
+  <h2>THE NIGHT GROWS LONG</h2>
+  <div class="sub">The last of them went in <span id="goWhere">Gaslight Lane</span>.</div>
+  <div class="go">Press Space · Click to try again</div>
+</div>
+
+<div id="btns">
+  <button id="pauseBtn" title="Pause (P)" aria-label="Pause"><svg viewBox="0 0 16 16"><rect x="3" y="2" width="3.4" height="12" rx="1"/><rect x="9.6" y="2" width="3.4" height="12" rx="1"/></svg></button>
+  <button id="muteBtn" title="Sound (M)" aria-label="Toggle sound"><svg viewBox="0 0 16 16"><path d="M2 5.5h3L9 2v12L5 10.5H2z"/><path class="w" d="M11 4.5q2.4 3.5 0 7l-.9-.8q1.7-2.7 0-5.4z"/><path class="x" d="M11 5.6l.8-.8L13.4 6.4 15 4.8l.8.8-1.6 1.6 1.6 1.6-.8.8-1.6-1.6-1.6 1.6-.8-.8 1.6-1.6z"/></svg></button>
+</div>
+
+<div id="loading">lighting the lamps…</div>
+<noscript><div id="noscript">CatWalk needs JavaScript and WebGL.</div></noscript>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

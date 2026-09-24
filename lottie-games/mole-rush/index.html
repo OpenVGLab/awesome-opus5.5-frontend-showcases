@@ -1,0 +1,1237 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>萌鼠出洞 MOLE RUSH</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1b2a17; }
+  body {
+    font-family: "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", "WenQuanYi Micro Hei", sans-serif;
+    user-select: none; -webkit-user-select: none; touch-action: none; -webkit-tap-highlight-color: transparent;
+  }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; overflow: hidden; }
+  #stage.playing { cursor: none; }
+  #world { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+  .lot { position: absolute; pointer-events: none; }
+  .lot > svg { display: block; }
+  .fill { left: 0; top: 0; width: 100%; height: 100%; }
+  .hidden { display: none !important; }
+  .slot { position: absolute; pointer-events: none; }
+
+  /* text styles */
+  .txt { position: absolute; pointer-events: none; white-space: nowrap; line-height: 1; }
+  .outline { paint-order: stroke fill; -webkit-text-stroke: 8px #5a2e0e; }
+  .wood { color: #6b3a15; }
+
+  /* HUD */
+  #hud { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; z-index: 60; }
+  #hudScore { position: absolute; left: 20px; top: 14px; width: 440px; height: 150px; }
+  #hudScore .label { left: 126px; top: 34px; font-size: 26px; font-weight: 700; color: #8a4f1c; letter-spacing: 4px; }
+  #hudScore .value { left: 124px; top: 64px; font-size: 60px; font-weight: 900; color: #fff; -webkit-text-stroke: 9px #7a3f12; paint-order: stroke fill; }
+  #hudCombo { position: absolute; left: 30px; top: 160px; width: 380px; height: 120px; }
+  #hudCombo .count { left: 100px; top: 38px; font-size: 42px; font-weight: 900; color: #fff; -webkit-text-stroke: 8px #6b3312; paint-order: stroke fill; }
+  #hudCombo .count small { font-size: 26px; margin-left: 6px; letter-spacing: 2px; }
+  #hudCombo .mult { right: 34px; top: 40px; font-size: 38px; font-weight: 900; color: #fff6c2; -webkit-text-stroke: 8px #6b3312; paint-order: stroke fill; }
+  #hudCombo.off .count, #hudCombo.off .mult { color: #f4efe6; -webkit-text-stroke-color: #7d7466; }
+  #hudTimer { position: absolute; left: 850px; top: 6px; width: 220px; height: 220px; }
+  #hudTimer .value { left: 0; width: 220px; top: 88px; text-align: center; font-size: 62px; font-weight: 900; color: #2f4356; }
+  #hudTimer.warn .value { color: #ff3b30; }
+  #status { position: absolute; left: 760px; width: 400px; top: 232px; text-align: center; }
+  #status div { position: static; display: block; margin-bottom: 8px; font-size: 34px; font-weight: 900; color: #fff; paint-order: stroke fill; }
+  #stFever { -webkit-text-stroke: 8px #c2185b; color: #fff3a0 !important; }
+  #stSlow { -webkit-text-stroke: 8px #1e6fa8; color: #e8fbff !important; }
+  .roundBtn { position: absolute; top: 16px; width: 130px; height: 130px; padding: 0; border: 0; background: transparent; cursor: pointer; pointer-events: auto; outline: none; }
+  #btnPause { left: 1770px; }
+  #btnSound { left: 1630px; z-index: 95; }
+
+  /* menus */
+  #overlay { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; z-index: 80; pointer-events: none; }
+  .screen { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; isolation: isolate; }
+  .panel { position: absolute; pointer-events: auto; isolation: isolate; }
+  .panelBody { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .18s ease .12s; }
+  .panel.shown .panelBody { opacity: 1; }
+  .btn { position: absolute; padding: 0; border: 0; background: transparent; cursor: pointer; pointer-events: auto; outline: none; font-family: inherit; }
+  .btn .label { position: absolute; left: 0; right: 0; top: 44%; transform: translateY(-50%); text-align: center; font-weight: 900; color: #fff; paint-order: stroke fill; line-height: 1; white-space: nowrap; transition: transform .06s; }
+  .btn.orange .label { -webkit-text-stroke: 8px #7a3a0a; }
+  .btn.green .label { -webkit-text-stroke: 8px #1e5424; }
+  .btn:active .label { transform: translateY(calc(-50% + 6px)); }
+  .btn.diff .label { top: 42%; font-size: 40px; color: #7a4a1c; -webkit-text-stroke: 0; }
+  .btn.diff.sel .label { color: #fff; -webkit-text-stroke: 8px #8a4a06; }
+  h1, h2, h3, p { margin: 0; }
+  .title-zh { position: absolute; left: 410px; width: 1100px; top: 168px; text-align: center; font-size: 150px; font-weight: 900; color: #ff8a2a; letter-spacing: 18px; -webkit-text-stroke: 14px #5a2e0e; paint-order: stroke fill; text-shadow: 0 10px 0 rgba(90, 46, 14, .35); line-height: 1; }
+  .title-en { position: absolute; left: 410px; width: 1100px; top: 358px; text-align: center; font-size: 46px; font-weight: 900; color: #fff; letter-spacing: 14px; -webkit-text-stroke: 7px #7a1e2a; paint-order: stroke fill; line-height: 1; }
+  .ptitle { position: absolute; left: 0; width: 100%; text-align: center; font-weight: 900; color: #7a3f12; line-height: 1; }
+  .psub { position: absolute; left: 0; width: 100%; text-align: center; font-weight: 700; color: #b0763a; letter-spacing: 6px; line-height: 1; }
+  .best { position: absolute; width: 250px; text-align: center; font-size: 26px; font-weight: 700; color: #8a5324; line-height: 1; }
+  .best b { color: #d9480f; font-size: 30px; }
+  .hint { position: absolute; font-size: 24px; color: #8a5324; font-weight: 700; line-height: 1.2; white-space: nowrap; }
+  .card { position: absolute; width: 300px; height: 380px; }
+  .card .nm { position: absolute; left: 0; width: 300px; top: 290px; text-align: center; font-size: 34px; font-weight: 900; color: #6b3a15; line-height: 1; }
+  .card .pt { position: absolute; left: 0; width: 300px; top: 334px; text-align: center; font-size: 26px; font-weight: 700; color: #b8520e; line-height: 1.25; white-space: nowrap; }
+  .card .pt.bad { color: #d32f2f; }
+  .card .pt.cool { color: #1e7fc0; }
+  .cols { position: absolute; left: 110px; top: 540px; width: 1460px; display: flex; gap: 60px; }
+  .cols section { flex: 1; }
+  .cols h3 { font-size: 36px; color: #7a3f12; margin-bottom: 18px; font-weight: 900; }
+  .cols li { font-size: 27px; color: #6b3a15; line-height: 1.55; font-weight: 700; list-style: none; white-space: nowrap; }
+  .cols ul { margin: 0; padding: 0; }
+  .cols kbd { font-family: inherit; font-size: 28px; font-weight: 900; color: #d9480f; margin: 0 3px; }
+  .res-score { position: absolute; left: 0; width: 100%; top: 346px; text-align: center; font-size: 120px; font-weight: 900; color: #ff8a2a; -webkit-text-stroke: 12px #6b3312; paint-order: stroke fill; line-height: 1; }
+  .res-score small { font-size: 44px; margin-left: 10px; color: #fff; -webkit-text-stroke: 8px #6b3312; }
+  .res-best { position: absolute; left: 0; width: 100%; top: 482px; text-align: center; font-size: 30px; font-weight: 700; color: #8a5324; line-height: 1; }
+  .stats { position: absolute; left: 90px; width: 980px; top: 540px; display: flex; justify-content: center; gap: 70px; }
+  .stat { text-align: center; }
+  .stat .k { font-size: 26px; color: #9a6a3a; font-weight: 700; line-height: 1.2; }
+  .stat .v { font-size: 50px; color: #6b3a15; font-weight: 900; line-height: 1.1; }
+  .icons { position: absolute; left: 70px; width: 1020px; top: 620px; height: 180px; }
+  .ico { position: absolute; top: 0; width: 180px; height: 180px; }
+  .ico .cnt { position: absolute; left: 0; width: 180px; top: 148px; text-align: center; font-size: 30px; font-weight: 900; color: #6b3a15; line-height: 1; }
+  #newRecord { position: absolute; left: 510px; top: -36px; width: 900px; height: 200px; pointer-events: none; z-index: 3; }
+  #newRecord .txt { left: 0; width: 900px; top: 64px; text-align: center; font-size: 56px; font-weight: 900; color: #fff; letter-spacing: 8px; -webkit-text-stroke: 8px #7a1e2a; paint-order: stroke fill; }
+  #center { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; z-index: 70; }
+  #countNum { position: absolute; left: 0; width: 1920px; top: 452px; text-align: center; font-size: 170px; font-weight: 900; color: #fff; -webkit-text-stroke: 14px #7a3a0a; paint-order: stroke fill; line-height: 1; }
+  #lastTen { position: absolute; left: 0; width: 1920px; top: 380px; text-align: center; font-size: 200px; font-weight: 900; color: rgba(255, 255, 255, .92); -webkit-text-stroke: 14px rgba(200, 30, 30, .9); paint-order: stroke fill; line-height: 1; }
+  #bannerBox { position: absolute; left: 510px; top: 200px; width: 900px; height: 200px; }
+  #bannerBox .txt { left: 0; width: 900px; top: 58px; text-align: center; font-size: 62px; font-weight: 900; color: #fff; letter-spacing: 8px; -webkit-text-stroke: 9px #7a1e2a; paint-order: stroke fill; }
+  #popups { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; z-index: 78; }
+  .pop { position: absolute; font-weight: 900; font-size: 58px; color: #fff; -webkit-text-stroke: 9px #7a3a0a; paint-order: stroke fill; white-space: nowrap; line-height: 1; will-change: transform, opacity; }
+  .pop.gold { color: #fff3a0; -webkit-text-stroke-color: #a8660e; font-size: 70px; }
+  .pop.bad { color: #ffd6d6; -webkit-text-stroke-color: #b71c1c; }
+  .pop.miss { color: #eee; -webkit-text-stroke-color: #555; font-size: 44px; }
+  .pop.ice { color: #e8fbff; -webkit-text-stroke-color: #1e6fa8; }
+  .pop.time { color: #eaffc2; -webkit-text-stroke-color: #2e7d32; font-size: 48px; }
+  #loading { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; background: #1b2a17; z-index: 200; }
+  #loading div { position: absolute; left: 0; width: 1920px; top: 500px; text-align: center; font-size: 56px; font-weight: 900; color: #fff; -webkit-text-stroke: 8px #2e6b1e; paint-order: stroke fill; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world">
+    <div id="board"></div>
+    <div id="fxLayer"></div>
+  </div>
+  <div id="popups"></div>
+  <div id="hud" class="hidden">
+    <div id="hudScore"><div class="txt label">分数</div><div class="txt value" id="scoreVal">0</div></div>
+    <div id="hudCombo" class="off"><div class="txt count" id="comboVal">0<small>连击</small></div><div class="txt mult" id="multVal">×1</div></div>
+    <div id="hudTimer"><div class="txt value" id="timeVal">60</div></div>
+    <div id="status"><div class="txt hidden" id="stFever">狂热中 分数×2</div><div class="txt hidden" id="stSlow">减速中 5.0 秒</div></div>
+    <button id="btnPause" class="roundBtn" title="暂停 (P)" aria-label="暂停"></button>
+  </div>
+  <button id="btnSound" class="roundBtn" title="静音 (M)" aria-label="静音"></button>
+  <div id="center">
+    <div id="bannerBox" class="hidden"><div class="txt" id="bannerTxt">狂热模式！</div></div>
+    <div id="countNum" class="hidden">3</div>
+    <div id="lastTen" class="hidden">10</div>
+  </div>
+  <div id="overlay">
+    <section class="screen hidden" id="scrTitle">
+      <div class="title-zh">萌鼠出洞</div>
+      <div class="title-en">MOLE RUSH</div>
+      <div class="panel" id="titlePanel" style="left:140px;top:782px;width:1640px;height:290px">
+        <div class="panelBody">
+          <div class="hint" style="left:100px;top:40px;font-size:30px;color:#7a3f12;font-weight:900">选择难度</div>
+          <div class="best" style="left:100px;top:200px" id="best_easy"></div>
+          <div class="best" style="left:370px;top:200px" id="best_normal"></div>
+          <div class="best" style="left:640px;top:200px" id="best_hard"></div>
+          <div class="hint" style="left:980px;top:206px;font-size:22px">Enter 开始 · H 帮助 · M 静音</div>
+        </div>
+      </div>
+    </section>
+    <section class="screen hidden" id="scrHelp">
+      <div class="panel" id="helpPanel" style="left:120px;top:44px;width:1680px;height:980px">
+        <div class="panelBody">
+          <div class="ptitle" style="top:62px;font-size:56px">游戏帮助</div>
+          <div class="psub" style="top:126px;font-size:24px">HOW TO PLAY</div>
+          <div class="cols">
+            <section>
+              <h3>操作方法</h3>
+              <ul>
+                <li>鼠标或触屏：点击洞口挥锤</li>
+                <li>小键盘 <kbd>7</kbd><kbd>8</kbd><kbd>9</kbd> / <kbd>4</kbd><kbd>5</kbd><kbd>6</kbd> / <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 对应九个洞</li>
+                <li>或 <kbd>Q</kbd><kbd>W</kbd><kbd>E</kbd> / <kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd></li>
+                <li><kbd>P</kbd> 暂停　<kbd>H</kbd> 帮助　<kbd>M</kbd> 静音</li>
+              </ul>
+            </section>
+            <section>
+              <h3>游戏规则</h3>
+              <ul>
+                <li>每局 60 秒，趁地鼠露头时敲中得分</li>
+                <li>连续敲中累积连击，倍率最高 ×4</li>
+                <li>连击到 10 进入狂热：分数翻倍，失手即结束</li>
+                <li>敲空洞口或敲到刺猬会中断连击</li>
+                <li>节奏越来越快，最后 10 秒倒计时</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="screen hidden" id="scrPause">
+      <div class="panel" id="pausePanel" style="left:600px;top:180px;width:720px;height:680px">
+        <div class="panelBody">
+          <div class="ptitle" style="top:64px;font-size:64px">暂停</div>
+          <div class="psub" style="top:140px;font-size:24px">PAUSED</div>
+          <div class="hint" style="left:0;width:720px;text-align:center;top:582px">P 继续 · H 帮助 · M 静音</div>
+        </div>
+      </div>
+    </section>
+    <section class="screen hidden" id="scrResult">
+      <div class="panel" id="resultPanel" style="left:380px;top:40px;width:1160px;height:990px">
+        <div class="panelBody">
+          <div class="ptitle" style="top:62px;font-size:56px" id="resTitle">本局结算</div>
+          <div class="res-score" id="resScore">0<small>分</small></div>
+          <div class="res-best" id="resBest">最高分 0</div>
+          <div class="stats">
+            <div class="stat"><div class="k">命中率</div><div class="v" id="resAcc">0%</div></div>
+            <div class="stat"><div class="k">最高连击</div><div class="v" id="resCombo">0</div></div>
+            <div class="stat"><div class="k">敲中次数</div><div class="v" id="resHits">0</div></div>
+          </div>
+          <div class="icons" id="resIcons"></div>
+        </div>
+      </div>
+      <div id="newRecord" class="hidden"><div class="txt">新纪录！</div></div>
+    </section>
+  </div>
+  <div id="loading"><div id="loadingTxt">加载中…</div></div>
+</div>
+<script src="../vendor/lottie.min.js"></script>
+<script>
+'use strict';
+// ============================================================================ assets
+const FILES = ['bg', 'sky', 'windmill', 'sunflower', 'carrots', 'hole', 'mole', 'mole_helmet', 'mole_gold', 'hedgehog', 'iceflower',
+  'hammer', 'fx_hit', 'fx_dust', 'fx_coins', 'fx_snow', 'fever', 'frost', 'fx_ring', 'confetti', 'timer', 'hud_score', 'hud_combo',
+  'btn_pause', 'btn_sound', 'btn_orange', 'btn_green', 'btn_diff', 'panel_title', 'panel_help', 'panel_pause', 'panel_result',
+  'dim', 'logo', 'stars', 'banner'];
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage unavailable: keep playing without saving */ } },
+};
+const RAW = {}, SEGS = {};
+const LOTS = [];
+const QA = { loadedFiles: [], failedFiles: [], errors: [] };
+window.addEventListener('error', (e) => QA.errors.push(String(e.message)));
+
+const $ = (id) => document.getElementById(id);
+const stage = $('stage'), world = $('world'), board = $('board'), fxLayer = $('fxLayer');
+const rand = (a, b) => a + Math.random() * (b - a);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// A Lottie instance with named segments (read from the file's markers).
+class Lot {
+  constructor(name, parent, style, opts = {}) {
+    this.name = name;
+    this.el = document.createElement('div');
+    this.el.className = 'lot' + (opts.cls ? ' ' + opts.cls : '');
+    if (style) Object.assign(this.el.style, style);
+    parent.appendChild(this.el);
+    this.anim = lottie.loadAnimation({
+      container: this.el, renderer: 'svg', loop: false, autoplay: false,
+      animationData: JSON.parse(RAW[name]),
+      rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false },
+    });
+    this.segs = SEGS[name];
+    this.cb = null;
+    this.anim.addEventListener('complete', () => { const cb = this.cb; this.cb = null; if (cb) cb(); });
+    if (opts.decor) this.anim.setSubframe(false);
+    this.show(opts.show || Object.keys(this.segs)[0]);
+    LOTS.push(this);
+  }
+  play(seg, cb) { this.cb = cb || null; this.anim.loop = false; this.anim.playSegments(this.segs[seg], true); return this; }
+  loop(seg) { this.cb = null; this.anim.loop = true; this.anim.playSegments(this.segs[seg], true); return this; }
+  chain(names, cb) { this.cb = cb || null; this.anim.loop = false; this.anim.playSegments(names.map((n) => this.segs[n]), true); return this; }
+  reverse(seg, cb) { const [a, b] = this.segs[seg]; this.cb = cb || null; this.anim.loop = false; this.anim.playSegments([b - 1, a], true); return this; }
+  // run the current segment backwards from wherever the playhead is now
+  back(cb) { this.cb = cb || null; this.anim.loop = false; this.anim.setDirection(-1); this.anim.play(); return this; }
+  show(seg, off = 0) {
+    const f = typeof seg === 'number' ? seg : this.segs[seg][0] + off;
+    this.cb = null; this.anim.loop = false;
+    this.anim.resetSegments(true);
+    this.anim.goToAndStop(f, true);
+    return this;
+  }
+  frame(f) { this.anim.goToAndStop(f, true); }
+  speed(v) { this.anim.setSpeed(v); }
+  visible(v) { this.el.style.display = v ? '' : 'none'; return this; }
+  get playing() { return !this.anim.isPaused; }
+}
+const box = (x, y, w, h, extra) => Object.assign({ left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' }, extra || {});
+
+// ============================================================================ audio (Web Audio, synthesized)
+const AU = {
+  ctx: null, master: null, sfx: null, music: null, noiseBuf: null, muted: store.get('moleRush.muted') === '1',
+  unlock() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this.ctx = new AC();
+      const c = this.ctx;
+      const comp = c.createDynamicsCompressor();
+      comp.threshold.value = -14; comp.ratio.value = 4;
+      this.master = c.createGain(); this.master.gain.value = this.muted ? 0 : 0.9;
+      this.sfx = c.createGain(); this.sfx.gain.value = 0.9;
+      this.music = c.createGain(); this.music.gain.value = 0.32;
+      this.sfx.connect(this.master); this.music.connect(this.master); this.master.connect(comp); comp.connect(c.destination);
+      const len = c.sampleRate;
+      this.noiseBuf = c.createBuffer(1, len, c.sampleRate);
+      const d = this.noiseBuf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      Music.start();
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  setMuted(m) {
+    this.muted = m;
+    store.set('moleRush.muted', m ? '1' : '0');
+    if (this.master) this.master.gain.setTargetAtTime(m ? 0 : 0.9, this.ctx.currentTime, 0.03);
+  },
+  tone(freq, dur, o = {}) {
+    if (!this.ctx) return;
+    const c = this.ctx, t = c.currentTime + (o.at || 0);
+    const osc = c.createOscillator(), g = c.createGain();
+    osc.type = o.type || 'square';
+    osc.frequency.setValueAtTime(freq, t);
+    if (o.slide) osc.frequency.exponentialRampToValueAtTime(o.slide, t + (o.slideT || dur));
+    if (o.detune) osc.detune.value = o.detune;
+    const v = o.vol === undefined ? 0.2 : o.vol;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v, t + (o.attack || 0.005));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g); g.connect(o.dest || this.sfx);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  },
+  noise(dur, o = {}) {
+    if (!this.ctx) return;
+    const c = this.ctx, t = c.currentTime + (o.at || 0);
+    const src = c.createBufferSource(); src.buffer = this.noiseBuf;
+    const f = c.createBiquadFilter(); f.type = o.filter || 'lowpass'; f.frequency.setValueAtTime(o.freq || 1500, t); f.Q.value = o.q || 0.8;
+    if (o.slide) f.frequency.exponentialRampToValueAtTime(o.slide, t + dur);
+    const g = c.createGain(); const v = o.vol === undefined ? 0.2 : o.vol;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + (o.attack || 0.004)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f); f.connect(g); g.connect(o.dest || this.sfx);
+    src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.03);
+  },
+};
+const SFX = {
+  whoosh() { AU.noise(0.13, { filter: 'bandpass', freq: 700, slide: 2600, q: 1.2, vol: 0.14 }); },
+  bonk(p = 1) { AU.tone(560 * p, 0.16, { type: 'triangle', slide: 170 * p, vol: 0.4 }); AU.tone(280 * p, 0.2, { type: 'sine', slide: 90, vol: 0.3 }); AU.noise(0.04, { freq: 3200, vol: 0.18 }); },
+  clang() { [880, 1330, 2010, 2680].forEach((f, i) => AU.tone(f, 0.32 - i * 0.05, { type: 'square', vol: 0.06, detune: i * 7 })); AU.noise(0.06, { filter: 'highpass', freq: 3000, vol: 0.14 }); },
+  coin() { AU.tone(988, 0.09, { vol: 0.12 }); AU.tone(1319, 0.36, { at: 0.08, vol: 0.12 }); [1568, 2093, 2637].forEach((f, i) => AU.tone(f, 0.18, { type: 'triangle', at: 0.16 + i * 0.06, vol: 0.08 })); },
+  ice() { [1760, 2349, 2637, 3136].forEach((f, i) => AU.tone(f, 0.7, { type: 'sine', at: i * 0.05, vol: 0.09 })); AU.noise(0.5, { filter: 'highpass', freq: 5000, vol: 0.07 }); },
+  boom() { AU.noise(0.75, { freq: 1200, slide: 90, vol: 0.7, attack: 0.002 }); AU.tone(120, 0.6, { type: 'sine', slide: 38, vol: 0.55 }); },
+  miss() { AU.tone(150, 0.16, { type: 'sine', slide: 60, vol: 0.35 }); AU.noise(0.14, { freq: 500, vol: 0.22 }); },
+  pop(type) { const f = type === 'mole_gold' ? 1200 : type === 'hedgehog' ? 380 : 620; AU.tone(f, 0.07, { type: 'sine', slide: f * 1.5, vol: 0.05 }); },
+  combo(n) { const base = 523 * Math.pow(2, Math.min(n, 20) / 24); [0, 4, 7].forEach((s, i) => AU.tone(base * Math.pow(2, s / 12), 0.1, { at: i * 0.05, vol: 0.07 })); },
+  fever() { [523, 659, 784, 1047, 1319].forEach((f, i) => AU.tone(f, 0.16, { at: i * 0.07, vol: 0.1 })); },
+  feverEnd() { AU.tone(440, 0.25, { slide: 220, vol: 0.1 }); },
+  count(go) { AU.tone(go ? 988 : 659, go ? 0.4 : 0.14, { type: 'square', vol: 0.12 }); },
+  tick() { AU.tone(1250, 0.06, { type: 'sine', slide: 800, vol: 0.2 }); },
+  timeUp() { AU.tone(880, 0.5, { slide: 330, vol: 0.14 }); AU.tone(660, 0.5, { at: 0.12, slide: 260, vol: 0.1 }); },
+  click() { AU.tone(760, 0.06, { type: 'sine', slide: 1100, vol: 0.12 }); },
+  result(stars) { [523, 659, 784].slice(0, Math.max(1, stars)).forEach((f, i) => AU.tone(f, 0.25, { at: 0.35 + i * 0.43, type: 'triangle', vol: 0.16 })); },
+  record() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => AU.tone(f, 0.22, { at: i * 0.11, vol: 0.1 })); },
+};
+// background music: a small step sequencer scheduled ahead of time
+const Music = {
+  step: 0, next: 0, timer: 0, fever: false, level: 1,
+  lead: [76, 79, 81, 79, 76, 74, 72, 74, 76, 0, 72, 69, 72, 76, 74, 72, 69, 72, 77, 76, 74, 72, 69, 72, 74, 0, 67, 71, 74, 79, 77, 74],
+  bass: [48, 45, 41, 43],
+  chord: [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]],
+  start() {
+    this.next = AU.ctx.currentTime + 0.1;
+    this.timer = setInterval(() => this.tick(), 25);
+  },
+  setLevel(v, t = 0.4) { this.level = v; if (AU.music) AU.music.gain.setTargetAtTime(0.32 * v, AU.ctx.currentTime, t); },
+  tick() {
+    const c = AU.ctx;
+    if (!c || c.state !== 'running') return;
+    const spb = 60 / (this.fever ? 146 : 124) / 4; // one sixteenth
+    while (this.next < c.currentTime + 0.12) {
+      const s = this.step % 64, bar = Math.floor(s / 16), inBar = s % 16;
+      const at = this.next - c.currentTime;
+      const mid = (m) => 440 * Math.pow(2, (m - 69) / 12);
+      const D = AU.music;
+      if (inBar % 2 === 0) {
+        const n = this.lead[Math.floor(s / 2)];
+        if (n) AU.tone(mid(n), spb * 1.7, { at, type: 'square', vol: 0.05, dest: D });
+      }
+      if (inBar % 4 === 0) AU.tone(mid(this.bass[bar] - 12 + (inBar === 8 ? 7 : 0)), spb * 3, { at, type: 'triangle', vol: 0.16, dest: D });
+      if (inBar === 0 || inBar === 8) AU.tone(150, 0.12, { at, type: 'sine', slide: 50, vol: 0.28, dest: D });
+      if (inBar === 4 || inBar === 12) AU.noise(0.1, { at, filter: 'bandpass', freq: 1800, vol: 0.08, dest: D });
+      if (inBar % 2 === 1) AU.noise(0.03, { at, filter: 'highpass', freq: 7000, vol: 0.04, dest: D });
+      if (inBar === 0) this.chord[bar].forEach((m) => AU.tone(mid(m), spb * 7, { at, type: 'sine', vol: 0.025, attack: 0.03, dest: D }));
+      if (this.fever) { const ch = this.chord[bar]; AU.tone(mid(ch[inBar % 3] + 12), spb * 0.9, { at, type: 'triangle', vol: 0.035, dest: D }); }
+      this.next += spb; this.step++;
+    }
+  },
+};
+
+// ============================================================================ game data
+const TYPES = {
+  mole: { name: '普通地鼠', pts: 1, stay: 1.0, looks: ['look', 'look', 'taunt'] },
+  mole_helmet: { name: '头盔地鼠', pts: 3, stay: 1.3, looks: ['look', 'taunt'] },
+  mole_gold: { name: '金色地鼠', pts: 10, stay: 0.55, looks: ['look', 'taunt'] },
+  hedgehog: { name: '炸弹刺猬', pts: -5, stay: 1.15, looks: ['look', 'taunt', 'taunt'] },
+  iceflower: { name: '冰晶花', pts: 2, stay: 1.2, looks: ['look', 'taunt'] },
+};
+const DIFFS = {
+  easy: { name: '简单', stay: [1.6, 1.1], gap: [1.05, 0.62], maxUp: [1, 2], burst: 0, w: { mole: 64, mole_helmet: 14, mole_gold: 7, hedgehog: 6, iceflower: 9 }, stars: [0, 100, 280] },
+  normal: { name: '普通', stay: [1.25, 0.82], gap: [0.85, 0.5], maxUp: [2, 3], burst: 0.12, w: { mole: 56, mole_helmet: 18, mole_gold: 6, hedgehog: 13, iceflower: 7 }, stars: [0, 150, 400] },
+  hard: { name: '困难', stay: [0.98, 0.64], gap: [0.66, 0.38], maxUp: [3, 4], burst: 0.35, w: { mole: 48, mole_helmet: 20, mole_gold: 6, hedgehog: 20, iceflower: 6 }, stars: [0, 200, 520] },
+};
+const GAME_TIME = 60;
+const HOLE_C = [180, 330]; // hole center inside the 360x420 character frame
+const HAMMER_T = [115, 368], HAMMER_W = 400, HAMMER_K = 0.9; // strike point inside hammer.json
+const ROWS = [{ y: 596, sc: 0.84, dx: 312 }, { y: 776, sc: 0.94, dx: 344 }, { y: 962, sc: 1.04, dx: 376 }];
+const KEYMAP = { Numpad7: 0, Numpad8: 1, Numpad9: 2, Numpad4: 3, Numpad5: 4, Numpad6: 5, Numpad1: 6, Numpad2: 7, Numpad3: 8,
+  KeyQ: 0, KeyW: 1, KeyE: 2, KeyA: 3, KeyS: 4, KeyD: 5, KeyZ: 6, KeyX: 7, KeyC: 8 };
+
+const G = {
+  state: 'loading', diff: store.get('moleRush.diff') || 'normal',
+  score: 0, time: GAME_TIME, elapsed: 0, combo: 0, maxCombo: 0, fever: false, slowT: 0,
+  hits: 0, swings: 0, counts: {}, spawnT: 0, lastTen: 0, moles: [], holes: [], attractT: 0, cdT: 0, cdStep: -1,
+  goldCool: 0, flowerCool: 0, endT: 0, prevState: null,
+};
+if (!DIFFS[G.diff]) G.diff = 'normal';
+let BEST = { easy: 0, normal: 0, hard: 0 };
+try { BEST = Object.assign(BEST, JSON.parse(store.get('moleRush.best') || '{}')); } catch (e) { /* keep defaults */ }
+
+// ============================================================================ scene construction
+const UI = {};
+const POOL = {};
+const FX = {};
+
+function buildScene() {
+  UI.bg = new Lot('bg', world, box(0, 0, 1920, 1080, { zIndex: 0 }), { show: 'day' });
+  UI.sky = new Lot('sky', world, box(0, 0, 1920, 460, { zIndex: 1 }), { decor: true });
+  UI.sky.loop('loop');
+  UI.windmill = new Lot('windmill', world, box(470, 40, 300, 400, { zIndex: 2 }), { decor: true });
+  UI.windmill.loop('loop');
+  UI.fever = new Lot('fever', world, box(0, 0, 1920, 1080, { zIndex: 3 })).visible(false);
+  [[20, 250, 1, 0], [200, 330, 0.82, 40], [1660, 250, 1, 70], [1520, 330, 0.82, 20]].forEach(([x, y, s, ph]) => {
+    const f = new Lot('sunflower', world, box(x, y, 240 * s, 460 * s, { zIndex: 4 }), { decor: true });
+    f.loop('loop'); f.anim.goToAndPlay(ph, true);
+  });
+  [[35, 722, 0], [1505, 722, 45]].forEach(([x, y, ph]) => {
+    const c = new Lot('carrots', world, box(x, y, 380, 230, { zIndex: 5 }), { decor: true });
+    c.loop('loop'); c.anim.goToAndPlay(ph, true);
+  });
+  board.style.cssText = 'position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:10';
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      const R = ROWS[r];
+      const cx = 960 + (c - 1) * R.dx, cy = R.y, sc = R.sc;
+      const x = cx - HOLE_C[0] * sc, y = cy - HOLE_C[1] * sc, w = 360 * sc, h = 420 * sc;
+      const lot = new Lot('hole', board, box(x, y, w, h, { zIndex: 10 + r * 3 }), { show: 'idle' });
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      Object.assign(slot.style, box(x, y, w, h, { zIndex: 11 + r * 3 }));
+      board.appendChild(slot);
+      G.holes.push({ i: r * 3 + c, r, c, cx, cy, sc, lot, slot, mole: null, cool: 0 });
+    }
+  }
+  // character pools
+  const holder = document.createElement('div');
+  holder.style.display = 'none';
+  board.appendChild(holder);
+  const sizes = { mole: 5, mole_helmet: 3, mole_gold: 2, hedgehog: 3, iceflower: 2 };
+  for (const [t, n] of Object.entries(sizes)) {
+    POOL[t] = [];
+    for (let i = 0; i < n; i++) {
+      const l = new Lot(t, holder, null, { cls: 'fill', show: 'hidden' });
+      l.home = holder;
+      POOL[t].push(l);
+    }
+  }
+  // effects
+  fxLayer.style.cssText = 'position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:30';
+  const fxDef = { fx_hit: [4, 300, 300, 150, 150], fx_dust: [3, 360, 220, 180, 160], fx_coins: [2, 420, 420, 210, 260], fx_snow: [2, 420, 420, 210, 210] };
+  for (const [n, [count, w, h, ox, oy]] of Object.entries(fxDef)) {
+    FX[n] = { list: [], i: 0, w, h, ox, oy };
+    for (let k = 0; k < count; k++) FX[n].list.push(new Lot(n, fxLayer, box(0, 0, w, h)).visible(false));
+  }
+  UI.frost = new Lot('frost', world, box(0, 0, 1920, 1080, { zIndex: 35 })).visible(false);
+
+  // HUD
+  UI.hudScore = new Lot('hud_score', $('hudScore'), box(0, 0, 440, 150, { zIndex: -1 }), { show: 'idle' });
+  UI.hudCombo = new Lot('hud_combo', $('hudCombo'), box(0, 0, 380, 120, { zIndex: -1 }), { show: 'off' });
+  UI.timer = new Lot('timer', $('hudTimer'), box(0, 0, 220, 220, { zIndex: -1 }), { show: 0 });
+  UI.btnPause = new Lot('btn_pause', $('btnPause'), null, { cls: 'fill', show: 'pause' });
+  UI.btnSound = new Lot('btn_sound', $('btnSound'), null, { cls: 'fill', show: AU.muted ? 'off' : 'on' });
+  UI.hammer = new Lot('hammer', stage, box(0, 0, HAMMER_W * HAMMER_K, HAMMER_W * HAMMER_K, { zIndex: 75, willChange: 'transform' }), { show: 'idle' }).visible(false);
+  UI.ring = new Lot('fx_ring', $('center'), box(780, 360, 360, 360, { zIndex: -1 })).visible(false);
+  UI.banner = new Lot('banner', $('bannerBox'), box(0, 0, 900, 200, { zIndex: -1 })).visible(false);
+
+  // menus
+  const ov = $('overlay');
+  UI.dim = new Lot('dim', ov, box(0, 0, 1920, 1080), { show: 'in' }).visible(false);
+  ov.insertBefore(UI.dim.el, ov.firstChild);
+  UI.logo = new Lot('logo', $('scrTitle'), box(410, 6, 1100, 460, { zIndex: -1 }));
+  UI.titlePanel = panel('panel_title', $('titlePanel'));
+  UI.helpPanel = panel('panel_help', $('helpPanel'));
+  UI.pausePanel = panel('panel_pause', $('pausePanel'));
+  UI.resultPanel = panel('panel_result', $('resultPanel'));
+  UI.stars = new Lot('stars', $('resultPanel').querySelector('.panelBody'), box(280, 110, 600, 220));
+  UI.recordBanner = new Lot('banner', $('newRecord'), box(0, 0, 900, 200, { zIndex: -1 }), { show: 'in' });
+  UI.confetti = new Lot('confetti', $('scrResult'), box(0, 0, 1920, 1080, { zIndex: 5 })).visible(false);
+
+  // title buttons
+  const tb = $('titlePanel').querySelector('.panelBody');
+  UI.diffBtns = {};
+  [['easy', 100], ['normal', 370], ['hard', 640]].forEach(([d, x]) => {
+    const b = makeButton(tb, 'btn_diff', 'diff', x, 80, 250, 107, DIFFS[d].name, 40, () => setDiff(d, true));
+    UI.diffBtns[d] = b;
+  });
+  makeButton(tb, 'btn_orange', 'orange', 960, 46, 420, 119, '开始游戏', 50, () => startGame());
+  makeButton(tb, 'btn_green', 'green', 1394, 62, 250, 71, '帮助', 32, () => openHelp());
+  // help cards
+  const hb = $('helpPanel').querySelector('.panelBody');
+  UI.helpChars = [];
+  const cards = [
+    ['mole', '普通地鼠', '敲中 +1 分', 'look', ''],
+    ['mole_helmet', '头盔地鼠', '敲两下 +3 分', 'taunt', ''],
+    ['mole_gold', '金色地鼠', '+10 分 +3 秒', 'look', ''],
+    ['hedgehog', '炸弹刺猬', '别敲！-5 分', 'taunt', 'bad'],
+    ['iceflower', '冰晶花', '全场减速 5 秒', 'look', 'cool'],
+  ];
+  cards.forEach(([t, nm, pt, seg, cls], i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.left = (90 + i * 300) + 'px'; card.style.top = '150px';
+    card.innerHTML = `<div class="nm">${nm}</div><div class="pt ${cls}">${pt}</div>`;
+    hb.appendChild(card);
+    const s = 0.66;
+    const hole = new Lot('hole', card, box(150 - 180 * s, 20, 360 * s, 420 * s), { show: 'idle' });
+    const ch = new Lot(t, card, box(150 - 180 * s, 20, 360 * s, 420 * s), { show: 'hidden' });
+    UI.helpChars.push({ ch, seg, hole });
+  });
+  UI.helpBack = makeButton(hb, 'btn_green', 'green', 690, 822, 300, 85, '返回', 40, () => closeHelp());
+  // pause buttons
+  const pb = $('pausePanel').querySelector('.panelBody');
+  makeButton(pb, 'btn_orange', 'orange', 160, 190, 400, 113, '继续游戏', 46, () => resumeGame());
+  makeButton(pb, 'btn_green', 'green', 160, 318, 400, 113, '重新开始', 44, () => { closeScreens(); startGame(); });
+  makeButton(pb, 'btn_green', 'green', 160, 446, 400, 113, '返回标题', 44, () => toTitle());
+  // result
+  const rb = $('resultPanel').querySelector('.panelBody');
+  UI.resIcons = [];
+  ['mole', 'mole_helmet', 'mole_gold', 'iceflower', 'hedgehog'].forEach((t, i) => {
+    const ic = document.createElement('div');
+    ic.className = 'ico'; ic.style.left = (i * 210) + 'px';
+    ic.innerHTML = '<div class="cnt">×0</div>';
+    $('resIcons').appendChild(ic);
+    const s = 0.4;
+    new Lot('hole', ic, box(90 - 180 * s, -14, 360 * s, 420 * s), { show: 'idle' });
+    new Lot(t, ic, box(90 - 180 * s, -14, 360 * s, 420 * s), { show: 'look', });
+    UI.resIcons.push({ t, cnt: ic.querySelector('.cnt') });
+  });
+  makeButton(rb, 'btn_orange', 'orange', 150, 812, 400, 113, '再来一局', 46, () => { closeScreens(); startGame(); });
+  makeButton(rb, 'btn_green', 'green', 610, 812, 400, 113, '返回标题', 44, () => toTitle());
+
+  // round buttons
+  roundButton($('btnPause'), UI.btnPause, () => (G.state === 'paused' ? 'play' : 'pause'), () => togglePause());
+  roundButton($('btnSound'), UI.btnSound, () => (AU.muted ? 'off' : 'on'), () => toggleMute());
+  setDiff(G.diff, false);
+}
+
+function panel(name, el) {
+  const lot = new Lot(name, el, null, { cls: 'fill', show: 'idle' });
+  lot.el.style.zIndex = -1;
+  return { el, lot };
+}
+function showPanel(p) {
+  p.el.classList.remove('shown');
+  p.lot.play('in', () => p.lot.show('idle'));
+  requestAnimationFrame(() => p.el.classList.add('shown'));
+}
+function makeButton(parent, lotName, cls, x, y, w, h, label, font, onClick) {
+  const b = document.createElement('button');
+  b.className = 'btn ' + cls;
+  Object.assign(b.style, box(x, y, w, h));
+  parent.appendChild(b);
+  const lot = new Lot(lotName, b, null, { cls: 'fill', show: lotName === 'btn_diff' ? 'off' : 'idle' });
+  const span = document.createElement('span');
+  span.className = 'label'; span.textContent = label; span.style.fontSize = font + 'px';
+  b.appendChild(span);
+  const obj = { b, lot, selected: false };
+  const idle = () => (lotName === 'btn_diff' ? lot.show(obj.selected ? 'onIdle' : 'off') : lot.show('idle'));
+  if (lotName !== 'btn_diff') {
+    b.addEventListener('pointerenter', () => lot.loop('hover'));
+    b.addEventListener('pointerleave', idle);
+  }
+  b.addEventListener('pointerdown', (e) => { e.stopPropagation(); AU.unlock(); if (lotName === 'btn_diff') { if (obj.selected) lot.play('press', idle); } else lot.play('press'); });
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    SFX.click();
+    if (lotName !== 'btn_diff') lot.play('release', idle);
+    onClick();
+  });
+  obj.idle = idle;
+  return obj;
+}
+function roundButton(el, lot, stateFn, onClick) {
+  el.addEventListener('pointerdown', (e) => { e.stopPropagation(); AU.unlock(); lot.play(stateFn() + 'Press'); });
+  el.addEventListener('click', (e) => { e.stopPropagation(); onClick(); lot.play(stateFn() + 'Press', () => lot.show(stateFn())); });
+}
+
+// ============================================================================ layout: keep 16:9, centered
+let VIEW = { s: 1, ox: 0, oy: 0 };
+function fit() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const s = Math.min(W / 1920, H / 1080);
+  const ox = (W - 1920 * s) / 2, oy = (H - 1080 * s) / 2;
+  VIEW = { s, ox, oy };
+  stage.style.transform = `translate(${ox}px, ${oy}px) scale(${s})`;
+}
+window.addEventListener('resize', fit);
+const toLogical = (cx, cy) => ({ x: (cx - VIEW.ox) / VIEW.s, y: (cy - VIEW.oy) / VIEW.s });
+const toScreen = (x, y) => ({ x: x * VIEW.s + VIEW.ox, y: y * VIEW.s + VIEW.oy });
+
+// ============================================================================ screens
+function closeScreens() {
+  ['scrTitle', 'scrHelp', 'scrPause', 'scrResult'].forEach((id) => $(id).classList.add('hidden'));
+  document.querySelectorAll('.panel').forEach((p) => p.classList.remove('shown'));
+  UI.dim.visible(false);
+  UI.confetti.visible(false); UI.confetti.anim.pause();
+  UI.helpChars.forEach((h) => h.ch.show('hidden'));
+}
+function showDim() { UI.dim.visible(true); UI.dim.play('in', () => UI.dim.show('idle')); }
+
+function resetVisuals() {
+  Object.values(FX).forEach((F) => F.list.forEach((l) => { l.show('play'); l.visible(false); }));
+  G.holes.forEach((h) => h.lot.show('idle'));
+  UI.hammer.show('idle');
+  G.paused = [];
+  $('popups').textContent = '';
+  SHAKE.t = 0; world.style.transform = '';
+}
+function toTitle() {
+  closeScreens();
+  clearMoles();
+  resetVisuals();
+  endFever(true); endSlow(true);
+  G.state = 'title';
+  stage.classList.remove('playing');
+  $('hud').classList.add('hidden');
+  $('countNum').classList.add('hidden'); $('lastTen').classList.add('hidden'); $('bannerBox').classList.add('hidden');
+  UI.hammer.visible(false);
+  UI.ring.visible(false);
+  $('scrTitle').classList.remove('hidden');
+  UI.logo.play('in', () => UI.logo.loop('loop'));
+  showPanel(UI.titlePanel);
+  updateBest();
+  G.attractT = 0.4;
+  Music.fever = false; Music.setLevel(1);
+}
+function updateBest() {
+  for (const d of Object.keys(DIFFS)) $('best_' + d).innerHTML = `最高分 <b>${BEST[d] || 0}</b>`;
+}
+function setDiff(d, sound) {
+  G.diff = d;
+  store.set('moleRush.diff', d);
+  for (const [k, b] of Object.entries(UI.diffBtns)) {
+    const was = b.selected;
+    b.selected = k === d;
+    b.b.classList.toggle('sel', b.selected);
+    if (b.selected && !was && sound) b.lot.play('on', () => b.lot.show('onIdle'));
+    else if (!b.selected && was && sound) b.lot.reverse('on', () => b.lot.show('off'));
+    else b.lot.show(b.selected ? 'onIdle' : 'off');
+  }
+}
+function openHelp() {
+  if (G.state === 'playing' || G.state === 'countdown') pauseGame();
+  G.helpFrom = G.state;
+  if (G.state === 'paused') $('scrPause').classList.add('hidden');
+  if (G.state === 'title') { $('scrTitle').classList.add('hidden'); UI.logo.anim.pause(); }
+  if (UI.dim.el.style.display === 'none') showDim();
+  $('scrHelp').classList.remove('hidden');
+  showPanel(UI.helpPanel);
+  UI.helpChars.forEach((h, i) => { h.ch.play('peek', () => h.ch.loop(h.seg)); h.hole.play('emerge'); });
+  G.state = 'help';
+}
+function closeHelp() {
+  $('scrHelp').classList.add('hidden');
+  $('helpPanel').classList.remove('shown');
+  UI.helpChars.forEach((h) => h.ch.show('hidden'));
+  if (G.helpFrom === 'paused') {
+    G.state = 'paused';
+    $('scrPause').classList.remove('hidden');
+    showPanel(UI.pausePanel);
+  } else {
+    UI.dim.visible(false);
+    G.state = 'title';
+    $('scrTitle').classList.remove('hidden');
+    UI.logo.loop('loop');
+    showPanel(UI.titlePanel);
+  }
+}
+
+// ============================================================================ game flow
+function resetRound() {
+  clearMoles();
+  resetVisuals();
+  endFever(true); endSlow(true);
+  Object.assign(G, { score: 0, time: GAME_TIME, elapsed: 0, combo: 0, maxCombo: 0, hits: 0, swings: 0, spawnT: 0.2, lastTen: 0, goldCool: 4, flowerCool: 8, endT: 0 });
+  G.counts = { mole: 0, mole_helmet: 0, mole_gold: 0, hedgehog: 0, iceflower: 0 };
+  G.holes.forEach((h) => { h.cool = 0; h.lot.show('idle'); });
+  UI.timer.frame(0);
+  $('hudTimer').classList.remove('warn');
+  UI.hudCombo.show('off'); $('hudCombo').classList.add('off');
+  UI.hudScore.show('idle');
+  updateHUD(true);
+}
+function startGame() {
+  AU.unlock();
+  closeScreens();
+  resetRound();
+  G.state = 'countdown';
+  G.cdT = 0; G.cdStep = -1;
+  stage.classList.add('playing');
+  $('hud').classList.remove('hidden');
+  UI.btnPause.show('pause');
+  UI.hammer.visible(true);
+  moveHammer(960, 700);
+  Music.setLevel(0.8);
+}
+function updateCountdown(dt) {
+  G.cdT += dt;
+  const step = Math.floor(G.cdT / 0.8);
+  if (step !== G.cdStep) {
+    G.cdStep = step;
+    const el = $('countNum');
+    if (step <= 3) {
+      el.classList.remove('hidden');
+      el.textContent = step < 3 ? String(3 - step) : '开始！';
+      el.style.fontSize = step < 3 ? '170px' : '120px';
+      el.animate([{ transform: 'scale(0.3)', opacity: 0 }, { transform: 'scale(1.15)', opacity: 1, offset: 0.25 }, { transform: 'scale(1)', opacity: 1, offset: 0.8 }, { transform: 'scale(1.3)', opacity: 0 }], { duration: 800, easing: 'ease-out' });
+      UI.ring.visible(true);
+      UI.ring.play(step < 3 ? 'pop' : 'go');
+      SFX.count(step === 3);
+    } else {
+      el.classList.add('hidden');
+      UI.ring.visible(false);
+      G.state = 'playing';
+      Music.setLevel(1);
+    }
+  }
+}
+function pauseGame() {
+  if (G.state !== 'playing' && G.state !== 'countdown') return;
+  G.prevState = G.state;
+  G.state = 'paused';
+  G.paused = LOTS.filter((l) => l.playing && isGameLot(l));
+  G.paused.forEach((l) => l.anim.pause());
+  UI.btnPause.show('play');
+  stage.classList.remove('playing');
+  UI.hammer.visible(false);
+  showDim();
+  $('scrPause').classList.remove('hidden');
+  showPanel(UI.pausePanel);
+  Music.setLevel(0.35);
+}
+function isGameLot(l) {
+  return l.el.closest('#board') || l.el.closest('#fxLayer') || l === UI.hammer || l === UI.ring || l === UI.hudScore || l === UI.hudCombo;
+}
+function resumeGame() {
+  if (G.state !== 'paused') return;
+  closeScreens();
+  G.state = G.prevState || 'playing';
+  (G.paused || []).forEach((l) => l.anim.play());
+  G.paused = [];
+  UI.btnPause.show('pause');
+  stage.classList.add('playing');
+  UI.hammer.visible(true);
+  Music.setLevel(1);
+}
+function togglePause() { if (G.state === 'paused') resumeGame(); else pauseGame(); }
+function toggleMute() { AU.unlock(); AU.setMuted(!AU.muted); UI.btnSound.show(AU.muted ? 'off' : 'on'); }
+
+function endGame() {
+  G.state = 'ending';
+  G.time = 0;
+  G.endT = 1.7;
+  updateHUD();
+  endFever(); endSlow();
+  G.moles.slice().forEach((m) => { if (m.state === 'peek' || m.state === 'up' || m.state === 'up2') retreat(m); });
+  $('lastTen').classList.add('hidden');
+  showBanner('时间到！', 1500);
+  SFX.timeUp();
+  Music.setLevel(0.5);
+}
+function showResult() {
+  G.state = 'result';
+  stage.classList.remove('playing');
+  UI.hammer.visible(false);
+  clearMoles();
+  const D = DIFFS[G.diff];
+  const stars = G.score >= D.stars[2] ? 3 : G.score >= D.stars[1] ? 2 : 1;
+  const record = G.score > (BEST[G.diff] || 0);
+  if (record) { BEST[G.diff] = G.score; store.set('moleRush.best', JSON.stringify(BEST)); }
+  $('resTitle').textContent = `本局结算 · ${D.name}`;
+  $('resScore').innerHTML = `${G.score}<small>分</small>`;
+  $('resBest').textContent = record ? `新的最高分！（${D.name}）` : `最高分 ${BEST[G.diff]}（${D.name}）`;
+  $('resAcc').textContent = (G.swings ? Math.round((G.hits / G.swings) * 100) : 0) + '%';
+  $('resCombo').textContent = G.maxCombo;
+  $('resHits').textContent = G.hits;
+  UI.resIcons.forEach((ic) => { ic.cnt.textContent = (ic.t === 'hedgehog' ? '误敲 ' : '×') + (G.counts[ic.t] || 0); });
+  showDim();
+  $('scrResult').classList.remove('hidden');
+  showPanel(UI.resultPanel);
+  UI.stars.show('empty');
+  const fs = UI.stars.segs.fill[0];
+  setTimeout(() => { if (G.state === 'result') { UI.stars.anim.loop = false; UI.stars.anim.playSegments([fs, fs + 26 * stars + 4], true); } }, 300);
+  SFX.result(stars);
+  $('newRecord').classList.toggle('hidden', !record);
+  if (record) {
+    UI.recordBanner.play('in', () => UI.recordBanner.show('idle'));
+    UI.confetti.visible(true); UI.confetti.loop('fall');
+    setTimeout(() => SFX.record(), 1500);
+  }
+  G.lastResult = { score: G.score, stars, record, acc: $('resAcc').textContent, maxCombo: G.maxCombo, hits: G.hits, counts: Object.assign({}, G.counts) };
+  Music.fever = false;
+  Music.setLevel(0.6);
+}
+
+// ============================================================================ moles
+function activeCount() { return G.moles.length; }
+function stayTime(type) {
+  const D = DIFFS[G.diff], p = clamp(G.elapsed / GAME_TIME, 0, 1);
+  if (G.state === 'title') return rand(1.0, 1.8);
+  return lerp(D.stay[0], D.stay[1], p) * TYPES[type].stay * (G.fever ? 0.85 : 1) * rand(0.85, 1.15);
+}
+function animSpeed() { return (G.slowT > 0 ? 0.5 : 1) * (G.fever ? 1.15 : 1); }
+function pickType() {
+  const w = Object.assign({}, DIFFS[G.diff].w);
+  if (G.goldCool > 0) w.mole_gold = 0;
+  if (G.flowerCool > 0 || G.slowT > 0) w.iceflower = 0;
+  if (G.state === 'title') { w.hedgehog = 10; w.mole_gold = 8; w.iceflower = 8; }
+  let total = 0;
+  for (const v of Object.values(w)) total += v;
+  let r = Math.random() * total;
+  for (const [k, v] of Object.entries(w)) { r -= v; if (r <= 0) return k; }
+  return 'mole';
+}
+function spawnOne(forceType, forceHole) {
+  const free = G.holes.filter((h) => !h.mole && h.cool <= 0);
+  let h = forceHole !== undefined ? G.holes[forceHole] : pick(free);
+  if (!h || h.mole) return null;
+  const type = forceType || pickType();
+  const lot = POOL[type].pop();
+  if (!lot) return null;
+  if (type === 'mole_gold') G.goldCool = 7;
+  if (type === 'iceflower') G.flowerCool = 11;
+  h.slot.appendChild(lot.el);
+  lot.visible(true);
+  lot.speed(animSpeed());
+  const m = { type, hole: h, lot, state: 'peek', stay: stayTime(type), hp: type === 'mole_helmet' ? 2 : 1, born: performance.now() };
+  h.mole = m;
+  G.moles.push(m);
+  h.lot.play('emerge');
+  lot.play('peek', () => {
+    if (m.state !== 'peek') return;
+    m.state = 'up';
+    lot.loop(pick(TYPES[type].looks));
+  });
+  if (G.state !== 'title') SFX.pop(type);
+  return m;
+}
+function retreat(m) {
+  m.state = 'retreat';
+  m.lot.speed(animSpeed());
+  m.lot.play(m.hp === 1 && m.type === 'mole_helmet' ? 'retreat2' : 'retreat', () => removeMole(m));
+}
+function removeMole(m) {
+  const i = G.moles.indexOf(m);
+  if (i >= 0) G.moles.splice(i, 1);
+  if (m.hole.mole === m) { m.hole.mole = null; m.hole.cool = G.state === 'title' ? 0.4 : 0.18; }
+  m.state = 'gone';
+  m.lot.show('hidden');
+  m.lot.visible(false);
+  m.lot.home.appendChild(m.lot.el);
+  POOL[m.type].push(m.lot);
+}
+function clearMoles() { G.moles.slice().forEach(removeMole); G.holes.forEach((h) => { h.mole = null; h.cool = 0; }); }
+function hittable(m) {
+  if (m.state === 'up' || m.state === 'up2') return true;
+  const a = m.lot.anim;
+  const prog = a.currentRawFrame / Math.max(1, a.totalFrames - 1);
+  if (m.state === 'peek') return prog > 0.22;
+  if (m.state === 'retreat') return prog < 0.4;
+  if (m.state === 'hit1') return prog > 0.25;
+  return false;
+}
+function spawnWave() {
+  const D = DIFFS[G.diff], p = clamp(G.elapsed / GAME_TIME, 0, 1);
+  const maxUp = Math.round(lerp(D.maxUp[0], D.maxUp[1], p)) + (G.fever ? 1 : 0);
+  let n = 1;
+  if (Math.random() < D.burst * (0.6 + p)) n++;
+  if (G.diff === 'hard' && Math.random() < 0.3 * p) n++;
+  for (let k = 0; k < n && activeCount() < maxUp; k++) spawnOne();
+}
+
+// ============================================================================ hitting
+function holeAt(x, y) {
+  const cands = G.holes.filter((h) => Math.abs(x - h.cx) < 118 * h.sc && y > h.cy - 215 * h.sc && y < h.cy + 52 * h.sc);
+  if (!cands.length) return -1;
+  const live = cands.filter((h) => h.mole && hittable(h.mole));
+  if (live.length) return live.sort((a, b) => b.r - a.r)[0].i;
+  cands.sort((a, b) => Math.hypot(x - a.cx, y - (a.cy - 60 * a.sc)) - Math.hypot(x - b.cx, y - (b.cy - 60 * b.sc)));
+  return cands[0].i;
+}
+function headPos(h) { return { x: h.cx, y: h.cy - 150 * h.sc }; }
+function moveHammer(x, y) {
+  G.hx = x; G.hy = y;
+  UI.hammer.el.style.transform = `translate(${x - HAMMER_T[0] * HAMMER_K}px, ${y - HAMMER_T[1] * HAMMER_K}px)`;
+}
+function swingHammer() { UI.hammer.chain(['swing', 'rebound'], () => UI.hammer.show('idle')); }
+
+function whack(i, fromKey) {
+  const h = G.holes[i];
+  if (fromKey) { const p = headPos(h); moveHammer(p.x, p.y + 10 * h.sc); }
+  swingHammer();
+  if (G.state !== 'playing') { SFX.whoosh(); return; }
+  const m = h.mole;
+  if (m && hittable(m)) { G.swings++; hitMole(m); }
+  else if (m && (m.state === 'hit' || m.state === 'hit1')) SFX.bonk(0.6); // already dazed: no effect either way
+  else { G.swings++; missHole(h); }
+}
+function hitMole(m) {
+  const h = m.hole, p = headPos(h);
+  const hitAnim = (seg, done) => { m.lot.speed(Math.max(0.8, animSpeed())); m.lot.play(seg, done); };
+  if (m.type === 'hedgehog') {
+    m.state = 'hit';
+    hitAnim('hit', () => removeMole(m));
+    G.counts.hedgehog++;
+    G.score = Math.max(0, G.score - 5);
+    popup('-5', p.x, p.y - 90 * h.sc, 'bad');
+    UI.hudScore.play('hurt', () => UI.hudScore.show('idle'));
+    breakCombo();
+    shake(0.5, 22);
+    SFX.boom();
+    fire('fx_dust', h.cx, h.cy + 10 * h.sc, h.sc * 1.3);
+    return;
+  }
+  G.hits++;
+  if (m.type === 'mole_helmet' && m.hp === 2) {
+    m.hp = 1;
+    m.state = 'hit1';
+    m.stay = Math.max(m.stay, 1.0);
+    hitAnim('hit1', () => { if (m.state === 'hit1') { m.state = 'up2'; m.lot.speed(animSpeed()); m.lot.loop('look2'); } });
+    addCombo();
+    popup('铛！', p.x, p.y - 80 * h.sc, 'miss');
+    SFX.clang();
+    fire('fx_hit', p.x, p.y - 30 * h.sc, h.sc * 0.8);
+    return;
+  }
+  m.state = 'hit';
+  hitAnim('hit', () => removeMole(m));
+  G.counts[m.type]++;
+  addCombo();
+  const mult = comboMult() * (G.fever ? 2 : 1);
+  const pts = TYPES[m.type].pts * mult;
+  G.score += pts;
+  UI.hudScore.play('bump', () => UI.hudScore.show('idle'));
+  fire('fx_hit', p.x, p.y, h.sc);
+  if (m.type === 'mole_gold') {
+    G.time += 3;
+    popup('+' + pts, p.x, p.y - 90 * h.sc, 'gold');
+    popup('+3 秒', 960, 262, 'time');
+    fire('fx_coins', p.x, p.y + 20 * h.sc, h.sc * 1.1);
+    SFX.bonk(1.3); SFX.coin();
+  } else if (m.type === 'iceflower') {
+    popup('+' + pts, p.x, p.y - 90 * h.sc, 'ice');
+    fire('fx_snow', h.cx, h.cy - 134 * h.sc, h.sc * 1.2);
+    startSlow(5);
+    SFX.ice();
+  } else {
+    popup('+' + pts, p.x, p.y - 90 * h.sc, '');
+    SFX.bonk(m.type === 'mole_helmet' ? 0.8 : 1);
+  }
+}
+function missHole(h) {
+  h.lot.play('miss', () => h.lot.show('idle'));
+  fire('fx_dust', h.cx, h.cy + 12 * h.sc, h.sc);
+  popup('没打中', h.cx, h.cy - 120 * h.sc, 'miss');
+  SFX.miss();
+  breakCombo();
+}
+function comboMult() { return G.combo >= 15 ? 4 : G.combo >= 10 ? 3 : G.combo >= 5 ? 2 : 1; }
+function addCombo() {
+  G.combo++;
+  G.maxCombo = Math.max(G.maxCombo, G.combo);
+  if (G.combo >= 10 && !G.fever) startFever();
+  if (G.fever) UI.hudCombo.loop('fever');
+  else UI.hudCombo.play('bump', () => UI.hudCombo.show('on'));
+  $('hudCombo').classList.remove('off');
+  if (G.combo % 5 === 0) SFX.combo(G.combo);
+}
+function breakCombo() {
+  const had = G.combo;
+  G.combo = 0;
+  endFever();
+  UI.hudCombo.show('off');
+  $('hudCombo').classList.add('off');
+  return had;
+}
+function startFever() {
+  G.fever = true;
+  UI.bg.play('toFever');
+  UI.fever.visible(true);
+  UI.fever.play('in', () => UI.fever.loop('loop'));
+  $('stFever').classList.remove('hidden');
+  showBanner('狂热模式！', 1200);
+  SFX.fever();
+  Music.fever = true;
+  G.moles.forEach((m) => { if (m.state !== 'hit' && m.state !== 'hit1') m.lot.speed(animSpeed()); });
+}
+function endFever(instant) {
+  if (!G.fever && !instant) return;
+  const was = G.fever;
+  G.fever = false;
+  Music.fever = false;
+  $('stFever').classList.add('hidden');
+  if (instant) { UI.bg.show('day'); UI.fever.visible(false); UI.fever.show('in'); return; }
+  UI.bg.back(() => UI.bg.show('day'));
+  UI.fever.play('out', () => { UI.fever.visible(false); });
+  if (was) SFX.feverEnd();
+  G.moles.forEach((m) => { if (m.state !== 'hit' && m.state !== 'hit1') m.lot.speed(animSpeed()); });
+}
+function startSlow(sec) {
+  const was = G.slowOn;
+  G.slowOn = true;
+  G.slowT = sec;
+  $('stSlow').classList.remove('hidden');
+  if (!was) { UI.frost.visible(true); UI.frost.play('in', () => UI.frost.loop('loop')); }
+  G.moles.forEach((m) => { if (m.state !== 'hit' && m.state !== 'hit1') m.lot.speed(animSpeed()); });
+}
+function endSlow(instant) {
+  if (!G.slowOn && !instant) return;
+  G.slowOn = false;
+  G.slowT = 0;
+  $('stSlow').classList.add('hidden');
+  if (instant) { UI.frost.visible(false); UI.frost.show('in'); return; }
+  UI.frost.play('out', () => UI.frost.visible(false));
+  G.moles.forEach((m) => { if (m.state !== 'hit' && m.state !== 'hit1') m.lot.speed(animSpeed()); });
+}
+
+// ============================================================================ effects, popups, shake
+function fire(name, x, y, k = 1) {
+  const F = FX[name];
+  const lot = F.list[F.i++ % F.list.length];
+  Object.assign(lot.el.style, box(x - F.ox * k, y - F.oy * k, F.w * k, F.h * k));
+  lot.visible(true);
+  lot.play('play', () => lot.visible(false));
+}
+function popup(text, x, y, cls) {
+  const d = document.createElement('div');
+  d.className = 'pop ' + (cls || '');
+  d.textContent = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px';
+  $('popups').appendChild(d);
+  const a = d.animate([
+    { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 0 },
+    { transform: 'translate(-50%, -80%) scale(1.15)', opacity: 1, offset: 0.2 },
+    { transform: 'translate(-50%, -110%) scale(1)', opacity: 1, offset: 0.65 },
+    { transform: 'translate(-50%, -160%) scale(0.95)', opacity: 0 },
+  ], { duration: 950, easing: 'ease-out' });
+  a.onfinish = () => d.remove();
+}
+function showBanner(text, ms) {
+  const b = $('bannerBox');
+  $('bannerTxt').textContent = text;
+  b.classList.remove('hidden');
+  UI.banner.visible(true);
+  UI.banner.play('in', () => UI.banner.show('idle'));
+  $('bannerTxt').animate([{ transform: 'scale(0.2)', opacity: 0 }, { transform: 'scale(1.12)', opacity: 1, offset: 0.5 }, { transform: 'scale(1)', opacity: 1 }], { duration: 380, easing: 'ease-out' });
+  clearTimeout(G.bannerTimer);
+  G.bannerTimer = setTimeout(() => UI.banner.play('out', () => b.classList.add('hidden')), ms);
+}
+let SHAKE = { t: 0, dur: 0, amp: 0 };
+function shake(dur, amp) { SHAKE = { t: dur, dur, amp }; }
+function updateShake(dt) {
+  if (SHAKE.t <= 0) return;
+  SHAKE.t -= dt;
+  if (SHAKE.t <= 0) { world.style.transform = ''; return; }
+  const k = SHAKE.amp * (SHAKE.t / SHAKE.dur);
+  world.style.transform = `translate(${rand(-k, k).toFixed(1)}px, ${rand(-k, k).toFixed(1)}px)`;
+}
+
+// ============================================================================ HUD
+const HUDC = {};
+function updateHUD(force) {
+  const t = Math.max(0, G.time);
+  const sec = Math.ceil(t);
+  const set = (k, v, el, html) => { if (force || HUDC[k] !== v) { HUDC[k] = v; if (html) $(el).innerHTML = v; else $(el).textContent = v; } };
+  set('score', G.score, 'scoreVal');
+  set('time', sec, 'timeVal');
+  set('combo', `${G.combo}<small>连击</small>`, 'comboVal', true);
+  set('mult', '×' + comboMult() * (G.fever ? 2 : 1), 'multVal');
+  set('slow', G.slowT > 0 ? `减速中 ${G.slowT.toFixed(1)} 秒` : '', 'stSlow');
+  const f = clamp((GAME_TIME - Math.min(t, GAME_TIME)) * 60, 0, 3599);
+  if (force || Math.abs((HUDC.tf || 0) - f) > 0.4) { HUDC.tf = f; UI.timer.frame(f); }
+  $('hudTimer').classList.toggle('warn', t <= 10 && G.state !== 'title');
+}
+
+// ============================================================================ main loop
+let last = performance.now();
+function update(now) {
+  const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
+  last = now;
+  if (G.state === 'playing') updateGame(dt);
+  else if (G.state === 'countdown') updateCountdown(dt);
+  else if (G.state === 'title' || G.state === 'help' && G.helpFrom === 'title') updateAttract(dt);
+  else if (G.state === 'ending') { G.endT -= dt; if (G.endT <= 0) showResult(); }
+  G.holes.forEach((h) => { if (h.cool > 0) h.cool -= dt; });
+  updateShake(dt);
+  if (BOT.on) BOT.tick(dt);
+  requestAnimationFrame(update);
+}
+function updateGame(dt) {
+  G.time -= dt;
+  G.elapsed += dt;
+  G.goldCool -= dt; G.flowerCool -= dt;
+  if (G.slowT > 0) { G.slowT -= dt; if (G.slowT <= 0) endSlow(); }
+  const D = DIFFS[G.diff], p = clamp(G.elapsed / GAME_TIME, 0, 1);
+  const rate = G.slowT > 0 ? 0.55 : 1;
+  G.spawnT -= dt * rate;
+  if (G.spawnT <= 0) {
+    spawnWave();
+    G.spawnT = lerp(D.gap[0], D.gap[1], p) * (G.fever ? 0.62 : 1) * rand(0.8, 1.2);
+  }
+  const md = dt * rate * (G.fever ? 1.1 : 1);
+  G.moles.slice().forEach((m) => {
+    if (m.state === 'up' || m.state === 'up2') { m.stay -= md; if (m.stay <= 0) retreat(m); }
+  });
+  const sec = Math.ceil(G.time);
+  if (G.time <= 10 && G.time > 0 && sec !== G.lastTen) {
+    G.lastTen = sec;
+    const el = $('lastTen');
+    el.textContent = sec;
+    el.classList.remove('hidden');
+    el.animate([{ transform: 'scale(1.6)', opacity: 0 }, { transform: 'scale(1)', opacity: 0.95, offset: 0.2 }, { transform: 'scale(0.9)', opacity: 0 }], { duration: 900, easing: 'ease-out', fill: 'forwards' });
+    SFX.tick();
+  }
+  if (G.time <= 0) { endGame(); return; }
+  updateHUD();
+}
+function updateAttract(dt) {
+  G.attractT -= dt;
+  if (G.attractT <= 0 && G.state === 'title') {
+    G.attractT = rand(0.5, 1.1);
+    if (activeCount() < 3) spawnOne();
+  }
+  G.moles.slice().forEach((m) => { if (m.state === 'up') { m.stay -= dt; if (m.stay <= 0) retreat(m); } });
+}
+
+// ============================================================================ input
+stage.addEventListener('pointerdown', (e) => {
+  AU.unlock();
+  if (G.state !== 'playing' && G.state !== 'countdown') return;
+  if (e.target.closest && e.target.closest('button')) return;
+  const p = toLogical(e.clientX, e.clientY);
+  moveHammer(p.x, p.y);
+  const i = holeAt(p.x, p.y);
+  if (i >= 0) whack(i, false);
+  else { swingHammer(); SFX.whoosh(); }
+  e.preventDefault();
+});
+stage.addEventListener('pointermove', (e) => {
+  if (G.state !== 'playing' && G.state !== 'countdown') return;
+  const p = toLogical(e.clientX, e.clientY);
+  moveHammer(p.x, p.y);
+});
+window.addEventListener('keydown', (e) => {
+  AU.unlock();
+  if (e.repeat) return;
+  const code = e.code;
+  if (code === 'KeyM') { toggleMute(); return; }
+  if (G.state === 'playing' || G.state === 'countdown') {
+    if (code in KEYMAP) { whack(KEYMAP[code], true); e.preventDefault(); return; }
+    if (code === 'KeyP' || code === 'Escape') { pauseGame(); return; }
+    if (code === 'KeyH') { openHelp(); return; }
+  } else if (G.state === 'paused') {
+    if (code === 'KeyP' || code === 'Escape' || code === 'Enter' || code === 'Space') resumeGame();
+    else if (code === 'KeyH') openHelp();
+  } else if (G.state === 'title') {
+    if (code === 'Enter' || code === 'Space') startGame();
+    else if (code === 'KeyH') openHelp();
+    else if (code === 'ArrowLeft' || code === 'ArrowRight') {
+      const ds = Object.keys(DIFFS); const i = ds.indexOf(G.diff);
+      setDiff(ds[(i + (code === 'ArrowLeft' ? 2 : 1)) % 3], true); SFX.click();
+    } else if (code === 'Digit1' || code === 'Digit2' || code === 'Digit3') setDiff(Object.keys(DIFFS)[Number(code.slice(5)) - 1], true);
+  } else if (G.state === 'help') {
+    if (code === 'KeyH' || code === 'Escape' || code === 'Enter') closeHelp();
+  } else if (G.state === 'result') {
+    if (code === 'Enter' || code === 'Space') { closeScreens(); startGame(); }
+    else if (code === 'Escape') toTitle();
+  }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
+window.addEventListener('blur', () => pauseGame());
+
+// ============================================================================ QA hooks + demo bot (drives the real pointer handler)
+const BOT = {
+  on: false, cd: 0, skill: 0.9, skipGold: true,
+  tick(dt) {
+    if (G.state !== 'playing') return;
+    this.cd -= dt;
+    if (this.cd > 0) return;
+    const now = performance.now();
+    const cands = G.moles.filter((m) => m.type !== 'hedgehog' && !(this.skipGold && m.type === 'mole_gold') && hittable(m) && now - m.born > 320);
+    if (!cands.length) return;
+    this.cd = rand(0.2, 0.36);
+    let h = cands[0].hole;
+    if (Math.random() > this.skill) h = pick(G.holes.filter((x) => !x.mole)) || h; // a real whiff on an empty hole
+    const aim = headPos(h);
+    clickAt(aim.x + rand(-25, 25), aim.y + rand(-20, 30));
+  },
+};
+function clickAt(x, y) {
+  const s = toScreen(x, y);
+  const target = document.elementFromPoint(s.x, s.y) || stage;
+  const opts = { clientX: s.x, clientY: s.y, bubbles: true, pointerId: 1, isPrimary: true, pointerType: 'mouse' };
+  target.dispatchEvent(new PointerEvent('pointermove', opts));
+  target.dispatchEvent(new PointerEvent('pointerdown', opts));
+  target.dispatchEvent(new PointerEvent('pointerup', opts));
+}
+window.__moleRush = {
+  QA, G, BOT,
+  state: () => G.state,
+  holeScreen: (i) => { const h = G.holes[i], p = headPos(h); const s = toScreen(p.x, p.y); return { x: Math.round(s.x), y: Math.round(s.y) }; },
+  spawn: (i, type) => { const h = G.holes[i]; if (h.mole) removeMole(h.mole); h.cool = 0; const m = spawnOne(type, i); if (m) m.stay = Math.max(m.stay, 2.5); return !!m; },
+  clear: (i) => { const h = G.holes[i]; if (h.mole) removeMole(h.mole); h.cool = 0.5; return true; },
+  summary: () => ({ state: G.state, score: G.score, time: +G.time.toFixed(2), combo: G.combo, maxCombo: G.maxCombo, fever: G.fever, hits: G.hits, swings: G.swings, counts: G.counts, lots: LOTS.length, loaded: LOTS.filter((l) => l.anim.isLoaded).length, files: QA.loadedFiles.length, failed: QA.failedFiles, result: G.lastResult || null }),
+  setTime: (t) => { G.time = t; },
+  stackAt: (x, y) => { const s = toScreen(x, y); return document.elementsFromPoint(s.x, s.y).slice(0, 8).map((e) => (e.id || e.className.baseVal !== undefined ? e.tagName + '#' + (e.id || '') : e.tagName + '.' + e.className) + ' z=' + getComputedStyle(e).zIndex); },
+};
+
+// ============================================================================ boot
+async function boot() {
+  fit();
+  let n = 0;
+  await Promise.all(FILES.map(async (f) => {
+    try {
+      const r = await fetch(`assets/${f}.json`);
+      if (!r.ok) throw new Error(r.status);
+      RAW[f] = await r.text();
+      const data = JSON.parse(RAW[f]);
+      SEGS[f] = {};
+      for (const m of data.markers || []) SEGS[f][m.cm] = [m.tm, m.tm + m.dr];
+      QA.loadedFiles.push(f);
+    } catch (err) {
+      QA.failedFiles.push(f + ': ' + err.message);
+      throw err;
+    }
+    $('loadingTxt').textContent = `加载中… ${++n}/${FILES.length}`;
+  }));
+  buildScene();
+  $('loading').classList.add('hidden');
+  toTitle();
+  requestAnimationFrame((t) => { last = t; requestAnimationFrame(update); });
+}
+boot().catch((e) => { $('loadingTxt').textContent = '加载失败：' + e.message; console.error(e); });
+</script>
+</body>
+</html>

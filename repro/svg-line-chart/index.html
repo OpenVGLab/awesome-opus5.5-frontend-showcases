@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>7 日延迟 · 纯 SVG 折线图</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23eaf1ff'/%3E%3Cpolyline points='6,11 12,19 17,15 22,22 26,18' fill='none' stroke='%232563eb' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f3f6fb;
+    --ink: #0f172a;
+    --ink-2: #334155;
+    --muted: #64748b;
+    --faint: #94a3b8;
+    --grid: #e8edf4;
+    --axis: #9aa8bb;
+    --blue: #2563eb;
+    --amber: #f59e0b;
+    --amber-ink: #b45309;
+    --up: #dc2626;
+    --down: #059669;
+    /* 绘图区四周的留白：SVG 本身只占绘图区，标题、刻度文字画在溢出区域里 */
+    --ml: 48px;
+    --mr: 16px;
+    --mt: 116px;
+    --mb: 36px;
+    --hs: 1;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: clamp(12px, 4vw, 48px);
+    background:
+      radial-gradient(1100px 560px at 12% -8%, #ffffff 0%, rgba(255, 255, 255, 0) 62%),
+      radial-gradient(900px 520px at 100% 108%, #e6efff 0%, rgba(230, 239, 255, 0) 62%),
+      var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { width: 100%; }
+  .card {
+    width: min(100%, 1480px, max(1160px, 76vw));
+    margin: 0 auto;
+    padding: clamp(16px, 2.4vw, 32px) clamp(16px, 2.6vw, 36px) clamp(14px, 1.6vw, 20px);
+    background: #fff;
+    border: 1px solid #e4e9f0;
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 20px 44px -20px rgba(15, 23, 42, .18);
+    transition: box-shadow .2s ease;
+  }
+  .card:has(.chart:focus-visible) {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .28), 0 20px 44px -20px rgba(15, 23, 42, .18);
+  }
+  .plot-wrap { padding: var(--mt) var(--mr) var(--mb) var(--ml); }
+
+  .chart {
+    display: block;
+    width: 100%;
+    height: clamp(240px, min(36vw, 100vh - 380px), 540px);
+    overflow: visible;
+    touch-action: pan-y;
+    outline: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .chart svg { overflow: visible; }
+
+  .head { transform: translateX(calc(var(--ml) * -1)) scale(var(--hs)); }
+  .kpi-g { transform: scale(var(--hs)); }
+  .title { font-size: 22px; font-weight: 700; fill: var(--ink); letter-spacing: .02em; }
+  .subtitle { font-size: 13px; fill: var(--muted); }
+  .legend text { font-size: 13px; fill: var(--ink-2); }
+  .lg-line { stroke: var(--blue); stroke-width: 2.5; stroke-linecap: round; }
+  .lg-dot { fill: #fff; stroke: var(--blue); stroke-width: 2; }
+  .lg-avg { stroke: var(--amber); stroke-width: 2; stroke-dasharray: 5 4; }
+
+  .kpi text { text-anchor: end; }
+  .kpi-num { font-size: 26px; font-weight: 700; fill: var(--ink); font-variant-numeric: tabular-nums; }
+  .kpi-unit { font-size: 13px; font-weight: 500; fill: var(--muted); }
+  .kpi-sub { font-size: 12px; fill: var(--muted); }
+  .kpi-sub .good { fill: var(--down); font-weight: 600; }
+
+  .grid line { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
+  .axis, .tick { stroke: var(--axis); stroke-width: 1; shape-rendering: crispEdges; }
+  .y-label, .unit { text-anchor: end; font-variant-numeric: tabular-nums; }
+  .y-label { font-size: 12px; fill: var(--muted); }
+  .unit { font-size: 11px; fill: var(--faint); }
+  .x-label { font-size: 12px; fill: var(--muted); text-anchor: middle; transition: fill .15s ease; }
+  .x-label.is-active { fill: var(--ink); font-weight: 600; }
+
+  .area { fill: url(#area-fill); }
+  .line { fill: none; stroke: var(--blue); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+  .avg-line { stroke: var(--amber); stroke-width: 1.75; stroke-dasharray: 6 5; }
+  .avg-label {
+    font-size: 11px; font-weight: 600; fill: var(--amber-ink); text-anchor: end;
+    paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round;
+  }
+
+  .hit { fill: transparent; }
+  .dot {
+    fill: #fff; stroke: var(--blue); stroke-width: 2;
+    transform-box: fill-box; transform-origin: center;
+    transition: transform .18s ease, fill .18s ease, stroke .18s ease;
+  }
+  .pt:hover .dot, .pt.is-active .dot { fill: var(--blue); stroke: #fff; transform: scale(1.45); }
+  .is-interactive .pt { pointer-events: none; }
+
+  .hover-band { fill: var(--blue); opacity: 0; transition: opacity .15s ease; }
+  .guide { stroke: #8fa0b8; stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; transition: opacity .15s ease; }
+  .halo { fill: var(--blue); opacity: 0; transition: opacity .15s ease; }
+  .has-active .hover-band { opacity: .05; }
+  .has-active .guide { opacity: 1; }
+  .has-active .halo { opacity: .14; }
+
+  .tip { opacity: 0; pointer-events: none; transition: opacity .15s ease, transform .18s cubic-bezier(.2, .8, .2, 1); }
+  .tip.snap { transition: opacity .15s ease; }
+  .has-active .tip { opacity: 1; }
+  .tip-bg { fill: #fff; stroke: #e2e8f0; stroke-width: 1; filter: url(#tip-shadow); }
+  .tip-dot { fill: var(--blue); }
+  .tip-day { font-size: 12px; fill: var(--muted); }
+  .tip-val { font-size: 20px; font-weight: 700; fill: var(--ink); font-variant-numeric: tabular-nums; }
+  .tip-unit { font-size: 12px; font-weight: 500; fill: var(--muted); }
+  .tip-delta { font-size: 12px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+  .tip-delta .up { fill: var(--up); font-weight: 600; }
+  .tip-delta .down { fill: var(--down); font-weight: 600; }
+
+  .hint {
+    display: flex; align-items: center; gap: 8px;
+    margin: 12px 0 0; padding-top: 12px;
+    border-top: 1px solid #f0f3f7;
+    font-size: 12.5px; line-height: 1.5; color: var(--muted);
+  }
+  .hint svg { flex: none; width: 15px; height: 15px; color: var(--faint); }
+  .keys { white-space: nowrap; }
+  kbd {
+    font: inherit; font-size: 11px; padding: 0 5px; border-radius: 4px;
+    border: 1px solid #dfe5ee; border-bottom-width: 2px; background: #f8fafc; color: var(--ink-2);
+  }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  @media (min-width: 1600px) and (min-height: 900px) {
+    :root { --hs: 1.14; --ml: 54px; --mt: 132px; --mb: 40px; }
+    .y-label, .x-label { font-size: 13px; }
+    .unit { font-size: 12px; }
+    .hint { font-size: 13px; }
+  }
+  @media (max-width: 640px) {
+    .kpi { display: none; }
+  }
+  @media (max-width: 420px) {
+    :root { --ml: 42px; --mr: 10px; --mt: 108px; }
+    .title { font-size: 20px; }
+    .subtitle { font-size: 12px; }
+    .x-label { font-size: 11px; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* 折线匀速展开 600ms，第 i 个点在线条到达 (i + 0.5) / 7 处时弹出 */
+    .series { animation: reveal .6s linear backwards; }
+    .dot { animation: pop .28s cubic-bezier(.3, 1.6, .5, 1) backwards; animation-delay: calc(30ms + var(--i) * 86ms); }
+    .avg { animation: fade .4s .3s ease backwards; }
+  }
+  @keyframes reveal {
+    from { clip-path: inset(-24px 100% -24px -24px); }
+    to { clip-path: inset(-24px -24px -24px -24px); }
+  }
+  @keyframes pop { from { transform: scale(0); } }
+  @keyframes fade { from { opacity: 0; } }
+</style>
+</head>
+<body>
+<main>
+  <figure class="card" id="card">
+    <div class="plot-wrap" id="plot-wrap">
+      <!--
+        SVG 的盒子恰好是绘图区：横坐标按 7 个等宽区间取中心（(i + 0.5) / 7），
+        纵坐标按 0–1000 ms 映射成百分比，所以宽度变化时点和线自动跟随，文字和线宽保持原尺寸。
+      -->
+      <svg id="chart" class="chart" role="img" tabindex="0" data-ymax="1000"
+           aria-labelledby="chart-title" aria-describedby="chart-desc">
+        <title id="chart-title">7 日延迟折线图</title>
+        <desc id="chart-desc">每日延迟（毫秒）：第 1 天 820，第 2 天 640，第 3 天 710，第 4 天 590，第 5 天 540，第 6 天 610，第 7 天 480。7 日均值约 627 毫秒，第 7 天较第 1 天下降 41.5%。</desc>
+        <defs>
+          <linearGradient id="area-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#3b82f6" stop-opacity=".22"/>
+            <stop offset=".75" stop-color="#3b82f6" stop-opacity=".04"/>
+            <stop offset="1" stop-color="#3b82f6" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="tip-shadow" x="-30%" y="-30%" width="160%" height="190%" color-interpolation-filters="sRGB">
+            <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0f172a" flood-opacity=".12"/>
+          </filter>
+        </defs>
+
+        <!-- 标题 + 中文图例 -->
+        <g class="head">
+          <text class="title" x="0" y="-90">7 日延迟</text>
+          <text class="subtitle" x="0" y="-65">最近 7 天的每日延迟，单位：毫秒（ms）</text>
+          <g class="legend" transform="translate(0 -34)">
+            <g>
+              <line class="lg-line" x1="1" x2="27" y1="-4.5" y2="-4.5"/>
+              <circle class="lg-dot" cx="14" cy="-4.5" r="3.5"/>
+              <text x="35" y="0">每日延迟</text>
+            </g>
+            <g transform="translate(111 0)">
+              <line class="lg-avg" x1="1" x2="27" y1="-4.5" y2="-4.5"/>
+              <text x="35" y="0">7 日均值 627 ms</text>
+            </g>
+          </g>
+        </g>
+
+        <!-- 右上角摘要（窄屏隐藏） -->
+        <svg class="kpi" x="100%" aria-hidden="true">
+          <g class="kpi-g">
+            <text class="kpi-num" x="0" y="-88">480<tspan class="kpi-unit" dx="4">ms</tspan></text>
+            <text class="kpi-sub" x="0" y="-65">第 7 天 · 较第 1 天 <tspan class="good">↓ 41.5%</tspan></text>
+          </g>
+        </svg>
+
+        <!-- 网格 -->
+        <g class="grid" aria-hidden="true">
+          <line x1="0" x2="100%" y1="0%" y2="0%"/>
+          <line x1="0" x2="100%" y1="20%" y2="20%"/>
+          <line x1="0" x2="100%" y1="40%" y2="40%"/>
+          <line x1="0" x2="100%" y1="60%" y2="60%"/>
+          <line x1="0" x2="100%" y1="80%" y2="80%"/>
+        </g>
+        <rect id="hover-band" class="hover-band" x="0" y="0" width="14.2857%" height="100%"/>
+
+        <!-- 7 日均值参考线 -->
+        <g class="avg" aria-hidden="true">
+          <line class="avg-line" x1="0" x2="100%" y1="37.2857%" y2="37.2857%"/>
+          <text class="avg-label" x="100%" y="37.2857%" dx="-6" dy="-7">均值 627</text>
+        </g>
+
+        <!-- 面积 + 折线：viewBox 700×1000 拉伸到绘图区，描边不随拉伸变粗 -->
+        <g class="series" aria-hidden="true">
+          <svg viewBox="0 0 700 1000" preserveAspectRatio="none">
+            <path class="area" d="M50 180 L150 360 L250 290 L350 410 L450 460 L550 390 L650 520 V1000 H50 Z"/>
+            <polyline class="line" vector-effect="non-scaling-stroke"
+                      points="50,180 150,360 250,290 350,410 450,460 550,390 650,520"/>
+          </svg>
+        </g>
+
+        <!-- Y 轴 -->
+        <g class="y-axis" aria-hidden="true">
+          <line class="axis" x1="0" x2="0" y1="0" y2="100%"/>
+          <line class="tick" x1="-5" x2="0" y1="0%" y2="0%"/>
+          <line class="tick" x1="-5" x2="0" y1="20%" y2="20%"/>
+          <line class="tick" x1="-5" x2="0" y1="40%" y2="40%"/>
+          <line class="tick" x1="-5" x2="0" y1="60%" y2="60%"/>
+          <line class="tick" x1="-5" x2="0" y1="80%" y2="80%"/>
+          <line class="tick" x1="-5" x2="0" y1="100%" y2="100%"/>
+          <text class="y-label" x="-10" y="0%" dy=".35em">1000</text>
+          <text class="y-label" x="-10" y="20%" dy=".35em">800</text>
+          <text class="y-label" x="-10" y="40%" dy=".35em">600</text>
+          <text class="y-label" x="-10" y="60%" dy=".35em">400</text>
+          <text class="y-label" x="-10" y="80%" dy=".35em">200</text>
+          <text class="y-label" x="-10" y="100%" dy=".35em">0</text>
+          <text class="unit" x="-10" y="-13">ms</text>
+        </g>
+
+        <!-- X 轴（原点放在绘图区底边） -->
+        <svg class="x-axis" y="100%" aria-hidden="true">
+          <line class="axis" x1="0" x2="100%" y1="0" y2="0"/>
+          <line class="tick" x1="7.1429%" x2="7.1429%" y1="0" y2="5"/>
+          <line class="tick" x1="21.4286%" x2="21.4286%" y1="0" y2="5"/>
+          <line class="tick" x1="35.7143%" x2="35.7143%" y1="0" y2="5"/>
+          <line class="tick" x1="50%" x2="50%" y1="0" y2="5"/>
+          <line class="tick" x1="64.2857%" x2="64.2857%" y1="0" y2="5"/>
+          <line class="tick" x1="78.5714%" x2="78.5714%" y1="0" y2="5"/>
+          <line class="tick" x1="92.8571%" x2="92.8571%" y1="0" y2="5"/>
+          <text class="x-label" x="7.1429%" y="23">第1天</text>
+          <text class="x-label" x="21.4286%" y="23">第2天</text>
+          <text class="x-label" x="35.7143%" y="23">第3天</text>
+          <text class="x-label" x="50%" y="23">第4天</text>
+          <text class="x-label" x="64.2857%" y="23">第5天</text>
+          <text class="x-label" x="78.5714%" y="23">第6天</text>
+          <text class="x-label" x="92.8571%" y="23">第7天</text>
+        </svg>
+
+        <line id="guide" class="guide" x1="0" x2="0" y1="0" y2="100%"/>
+        <circle id="halo" class="halo" cx="0" cy="0" r="12"/>
+
+        <!-- 数据点：<title> 提供原生悬浮提示（无 JS 时生效） -->
+        <g class="points">
+          <g class="pt" data-v="820"><title>第 1 天：820 ms</title><circle class="hit" cx="7.1429%" cy="18%" r="14"/><circle class="dot" cx="7.1429%" cy="18%" r="4.5" style="--i:0"/></g>
+          <g class="pt" data-v="640"><title>第 2 天：640 ms</title><circle class="hit" cx="21.4286%" cy="36%" r="14"/><circle class="dot" cx="21.4286%" cy="36%" r="4.5" style="--i:1"/></g>
+          <g class="pt" data-v="710"><title>第 3 天：710 ms</title><circle class="hit" cx="35.7143%" cy="29%" r="14"/><circle class="dot" cx="35.7143%" cy="29%" r="4.5" style="--i:2"/></g>
+          <g class="pt" data-v="590"><title>第 4 天：590 ms</title><circle class="hit" cx="50%" cy="41%" r="14"/><circle class="dot" cx="50%" cy="41%" r="4.5" style="--i:3"/></g>
+          <g class="pt" data-v="540"><title>第 5 天：540 ms</title><circle class="hit" cx="64.2857%" cy="46%" r="14"/><circle class="dot" cx="64.2857%" cy="46%" r="4.5" style="--i:4"/></g>
+          <g class="pt" data-v="610"><title>第 6 天：610 ms</title><circle class="hit" cx="78.5714%" cy="39%" r="14"/><circle class="dot" cx="78.5714%" cy="39%" r="4.5" style="--i:5"/></g>
+          <g class="pt" data-v="480"><title>第 7 天：480 ms</title><circle class="hit" cx="92.8571%" cy="52%" r="14"/><circle class="dot" cx="92.8571%" cy="52%" r="4.5" style="--i:6"/></g>
+        </g>
+
+        <!-- 悬浮提示框（由脚本定位） -->
+        <g id="tip" class="tip" aria-hidden="true">
+          <path id="tip-bg" class="tip-bg" d="M0 0"/>
+          <circle class="tip-dot" cx="15" cy="16.5" r="3.5"/>
+          <text id="tip-day" class="tip-day" x="24" y="21">第 1 天</text>
+          <text id="tip-val" class="tip-val" x="14" y="47"><tspan id="tip-num">820</tspan><tspan class="tip-unit" dx="4">ms</tspan></text>
+          <text id="tip-delta" class="tip-delta" x="14" y="67"><tspan>较前日</tspan><tspan id="tip-chg" dx="6">—</tspan><tspan id="tip-pct" dx="6"></tspan></text>
+        </g>
+      </svg>
+    </div>
+    <figcaption class="hint">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 7.3v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".95" fill="currentColor"/></svg>
+      <span>鼠标悬停或触屏点按查看每日数值；聚焦图表后可用 <span class="keys"><kbd>←</kbd> <kbd>→</kbd></span> 逐点切换。</span>
+    </figcaption>
+  </figure>
+  <p id="live" class="sr-only" aria-live="polite"></p>
+</main>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const card = $('card');
+  const wrap = $('plot-wrap');
+  const svg = $('chart');
+  const band = $('hover-band');
+  const guide = $('guide');
+  const halo = $('halo');
+  const tip = $('tip');
+  const tipBg = $('tip-bg');
+  const tipDay = $('tip-day');
+  const tipVal = $('tip-val');
+  const tipNum = $('tip-num');
+  const tipDelta = $('tip-delta');
+  const tipChg = $('tip-chg');
+  const tipPct = $('tip-pct');
+  const live = $('live');
+
+  const pts = Array.from(svg.querySelectorAll('.pt'));
+  const xLabels = Array.from(svg.querySelectorAll('.x-label'));
+  const data = pts.map((p) => Number(p.dataset.v));
+  const n = data.length;
+  const yMax = Number(svg.dataset.ymax);
+
+  const TIP_H = 78;
+  const RADIUS = 10;
+  const CARET = 6;
+  const GAP = 11;
+  const PAD_R = 14;
+
+  const xFrac = (i) => (i + 0.5) / n;
+  const yFrac = (v) => 1 - v / yMax;
+  const pct = (f) => `${+(f * 100).toFixed(4)}%`;
+
+  let active = -1;
+
+  // 有脚本时由脚本接管悬浮，避免与原生 <title> 提示重复
+  svg.classList.add('is-interactive');
+
+  function bubblePath(w, h, cx, below) {
+    const r = RADIUS;
+    const c = CARET;
+    cx = Math.max(r + c, Math.min(w - r - c, cx));
+    const top = below ? `H${cx - c} L${cx} ${-c} L${cx + c} 0 ` : '';
+    const bottom = below ? '' : `H${cx + c} L${cx} ${h + c} L${cx - c} ${h} `;
+    return `M${r} 0 ${top}H${w - r} A${r} ${r} 0 0 1 ${w} ${r} V${h - r} A${r} ${r} 0 0 1 ${w - r} ${h} ` +
+      `${bottom}H${r} A${r} ${r} 0 0 1 0 ${h - r} V${r} A${r} ${r} 0 0 1 ${r} 0 Z`;
+  }
+
+  function describeDelta(i) {
+    if (i === 0) return { chg: '—', pct: '', cls: '', speech: '' };
+    const d = data[i] - data[i - 1];
+    if (d === 0) return { chg: '持平', pct: '', cls: '', speech: '，与前日持平' };
+    const p = Math.abs((d / data[i - 1]) * 100).toFixed(1);
+    const up = d > 0;
+    return {
+      chg: `${up ? '↑' : '↓'} ${Math.abs(d)} ms`,
+      pct: `${up ? '+' : '−'}${p}%`,
+      cls: up ? 'up' : 'down',
+      speech: `，较前日${up ? '上升' : '下降'} ${Math.abs(d)} 毫秒`,
+    };
+  }
+
+  function rightEdge(el) {
+    const b = el.getBBox();
+    return b.x + b.width;
+  }
+
+  function place() {
+    if (active < 0) return;
+    const box = svg.getBoundingClientRect();
+    const cs = getComputedStyle(wrap);
+    const ml = parseFloat(cs.paddingLeft);
+    const mr = parseFloat(cs.paddingRight);
+    const s = parseFloat(cs.getPropertyValue('--hs')) || 1;
+    const px = xFrac(active) * box.width;
+    const py = yFrac(data[active]) * box.height;
+    const w = Math.ceil(Math.max(rightEdge(tipDay), rightEdge(tipVal), rightEdge(tipDelta)) + PAD_R);
+    const sw = w * s;
+    const sh = TIP_H * s;
+
+    let x = px - sw / 2;
+    x = Math.max(-ml + 2, Math.min(box.width + mr - 2 - sw, x));
+    let y = py - GAP - CARET * s - sh;
+    const below = y < -12;
+    if (below) y = py + GAP + CARET * s;
+
+    tipBg.setAttribute('d', bubblePath(w, TIP_H, (px - x) / s, below));
+    tip.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s})`;
+  }
+
+  function show(i) {
+    i = Math.max(0, Math.min(n - 1, i));
+    const wasHidden = active < 0;
+    if (i !== active) {
+      if (active >= 0) {
+        pts[active].classList.remove('is-active');
+        xLabels[active].classList.remove('is-active');
+      }
+      active = i;
+      pts[i].classList.add('is-active');
+      xLabels[i].classList.add('is-active');
+
+      const cx = pct(xFrac(i));
+      const cy = pct(yFrac(data[i]));
+      band.setAttribute('x', pct(i / n));
+      guide.setAttribute('x1', cx);
+      guide.setAttribute('x2', cx);
+      guide.setAttribute('y1', cy);
+      halo.setAttribute('cx', cx);
+      halo.setAttribute('cy', cy);
+
+      const d = describeDelta(i);
+      tipDay.textContent = `第 ${i + 1} 天`;
+      tipNum.textContent = String(data[i]);
+      tipChg.textContent = d.chg;
+      tipPct.textContent = d.pct;
+      tipChg.setAttribute('class', d.cls);
+      tipPct.setAttribute('class', d.cls);
+      live.textContent = `第 ${i + 1} 天：${data[i]} 毫秒${d.speech}`;
+    }
+    if (wasHidden) tip.classList.add('snap');
+    place();
+    svg.classList.add('has-active');
+    if (wasHidden) {
+      getComputedStyle(tip).transform;
+      requestAnimationFrame(() => tip.classList.remove('snap'));
+    }
+  }
+
+  function hide() {
+    if (active < 0) return;
+    pts[active].classList.remove('is-active');
+    xLabels[active].classList.remove('is-active');
+    active = -1;
+    svg.classList.remove('has-active');
+  }
+
+  function nearPlot(e) {
+    const b = svg.getBoundingClientRect();
+    return e.clientX >= b.left && e.clientX <= b.right && e.clientY >= b.top - 16 && e.clientY <= b.bottom + 32;
+  }
+
+  function indexAt(clientX) {
+    const b = svg.getBoundingClientRect();
+    return Math.floor(((clientX - b.left) / b.width) * n);
+  }
+
+  let usingKeys = false;
+  let lastX = NaN;
+  let lastY = NaN;
+
+  // 键盘切换后鼠标若静止在图上，浏览器会因高亮元素移动补发 pointerover；
+  // 坐标没变的指针事件不能把选中点拉回鼠标位置
+  const onPointer = (e) => {
+    if (e.clientX !== lastX || e.clientY !== lastY) usingKeys = false;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    if (usingKeys) return;
+    if (nearPlot(e)) show(indexAt(e.clientX));
+    else if (e.pointerType === 'mouse') hide();
+  };
+  card.addEventListener('pointermove', onPointer);
+  card.addEventListener('pointerover', onPointer);
+  card.addEventListener('pointerleave', (e) => {
+    if (e.pointerType === 'mouse' && !usingKeys) hide();
+  });
+  // 触屏：点按绘图区显示最近的点，点按别处收起
+  document.addEventListener('pointerdown', (e) => {
+    usingKeys = false;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    if (card.contains(e.target) && nearPlot(e)) show(indexAt(e.clientX));
+    else if (e.pointerType !== 'mouse') hide();
+  });
+
+  svg.addEventListener('keydown', (e) => {
+    let i;
+    switch (e.key) {
+      case 'ArrowRight': i = active < 0 ? 0 : active + 1; break;
+      case 'ArrowLeft': i = active < 0 ? n - 1 : active - 1; break;
+      case 'Home': i = 0; break;
+      case 'End': i = n - 1; break;
+      case 'Escape': hide(); return;
+      default: return;
+    }
+    e.preventDefault();
+    usingKeys = true;
+    show(i);
+  });
+  svg.addEventListener('focus', () => {
+    let keyboard = true;
+    try { keyboard = svg.matches(':focus-visible'); } catch (err) { /* 旧浏览器 */ }
+    if (active < 0 && keyboard) {
+      usingKeys = true;
+      show(0);
+    }
+  });
+  svg.addEventListener('blur', hide);
+
+  if ('ResizeObserver' in window) new ResizeObserver(place).observe(svg);
+  else window.addEventListener('resize', place);
+})();
+</script>
+</body>
+</html>

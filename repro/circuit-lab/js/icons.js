@@ -1,0 +1,36 @@
+// icons.js - tiny line icons as inline SVG strings (no icon font or image files needed).
+const icon = (d) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+const dot = (x, y) => `<circle cx="${x}" cy="${y}" r="0.9" fill="currentColor" stroke="none"/>`;
+
+export const ICONS = {
+  close: icon('<path d="M6 6l12 12M18 6L6 18"/>'),
+  trash: icon('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>'),
+  rotate: icon('<path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/>'),
+  sliders: icon('<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>'),
+  power: icon('<path d="M12 3v8"/><path d="M7 6.5a7 7 0 1 0 10 0"/>'),
+  play: icon('<path d="M8 5v14l11-7z" fill="currentColor"/>'),
+  undo: icon('<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>'),
+  redo: icon('<path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>'),
+  zoomIn: icon('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/>'),
+  zoomOut: icon('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/>'),
+  fit: icon('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
+  eraser: icon('<path d="M7 21h13M5.5 15.5l9-9a2 2 0 0 1 2.8 0l2.2 2.2a2 2 0 0 1 0 2.8L13 18l-3 3H8l-2.5-2.5a2 2 0 0 1 0-3z"/><path d="M9 12l6 6"/>'),
+  help: icon(`<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4V14"/>${dot(12, 17.3)}`),
+  sound: icon('<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>'),
+  mute: icon('<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M17 9.5l5 5M22 9.5l-5 5"/>'),
+  check: icon('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+  okCircle: icon('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>'),
+  xCircle: icon('<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>'),
+  alert: icon(`<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5"/>${dot(12, 17.2)}`),
+  info: icon(`<circle cx="12" cy="12" r="9"/><path d="M12 11v6"/>${dot(12, 7.7)}`),
+  bolt: icon('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
+  flask: icon('<path d="M9 3h6M10 3v6l-5.6 9.6A2 2 0 0 0 6.1 21.5h11.8a2 2 0 0 0 1.7-2.9L14 9V3"/><path d="M7.3 15.5h9.4"/>'),
+  book: icon('<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19M9 7h6"/>'),
+  chevronDown: icon('<path d="M6 9l6 6 6-6"/>'),
+  chevronUp: icon('<path d="M6 15l6-6 6 6"/>'),
+  arrowRight: icon('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+  arrowLeft: icon('<path d="M19 12H5M11 6l-6 6 6 6"/>'),
+  reset: icon('<path d="M4 12a8 8 0 1 0 2.34-5.66"/><path d="M4 4v5h5"/>'),
+  layers: icon('<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>'),
+  target: icon('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/>'),
+};

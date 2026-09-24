@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The Cube — 3D Rubik's Cube (2×2 to 5×5)</title>
+<meta name="description" content="A 3D Rubik's cube game built with Three.js: pick a 2×2, 3×3, 4×4 or 5×5 cube, turn its layers with the mouse and restore every face to a single colour." />
+<meta name="theme-color" content="#0b0d1f" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 48'%3E%3Cg stroke='%230b0d19' stroke-width='2' stroke-linejoin='round'%3E%3Cpolygon points='22,4 40,14 22,24 4,14' fill='%23f4f4ef'/%3E%3Cpolygon points='4,14 22,24 22,44 4,34' fill='%2300a85a'/%3E%3Cpolygon points='22,24 40,14 40,34 22,44' fill='%23d61f2c'/%3E%3C/g%3E%3C/svg%3E" />
+<style>
+  /* ------------------------------------------------------------------
+   * Design tokens
+   * ------------------------------------------------------------------ */
+  :root {
+    --ink: #eef0ff;
+    --ink-dim: #aab0d8;
+    --ink-faint: #737aa8;
+    --accent: #ffd23f;
+    --accent-ink: #231a00;
+    --glass: rgba(19, 23, 50, 0.62);
+    --glass-strong: rgba(13, 16, 36, 0.86);
+    --line: rgba(255, 255, 255, 0.09);
+    --panel-w: clamp(300px, 25vw, 380px);
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body {
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(1400px 900px at 75% 115%, rgba(255, 170, 60, 0.09), transparent 60%),
+      linear-gradient(160deg, #171c42 0%, #0d1027 55%, #080a18 100%);
+  }
+  button { font: inherit; color: inherit; }
+  /* Soft glow that always sits behind the cube (follows the free area beside the panel). */
+  #glow {
+    position: fixed; top: 0; bottom: 0; left: 0; right: 0; pointer-events: none;
+    background: radial-gradient(min(900px, 90vw) min(640px, 80vh) at 50% 47%, rgba(80, 98, 210, 0.36), transparent 70%);
+    transition: right .4s cubic-bezier(.2, .8, .2, 1);
+  }
+  body.docked.panel-open #glow { right: var(--panel-w); }
+
+  /* The WebGL canvas fills the window; the HUD floats above it. */
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+  #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
+  #loading {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    color: var(--ink-dim); font-size: 14px; letter-spacing: .08em; z-index: 1;
+  }
+  #app { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+  #stage { position: absolute; inset: 0; transition: right .4s cubic-bezier(.2, .8, .2, 1); }
+  body.docked.panel-open #stage { right: var(--panel-w); }
+
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .05);
+  }
+
+  /* ---------------- Brand ---------------- */
+  .brand { position: absolute; top: 18px; left: 22px; display: flex; align-items: center; gap: 12px; }
+  .logo { width: 40px; height: 44px; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .45)); }
+  .brand h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: .01em; line-height: 1.1; }
+  .brand p { margin: 3px 0 0; font-size: 12.5px; color: var(--ink-dim); }
+
+  /* ---------------- Level picker ---------------- */
+  .levels { position: absolute; top: 88px; left: 22px; display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
+  .levels-title { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 1px 4px; }
+  .level {
+    display: flex; align-items: center; gap: 12px; width: 206px; padding: 9px 12px 9px 10px;
+    border-radius: 14px; border: 1px solid var(--line); background: var(--glass);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    cursor: pointer; text-align: left;
+    transition: transform .18s ease, border-color .2s, background .2s, box-shadow .2s;
+  }
+  .level:hover { transform: translateX(3px); border-color: rgba(255, 255, 255, .22); }
+  .level.active {
+    border-color: rgba(255, 210, 63, .75);
+    background: linear-gradient(135deg, rgba(255, 210, 63, .18), rgba(255, 210, 63, .04) 70%), var(--glass);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, .3), 0 0 0 3px rgba(255, 210, 63, .12);
+  }
+  .mini {
+    flex: none; width: 36px; height: 36px; display: grid; gap: 2px; padding: 3px;
+    border-radius: 8px; background: #06070d; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06);
+  }
+  .mini i { display: block; border-radius: 2px; background: var(--lc); box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25); }
+  .lv-body { display: flex; flex-direction: column; min-width: 0; }
+  .lv-top { display: flex; align-items: baseline; gap: 8px; }
+  .lv-top b { font-size: 16px; font-weight: 800; }
+  .lv-top em { font-style: normal; font-size: 12px; color: var(--ink-dim); }
+  .level.active .lv-top em { color: var(--accent); }
+  .lv-best { font-size: 10.5px; color: var(--ink-faint); font-family: var(--mono); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .level.active .lv-best { color: var(--ink-dim); }
+
+  /* ---------------- Stats ---------------- */
+  .stats { position: absolute; top: 18px; right: 22px; display: flex; padding: 9px 4px; border-radius: 16px; }
+  .stat { display: flex; flex-direction: column; gap: 2px; padding: 0 16px; border-left: 1px solid var(--line); min-width: 84px; }
+  .stat:first-child { border-left: 0; min-width: 122px; }
+  .stat .k { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint); }
+  .stat .v { font-family: var(--mono); font-size: 21px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
+  .stat .v.dim { color: var(--ink-dim); }
+  .stats.running .stat:first-child .v { color: var(--accent); }
+
+  /* ---------------- Toast ---------------- */
+  #toast {
+    position: absolute; top: 86px; left: 50%; transform: translate(-50%, -10px);
+    padding: 9px 16px; border-radius: 999px; background: rgba(10, 12, 28, .88); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink); opacity: 0; transition: opacity .25s, transform .25s;
+    white-space: nowrap; max-width: min(560px, 58%); overflow: hidden; text-overflow: ellipsis; pointer-events: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ---------------- Bottom: status line + toolbar ---------------- */
+  .bottom {
+    position: absolute; left: 0; right: 0; bottom: 18px; padding: 0 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none;
+  }
+  .status {
+    max-width: min(100%, 740px); min-height: 36px; padding: 6px 16px; border-radius: 999px;
+    font-size: 13px; color: var(--ink-dim); display: flex; align-items: center; justify-content: center; gap: 6px;
+    white-space: nowrap; overflow: hidden;
+  }
+  .status b { color: var(--ink); font-weight: 700; }
+  .status .lbl { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint); margin-right: 4px; }
+  .status .more { color: var(--ink-faint); font: 600 12px var(--mono); margin-right: 2px; }
+  .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+
+  .toolbar { display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 16px; pointer-events: auto; }
+  .sep { width: 1px; height: 24px; background: var(--line); margin: 0 4px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 40px; padding: 0 14px;
+    border-radius: 11px; border: 1px solid transparent; background: rgba(255, 255, 255, .06);
+    color: var(--ink); font-size: 13.5px; font-weight: 650; cursor: pointer; white-space: nowrap;
+    transition: background .15s, transform .1s, opacity .2s, box-shadow .2s;
+  }
+  .btn:hover:not(:disabled) { background: rgba(255, 255, 255, .13); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { opacity: .36; cursor: not-allowed; }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+  .btn.primary {
+    background: linear-gradient(180deg, #ffe066, #ffc21a); color: #241a00;
+    box-shadow: 0 6px 18px rgba(255, 194, 26, .28), inset 0 1px 0 rgba(255, 255, 255, .5);
+  }
+  .btn.primary:hover:not(:disabled) { background: linear-gradient(180deg, #ffe680, #ffc933); }
+  .btn.icon { width: 40px; padding: 0; }
+  .btn.ghost { background: transparent; }
+  .btn[aria-pressed="true"].toggle { background: rgba(255, 210, 63, .14); color: var(--accent); }
+  .level:focus-visible, .btn:focus-visible, .tab:focus-visible, .play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Move-notation chips (status line and formula cards) */
+  .chip {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 7px;
+    border-radius: 7px; background: rgba(255, 255, 255, .08); color: var(--ink); font: 700 12.5px/1 var(--mono);
+    transition: background .15s, color .15s, transform .15s, box-shadow .15s;
+  }
+  .chip.new { background: var(--accent); color: var(--accent-ink); animation: pop .28s ease-out; }
+  .chip.active { background: var(--accent); color: var(--accent-ink); transform: translateY(-2px); box-shadow: 0 6px 14px rgba(255, 210, 63, .35); }
+  .chip.done { background: rgba(255, 210, 63, .2); color: #ffe7a3; }
+  @keyframes pop { 0% { transform: scale(.6); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+  /* ---------------- Side panel: Formula Lab ---------------- */
+  #panel {
+    position: absolute; top: 0; right: 0; bottom: 0; width: var(--panel-w);
+    display: flex; flex-direction: column; pointer-events: auto;
+    background: var(--glass-strong); border-left: 1px solid var(--line);
+    -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
+    transform: translateX(100%); visibility: hidden;
+    transition: transform .4s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .4s;
+  }
+  body.panel-open #panel { transform: none; visibility: visible; transition: transform .4s cubic-bezier(.2, .8, .2, 1), visibility 0s; }
+  .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 20px 16px 12px 20px; }
+  .panel-head h2 { margin: 0; font-size: 17px; font-weight: 800; }
+  .panel-head p { margin: 3px 0 0; font-size: 12.5px; color: var(--ink-dim); }
+  .tabs { display: flex; gap: 4px; margin: 0 16px 4px; padding: 4px; border-radius: 12px; background: rgba(255, 255, 255, .05); }
+  .tab { flex: 1; height: 34px; border: 0; border-radius: 9px; background: transparent; color: var(--ink-dim); font-size: 13px; font-weight: 700; cursor: pointer; }
+  .tab:hover { color: var(--ink); }
+  .tab.active { background: rgba(255, 255, 255, .12); color: var(--ink); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08); }
+  .panel-body { flex: 1; overflow-y: auto; padding: 12px 16px 24px; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .18) transparent; }
+  .tab-page { display: none; }
+  .tab-page.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } }
+
+  .legend {
+    font-size: 12px; color: var(--ink-dim); line-height: 1.6; padding: 10px 12px; margin-bottom: 12px;
+    border-radius: 12px; background: rgba(255, 210, 63, .06); border: 1px solid rgba(255, 210, 63, .16);
+  }
+  .legend code, .guide code, .ctl-list code {
+    font-family: var(--mono); color: var(--ink); font-weight: 700; font-size: 11.5px;
+    background: rgba(255, 255, 255, .08); padding: 1px 5px; border-radius: 5px; white-space: nowrap;
+  }
+  .formula {
+    position: relative; padding: 12px 12px 12px 14px; margin-bottom: 10px; border-radius: 14px;
+    background: rgba(255, 255, 255, .04); border: 1px solid rgba(255, 255, 255, .06);
+    transition: border-color .2s, background .2s;
+  }
+  .formula:hover { border-color: rgba(255, 255, 255, .14); }
+  .formula.playing { border-color: rgba(255, 210, 63, .5); background: rgba(255, 210, 63, .07); }
+  .formula .tag {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); background: rgba(255, 210, 63, .1); padding: 2px 7px; border-radius: 999px;
+  }
+  .formula h3 { margin: 6px 44px 0 0; font-size: 14.5px; font-weight: 750; }
+  .formula .alg { display: flex; flex-wrap: wrap; gap: 4px; margin: 9px 0 8px; }
+  .formula p { margin: 0; font-size: 12.5px; color: var(--ink-dim); line-height: 1.45; }
+  .play {
+    position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; border: 0; cursor: pointer;
+    display: grid; place-items: center; background: linear-gradient(180deg, #ffe066, #ffc21a); color: #241a00;
+    box-shadow: 0 6px 16px rgba(255, 194, 26, .25); transition: transform .12s;
+  }
+  .play:hover { transform: scale(1.08); }
+  .play svg { width: 16px; height: 16px; margin-left: 2px; }
+
+  .guide h3, .ctl-list h3 { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin: 20px 0 8px; }
+  .guide h3:first-child, .ctl-list h3:first-child { margin-top: 4px; }
+  .guide p, .guide li { font-size: 13px; line-height: 1.55; color: var(--ink-dim); }
+  .guide p { margin: 0 0 8px; }
+  .guide b, .tip b { color: var(--ink); }
+  .guide ol, .guide ul { margin: 0 0 8px; padding-left: 20px; }
+  .guide li { margin-bottom: 6px; }
+  .guide .note { font-size: 12.5px; padding: 9px 11px; border-radius: 10px; background: rgba(255, 255, 255, .04); }
+  .tip { padding: 10px 12px; margin-bottom: 8px; border-radius: 12px; background: rgba(255, 255, 255, .04); border: 1px solid var(--line); font-size: 13px; line-height: 1.5; color: var(--ink-dim); }
+  .ctl { display: flex; flex-direction: column; gap: 4px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-dim); line-height: 1.4; }
+  .ctl .ctl-k { color: var(--ink); font-weight: 650; white-space: nowrap; display: flex; gap: 3px; align-items: center; }
+  .ctl-list p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--ink-dim); }
+  .ctl-list p b { color: var(--ink); }
+  kbd {
+    display: inline-block; min-width: 22px; padding: 2px 5px; text-align: center; font: 700 11.5px var(--mono); color: var(--ink);
+    border-radius: 6px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .14); border-bottom-width: 2px;
+  }
+
+  /* ---------------- Win dialog ---------------- */
+  .modal {
+    position: absolute; inset: 0; display: grid; place-items: center; z-index: 5; pointer-events: auto;
+    background: radial-gradient(circle at 50% 50%, rgba(8, 10, 24, .1), rgba(8, 10, 24, .5));
+    opacity: 0; transition: opacity .35s;
+  }
+  .modal[hidden] { display: none; }
+  .modal.show { opacity: 1; }
+  .modal-card {
+    width: min(400px, calc(100% - 40px)); padding: 26px 26px 20px; border-radius: 22px; text-align: center;
+    background: rgba(16, 19, 44, .9); transform: translateY(14px) scale(.96);
+    transition: transform .45s cubic-bezier(.2, .9, .3, 1.25);
+  }
+  .modal.show .modal-card { transform: none; }
+  .win-badge {
+    width: 60px; height: 60px; margin: 0 auto 10px; border-radius: 18px; display: grid; place-items: center;
+    background: linear-gradient(135deg, #ffe066, #ffb300); color: #2a1c00; box-shadow: 0 10px 30px rgba(255, 190, 40, .35);
+  }
+  .win-badge svg { width: 32px; height: 32px; }
+  .modal-card h2 { margin: 0; font-size: 28px; font-weight: 900; }
+  .win-sub { margin: 4px 0 16px; color: var(--ink-dim); font-size: 13.5px; }
+  .win-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  .win-stats div { padding: 10px 6px; border-radius: 12px; background: rgba(255, 255, 255, .05); display: flex; flex-direction: column; gap: 3px; }
+  .win-stats .k { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+  .win-stats .v { font-family: var(--mono); font-size: 19px; font-weight: 800; }
+  .win-record { margin: 0 0 16px; font-size: 13px; color: var(--accent); font-weight: 700; min-height: 18px; }
+  .win-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .win-tip { margin: 14px 0 0; font-size: 12px; color: var(--ink-faint); line-height: 1.45; }
+
+  /* ---------------- Responsive ---------------- */
+  @media (max-width: 999px) {
+    #panel { width: min(92vw, 380px); box-shadow: -24px 0 60px rgba(0, 0, 0, .5); }
+  }
+  @media (max-width: 760px) {
+    .brand { top: 12px; left: 14px; }
+    .brand p { display: none; }
+    .logo { width: 30px; height: 33px; }
+    .brand h1 { font-size: 18px; }
+    .stats { top: 10px; right: 12px; padding: 6px 2px; }
+    .stat, .stat:first-child { min-width: 0; padding: 0 10px; }
+    .stat .v { font-size: 16px; }
+    .stat:nth-child(3) { display: none; }
+    .levels { top: 62px; left: 12px; right: 12px; flex-direction: row; gap: 6px; }
+    .levels-title, .lv-best, .lv-top em { display: none; }
+    .level { flex: 1; width: auto; padding: 7px; gap: 7px; justify-content: center; }
+    .level .mini { width: 26px; height: 26px; }
+    .btn .lbl { display: none; }
+    .btn { padding: 0 11px; }
+    .bottom { bottom: 12px; }
+    .status { white-space: normal; text-align: center; border-radius: 14px; font-size: 12px; line-height: 1.4; flex-wrap: wrap; }
+    #toast { top: 118px; max-width: 92%; }
+  }
+  @media (max-height: 600px) and (min-width: 761px) {
+    .levels { gap: 5px; }
+    .level { padding: 6px 10px; }
+    .lv-best { display: none; }
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "../vendor/three/build/three.module.js",
+    "three/addons/": "../vendor/three/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<script>
+  // Decide the side-panel layout before the first paint so nothing jumps once the 3D engine has loaded.
+  (function () {
+    var wide = window.innerWidth >= 1000;
+    document.body.classList.toggle('docked', wide);
+    document.body.classList.toggle('panel-open', wide);
+  })();
+</script>
+
+<div id="glow" aria-hidden="true"></div>
+<canvas id="scene" aria-label="3D Rubik's cube. Drag a face to turn a layer, drag empty space to rotate the cube."></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div id="loading">Loading 3D engine…</div>
+
+<div id="app">
+  <main id="stage">
+    <!-- Title -->
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 44 48" aria-hidden="true">
+        <g stroke="#0b0d19" stroke-width="1.6" stroke-linejoin="round">
+          <polygon points="22,4 40,14 22,24 4,14" fill="#f4f4ef" />
+          <polygon points="4,14 22,24 22,44 4,34" fill="#00a85a" />
+          <polygon points="22,24 40,14 40,34 22,44" fill="#d61f2c" />
+        </g>
+        <g stroke="#0b0d19" stroke-width="1.6" stroke-linecap="round">
+          <line x1="28" y1="7.33" x2="10" y2="17.33" /><line x1="34" y1="10.67" x2="16" y2="20.67" />
+          <line x1="16" y1="7.33" x2="34" y2="17.33" /><line x1="10" y1="10.67" x2="28" y2="20.67" />
+          <line x1="10" y1="17.33" x2="10" y2="37.33" /><line x1="16" y1="20.67" x2="16" y2="40.67" />
+          <line x1="4" y1="20.67" x2="22" y2="30.67" /><line x1="4" y1="27.33" x2="22" y2="37.33" />
+          <line x1="28" y1="20.67" x2="28" y2="40.67" /><line x1="34" y1="17.33" x2="34" y2="37.33" />
+          <line x1="22" y1="30.67" x2="40" y2="20.67" /><line x1="22" y1="37.33" x2="40" y2="27.33" />
+        </g>
+      </svg>
+      <div>
+        <h1>The Cube</h1>
+        <p>3D Rubik's Cube · 2×2 to 5×5</p>
+      </div>
+    </div>
+
+    <!-- Level picker (mini grids are generated by the script) -->
+    <nav class="levels" aria-label="Choose cube level" role="radiogroup">
+      <div class="levels-title">Choose level</div>
+      <button class="level" type="button" role="radio" data-n="2" aria-checked="false"><span class="mini"></span><span class="lv-body"><span class="lv-top"><b>2×2</b><em>Beginner</em></span><span class="lv-best"></span></span></button>
+      <button class="level" type="button" role="radio" data-n="3" aria-checked="false"><span class="mini"></span><span class="lv-body"><span class="lv-top"><b>3×3</b><em>Classic</em></span><span class="lv-best"></span></span></button>
+      <button class="level" type="button" role="radio" data-n="4" aria-checked="false"><span class="mini"></span><span class="lv-body"><span class="lv-top"><b>4×4</b><em>Advanced</em></span><span class="lv-best"></span></span></button>
+      <button class="level" type="button" role="radio" data-n="5" aria-checked="false"><span class="mini"></span><span class="lv-body"><span class="lv-top"><b>5×5</b><em>Expert</em></span><span class="lv-best"></span></span></button>
+    </nav>
+
+    <!-- Timer / moves / best -->
+    <div class="stats glass" id="stats">
+      <div class="stat"><span class="k">Time</span><span class="v" id="stat-time">00:00.00</span></div>
+      <div class="stat"><span class="k">Moves</span><span class="v" id="stat-moves">0</span></div>
+      <div class="stat"><span class="k">Best</span><span class="v dim" id="stat-best">—</span></div>
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <!-- Status line + main toolbar -->
+    <div class="bottom">
+      <div id="status" class="status glass" aria-live="polite"></div>
+      <div class="toolbar glass" role="toolbar" aria-label="Game controls">
+        <button class="btn primary" id="btn-scramble" type="button" title="Scramble the cube and start a timed solve">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5" /><path d="M4 20 21 3" /><path d="M21 16v5h-5" /><path d="m15 15 6 6" /><path d="m4 4 5 5" /></svg>
+          <span class="lbl">Scramble</span>
+        </button>
+        <span class="sep"></span>
+        <button class="btn" id="btn-undo" type="button" title="Undo the last move (Ctrl+Z)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></svg>
+          <span class="lbl">Undo</span>
+        </button>
+        <button class="btn" id="btn-redo" type="button" title="Redo (Ctrl+Y)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5" /><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" /></svg>
+          <span class="lbl">Redo</span>
+        </button>
+        <button class="btn" id="btn-rewind" type="button" title="Replay every turn backwards until the cube is restored (does not count as a solve)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 19 2 12l9-7z" /><path d="M22 19l-9-7 9-7z" /></svg>
+          <span class="lbl">Rewind</span>
+        </button>
+        <button class="btn" id="btn-reset" type="button" title="Start over with a fresh, solved cube">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
+          <span class="lbl">Reset</span>
+        </button>
+        <span class="sep"></span>
+        <button class="btn icon toggle" id="btn-sound" type="button" aria-pressed="true" title="Sound on / off">
+          <svg class="ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M19 5a10 10 0 0 1 0 14" /></svg>
+          <svg class="ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M11 5 6 9H2v6h4l5 4z" /><path d="m23 9-6 6" /><path d="m17 9 6 6" /></svg>
+        </button>
+        <button class="btn icon toggle" id="btn-panel" type="button" aria-pressed="true" title="Formula Lab, guide and controls (H)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z" /><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Win dialog -->
+    <div id="win" class="modal" hidden>
+      <div class="modal-card glass" role="dialog" aria-modal="true" aria-labelledby="win-title">
+        <div class="win-badge"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z" /></svg></div>
+        <h2 id="win-title">Solved!</h2>
+        <p class="win-sub" id="win-sub">3×3 · Classic</p>
+        <div class="win-stats">
+          <div><span class="k">Time</span><span class="v" id="win-time">00:00.00</span></div>
+          <div><span class="k">Moves</span><span class="v" id="win-moves">0</span></div>
+          <div><span class="k">Turns / s</span><span class="v" id="win-tps">0.00</span></div>
+        </div>
+        <p class="win-record" id="win-record"></p>
+        <div class="win-actions">
+          <button class="btn primary" id="win-again" type="button">Scramble again</button>
+          <button class="btn" id="win-next" type="button">Try 4×4 →</button>
+          <button class="btn ghost" id="win-close" type="button">Close</button>
+        </div>
+        <p class="win-tip" id="win-tip"></p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Formula Lab / Guide / Controls -->
+  <aside id="panel" aria-label="Formula lab and guide">
+    <header class="panel-head">
+      <div>
+        <h2>Formula Lab</h2>
+        <p>Press ▶ and watch a formula play on your cube</p>
+      </div>
+      <button class="btn icon ghost" id="panel-close" type="button" aria-label="Close panel" title="Close (H)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+      </button>
+    </header>
+    <div class="tabs" role="tablist">
+      <button class="tab active" type="button" role="tab" data-tab="formulas" aria-selected="true">Formulas</button>
+      <button class="tab" type="button" role="tab" data-tab="guide" aria-selected="false">Guide</button>
+      <button class="tab" type="button" role="tab" data-tab="controls" aria-selected="false">Controls</button>
+    </div>
+    <div class="panel-body">
+      <section class="tab-page active" data-page="formulas">
+        <div class="legend">
+          <code>R L U D F B</code> turn the Right, Left, Up, Down, Front or Back face clockwise (as seen when looking at that face).
+          <code>R'</code> counter-clockwise · <code>R2</code> half turn · <code>M E S</code> middle slices · <code>2R</code> 2nd layer from the right.
+          Letters follow your view: <b>F</b> is the face pointing at you, <b>U</b> the face on top.
+        </div>
+        <div id="formula-list"></div>
+      </section>
+
+      <section class="tab-page guide" data-page="guide">
+        <h3>Goal</h3>
+        <p>Scramble the cube, then turn its layers until <b>every face shows a single colour</b>.</p>
+
+        <h3>Levels</h3>
+        <ul>
+          <li><b>2×2 Beginner</b> — only corner pieces: learn how turns move pieces around.</li>
+          <li><b>3×3 Classic</b> — the original puzzle; centres never move.</li>
+          <li><b>4×4 Advanced</b> — no fixed centres; build them, pair the edges, watch for parity.</li>
+          <li><b>5×5 Expert</b> — many more pieces, same ideas as the 4×4.</li>
+        </ul>
+
+        <h3>Beginner's method (3×3)</h3>
+        <ol>
+          <li><b>White cross</b> on top, each edge matching its side centre.</li>
+          <li><b>White corners</b> — park a corner below its slot (front-right) and repeat <code>R' D' R D</code> until it jumps in.</li>
+          <li>Turn the cube over (drag empty space or use the arrow keys) so yellow is on top, then insert the <b>middle-layer edges</b>.</li>
+          <li><b>Top-layer cross</b> — <code>F R U R' U' F'</code>.</li>
+          <li><b>Orient top corners</b> — Sune <code>R U R' U R U2 R'</code>.</li>
+          <li><b>Place top corners</b> — <code>U R U' L' U R' U' L</code>.</li>
+          <li><b>Place top edges</b> — <code>R U' R U R U R U' R' U' R2</code>.</li>
+        </ol>
+        <p class="note"><b>2×2:</b> do steps 2, 5 and 6 — it is a 3×3 without edges and centres. <b>4×4 / 5×5:</b> solve the centres, pair up matching edge pieces, then finish like a 3×3.</p>
+
+        <h3>Game tips</h3>
+        <div class="tip"><b>Learn basic formulas.</b> Understand and master a few restoration formulas — the top-layer cross, corner permutation and friends. Play them from the Formulas tab and watch what each one does.</div>
+        <div class="tip"><b>Simple to complex.</b> Start with the 2×2, then move on to the 3×3, 4×4 and 5×5 to build your technique step by step.</div>
+        <div class="tip"><b>Practice observation.</b> While you turn, pay attention to how the colours are distributed and how the layers relate to each other — you will solve faster with fewer wasted moves.</div>
+
+        <h3>Why it is good for you</h3>
+        <p>Solving trains spatial imagination and logical thinking — a fun brain workout for players of all ages, from first-timers to cube enthusiasts.</p>
+      </section>
+
+      <section class="tab-page ctl-list" data-page="controls">
+        <h3>Mouse &amp; touch</h3>
+        <div class="ctl"><span class="ctl-k">Drag a face</span><span>Turn that row or column — it follows your drag</span></div>
+        <div class="ctl"><span class="ctl-k">Drag empty space</span><span>Rotate the whole cube (right-drag works anywhere)</span></div>
+        <div class="ctl"><span class="ctl-k">Wheel / pinch</span><span>Zoom in and out</span></div>
+        <div class="ctl"><span class="ctl-k">Double-click space</span><span>Reset the view</span></div>
+        <h3>Keyboard</h3>
+        <div class="ctl"><span class="ctl-k"><kbd>U</kbd><kbd>D</kbd><kbd>L</kbd><kbd>R</kbd><kbd>F</kbd><kbd>B</kbd></span><span>Turn a face clockwise, relative to your view</span></div>
+        <div class="ctl"><span class="ctl-k"><kbd>Shift</kbd>+ key</span><span>Counter-clockwise turn</span></div>
+        <div class="ctl"><span class="ctl-k"><kbd>M</kbd><kbd>E</kbd><kbd>S</kbd></span><span>Middle slices (3×3 and 5×5)</span></div>
+        <div class="ctl"><span class="ctl-k"><kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd></span><span>Turn the whole cube over by 90°</span></div>
+        <div class="ctl"><span class="ctl-k"><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd></span><span>Undo / redo</span></div>
+        <div class="ctl"><span class="ctl-k"><kbd>H</kbd></span><span>Show or hide this panel</span></div>
+        <h3>Scoring</h3>
+        <p>Press <b>Scramble</b> to start a timed attempt. The clock starts with your first turn and stops the moment every face is one colour. Best time and fewest moves are saved per level. <b>Rewind</b> replays your turns backwards and does not count as a solve.</p>
+      </section>
+    </div>
+  </aside>
+</div>
+
+<script type="module">
+/* =============================================================================
+ * THE CUBE — a Rubik's cube game (2×2 … 5×5) built with Three.js.
+ *
+ * How it fits together
+ *  - Every cubie (small cube) is a Mesh inside `cubeGroup`. Its position is kept
+ *    in "cube units": integers for odd sizes, half-integers for even sizes, so the
+ *    cube is always centred on the origin. `cubeGroup` is scaled so that every
+ *    level has the same on-screen size.
+ *  - A move is { axis: 'x'|'y'|'z', layer: 0…N-1, q } where q is the number of
+ *    quarter turns about the positive axis (right-hand rule, -1 | 1 | 2).
+ *  - To animate a move, the cubies of that layer are re-parented to a `pivot`
+ *    object, the pivot is rotated, and afterwards the cubies are handed back to
+ *    `cubeGroup` with positions/rotations snapped to exact values (no drift).
+ *  - The camera never moves (except for zoom). Dragging empty space rotates
+ *    `cubeGroup` itself, so the player can turn the cube over freely — just like
+ *    holding a real one. Keyboard letters (R, U, F…) are resolved relative to the
+ *    current view, so "F" is always the face pointing at the player.
+ *  - A face is solved when all stickers facing the same direction share one
+ *    colour; the puzzle is solved when that is true for all six directions.
+ * ========================================================================== */
+
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+/* -----------------------------------------------------------------------------
+ * 1. CONFIGURATION
+ * -------------------------------------------------------------------------- */
+
+/** Edge length of the whole cube in world units — identical for every level. */
+const CUBE_SIZE = 3;
+const HALF_PI = Math.PI / 2;
+const AXIS_NAMES = ['x', 'y', 'z'];
+const Z_AXIS = new THREE.Vector3(0, 0, 1);
+const IDENTITY_Q = new THREE.Quaternion();
+
+/** The six faces in the cube's local frame (Western colour scheme: white on top,
+ *  green in front, red on the right — white/yellow, green/blue, red/orange opposite). */
+const FACES = [
+  { key: 'R', normal: new THREE.Vector3(1, 0, 0), color: '#d61f2c' },
+  { key: 'L', normal: new THREE.Vector3(-1, 0, 0), color: '#ff7a1a' },
+  { key: 'U', normal: new THREE.Vector3(0, 1, 0), color: '#f4f4ef' },
+  { key: 'D', normal: new THREE.Vector3(0, -1, 0), color: '#ffd41f' },
+  { key: 'F', normal: new THREE.Vector3(0, 0, 1), color: '#00a85a' },
+  { key: 'B', normal: new THREE.Vector3(0, 0, -1), color: '#1261d6' },
+];
+
+/** Difficulty levels: scramble length grows with the cube. */
+const LEVELS = {
+  2: { name: 'Beginner', scramble: 12, color: '#00a85a', blurb: 'corners only — the perfect warm-up.' },
+  3: { name: 'Classic', scramble: 22, color: '#d61f2c', blurb: 'the original puzzle with fixed centres.' },
+  4: { name: 'Advanced', scramble: 40, color: '#1261d6', blurb: 'no fixed centres — pair edges, beware parity.' },
+  5: { name: 'Expert', scramble: 60, color: '#ff7a1a', blurb: 'the Professor’s Cube, 98 pieces to tame.' },
+};
+
+/** Encouragement shown in the win dialog. */
+const WIN_TIPS = {
+  2: 'Great start! Ready for the classic? The 3×3 adds edges and centres.',
+  3: 'Classic conquered. The 4×4 adds centre building, edge pairing and parity.',
+  4: 'Impressive! The 5×5 is the final challenge.',
+  5: 'You tamed the Professor’s Cube. Now try to beat your time!',
+};
+
+/** Basic formulas (outer-layer turns only, so they work on every cube size). */
+const FORMULAS = [
+  { name: 'Sexy Move', tag: 'Trigger', alg: "R U R' U'", text: 'The building block of many formulas. Repeat it six times and the cube returns to where it started.' },
+  { name: 'Middle Layer · Right', tag: 'Step 3', alg: "U R U' R' U' F' U F", text: 'Sends the top-front edge into the middle layer’s front-right slot.' },
+  { name: 'Middle Layer · Left', tag: 'Step 3', alg: "U' L' U L U F U' F'", text: 'Sends the top-front edge into the front-left slot.' },
+  { name: 'Top Layer Cross', tag: 'Step 4', alg: "F R U R' U' F'", text: 'Grows the top cross: dot → L-shape → line → cross. Hold the L at back-left, the line horizontally.' },
+  { name: 'Sune', tag: 'Step 5', alg: "R U R' U R U2 R'", text: 'Twists the top corners until the whole top face is one colour.' },
+  { name: 'Corner Permutation', tag: 'Step 6', alg: "U R U' L' U R' U' L", text: 'Cycles three top corners. Keep a correctly placed corner at front-right.' },
+  { name: 'Edge Permutation (Ua)', tag: 'Step 7', alg: "R U' R U R U R U' R' U' R2", text: 'Cycles three top edges to finish the cube.' },
+  { name: 'Corner Insert', tag: 'Step 2', alg: "R' D' R D", text: 'Repeat until the corner below the front-right slot jumps into place with white on top.' },
+  { name: 'T-Perm', tag: 'PLL', alg: "R U R' U' R' F R2 U' R' U' R U R' F'", text: 'Swaps two top corners and two top edges in one go.' },
+  { name: 'Checkerboard', tag: 'Pattern', alg: 'R2 L2 U2 D2 F2 B2', text: 'A classic pretty pattern — play it on a solved 3×3 or 5×5.' },
+];
+
+/** Human-readable names used for notation tooltips. */
+const MOVE_NAMES = {
+  R: 'Right face', L: 'Left face', U: 'Up (top) face', D: 'Down (bottom) face', F: 'Front face', B: 'Back face',
+  M: 'Middle slice (turns like L)', E: 'Equator slice (turns like D)', S: 'Standing slice (turns like F)',
+};
+const TOKEN_RE = /^(\d*)([RLUDFBMES])(2'|2|')?$/;
+
+/* -----------------------------------------------------------------------------
+ * 2. SMALL HELPERS
+ * -------------------------------------------------------------------------- */
+
+const clamp = THREE.MathUtils.clamp;
+const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+const easeOutBack = (t) => { const c1 = 1.35, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+
+/** Normalises a number of quarter turns to -1, 0, 1 or 2. */
+function normQ(q) {
+  const r = ((Math.round(q) % 4) + 4) % 4;
+  return r === 3 ? -1 : r;
+}
+
+/** Axis along which a vector is longest: { index, name, sign }. */
+function dominantAxis(v) {
+  const ax = Math.abs(v.x), ay = Math.abs(v.y), az = Math.abs(v.z);
+  const index = ax >= ay && ax >= az ? 0 : ay >= az ? 1 : 2;
+  return { index, name: AXIS_NAMES[index], sign: Math.sign(v.getComponent(index)) || 1 };
+}
+
+/** Rounds a vector to the nearest signed unit axis. */
+function snapToAxis(v) {
+  const a = dominantAxis(v);
+  return new THREE.Vector3().setComponent(a.index, a.sign);
+}
+
+const pad2 = (n) => String(n).padStart(2, '0');
+/** mm:ss.cc */
+function formatTime(ms) {
+  const cs = Math.floor(Math.max(0, ms) / 10);
+  return `${pad2(Math.floor(cs / 6000))}:${pad2(Math.floor(cs / 100) % 60)}.${pad2(cs % 100)}`;
+}
+
+/** localStorage wrapper that silently degrades when storage is unavailable. */
+const Store = {
+  get(key, fallback) {
+    try { const v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch { return fallback; }
+  },
+  set(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* private mode etc. */ }
+  },
+};
+
+/* -----------------------------------------------------------------------------
+ * 3. RENDERER, SCENE, CAMERA, LIGHTS
+ * -------------------------------------------------------------------------- */
+
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setClearColor(0x000000, 0);          // transparent: the CSS gradient shows through
+renderer.toneMapping = THREE.NeutralToneMapping; // keeps sticker colours saturated
+renderer.toneMappingExposure = 1.0;
+
+const scene = new THREE.Scene();
+{
+  // A soft studio environment gives the plastic and stickers believable reflections.
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  pmrem.dispose();
+}
+scene.environmentIntensity = 0.55;
+
+/** The camera looks at the cube from the front-right-top ("three-quarter" view),
+ *  so F, R and U are visible and F is unambiguously the face pointing at us. */
+const VIEW_DIR = new THREE.Vector3(0.5, 0.52, 0.8).normalize();
+const camera = new THREE.PerspectiveCamera(34, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.copy(VIEW_DIR).multiplyScalar(14);
+camera.lookAt(0, 0, 0);
+camera.updateMatrixWorld();
+/** Screen-right / screen-up directions in world space (the camera only zooms, never turns). */
+const CAM_RIGHT = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+const CAM_UP = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.6);
+keyLight.position.set(3, 8, 6);
+const rimLight = new THREE.DirectionalLight(0x9fb8ff, 0.7);
+rimLight.position.set(-6, 2, -5);
+const fillLight = new THREE.DirectionalLight(0xffe2c4, 0.35);
+fillLight.position.set(-5, -3, 6);
+scene.add(keyLight, rimLight, fillLight);
+
+/** The "floor" under the floating cube: a faint pool of light with a soft contact
+ *  shadow in the middle, both painted into small canvas textures. */
+function radialTexture(stops) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const g = c.getContext('2d');
+  const grd = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  for (const [offset, color] of stops) grd.addColorStop(offset, color);
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 256, 256);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+function floorDecal(tex, size, y, order) {
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }),
+  );
+  mesh.rotation.x = -HALF_PI;
+  mesh.scale.setScalar(size);
+  mesh.position.y = y;
+  mesh.renderOrder = order;
+  scene.add(mesh);
+}
+floorDecal(radialTexture([[0, 'rgba(130,150,255,0.34)'], [0.3, 'rgba(110,130,245,0.2)'], [0.65, 'rgba(90,110,230,0.06)'], [1, 'rgba(80,100,220,0)']]),
+  CUBE_SIZE * 4.6, -CUBE_SIZE / 2 - 0.62, -2);
+floorDecal(radialTexture([[0, 'rgba(4,5,14,0.9)'], [0.35, 'rgba(4,5,14,0.7)'], [0.62, 'rgba(4,5,14,0.25)'], [1, 'rgba(4,5,14,0)']]),
+  CUBE_SIZE * 2.0, -CUBE_SIZE / 2 - 0.61, -1);
+
+/** Everything that belongs to the puzzle lives in cubeGroup; pivot is used for layer turns. */
+const cubeGroup = new THREE.Group();
+scene.add(cubeGroup);
+const pivot = new THREE.Object3D();
+cubeGroup.add(pivot);
+
+/* -----------------------------------------------------------------------------
+ * 4. CUBIE GEOMETRY & MATERIALS (shared by all levels — built once)
+ * -------------------------------------------------------------------------- */
+
+const BODY = 0.965;                        // cubie size inside its 1×1×1 cell (the gap shows the black core)
+const bodyGeo = new RoundedBoxGeometry(BODY, BODY, BODY, 3, 0.07);
+const coreGeo = new THREE.BoxGeometry(BODY, BODY, BODY); // hidden inner cubies need no rounding
+const bodyMat = new THREE.MeshStandardMaterial({ color: 0x131419, roughness: 0.42, metalness: 0.08 });
+const stickerMats = FACES.map((f) => new THREE.MeshStandardMaterial({ color: f.color, roughness: 0.26, metalness: 0 }));
+const stickerGeo = makeStickerGeometry(0.82, 0.1);
+const STICKER_Z = BODY / 2 + 0.001;        // stickers sit right on the cubie surface
+
+/** A rounded-square sticker with a tiny bevel so its edges catch the light. */
+function makeStickerGeometry(size, radius) {
+  const s = size / 2, r = radius;
+  const shape = new THREE.Shape();
+  shape.moveTo(-s + r, -s);
+  shape.lineTo(s - r, -s);
+  shape.absarc(s - r, -s + r, r, -HALF_PI, 0, false);
+  shape.lineTo(s, s - r);
+  shape.absarc(s - r, s - r, r, 0, HALF_PI, false);
+  shape.lineTo(-s + r, s);
+  shape.absarc(-s + r, s - r, r, HALF_PI, Math.PI, false);
+  shape.lineTo(-s, -s + r);
+  shape.absarc(-s + r, -s + r, r, Math.PI, Math.PI * 1.5, false);
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.004, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.012, bevelSegments: 2, curveSegments: 6,
+  });
+  geo.translate(0, 0, 0.008); // back face flush with z = 0
+  return geo;
+}
+
+/* -----------------------------------------------------------------------------
+ * 5. GAME STATE
+ * -------------------------------------------------------------------------- */
+
+/** idle: free play · scrambling · ready: scrambled, clock waiting for the first turn
+ *  playing: clock running · solved: win dialog · auto: rewinding */
+let state = 'idle';
+const cube = { N: 3, cubies: [], stickers: [] };
+const moveHistory = [];   // player turns since the last scramble/reset: { move, notation }
+const redoStack = [];
+const log = [];           // every turn since the cube was last solved (compacted) — used by Rewind
+const turnQueue = [];     // pending animated turns
+let activeTurn = null;    // the turn currently animating
+let gesture = null;       // current pointer gesture: 'turn' | 'view' | 'pinch'
+let intro = null;         // fly-in animation after (re)building the cube
+let spin = null;          // celebratory spin after a win
+let viewAnim = null;      // animated whole-cube reorientation (arrow keys / reset view)
+const spinVel = new THREE.Vector2(); // inertia of a free rotation (rad per ms)
+let timerStart = 0;
+let timerElapsed = 0;
+let records = Store.get('thecube.records.v1', {});
+let needsRender = true;
+let hoverAt = null;
+let panelOpen = document.body.classList.contains('panel-open');
+let docked = document.body.classList.contains('docked');
+let baseDistance = 14;
+let zoom = 1;
+let zoomTarget = 1;
+const ZOOM_MIN = 0.62;
+const ZOOM_MAX = 1.8;
+let viewShift = 0;        // horizontal projection shift that keeps the cube centred beside the panel
+let viewShiftTarget = 0;
+let viewLift = 0;
+let maxChips = 16;
+
+function requestRender() { needsRender = true; }
+
+/* -----------------------------------------------------------------------------
+ * 6. BUILDING THE CUBE
+ * -------------------------------------------------------------------------- */
+
+/** Creates a solved N×N×N cube. Hidden inner cubies are included so that no hole
+ *  appears when a layer is half-turned. */
+function buildCube(N) {
+  for (const c of cube.cubies) c.removeFromParent();
+  cube.cubies = [];
+  cube.stickers = [];
+  cube.N = N;
+  pivot.quaternion.identity();
+  cubeGroup.scale.setScalar(CUBE_SIZE / N);
+  const half = (N - 1) / 2;
+  for (let ix = 0; ix < N; ix++) {
+    for (let iy = 0; iy < N; iy++) {
+      for (let iz = 0; iz < N; iz++) {
+        const idx = [ix, iy, iz];
+        const onSurface = idx.some((v) => v === 0 || v === N - 1);
+        const piece = new THREE.Mesh(onSurface ? bodyGeo : coreGeo, bodyMat);
+        piece.position.set(ix - half, iy - half, iz - half);
+        if (onSurface) {
+          FACES.forEach((face, fi) => {
+            const a = dominantAxis(face.normal);
+            if (idx[a.index] === (a.sign > 0 ? N - 1 : 0)) addSticker(piece, fi);
+          });
+        }
+        cubeGroup.add(piece);
+        cube.cubies.push(piece);
+      }
+    }
+  }
+  startIntro();
+}
+
+function addSticker(piece, faceIndex) {
+  const face = FACES[faceIndex];
+  const s = new THREE.Mesh(stickerGeo, stickerMats[faceIndex]);
+  s.quaternion.setFromUnitVectors(Z_AXIS, face.normal);
+  s.position.copy(face.normal).multiplyScalar(STICKER_Z);
+  s.userData = { face: faceIndex, normal: face.normal }; // local normal, rotated with the cubie
+  piece.add(s);
+  cube.stickers.push(s);
+}
+
+/** Cubies fly in from an exploded state — a quick, playful "assembly" animation. */
+function startIntro() {
+  const now = performance.now();
+  intro = {
+    start: now,
+    duration: 560,
+    items: cube.cubies.map((c) => {
+      const to = c.position.clone();
+      const dir = to.lengthSq() > 0 ? to.clone().normalize() : new THREE.Vector3(0, 1, 0);
+      const from = to.clone().multiplyScalar(1.8).addScaledVector(dir, 1 + Math.random() * 1.2);
+      const q0 = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+        (Math.random() - 0.5) * 2.2, (Math.random() - 0.5) * 2.2, (Math.random() - 0.5) * 2.2));
+      const delay = Math.random() * 160 + (to.length() / cube.N) * 70;
+      c.position.copy(from);
+      c.quaternion.copy(q0);
+      c.scale.setScalar(0.2);
+      return { c, from, to, q0, delay };
+    }),
+  };
+}
+
+function updateIntro(now) {
+  let done = true;
+  for (const it of intro.items) {
+    const t = clamp((now - intro.start - it.delay) / intro.duration, 0, 1);
+    if (t < 1) done = false;
+    const e = easeOutCubic(t);
+    it.c.position.lerpVectors(it.from, it.to, easeOutBack(t));
+    it.c.quaternion.slerpQuaternions(it.q0, IDENTITY_Q, e);
+    it.c.scale.setScalar(0.2 + 0.8 * e);
+  }
+  if (done) {
+    for (const it of intro.items) {
+      it.c.position.copy(it.to);
+      it.c.quaternion.identity();
+      it.c.scale.setScalar(1);
+    }
+    intro = null;
+    pumpQueue();
+    refreshUI();
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * 7. TURN ENGINE — layer selection, animation and snapping
+ * -------------------------------------------------------------------------- */
+
+/** Index (0…N-1) of the layer a cubie occupies along an axis. */
+function layerOf(piece, axis) {
+  return Math.round(piece.position[axis] + (cube.N - 1) / 2);
+}
+
+/** Re-parents one layer to the pivot so it can be rotated as a unit. */
+function attachLayer(axis, layer) {
+  pivot.quaternion.identity();
+  pivot.updateMatrixWorld(true);
+  const list = cube.cubies.filter((c) => layerOf(c, axis) === layer);
+  for (const c of list) pivot.attach(c);
+  return list;
+}
+
+const _snapM = new THREE.Matrix4();
+/** Hands a turned layer back to cubeGroup and removes floating-point drift:
+ *  positions snap to the half-unit grid, rotation matrices to exact 0/±1. */
+function releaseLayer(list) {
+  pivot.updateMatrixWorld(true);
+  for (const c of list) {
+    cubeGroup.attach(c);
+    c.position.set(Math.round(c.position.x * 2) / 2, Math.round(c.position.y * 2) / 2, Math.round(c.position.z * 2) / 2);
+    _snapM.makeRotationFromQuaternion(c.quaternion);
+    const e = _snapM.elements;
+    for (const i of [0, 1, 2, 4, 5, 6, 8, 9, 10]) e[i] = Math.round(e[i]);
+    c.quaternion.setFromRotationMatrix(_snapM);
+    c.scale.setScalar(1);
+  }
+  pivot.quaternion.identity();
+}
+
+const AXIS_VECTORS = { x: new THREE.Vector3(1, 0, 0), y: new THREE.Vector3(0, 1, 0), z: new THREE.Vector3(0, 0, 1) };
+function setPivotAngle(axis, angle) {
+  pivot.quaternion.setFromAxisAngle(AXIS_VECTORS[axis], angle);
+}
+
+/** Queues an animated turn. item = { move, source, notation?, duration?, ease?, onStart?, onDone? }
+ *  source: 'user' | 'undo' | 'redo' | 'scramble' | 'auto'. */
+function enqueueTurn(item) {
+  turnQueue.push(item);
+  pumpQueue();
+}
+
+/** Starts the next queued turn if nothing else is moving the cube. */
+function pumpQueue(startTime = performance.now()) {
+  if (activeTurn || intro || gesture?.kind === 'turn' || !turnQueue.length) return;
+  const item = turnQueue.shift();
+  const m = item.move;
+  let duration = item.duration ?? (Math.abs(m.q) === 2 ? 300 : 200);
+  if (item.keyboard && turnQueue.length >= 2) duration *= 0.6; // fast typists: catch up
+  activeTurn = {
+    item, axis: m.axis, list: attachLayer(m.axis, m.layer),
+    from: 0, to: m.q * HALF_PI, start: startTime, duration, ease: item.ease || easeInOutCubic,
+  };
+  item.onStart?.();
+  requestRender();
+}
+
+function updateTurn(now) {
+  // On slow devices several short turns can end within one frame. Each follow-up
+  // turn starts when the previous one was due to end, so a scramble takes the
+  // same time at 10 fps as at 60 fps.
+  for (let guard = 0; activeTurn && guard < 64; guard++) {
+    const t = activeTurn;
+    const k = Math.min(1, (now - t.start) / t.duration);
+    setPivotAngle(t.axis, t.from + (t.to - t.from) * t.ease(k));
+    if (k < 1) return;
+    finishTurn(t.start + t.duration);
+  }
+}
+
+/** Completes the active turn immediately (also used to fast-forward a snap). */
+function finishTurn(chainTime) {
+  const t = activeTurn;
+  activeTurn = null;
+  setPivotAngle(t.axis, t.to);
+  releaseLayer(t.list);
+  if (t.item) afterTurn(t.item);
+  pumpQueue(chainTime);
+}
+
+/** Book-keeping once a turn has landed: history, rewind log, sound, win check. */
+function afterTurn(item) {
+  const m = item.move;
+  if (normQ(m.q) === 0) return;
+  const fast = item.source === 'scramble' || item.source === 'auto';
+  Sound.click(fast ? 0.35 : 1);
+  if (item.source !== 'auto') logMove(m);
+  if (item.source === 'user') {
+    moveHistory.push({ move: m, notation: item.notation });
+    redoStack.length = 0;
+  } else if (item.source === 'redo') {
+    moveHistory.push({ move: m, notation: item.notation });
+  }
+  item.onDone?.();
+  if (item.source === 'user' || item.source === 'undo' || item.source === 'redo') checkSolved();
+  refreshUI();
+}
+
+/** Appends to the rewind log, merging consecutive turns of the same layer. */
+function logMove(m) {
+  const last = log[log.length - 1];
+  if (last && last.axis === m.axis && last.layer === m.layer) {
+    last.q = normQ(last.q + m.q);
+    if (last.q === 0) log.pop();
+  } else {
+    log.push({ axis: m.axis, layer: m.layer, q: normQ(m.q) });
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * 8. SOLVED DETECTION
+ * -------------------------------------------------------------------------- */
+
+const _n = new THREE.Vector3();
+/** True when, for each of the six directions, every outward-facing sticker has the same colour. */
+function isSolved() {
+  const seen = {};
+  for (const s of cube.stickers) {
+    _n.copy(s.userData.normal).applyQuaternion(s.parent.quaternion);
+    const a = dominantAxis(_n);
+    const key = a.index * 2 + (a.sign > 0 ? 0 : 1);
+    if (seen[key] === undefined) seen[key] = s.userData.face;
+    else if (seen[key] !== s.userData.face) return false;
+  }
+  return true;
+}
+
+function checkSolved() {
+  if (!isSolved()) return;
+  log.length = 0; // solved again: nothing left to rewind
+  if (state === 'playing') win();
+  else if (state === 'idle' && moveHistory.length >= 4) toast('Back to a solved cube — press Scramble for a timed challenge');
+}
+
+/* -----------------------------------------------------------------------------
+ * 9. NOTATION — view-relative letters <-> internal moves
+ * -------------------------------------------------------------------------- */
+
+/** Works out which cube axes currently play the roles of R, U and F for the player:
+ *  F = axis pointing most towards the camera, U = axis closest to "screen up". */
+function getViewFrame() {
+  const inv = cubeGroup.quaternion.clone().invert();
+  const toCam = camera.position.clone().normalize().applyQuaternion(inv);
+  const up = CAM_UP.clone().applyQuaternion(inv);
+  const F = snapToAxis(toCam);
+  const U = snapToAxis(up.sub(F.clone().multiplyScalar(up.dot(F))));
+  const R = new THREE.Vector3().crossVectors(U, F);
+  return { R, U, F };
+}
+const DEFAULT_FRAME = { R: new THREE.Vector3(1, 0, 0), U: new THREE.Vector3(0, 1, 0), F: new THREE.Vector3(0, 0, 1) };
+
+/** Converts a token such as R, U', F2, M or 2R into an internal move for the given view. */
+function tokenToMove(token, frame) {
+  const m = TOKEN_RE.exec(token);
+  if (!m) return null;
+  const N = cube.N;
+  const depth = m[1] ? parseInt(m[1], 10) : 1;
+  const letter = m[2];
+  const suffix = m[3] || '';
+  // Reference face whose outward normal defines "clockwise" (slices follow L, D and F).
+  const [base, sign] = { R: ['R', 1], L: ['R', -1], U: ['U', 1], D: ['U', -1], F: ['F', 1], B: ['F', -1], M: ['R', -1], E: ['U', -1], S: ['F', 1] }[letter];
+  const outward = dominantAxis(frame[base].clone().multiplyScalar(sign));
+  let layer;
+  if ('MES'.includes(letter)) {
+    if (N % 2 === 0) return null;          // no middle slice on even cubes
+    layer = (N - 1) / 2;
+  } else {
+    if (depth < 1 || depth > N) return null;
+    layer = outward.sign > 0 ? N - depth : depth - 1;
+  }
+  // Clockwise seen from outside = negative rotation about the outward normal.
+  const turns = suffix.startsWith('2') ? 2 : suffix === "'" ? 1 : -1;
+  const q = turns === 2 ? 2 : turns * outward.sign;
+  const move = { axis: outward.name, layer, q };
+  return { move, notation: moveToNotation(move, frame) };
+}
+
+/** Converts an internal move into standard notation relative to the given view. */
+function moveToNotation(move, frame) {
+  const half = (cube.N - 1) / 2;
+  const axisVec = AXIS_VECTORS[move.axis];
+  const families = [['R', 'L', 'M'], ['U', 'D', 'E'], ['F', 'B', 'S']];
+  const suffix = (q) => (q === -1 ? '' : q === 1 ? "'" : '2');
+  for (const [pos, neg, slice] of families) {
+    const d = Math.round(frame[pos].dot(axisVec));
+    if (d === 0) continue;
+    const p = (move.layer - half) * d;       // layer position along the "pos" face normal
+    const qPos = normQ(move.q * d);          // quarter turns about that normal
+    if (Math.abs(p) < 1e-6) return slice + suffix(slice === 'S' ? qPos : normQ(-qPos));
+    const depth = Math.round(half - Math.abs(p)) + 1;
+    return (depth > 1 ? depth : '') + (p > 0 ? pos : neg) + suffix(p > 0 ? qPos : normQ(-qPos));
+  }
+  return '?';
+}
+
+function describeToken(token) {
+  const m = TOKEN_RE.exec(token);
+  if (!m) return token;
+  const name = MOVE_NAMES[m[2]];
+  const where = m[1] ? `layer ${m[1]} from the ${name.toLowerCase()}` : name;
+  const turn = !m[3] ? 'clockwise quarter turn' : m[3] === "'" ? 'counter-clockwise quarter turn' : 'half turn';
+  return `${token} — ${where}, ${turn}`;
+}
+
+/* -----------------------------------------------------------------------------
+ * 10. GAME FLOW — levels, scramble, undo/redo, rewind, win
+ * -------------------------------------------------------------------------- */
+
+/** Player input is accepted only in these states (and not while the cube assembles). */
+function userCanAct() {
+  return !intro && (state === 'idle' || state === 'ready' || state === 'playing');
+}
+
+function startTimerIfReady() {
+  if (state !== 'ready') return;
+  state = 'playing';
+  timerStart = performance.now();
+  refreshUI();
+}
+
+/** Switches level (or restarts the current one) with a fresh, solved cube. */
+function setLevel(n, { announce = true } = {}) {
+  turnQueue.length = 0;
+  activeTurn = null;
+  if (gesture) { try { canvas.releasePointerCapture(gesture.id); } catch { /* already released */ } gesture = null; }
+  if (spin) { cubeGroup.quaternion.copy(spin.base); spin = null; }
+  hideWin();
+  clearFormulaHighlights();
+  buildCube(n);
+  state = 'idle';
+  moveHistory.length = 0;
+  redoStack.length = 0;
+  log.length = 0;
+  timerElapsed = 0;
+  Store.set('thecube.level', n);
+  refreshUI();
+  if (announce) toast(`${n}×${n} ${LEVELS[n].name}: ${LEVELS[n].blurb}`);
+  requestRender();
+}
+
+/** Random-move scramble (never the same axis twice in a row, so turns never cancel).
+ *  An explicit algorithm string can be passed for demos and tests. */
+function scramble(alg) {
+  if (state === 'scrambling' || state === 'auto') return;
+  if (gesture?.kind === 'turn') cancelTurnGesture();
+  turnQueue.length = 0;     // clear first, so finishing the active turn cannot start another
+  if (activeTurn) finishTurn();
+  hideWin();
+  clearFormulaHighlights();
+  let seq;
+  if (typeof alg === 'string' && alg.trim()) {
+    seq = alg.trim().split(/\s+/).map((t) => tokenToMove(t, DEFAULT_FRAME)?.move).filter(Boolean);
+  } else {
+    seq = randomMoves(cube.N, LEVELS[cube.N].scramble);
+  }
+  state = 'scrambling';
+  moveHistory.length = 0;
+  redoStack.length = 0;
+  timerElapsed = 0;
+  const per = clamp(2400 / seq.length, 38, 110);
+  seq.forEach((move, i) => enqueueTurn({
+    move, source: 'scramble', duration: per, ease: easeInOutQuad,
+    onDone: i === seq.length - 1 ? scrambleDone : null,
+  }));
+  Sound.whoosh();
+  refreshUI();
+}
+
+function randomMoves(N, count) {
+  const seq = [];
+  let lastAxis = -1;
+  while (seq.length < count) {
+    const a = Math.floor(Math.random() * 3);
+    if (a === lastAxis) continue;
+    lastAxis = a;
+    seq.push({ axis: AXIS_NAMES[a], layer: Math.floor(Math.random() * N), q: [1, -1, 2][Math.floor(Math.random() * 3)] });
+  }
+  return seq;
+}
+
+function scrambleDone() {
+  if (isSolved()) {
+    // Tiny cubes can (very rarely) land on a solved state — add a few more turns.
+    const extra = randomMoves(cube.N, 3);
+    extra.forEach((move, i) => enqueueTurn({ move, source: 'scramble', duration: 90, onDone: i === 2 ? scrambleDone : null }));
+    return;
+  }
+  state = 'ready';
+  toast('Scrambled! The clock starts with your first turn.');
+  refreshUI();
+}
+
+/** Undo/redo act on the latest landed turn, so they wait until queued turns are done. */
+function undo() {
+  if (!userCanAct() || turnQueue.length || gesture?.kind === 'turn') return;
+  if (activeTurn) finishTurn();
+  if (!moveHistory.length) return;
+  const entry = moveHistory.pop();
+  redoStack.push(entry);
+  enqueueTurn({ move: { ...entry.move, q: normQ(-entry.move.q) }, source: 'undo', duration: 170, onStart: startTimerIfReady });
+  refreshUI();
+}
+
+function redo() {
+  if (!userCanAct() || turnQueue.length || gesture?.kind === 'turn') return;
+  if (activeTurn) finishTurn();
+  if (!redoStack.length) return;
+  const entry = redoStack.pop();
+  enqueueTurn({ move: entry.move, notation: entry.notation, source: 'redo', duration: 170, onStart: startTimerIfReady });
+  refreshUI();
+}
+
+/** Plays every logged turn backwards — a demonstration, not a solver, so it never counts as a win. */
+function rewind() {
+  if (!userCanAct() || gesture?.kind === 'turn') return;
+  turnQueue.length = 0;     // clear first, so finishing the active turn cannot start another
+  if (activeTurn) finishTurn();
+  if (!log.length) return;
+  clearFormulaHighlights();
+  const seq = log.slice().reverse().map((m) => ({ ...m, q: normQ(-m.q) }));
+  log.length = 0;
+  if (state === 'playing') timerElapsed = performance.now() - timerStart;
+  state = 'auto';
+  const per = clamp(4200 / seq.length, 40, 170);
+  seq.forEach((move, i) => enqueueTurn({
+    move, source: 'auto', duration: per * (Math.abs(move.q) === 2 ? 1.35 : 1), ease: easeInOutQuad,
+    onDone: i === seq.length - 1 ? finishRewind : null,
+  }));
+  refreshUI();
+}
+
+function finishRewind() {
+  state = 'idle';
+  moveHistory.length = 0;
+  redoStack.length = 0;
+  log.length = 0;
+  timerElapsed = 0;
+  toast('Rewound to a solved cube (not counted). Scramble to try for real!');
+  refreshUI();
+}
+
+function reset() {
+  setLevel(cube.N, { announce: false });
+  toast('Fresh cube — press Scramble when you are ready');
+}
+
+/** The cube was solved during a timed attempt. */
+function win() {
+  const N = cube.N;
+  const time = performance.now() - timerStart;
+  const moves = moveHistory.length;
+  timerElapsed = time;
+  state = 'solved';
+  turnQueue.length = 0;
+  clearFormulaHighlights();
+  const prev = records[N] || {};
+  const bestTime = !prev.time || time < prev.time;
+  const bestMoves = !prev.moves || moves < prev.moves;
+  records[N] = { time: bestTime ? time : prev.time, moves: bestMoves ? moves : prev.moves, solves: (prev.solves || 0) + 1 };
+  Store.set('thecube.records.v1', records);
+
+  spin = { start: performance.now(), duration: 1600, base: cubeGroup.quaternion.clone() };
+  Sound.win();
+  const stage = document.getElementById('stage').getBoundingClientRect();
+  Confetti.burst(stage.left + stage.width / 2, window.innerHeight * 0.42);
+
+  document.getElementById('win-sub').textContent = `${N}×${N} · ${LEVELS[N].name}`;
+  document.getElementById('win-time').textContent = formatTime(time);
+  document.getElementById('win-moves').textContent = moves;
+  document.getElementById('win-tps').textContent = (moves / Math.max(time / 1000, 0.01)).toFixed(2);
+  document.getElementById('win-record').textContent =
+    prev.time === undefined ? 'First solve on this level — record saved!'
+      : bestTime && bestMoves ? 'New best time and fewest moves!'
+        : bestTime ? 'New best time!'
+          : bestMoves ? 'New fewest-moves record!'
+            : `Best: ${formatTime(prev.time)} · ${prev.moves} moves`;
+  const next = document.getElementById('win-next');
+  next.hidden = N >= 5;
+  next.textContent = `Try ${N + 1}×${N + 1} →`;
+  document.getElementById('win-tip').textContent = WIN_TIPS[N];
+  refreshUI();
+  setTimeout(() => { if (state === 'solved') showWin(); }, 900);
+}
+
+const winEl = document.getElementById('win');
+function showWin() {
+  winEl.hidden = false;
+  requestAnimationFrame(() => winEl.classList.add('show'));
+  document.getElementById('win-again').focus({ preventScroll: true });
+}
+function hideWin() {
+  winEl.classList.remove('show');
+  winEl.hidden = true;
+}
+function closeWin() {
+  hideWin();
+  if (state === 'solved') {
+    state = 'idle';
+    moveHistory.length = 0;
+    redoStack.length = 0;
+    refreshUI();
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * 11. FORMULA PLAYBACK
+ * -------------------------------------------------------------------------- */
+
+const formulaCards = [];
+
+/** Plays a formula on the cube, highlighting each notation chip as its turn animates.
+ *  Letters are resolved once, against the view at the moment ▶ is pressed. */
+function playFormula(index) {
+  if (!userCanAct()) {
+    toast(state === 'scrambling' ? 'Wait for the scramble to finish' : state === 'auto' ? 'Wait for the rewind to finish' : 'Close the dialog first');
+    return;
+  }
+  const f = FORMULAS[index];
+  const card = formulaCards[index];
+  const frame = getViewFrame();
+  const parsed = f.alg.split(/\s+/).map((t) => tokenToMove(t, frame));
+  if (parsed.some((p) => !p)) { toast('This formula needs an odd-sized cube'); return; }
+  const chips = [...card.querySelectorAll('.chip')];
+  card.classList.add('playing');
+  chips.forEach((c) => c.classList.remove('active', 'done'));
+  parsed.forEach((p, i) => enqueueTurn({
+    move: p.move, notation: p.notation, source: 'user',
+    duration: Math.abs(p.move.q) === 2 ? 380 : 270, ease: easeInOutCubic,
+    onStart: () => {
+      startTimerIfReady();
+      chips.forEach((c, j) => { c.classList.toggle('active', j === i); c.classList.toggle('done', j < i); });
+    },
+    onDone: i === parsed.length - 1 ? () => setTimeout(() => {
+      card.classList.remove('playing');
+      chips.forEach((c) => c.classList.remove('active', 'done'));
+    }, 700) : null,
+  }));
+  toast(`${f.name}: ${f.alg}`);
+}
+
+function clearFormulaHighlights() {
+  for (const card of formulaCards) {
+    card.classList.remove('playing');
+    card.querySelectorAll('.chip').forEach((c) => c.classList.remove('active', 'done'));
+  }
+}
+
+/* -----------------------------------------------------------------------------
+ * 12. POINTER INPUT — drag a face to turn a layer, drag space to rotate the cube
+ * -------------------------------------------------------------------------- */
+
+const raycaster = new THREE.Raycaster();
+const _ndc = new THREE.Vector2();
+const _inv = new THREE.Matrix4();
+const _box = new THREE.Box3();
+const pointers = new Map();
+
+/** Ray-casts against the cube's bounding box in cube units. Returns the hit point,
+ *  the face that was hit (axis + sign) and the grid cell of the touched cubie. */
+function pickCube(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  _ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+  camera.updateMatrixWorld();
+  raycaster.setFromCamera(_ndc, camera);
+  cubeGroup.updateMatrixWorld(true);
+  _inv.copy(cubeGroup.matrixWorld).invert();
+  const ray = raycaster.ray.clone().applyMatrix4(_inv);
+  const h = cube.N / 2;
+  _box.min.set(-h, -h, -h);
+  _box.max.set(h, h, h);
+  const point = ray.intersectBox(_box, new THREE.Vector3());
+  if (!point) return null;
+  const face = dominantAxis(point);
+  const cell = [0, 1, 2].map((i) => clamp(Math.floor(point.getComponent(i) + h), 0, cube.N - 1));
+  return { point, normalAxis: face.index, normalSign: face.sign, cell };
+}
+
+/** Projects a point given in cube units to client (CSS pixel) coordinates. */
+function toScreen(localPoint) {
+  const rect = canvas.getBoundingClientRect();
+  const v = localPoint.clone().applyMatrix4(cubeGroup.matrixWorld).project(camera);
+  return { x: rect.left + (v.x + 1) / 2 * rect.width, y: rect.top + (1 - v.y) / 2 * rect.height };
+}
+
+/** Screen pixels covered by one cube unit at the cube's centre. */
+function pxPerUnit() {
+  const h = canvas.getBoundingClientRect().height;
+  const dist = camera.position.length();
+  return h / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * dist) * (CUBE_SIZE / cube.N);
+}
+
+function onPointerDown(e) {
+  Sound.init();
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, type: e.pointerType });
+  try { canvas.setPointerCapture(e.pointerId); } catch { /* synthetic pointer */ }
+
+  // A second finger turns the gesture into a pinch-zoom.
+  if (pointers.size === 2 && [...pointers.values()].every((p) => p.type === 'touch')) {
+    if (gesture?.kind === 'turn') cancelTurnGesture();
+    const [a, b] = [...pointers.values()];
+    gesture = { kind: 'pinch', startDist: Math.hypot(a.x - b.x, a.y - b.y) || 1, startZoom: zoomTarget };
+    return;
+  }
+  if (gesture) return;
+  if (e.button !== 0 && e.button !== 2) return;
+  viewAnim = null;
+  spinVel.set(0, 0);
+
+  const hit = e.button === 0 ? pickCube(e.clientX, e.clientY) : null;
+  if (hit && userCanAct() && !turnQueue.length && !spin) {
+    if (activeTurn) finishTurn(); // fast-forward the previous snap so quick solvers never wait
+    gesture = { kind: 'turn', id: e.pointerId, x0: e.clientX, y0: e.clientY, hit, locked: false, angle: 0, samples: [] };
+  } else {
+    // Empty space (or a busy cube): rotate the whole cube instead.
+    gesture = { kind: 'view', id: e.pointerId, lastX: e.clientX, lastY: e.clientY, samples: [] };
+  }
+  canvas.style.cursor = 'grabbing';
+  e.preventDefault();
+}
+
+function onPointerMove(e) {
+  const p = pointers.get(e.pointerId);
+  if (p) { p.x = e.clientX; p.y = e.clientY; }
+  if (!gesture) {
+    if (e.pointerType === 'mouse') hoverAt = { x: e.clientX, y: e.clientY };
+    return;
+  }
+  if (gesture.kind === 'pinch') {
+    const pts = [...pointers.values()];
+    if (pts.length >= 2) {
+      const d = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      zoomTarget = clamp(gesture.startZoom * gesture.startDist / Math.max(d, 1), ZOOM_MIN, ZOOM_MAX);
+    }
+    return;
+  }
+  if (e.pointerId !== gesture.id) return;
+  if (gesture.kind === 'turn') turnGestureMove(e);
+  else viewGestureMove(e);
+}
+
+function onPointerUp(e) {
+  pointers.delete(e.pointerId);
+  if (!gesture) return;
+  if (gesture.kind === 'pinch') {
+    if (pointers.size < 2) gesture = null;
+    return;
+  }
+  if (e.pointerId !== gesture.id) return;
+  const g = gesture;
+  gesture = null;
+  if (g.kind === 'turn') endTurnGesture(g, e.type === 'pointercancel');
+  else endViewGesture(g);
+  canvas.style.cursor = '';
+}
+
+/** Turn gesture: wait until the pointer has moved a few pixels, then decide which
+ *  layer to turn from the drag direction, and from then on follow the pointer. */
+function turnGestureMove(e) {
+  const g = gesture;
+  const dx = e.clientX - g.x0, dy = e.clientY - g.y0;
+  if (!g.locked) {
+    if (Math.hypot(dx, dy) < (e.pointerType === 'touch' ? 12 : 7)) return;
+    lockTurnDirection(g, dx, dy);
+  }
+  g.angle = g.axisSign * (dx * g.dir.x + dy * g.dir.y) / g.radiusPx;
+  setPivotAngle(g.axis, g.angle);
+  const now = performance.now();
+  g.samples.push({ t: now, a: g.angle });
+  while (g.samples.length > 2 && now - g.samples[0].t > 100) g.samples.shift();
+  requestRender();
+}
+
+/**
+ * Picks the layer to turn.
+ *  n  = normal of the touched face (cube units)
+ *  t  = the face tangent (one of the two other axes) whose on-screen direction best
+ *       matches the drag
+ *  a  = n × t is the rotation axis; the touched cubie's coordinate along a is the layer.
+ * A positive rotation about a moves the touched surface point along +t, so the
+ * drag distance measured along t's screen direction maps directly to the angle.
+ */
+function lockTurnDirection(g, dx, dy) {
+  const { hit } = g;
+  const n = new THREE.Vector3().setComponent(hit.normalAxis, hit.normalSign);
+  const s0 = toScreen(hit.point);
+  const len = Math.hypot(dx, dy);
+  let best = null;
+  for (let i = 0; i < 3; i++) {
+    if (i === hit.normalAxis) continue;
+    const t = new THREE.Vector3().setComponent(i, 1);
+    const s1 = toScreen(hit.point.clone().add(t));
+    const vx = s1.x - s0.x, vy = s1.y - s0.y;
+    const l = Math.hypot(vx, vy) || 1e-6;
+    const score = Math.abs((dx * vx + dy * vy) / (l * len));
+    if (!best || score > best.score) best = { t, dir: { x: vx / l, y: vy / l }, l, score };
+  }
+  const a = dominantAxis(new THREE.Vector3().crossVectors(n, best.t));
+  g.axis = a.name;
+  g.axisSign = a.sign;
+  g.layer = hit.cell[a.index];
+  g.dir = best.dir;
+  // Lever arm = half the cube; the 0.7 factor makes a quarter turn need a bit less travel.
+  g.radiusPx = Math.max(best.l, pxPerUnit() * 0.55) * cube.N / 2 * 0.7;
+  g.list = attachLayer(g.axis, g.layer);
+  g.locked = true;
+  startTimerIfReady();
+}
+
+/** Release: snap to the nearest quarter turn, nudged by the flick velocity. */
+function endTurnGesture(g, cancelled) {
+  if (!g.locked) { pumpQueue(); return; }
+  const now = performance.now();
+  const recent = g.samples.filter((s) => now - s.t < 100);
+  let w = 0;
+  if (recent.length >= 2) {
+    const a = recent[0], b = recent[recent.length - 1];
+    if (b.t - a.t > 4) w = (b.a - a.a) / (b.t - a.t);
+  }
+  const cur = g.angle / HALF_PI;
+  let q = cancelled ? Math.round(cur) : Math.round((g.angle + w * 130) / HALF_PI);
+  q = clamp(q, Math.floor(cur), Math.ceil(cur));
+  const to = q * HALF_PI;
+  const move = { axis: g.axis, layer: g.layer, q: normQ(q) };
+  activeTurn = {
+    list: g.list, axis: g.axis, from: g.angle, to, start: now, ease: easeOutCubic,
+    duration: 70 + 210 * Math.min(1, Math.abs(to - g.angle) / HALF_PI),
+    item: move.q ? { move, source: 'user', notation: moveToNotation(move, getViewFrame()) } : null,
+  };
+  requestRender();
+}
+
+function cancelTurnGesture() {
+  const g = gesture;
+  gesture = null;
+  if (g?.locked) endTurnGesture(g, true);
+}
+
+/** Free rotation of the whole cube around the screen axes (like turning it in your hand). */
+const _qa = new THREE.Quaternion();
+const _qb = new THREE.Quaternion();
+function rotateView(aboutUp, aboutRight) {
+  _qa.setFromAxisAngle(CAM_UP, aboutUp);
+  _qb.setFromAxisAngle(CAM_RIGHT, aboutRight);
+  cubeGroup.quaternion.premultiply(_qa).premultiply(_qb).normalize();
+  requestRender();
+}
+
+function viewRotateSpeed() {
+  return (Math.PI * 1.6) / Math.max(360, canvas.getBoundingClientRect().height);
+}
+
+function viewGestureMove(e) {
+  const g = gesture;
+  const k = viewRotateSpeed();
+  const ax = (e.clientX - g.lastX) * k, ay = (e.clientY - g.lastY) * k;
+  g.lastX = e.clientX;
+  g.lastY = e.clientY;
+  rotateView(ax, ay);
+  const now = performance.now();
+  g.samples.push({ t: now, ax, ay });
+  while (g.samples.length > 1 && now - g.samples[0].t > 90) g.samples.shift();
+}
+
+function endViewGesture(g) {
+  const now = performance.now();
+  const recent = g.samples.filter((s) => now - s.t < 90);
+  if (recent.length >= 2) {
+    const dt = Math.max(16, now - recent[0].t);
+    spinVel.set(recent.reduce((s, r) => s + r.ax, 0) / dt, recent.reduce((s, r) => s + r.ay, 0) / dt);
+    const max = 0.006; // rad/ms — a hard flick still settles within about half a turn
+    if (spinVel.length() > max) spinVel.setLength(max);
+  }
+}
+
+/** Animated 90° reorientation around the cube axis that currently points up / right. */
+function quarterView(role, dir) {
+  if (viewAnim) { cubeGroup.quaternion.copy(viewAnim.to); viewAnim = null; }
+  spinVel.set(0, 0);
+  const axisWorld = getViewFrame()[role].clone().applyQuaternion(cubeGroup.quaternion);
+  const to = new THREE.Quaternion().setFromAxisAngle(axisWorld, dir * HALF_PI).multiply(cubeGroup.quaternion);
+  viewAnim = { from: cubeGroup.quaternion.clone(), to, start: performance.now(), duration: 380 };
+}
+
+function resetView() {
+  spinVel.set(0, 0);
+  viewAnim = { from: cubeGroup.quaternion.clone(), to: new THREE.Quaternion(), start: performance.now(), duration: 650 };
+  zoomTarget = 1;
+}
+
+function updateViewAnim(now) {
+  const t = Math.min(1, (now - viewAnim.start) / viewAnim.duration);
+  cubeGroup.quaternion.slerpQuaternions(viewAnim.from, viewAnim.to, easeInOutCubic(t));
+  if (t >= 1) viewAnim = null;
+}
+
+function updateSpin(now) {
+  const t = Math.min(1, (now - spin.start) / spin.duration);
+  _qa.setFromAxisAngle(AXIS_VECTORS.y, easeInOutCubic(t) * Math.PI * 2);
+  cubeGroup.quaternion.copy(spin.base).premultiply(_qa);
+  cubeGroup.scale.setScalar((CUBE_SIZE / cube.N) * (1 + 0.07 * Math.sin(Math.PI * t)));
+  if (t >= 1) {
+    cubeGroup.quaternion.copy(spin.base);
+    cubeGroup.scale.setScalar(CUBE_SIZE / cube.N);
+    spin = null;
+  }
+}
+
+function updateHover() {
+  const h = pickCube(hoverAt.x, hoverAt.y);
+  hoverAt = null;
+  canvas.style.cursor = h && userCanAct() ? 'grab' : '';
+}
+
+canvas.addEventListener('pointerdown', onPointerDown);
+canvas.addEventListener('pointermove', onPointerMove);
+canvas.addEventListener('pointerup', onPointerUp);
+canvas.addEventListener('pointercancel', onPointerUp);
+canvas.addEventListener('lostpointercapture', (e) => { if (gesture && gesture.id === e.pointerId) onPointerUp(e); });
+canvas.addEventListener('pointerleave', () => { if (!gesture) canvas.style.cursor = ''; });
+canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+canvas.addEventListener('dblclick', (e) => { if (!pickCube(e.clientX, e.clientY)) resetView(); });
+canvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+  zoomTarget = clamp(zoomTarget * Math.exp(dy * 0.0012), ZOOM_MIN, ZOOM_MAX);
+}, { passive: false });
+
+/* -----------------------------------------------------------------------------
+ * 13. KEYBOARD INPUT
+ * -------------------------------------------------------------------------- */
+
+function keyTurn(letter, prime) {
+  if (!userCanAct()) return;
+  const t = tokenToMove(letter + (prime ? "'" : ''), getViewFrame());
+  if (!t) return;
+  enqueueTurn({ move: t.move, notation: t.notation, source: 'user', keyboard: true, duration: 190, onStart: startTimerIfReady });
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.target instanceof Element && e.target.closest('input, textarea, select')) return;
+  Sound.init();
+  const key = e.key;
+  if ((e.ctrlKey || e.metaKey) && !e.altKey) {
+    const k = key.toLowerCase();
+    if (k === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); }
+    else if (k === 'y') { e.preventDefault(); redo(); }
+    return;
+  }
+  if (e.altKey) return;
+  if (key === 'Escape') {
+    if (!winEl.hidden) closeWin();
+    else if (panelOpen && !docked) togglePanel(false);
+    return;
+  }
+  if (e.repeat) return;
+  const arrows = { ArrowLeft: ['U', -1], ArrowRight: ['U', 1], ArrowUp: ['R', -1], ArrowDown: ['R', 1] };
+  if (arrows[key]) { e.preventDefault(); quarterView(...arrows[key]); return; }
+  if (key.length !== 1) return;
+  const letter = key.toUpperCase();
+  if ('UDLRFB'.includes(letter)) keyTurn(letter, e.shiftKey);
+  else if ('MES'.includes(letter)) {
+    if (cube.N % 2) keyTurn(letter, e.shiftKey);
+    else toast('Middle-slice turns need an odd cube (3×3 or 5×5)');
+  } else if (letter === 'H' || key === '?') togglePanel();
+});
+
+/* -----------------------------------------------------------------------------
+ * 14. HUD / UI
+ * -------------------------------------------------------------------------- */
+
+const statusEl = document.getElementById('status');
+const statsEl = document.getElementById('stats');
+const statTime = document.getElementById('stat-time');
+const statMoves = document.getElementById('stat-moves');
+const statBest = document.getElementById('stat-best');
+const btnScramble = document.getElementById('btn-scramble');
+const btnUndo = document.getElementById('btn-undo');
+const btnRedo = document.getElementById('btn-redo');
+const btnRewind = document.getElementById('btn-rewind');
+const btnReset = document.getElementById('btn-reset');
+const btnSound = document.getElementById('btn-sound');
+const btnPanel = document.getElementById('btn-panel');
+const panelEl = document.getElementById('panel');
+const levelBtns = [...document.querySelectorAll('.level')];
+const toastEl = document.getElementById('toast');
+let lastStatusHTML = '';
+let lastClockText = '';
+let toastTimer = 0;
+
+function toast(message, ms = 2600) {
+  toastEl.textContent = message;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms);
+}
+
+/** Brings every HUD element in line with the game state. */
+function refreshUI() {
+  const busy = state === 'scrambling' || state === 'auto';
+  btnScramble.disabled = busy;
+  btnUndo.disabled = !userCanAct() || turnQueue.length > 0 || !moveHistory.length;
+  btnRedo.disabled = !userCanAct() || turnQueue.length > 0 || !redoStack.length;
+  btnRewind.disabled = !userCanAct() || !log.length;
+  statMoves.textContent = moveHistory.length;
+  const rec = records[cube.N];
+  statBest.textContent = rec?.time ? formatTime(rec.time) : '—';
+  statsEl.classList.toggle('running', state === 'playing');
+  for (const btn of levelBtns) {
+    const n = Number(btn.dataset.n);
+    const active = n === cube.N;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-checked', String(active));
+    const r = records[n];
+    btn.querySelector('.lv-best').textContent = r?.time ? `Best ${formatTime(r.time)} · ${r.moves} mv` : 'Not solved yet';
+  }
+  renderStatus();
+}
+
+/** Status line: what to do next, or the most recent moves as notation chips. */
+function renderStatus() {
+  const N = cube.N;
+  let html;
+  if (state === 'scrambling') html = `<span class="dot"></span>Scrambling the <b>${N}×${N}</b>…`;
+  else if (state === 'auto') html = `<span class="dot"></span>Rewinding — <b>${turnQueue.length + (activeTurn ? 1 : 0)}</b> turns to go`;
+  else if (state === 'ready') html = '<b>Scrambled!</b> Study the colours — the clock starts with your first turn';
+  else if (state === 'solved') html = `<b>Solved</b> in ${formatTime(timerElapsed)} with ${moveHistory.length} moves`;
+  else if (moveHistory.length) {
+    const recent = moveHistory.slice(-maxChips);
+    const hidden = moveHistory.length - recent.length;
+    html = '<span class="lbl">Moves</span>' + (hidden ? `<span class="more">+${hidden}</span>` : '') +
+      recent.map((h, i) => `<span class="chip${i === recent.length - 1 ? ' new' : ''}" title="${describeToken(h.notation)}">${h.notation}</span>`).join('');
+  } else if (state === 'playing') html = '<span class="dot"></span><b>Clock running</b> — drag a face or press U D L R F B';
+  else html = '<b>Free play:</b> drag any face to turn a layer · press <b>Scramble</b> for a timed solve';
+  if (html !== lastStatusHTML) {
+    statusEl.innerHTML = html;
+    lastStatusHTML = html;
+  }
+}
+
+function updateClock(now) {
+  const text = formatTime(state === 'playing' ? now - timerStart : timerElapsed);
+  if (text !== lastClockText) {
+    statTime.textContent = text;
+    lastClockText = text;
+  }
+}
+
+function togglePanel(force) {
+  panelOpen = typeof force === 'boolean' ? force : !panelOpen;
+  document.body.classList.toggle('panel-open', panelOpen);
+  btnPanel.setAttribute('aria-pressed', String(panelOpen));
+  layout();
+}
+
+function renderFormulaCards() {
+  const list = document.getElementById('formula-list');
+  const playIcon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.2-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
+  FORMULAS.forEach((f, i) => {
+    const card = document.createElement('article');
+    card.className = 'formula';
+    card.innerHTML =
+      `<button class="play" type="button" aria-label="Play ${f.name} on the cube" title="Play on the cube">${playIcon}</button>` +
+      `<span class="tag">${f.tag}</span><h3>${f.name}</h3>` +
+      `<div class="alg">${f.alg.split(' ').map((t) => `<span class="chip" title="${describeToken(t)}">${t}</span>`).join('')}</div>` +
+      `<p>${f.text}</p>`;
+    card.querySelector('.play').addEventListener('click', () => playFormula(i));
+    list.appendChild(card);
+    formulaCards.push(card);
+  });
+}
+
+function bindUI() {
+  // Level cards get a mini N×N face icon.
+  for (const btn of levelBtns) {
+    const n = Number(btn.dataset.n);
+    const mini = btn.querySelector('.mini');
+    mini.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+    mini.style.setProperty('--lc', LEVELS[n].color);
+    mini.innerHTML = '<i></i>'.repeat(n * n);
+    btn.addEventListener('click', () => { Sound.init(); Sound.tick(); setLevel(n); });
+  }
+  btnScramble.addEventListener('click', () => { Sound.init(); scramble(); });
+  btnUndo.addEventListener('click', () => { Sound.init(); undo(); });
+  btnRedo.addEventListener('click', () => { Sound.init(); redo(); });
+  btnRewind.addEventListener('click', () => { Sound.init(); rewind(); });
+  btnReset.addEventListener('click', () => { Sound.init(); Sound.tick(); reset(); });
+  btnSound.addEventListener('click', () => {
+    Sound.init();
+    Sound.setMuted(!Sound.muted);
+    syncSoundButton();
+    if (!Sound.muted) Sound.tick();
+  });
+  btnPanel.addEventListener('click', () => togglePanel());
+  document.getElementById('panel-close').addEventListener('click', () => togglePanel(false));
+  document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach((t) => {
+      t.classList.toggle('active', t === tab);
+      t.setAttribute('aria-selected', String(t === tab));
+    });
+    document.querySelectorAll('.tab-page').forEach((p) => p.classList.toggle('active', p.dataset.page === tab.dataset.tab));
+  }));
+  document.getElementById('win-again').addEventListener('click', () => { closeWin(); scramble(); });
+  document.getElementById('win-next').addEventListener('click', () => { hideWin(); setLevel(Math.min(5, cube.N + 1)); scramble(); });
+  document.getElementById('win-close').addEventListener('click', closeWin);
+  winEl.addEventListener('click', (e) => { if (e.target === winEl) closeWin(); });
+  // Mouse clicks should not leave focus on a button (Space would press it again).
+  document.addEventListener('click', (e) => {
+    const b = e.target instanceof Element && e.target.closest('button');
+    if (b && e.detail > 0) b.blur();
+  });
+  btnPanel.setAttribute('aria-pressed', String(panelOpen));
+  syncSoundButton();
+}
+
+function syncSoundButton() {
+  btnSound.setAttribute('aria-pressed', String(!Sound.muted));
+  btnSound.querySelector('.ic-on').toggleAttribute('hidden', Sound.muted);
+  btnSound.querySelector('.ic-off').toggleAttribute('hidden', !Sound.muted);
+}
+
+/* -----------------------------------------------------------------------------
+ * 15. SOUND — synthesised with Web Audio (no audio files)
+ * -------------------------------------------------------------------------- */
+
+const Sound = {
+  ctx: null,
+  master: null,
+  noise: null,
+  muted: Store.get('thecube.muted', false),
+  lastClick: 0,
+
+  /** Audio can only start after a user gesture, so this runs on the first click/key. */
+  init() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      try { this.ctx = new AC(); } catch { return; }
+      this.master = this.ctx.createGain();
+      this.master.gain.value = this.muted ? 0 : 0.9;
+      const comp = this.ctx.createDynamicsCompressor();
+      this.master.connect(comp);
+      comp.connect(this.ctx.destination);
+      const len = Math.floor(this.ctx.sampleRate * 0.25);
+      this.noise = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+      const d = this.noise.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2);
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  },
+
+  setMuted(m) {
+    this.muted = m;
+    Store.set('thecube.muted', m);
+    if (this.master) this.master.gain.setTargetAtTime(m ? 0 : 0.9, this.ctx.currentTime, 0.02);
+  },
+
+  ready() { return this.ctx && !this.muted && this.ctx.state === 'running'; },
+
+  /** Plastic "clack" when a layer seats: band-passed noise burst plus a short low thump. */
+  click(volume = 1) {
+    if (!this.ready()) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    if (t - this.lastClick < 0.028) return;
+    this.lastClick = t;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noise;
+    src.playbackRate.value = 0.85 + Math.random() * 0.35;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 1500 + Math.random() * 1100;
+    bp.Q.value = 1.2;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.5 * volume, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+    src.connect(bp).connect(g).connect(this.master);
+    src.start(t);
+    src.stop(t + 0.1);
+    const osc = ctx.createOscillator();
+    osc.frequency.setValueAtTime(240, t);
+    osc.frequency.exponentialRampToValueAtTime(100, t + 0.06);
+    const g2 = ctx.createGain();
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.exponentialRampToValueAtTime(0.2 * volume, t + 0.005);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+    osc.connect(g2).connect(this.master);
+    osc.start(t);
+    osc.stop(t + 0.1);
+  },
+
+  /** Soft UI blip. */
+  tick() {
+    if (!this.ready()) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(1250, t);
+    o.frequency.exponentialRampToValueAtTime(900, t + 0.05);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.12, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+    o.connect(g).connect(this.master);
+    o.start(t);
+    o.stop(t + 0.08);
+  },
+
+  /** Rising filtered-noise swoosh for the scramble. */
+  whoosh() {
+    if (!this.ready()) return;
+    const ctx = this.ctx, t = ctx.currentTime;
+    const src = ctx.createBufferSource();
+    src.buffer = this.noise;
+    src.loop = true;
+    const f = ctx.createBiquadFilter();
+    f.type = 'bandpass';
+    f.Q.value = 0.8;
+    f.frequency.setValueAtTime(400, t);
+    f.frequency.exponentialRampToValueAtTime(2600, t + 0.45);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.18, t + 0.12);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+    src.connect(f).connect(g).connect(this.master);
+    src.start(t);
+    src.stop(t + 0.6);
+  },
+
+  /** Bright arpeggio for a solve. */
+  win() {
+    if (!this.ready()) return;
+    const ctx = this.ctx, t0 = ctx.currentTime + 0.03;
+    [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98].forEach((freq, i) => {
+      const t = t0 + i * 0.085;
+      for (const [type, mul, vol] of [['triangle', 1, 0.2], ['sine', 2, 0.05]]) {
+        const o = ctx.createOscillator();
+        o.type = type;
+        o.frequency.value = freq * mul;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 1.2);
+        o.connect(g).connect(this.master);
+        o.start(t);
+        o.stop(t + 1.3);
+      }
+    });
+  },
+};
+
+/* -----------------------------------------------------------------------------
+ * 16. CONFETTI (2D canvas overlay, only runs while particles are alive)
+ * -------------------------------------------------------------------------- */
+
+const Confetti = {
+  canvas: document.getElementById('fx'),
+  ctx: null,
+  parts: [],
+  running: false,
+  last: 0,
+
+  burst(cx, cy) {
+    this.ctx = this.ctx || this.canvas.getContext('2d');
+    this.resize();
+    const colors = FACES.map((f) => f.color).concat('#ffe066');
+    for (let i = 0; i < 170; i++) {
+      const a = -HALF_PI + (Math.random() - 0.5) * 2.4;
+      const speed = 420 + Math.random() * 620;
+      this.parts.push({
+        x: cx, y: cy, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
+        w: 6 + Math.random() * 6, h: 9 + Math.random() * 9, rot: Math.random() * 6.28, vr: (Math.random() - 0.5) * 14,
+        flip: Math.random() * 6.28, vf: 4 + Math.random() * 8, color: colors[i % colors.length], life: 0, ttl: 2.4 + Math.random() * 1.4,
+      });
+    }
+    if (!this.running) {
+      this.running = true;
+      this.last = performance.now();
+      requestAnimationFrame((t) => this.step(t));
+    }
+  },
+
+  resize() {
+    if (!this.ctx) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.canvas.width = Math.round(window.innerWidth * dpr);
+    this.canvas.height = Math.round(window.innerHeight * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  },
+
+  step(now) {
+    const dt = Math.min(0.05, (now - this.last) / 1000);
+    this.last = now;
+    const ctx = this.ctx;
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    this.parts = this.parts.filter((p) => (p.life += dt) < p.ttl);
+    for (const p of this.parts) {
+      p.vy += 980 * dt;
+      p.vx *= 1 - 1.6 * dt;
+      p.vy *= 1 - 0.6 * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.rot += p.vr * dt;
+      p.flip += p.vf * dt;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, (p.ttl - p.life) / 0.6);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.scale(1, Math.cos(p.flip));
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+    if (this.parts.length) requestAnimationFrame((t) => this.step(t));
+    else {
+      this.running = false;
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+  },
+};
+
+/* -----------------------------------------------------------------------------
+ * 17. LAYOUT — canvas size, camera distance and the panel-aware view offset
+ * -------------------------------------------------------------------------- */
+
+function layout() {
+  const W = window.innerWidth, H = window.innerHeight;
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H;
+  docked = W >= 1000;
+  document.body.classList.toggle('docked', docked);
+  const panelW = docked && panelOpen ? panelEl.offsetWidth : 0;
+  const stageW = W - panelW;
+  // Shift the projection so the cube is centred in the free area beside the panel,
+  // and lift it slightly to balance the toolbar at the bottom.
+  viewShiftTarget = panelW / 2;
+  viewLift = H * 0.018;
+  // Distance at which the cube's bounding sphere fills ~60% of the stage height
+  // (or ~78% of its width on narrow, portrait screens).
+  const R = CUBE_SIZE * Math.sqrt(3) / 2;
+  const tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const angle = Math.min(Math.atan(tanHalf * 0.6), Math.atan(tanHalf * (stageW / H) * 0.78));
+  baseDistance = R / Math.sin(angle);
+  maxChips = clamp(Math.floor((Math.min(stageW, 740) - 120) / 38), 5, 16);
+  lastStatusHTML = '';
+  renderStatus();
+  applyCamera();
+  Confetti.resize();
+  requestRender();
+}
+
+function applyCamera() {
+  const W = window.innerWidth, H = window.innerHeight;
+  camera.position.copy(VIEW_DIR).multiplyScalar(baseDistance * zoom);
+  camera.setViewOffset(W, H, viewShift, viewLift, W, H);
+  camera.updateProjectionMatrix();
+  camera.updateMatrixWorld();
+}
+
+window.addEventListener('resize', layout);
+
+/* -----------------------------------------------------------------------------
+ * 18. MAIN LOOP — renders only when something changed
+ * -------------------------------------------------------------------------- */
+
+let lastFrame = performance.now();
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.1, Math.max(0, (now - lastFrame) / 1000));
+  lastFrame = now;
+  let dirty = needsRender;
+  needsRender = false;
+
+  if (zoom !== zoomTarget) {
+    zoom += (zoomTarget - zoom) * (1 - Math.exp(-dt * 12));
+    if (Math.abs(zoomTarget - zoom) < 1e-4) zoom = zoomTarget;
+    applyCamera();
+    dirty = true;
+  }
+  if (viewShift !== viewShiftTarget) {
+    viewShift += (viewShiftTarget - viewShift) * (1 - Math.exp(-dt * 10));
+    if (Math.abs(viewShiftTarget - viewShift) < 0.5) viewShift = viewShiftTarget;
+    applyCamera();
+    dirty = true;
+  }
+  if (!gesture && (Math.abs(spinVel.x) + Math.abs(spinVel.y)) > 1e-5) {
+    const ms = dt * 1000;
+    rotateView(spinVel.x * ms, spinVel.y * ms);
+    spinVel.multiplyScalar(Math.exp(-dt * 7));
+    dirty = true;
+  }
+  if (viewAnim) { updateViewAnim(now); dirty = true; }
+  if (intro) { updateIntro(now); dirty = true; }
+  if (activeTurn) { updateTurn(now); dirty = true; }
+  if (spin) { updateSpin(now); dirty = true; }
+  if (hoverAt && !gesture) updateHover();
+  updateClock(now);
+  if (dirty) renderer.render(scene, camera);
+}
+
+/* -----------------------------------------------------------------------------
+ * 19. START
+ * -------------------------------------------------------------------------- */
+
+renderFormulaCards();
+bindUI();
+layout();
+viewShift = viewShiftTarget; // no slide-in on first load
+applyCamera();
+const savedLevel = Number(Store.get('thecube.level', 3));
+setLevel(LEVELS[savedLevel] ? savedLevel : 3, { announce: false });
+renderer.compile(scene, camera);
+document.getElementById('loading').remove();
+requestAnimationFrame(frame);
+toast('Drag a face to turn a layer · drag empty space to rotate the cube', 3800);
+
+/** Small hook for automated tests and the browser console (the game does not need it). */
+window.TheCube = {
+  get state() { return state; },
+  get size() { return cube.N; },
+  get moves() { return moveHistory.map((h) => h.notation); },
+  get busy() { return Boolean(activeTurn || turnQueue.length || intro || gesture || spin); },
+  isSolved,
+  setLevel: (n) => setLevel(n),
+  scramble: (alg) => scramble(alg),
+  /** Client-pixel position of a point given in cube units (e.g. a sticker centre). */
+  screenOf: (x, y, z) => { cubeGroup.updateMatrixWorld(true); return toScreen(new THREE.Vector3(x, y, z)); },
+  /** Which cube axes currently act as R, U and F for the player. */
+  viewFrame: () => { const f = getViewFrame(); return { R: f.R.toArray(), U: f.U.toArray(), F: f.F.toArray() }; },
+};
+</script>
+</body>
+</html>

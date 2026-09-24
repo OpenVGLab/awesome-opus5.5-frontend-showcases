@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>灯塔与鲸 · The Lighthouse and the Whale</title>
+<meta name="description" content="一部由代码实时绘制、实时合成配乐的动画短片。">
+<style>
+  @font-face {
+    font-family: 'FilmSans';
+    src: url('fonts/film-light.woff') format('woff');
+    font-weight: 300;
+    font-display: swap;
+  }
+  :root {
+    --zh: 22px; --pic-x: 0px; --pic-y: 0px; --pic-w: 100vw; --pic-h: 56vw;
+    --cap-top: 90vh; --cap-h: 60px; --ctl-shift: 0px; --spread: 0.3em;
+    --warm: #ffd89a; --cyan: #7fffe0;
+  }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  body {
+    font-family: 'FilmSans', 'Noto Sans CJK SC', 'Source Han Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    font-weight: 300; color: #eef2f7; -webkit-font-smoothing: antialiased;
+    user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  #film { position: fixed; left: 0; top: 0; display: block; }
+  #stage { position: fixed; inset: 0; }
+  body.started:not(.paused):not(.show-ui) #stage { cursor: none; }
+
+  /* captions: sit in the lower letterbox bar when there is room */
+  #caption {
+    position: fixed; left: var(--pic-x); width: var(--pic-w); top: var(--cap-top); height: var(--cap-h);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; pointer-events: none; opacity: 0; transition: transform .35s ease;
+  }
+  #caption .zh { font-size: var(--zh); letter-spacing: .14em; line-height: 1.3; padding-left: .14em; }
+  #caption .en { font-size: calc(var(--zh) * .56); letter-spacing: .05em; opacity: .6; margin-top: calc(var(--zh) * .24); }
+  #caption.overlay { text-shadow: 0 1px 10px rgba(0,0,0,.85), 0 0 3px rgba(0,0,0,.9); }
+  body.show-ui.started #caption, body.paused.started #caption {
+    transform: translateY(calc(-1 * var(--ctl-shift))); text-shadow: 0 1px 10px rgba(0,0,0,.85), 0 0 3px rgba(0,0,0,.9);
+  }
+  /* the seek tooltip rises above the bar; lift captions clear of it while hovering */
+  body.started:has(#c-bar:hover) #caption { transform: translateY(calc(-1 * var(--ctl-shift) - 30px)); }
+  body.clean #controls { display: none; }
+  body.clean #caption { transform: none !important; }
+
+  .card {
+    position: fixed; left: var(--pic-x); top: var(--pic-y); width: var(--pic-w); height: var(--pic-h);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; pointer-events: none; opacity: 0;
+  }
+  #title .zh {
+    font-size: calc(var(--pic-w) * .052); letter-spacing: var(--spread); padding-left: var(--spread);
+    text-shadow: 0 0 calc(var(--pic-w) * .02) rgba(140,170,255,.35);
+  }
+  #title .en {
+    font-size: max(11px, calc(var(--pic-w) * .0098)); letter-spacing: .55em; padding-left: .55em;
+    opacity: .72; margin-top: 1.5em;
+  }
+  #endcard { justify-content: flex-start; padding-top: calc(var(--pic-h) * .085); box-sizing: border-box; }
+  #endcard .t { font-size: calc(var(--pic-w) * .04); letter-spacing: .32em; padding-left: .32em; text-shadow: 0 0 24px rgba(120,255,225,.3); }
+  #endcard .line { font-size: max(13px, calc(var(--pic-w) * .0125)); letter-spacing: .16em; margin-top: 1.7em; opacity: 0; line-height: 1.9; text-shadow: 0 1px 12px rgba(0,0,0,.6); }
+  #endcard .line small { display: block; font-size: .7em; letter-spacing: .06em; opacity: .62; }
+  #endcard .fin { font-size: max(12px, calc(var(--pic-w) * .011)); letter-spacing: .6em; padding-left: .6em; margin-top: 2em; opacity: 0; }
+  #endcard .credit { font-size: max(10px, calc(var(--pic-w) * .0078)); letter-spacing: .2em; margin-top: 1em; opacity: 0; color: #b9c6d8; }
+  #replay {
+    margin-top: 1.5em; pointer-events: none; opacity: 0; cursor: pointer;
+    font: inherit; font-size: max(12px, calc(var(--pic-w) * .0095)); letter-spacing: .3em; padding: .8em 1.8em .8em 2.1em;
+    color: #eef2f7; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.28); border-radius: 999px;
+    transition: background .25s, border-color .25s;
+  }
+  #replay:hover { background: rgba(127,255,224,.12); border-color: rgba(127,255,224,.6); }
+
+  /* start poster */
+  #start {
+    --cx: 50%;
+    position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background:
+      radial-gradient(ellipse 46% 62% at var(--cx) 50%, rgba(0,3,10,.5) 0%, rgba(0,3,10,.28) 55%, rgba(0,3,10,0) 100%),
+      radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 40%, rgba(0,0,0,.62) 100%);
+    cursor: pointer; transition: opacity .9s ease; text-align: center; padding: 20px; box-sizing: border-box;
+  }
+  /* wide screens: the title block sits in the open sky left of the lighthouse (which is at ~69% of the picture) */
+  @media (min-aspect-ratio: 5/4) {
+    #start { --cx: calc(var(--pic-x) + var(--pic-w) * .33); padding-left: 0; padding-right: calc(100vw - 2 * var(--cx)); }
+  }
+  #start.gone { opacity: 0; pointer-events: none; }
+  #start .kicker { font-size: clamp(11px, 1.05vw, 15px); letter-spacing: .5em; padding-left: .5em; opacity: .75; }
+  #start .t {
+    font-size: clamp(44px, 7.4vw, 124px); letter-spacing: .3em; padding-left: .3em; margin: .32em 0 .2em;
+    text-shadow: 0 0 40px rgba(120,255,225,.28), 0 2px 20px rgba(0,0,0,.6);
+  }
+  #start .en { font-size: clamp(11px, .95vw, 15px); letter-spacing: .6em; padding-left: .6em; opacity: .75; }
+  #start .btn {
+    margin-top: clamp(26px, 4.2vh, 52px); width: clamp(64px, 6vw, 88px); aspect-ratio: 1; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.55); display: grid; place-items: center; position: relative;
+    background: rgba(255,255,255,.05); transition: transform .3s, background .3s, border-color .3s;
+  }
+  #start .btn::after {
+    content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 1px solid rgba(127,255,224,.35);
+    animation: pulse 2.8s ease-out infinite;
+  }
+  #start:hover .btn { transform: scale(1.06); background: rgba(127,255,224,.1); border-color: rgba(127,255,224,.8); }
+  #start .btn svg { width: 34%; margin-left: 8%; }
+  #start .go { margin-top: 1.2em; font-size: clamp(12px, 1.05vw, 16px); letter-spacing: .3em; padding-left: .3em; }
+  #start .hint { margin-top: clamp(18px, 3vh, 36px); font-size: clamp(10px, .82vw, 13px); letter-spacing: .14em; opacity: .55; line-height: 1.9; }
+  @keyframes pulse { 0% { transform: scale(.92); opacity: .9; } 100% { transform: scale(1.35); opacity: 0; } }
+
+  /* controls */
+  #controls {
+    position: fixed; left: 50%; bottom: 10px; transform: translateX(-50%);
+    width: min(calc(100vw - 24px), max(560px, calc(var(--pic-w) - 40px)), 1180px); box-sizing: border-box;
+    display: flex; align-items: center; gap: 12px; padding: 7px 12px; border-radius: 12px;
+    background: rgba(8,12,20,.62); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.08); opacity: 0; pointer-events: none; transition: opacity .35s;
+  }
+  body.started.show-ui #controls, body.started.paused #controls { opacity: 1; pointer-events: auto; }
+  #controls button {
+    font: inherit; color: #eef2f7; background: none; border: 0; padding: 4px; cursor: pointer; display: grid; place-items: center;
+    opacity: .85; border-radius: 6px; flex: none;
+  }
+  #controls button:hover { opacity: 1; background: rgba(255,255,255,.08); }
+  #controls svg { width: 20px; height: 20px; display: block; }
+  #c-play .i-pause { display: none; }
+  body:not(.paused) #c-play .i-play { display: none; }
+  body:not(.paused) #c-play .i-pause { display: block; }
+  #c-time { font-size: 12px; letter-spacing: .06em; opacity: .8; min-width: 92px; font-variant-numeric: tabular-nums; }
+  #c-bar { position: relative; flex: 1; height: 22px; cursor: pointer; touch-action: none; }
+  #c-bar::before { content: ''; position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.16); }
+  #c-fill { position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--warm), var(--cyan)); background-size: calc(100vw) 100%; }
+  #c-fill::after { content: ''; position: absolute; right: -6px; top: -4px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px rgba(127,255,224,.7); }
+  #c-marks .mark { position: absolute; top: 7px; width: 2px; height: 8px; margin-left: -1px; background: rgba(255,255,255,.45); border-radius: 1px; }
+  #c-tip {
+    position: absolute; bottom: 26px; transform: translateX(-50%); white-space: nowrap; font-size: 12px; letter-spacing: .08em;
+    padding: 4px 8px; border-radius: 6px; background: rgba(8,12,20,.85); opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  #c-bar:hover #c-tip { opacity: 1; }
+  #c-cc { font-size: 13px !important; letter-spacing: .1em; padding: 3px 8px !important; border: 1px solid rgba(255,255,255,.35) !important; }
+  #c-cc.off { opacity: .45 !important; text-decoration: line-through; }
+  #c-mute .i-off { display: none; }
+  #c-mute.off .i-on { display: none; }
+  #c-mute.off .i-off { display: block; }
+  @media (max-width: 640px) { #c-time { display: none; } #controls { gap: 6px; } }
+</style>
+</head>
+<body class="paused">
+<canvas id="film"></canvas>
+<div id="stage"></div>
+
+<div id="title" class="card">
+  <div class="zh">灯塔与鲸</div>
+  <div class="en">THE LIGHTHOUSE AND THE WHALE</div>
+</div>
+
+<div id="endcard" class="card">
+  <div class="t">灯塔与鲸</div>
+  <div class="line">献给每一个，曾经照亮过别人的人。<small>For everyone who has ever been a light for someone.</small></div>
+  <div class="fin">完 · THE END</div>
+  <div class="credit">画面、配乐与音效，均由代码在浏览器中实时生成</div>
+  <button id="replay" type="button">再看一遍</button>
+</div>
+
+<div id="caption"><div class="zh"></div><div class="en"></div></div>
+
+<div id="start" role="button" aria-label="播放短片">
+  <div class="kicker">一部实时绘制的动画短片</div>
+  <div class="t">灯塔与鲸</div>
+  <div class="en">THE LIGHTHOUSE AND THE WHALE</div>
+  <div class="btn"><svg viewBox="0 0 24 24" fill="#eef2f7"><path d="M5 3.5v17l15-8.5z"/></svg></div>
+  <div class="go">观看短片 · 2 分 30 秒</div>
+  <div class="hint">建议打开声音<br>空格 暂停 · ← → 快退 / 快进 · C 字幕 · M 静音 · F 全屏</div>
+</div>
+
+<div id="controls">
+  <button id="c-play" type="button" aria-label="播放 / 暂停">
+    <svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>
+    <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></svg>
+  </button>
+  <div id="c-time">00:00 / 02:30</div>
+  <div id="c-bar"><div id="c-marks"></div><div id="c-fill"></div><div id="c-tip"></div></div>
+  <button id="c-cc" type="button" aria-label="字幕">字幕</button>
+  <button id="c-mute" type="button" aria-label="静音">
+    <svg class="i-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+    <svg class="i-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+  </button>
+  <button id="c-fs" type="button" aria-label="全屏">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>
+  </button>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

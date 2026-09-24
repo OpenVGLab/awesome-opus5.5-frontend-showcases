@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quorum — Many minds. Still you.</title>
+  <meta name="description" content="Quorum is the hive mind with work–life balance. Keep your individual identity, borrow everyone else’s know-how, and give the hive one day a week, 9 to 5, plus 5% of income.">
+  <meta name="theme-color" content="#F6F0E4">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M20 4 33.9 12v16L20 36 6.1 28V12z' fill='%23F4AF2D' stroke='%231B150D' stroke-width='3' stroke-linejoin='round'/%3E%3Ccircle cx='15.5' cy='19' r='2.2' fill='%231B150D'/%3E%3Ccircle cx='24.5' cy='19' r='2.2' fill='%231B150D'/%3E%3Cpath d='M34 26.5 40.5 30.3v7.4L34 41.5l-6.5-3.8v-7.4z' fill='%232F4BE8' stroke='%23F6F0E4' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script type="module" src="assets/js/main.js"></script>
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></symbol>
+    <symbol id="i-percent" viewBox="0 0 24 24"><path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.6"/><circle cx="17" cy="17" r="2.6"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.4 14.2c2 2.3 5.2 2.3 7.2 0M9 9.6h.01M15 9.6h.01"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M12 2.6 20.2 7.3v9.4L12 21.4l-8.2-4.7V7.3z"/><path d="M10.2 8.9v6.2l5-3.1z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.3 4.3L19 7.2"/></symbol>
+    <symbol id="i-cross" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.2"/><path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.2s-7.6-4.6-7.6-10.4A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.6 2.6c0 5.8-7.6 10.4-7.6 10.4z"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9.2 18h5.6M10.2 21h3.6M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-case" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2.4"/><path d="M8.5 7V5.4A1.9 1.9 0 0 1 10.4 3.5h3.2a1.9 1.9 0 0 1 1.9 1.9V7M3 12.6h18"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5.5h16v10.2H10.2L5.6 19.4v-3.7H4z"/><path d="M8.5 9.3h7M8.5 12.2h4.5"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.6 3.6a5 5 0 0 0-4.7 6.7L3.8 16.4a1.9 1.9 0 0 0 0 2.7l1.1 1.1a1.9 1.9 0 0 0 2.7 0l6.1-6.1a5 5 0 0 0 6.7-4.7l-3.1 1.6-2.4-2.4 1.6-3.1a5 5 0 0 0-1.9.1z"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3s5.6 4.6 5.6 10.4a5.6 5.6 0 0 1-11.2 0c0-2.8 1.8-4.6 1.8-4.6s.4 3 2.6 3.2C10.4 8.4 12 3 12 3z"/></symbol>
+    <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.4"/><circle cx="9" cy="10" r="1.9"/><path d="m20.6 16.2-5-5-8.6 8.4"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7.4 16.4a3.9 3.9 0 0 1-.6-7.8 5.2 5.2 0 0 1 9.9-1.3 4.6 4.6 0 0 1 .4 9.1z"/><circle cx="6" cy="20" r="1.2"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9s-1.3 6.2-3.9 9c-2.6-2.8-3.9-5.8-3.9-9S9.4 5.8 12 3z"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.8 4.8 13.6h6.4l-1 7.6 8.2-10.8H12z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.2" r="3.4"/><path d="M2.8 20a6.2 6.2 0 0 1 12.4 0M16 4.9a3.4 3.4 0 0 1 0 6.6M18.2 14.4A6.2 6.2 0 0 1 21.2 20"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></symbol>
+  </svg>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a class="brand" href="#top" aria-label="Quorum home">
+        <svg class="mark" viewBox="0 0 44 44" aria-hidden="true"><path class="mark__hive" d="M20 4 33.9 12v16L20 36 6.1 28V12z"/><circle cx="15.5" cy="19" r="2"/><circle cx="24.5" cy="19" r="2"/><path class="mark__you" d="M34 26.5 40.5 30.3v7.4L34 41.5l-6.5-3.8v-7.4z"/></svg>
+        <span>Quorum</span>
+      </a>
+      <nav class="nav__links" id="navLinks" aria-label="Sections">
+        <a href="#how">How it works</a>
+        <a href="#ask">Try it</a>
+        <a href="#identity">Still you</a>
+        <a href="#week">Hive Day</a>
+        <a href="#pricing">The 5%</a>
+        <a href="#network">Network</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav__cta">
+        <a class="nav__signin" href="#apply">Member sync</a>
+        <a class="btn btn--ink btn--sm" href="#apply">Apply to join</a>
+        <button class="nav__menu" id="navMenu" type="button" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu"><svg class="i"><use href="#i-menu"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" id="top" aria-labelledby="heroTitle">
+      <div class="hive" id="hive">
+        <svg class="hive__svg" id="hiveSvg" role="img" aria-label="A honeycomb of Quorum members, each with a face of their own. The single blue cell is you."></svg>
+        <div class="hive__card" id="hiveCard" aria-live="polite"></div>
+        <div class="you-tag" id="youTag"><b>You</b><span>still 100% you</span></div>
+      </div>
+      <div class="hero__toasts" id="toasts" aria-live="polite"></div>
+
+      <div class="container hero__inner">
+        <div class="hero__copy">
+          <p class="pill"><span class="pill__dot"></span><span>Now syncing Cohort 27 · <span data-cells>1,204</span> cells left</span></p>
+          <h1 class="hero__title" id="heroTitle">Many minds.<br>Still <em>you.</em></h1>
+          <p class="hero__lead">Quorum is the hive mind with work–life balance. Tap into 2.4&nbsp;million minds whenever you like, keep your name, your quirks and your weekends — and give the hive just one day a week.</p>
+          <div class="hero__cta">
+            <a class="btn btn--ink btn--lg" href="#apply">Apply to join <svg class="i"><use href="#i-arrow"/></svg></a>
+            <a class="btn btn--ghost btn--lg" href="#ask"><svg class="i"><use href="#i-play"/></svg> Try the hive</a>
+          </div>
+          <ul class="terms" aria-label="The terms">
+            <li><svg class="i"><use href="#i-clock"/></svg>1 day a week, 9 to 5</li>
+            <li><svg class="i"><use href="#i-percent"/></svg>5% of income</li>
+            <li><svg class="i"><use href="#i-smile"/></svg>100% still you</li>
+          </ul>
+          <p class="hero__hint"><span class="hint-fine">Hover the hive to meet members · click one to borrow a skill</span><span class="hint-touch">Tap a cell in the hive to meet a member and borrow a skill</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats" aria-label="Quorum in numbers">
+      <div class="container stats__grid">
+        <div class="stat reveal"><b data-minds>2,481,337</b><span><i class="live"></i>minds synced, live</span></div>
+        <div class="stat reveal"><b>190</b><span>countries with a Quorum node</span></div>
+        <div class="stat reveal"><b>8 hrs</b><span>a week for the hive. The other 160 are yours.</span></div>
+        <div class="stat reveal"><b>0</b><span>identities lost. We check every morning.</span></div>
+      </div>
+      <p class="container press reveal">As wondered about in <span>The Daily Neuron</span><span>Collective Quarterly</span><span>Morning Swarm</span><span>Honey &amp; Ledger</span><span>The Comb Review</span></p>
+    </section>
+
+    <!-- THE DEAL -->
+    <section class="section" id="deal" aria-labelledby="dealTitle">
+      <div class="container">
+        <header class="section__head reveal">
+          <p class="eyebrow">The deal</p>
+          <h2 id="dealTitle">The whole deal fits on <em>a sticky note.</em></h2>
+          <p class="lede">Most hive minds want everything, forever. We want one day a week and a small percentage. That’s the complete arrangement — no asterisks, no robes.</p>
+        </header>
+        <div class="deal">
+          <article class="deal__card deal__card--give reveal">
+            <span class="tag tag--honey">You give</span>
+            <ul>
+              <li><svg class="i"><use href="#i-clock"/></svg><div><b>One day a week, 9 to 5.</b><span>Pick your Hive Day. Lunch is on the hive.</span></div></li>
+              <li><svg class="i"><use href="#i-percent"/></svg><div><b>5% of income.</b><span>Flat and before tax — and nothing at all if you earn nothing.</span></div></li>
+            </ul>
+          </article>
+          <article class="deal__card deal__card--get reveal">
+            <span class="tag tag--ink">You get</span>
+            <ul>
+              <li><svg class="i"><use href="#i-bulb"/></svg><div><b>Everyone else’s mind.</b><span>Pretty much. Skills, languages and know-how from 2.4 million members, on tap.</span></div></li>
+              <li><svg class="i"><use href="#i-globe"/></svg><div><b>A network of professionals.</b><span>In 190 countries — plus every opportunity any of them hears about.</span></div></li>
+            </ul>
+          </article>
+          <article class="deal__card deal__card--keep reveal">
+            <span class="tag tag--you">You keep</span>
+            <ul>
+              <li><svg class="i"><use href="#i-smile"/></svg><div><b>Your identity.</b><span>Your name, face, memories and opinions. Linked, never merged.</span></div></li>
+              <li><svg class="i"><use href="#i-sun"/></svg><div><b>The rest of your week.</b><span>Evenings, weekends, and the right to be wrong entirely on your own.</span></div></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section section--tint" id="how" aria-labelledby="howTitle">
+      <div class="container">
+        <header class="section__head section__head--center reveal">
+          <p class="eyebrow">How it works</p>
+          <h2 id="howTitle">Borrow every brain. <em>Keep your own.</em></h2>
+        </header>
+        <ol class="steps">
+          <li class="step reveal">
+            <div class="step__illo" data-illo="sync"></div>
+            <span class="step__num">01</span>
+            <h3>Sync in forty minutes</h3>
+            <p>Visit any Quorum node. No surgery, no robes, no chanting — just a comfy chair, a cup of tea and a very gentle hum. Bring photo ID.</p>
+          </li>
+          <li class="step reveal">
+            <div class="step__illo" data-illo="wonder"></div>
+            <span class="step__num">02</span>
+            <h3>Wonder anything</h3>
+            <p>Need to know something? Just wonder. The answer surfaces like one of your own memories, signed by whoever lent it, so you can say thanks.</p>
+          </li>
+          <li class="step reveal">
+            <div class="step__illo" data-illo="day"></div>
+            <span class="step__num">03</span>
+            <h3>Show up one day a week</h3>
+            <p>On your Hive Day you work on shared objectives from 9 to 5 alongside a few hundred thousand others. At 5:01 you’re off — and entirely yourself.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ASK THE HIVE -->
+    <section class="section section--dark" id="ask" aria-labelledby="askTitle">
+      <canvas class="hexfield" data-hexfield aria-hidden="true"></canvas>
+      <div class="container ask">
+        <header class="section__head section__head--center reveal">
+          <p class="eyebrow">Everyone else’s mind · live demo</p>
+          <h2 id="askTitle">Go on. <em>Wonder something.</em></h2>
+          <p class="lede">Members don’t type. They just wonder, and an answer arrives like a memory — signed by whoever lent it. This is the typed version.</p>
+        </header>
+        <form class="ask__form reveal" id="askForm" autocomplete="off">
+          <label class="sr-only" for="askInput">Ask the hive anything</label>
+          <svg class="i ask__icon"><use href="#i-bulb"/></svg>
+          <input id="askInput" name="q" type="text" placeholder="How do I…" maxlength="120" enterkeyhint="send">
+          <button class="btn btn--honey" type="submit">Wonder <svg class="i"><use href="#i-arrow"/></svg></button>
+        </form>
+        <div class="ask__chips reveal" id="askChips" aria-label="Example questions"></div>
+        <div class="ask__results" id="askResults" aria-live="polite">
+          <p class="ask__empty">Answers from the hive will appear here.</p>
+        </div>
+        <p class="ask__note">Simulation. The answers are pre-written; for members they arrive in about 0.4 seconds, inside their heads, with a warm feeling of having always known.</p>
+      </div>
+    </section>
+
+    <!-- IDENTITY -->
+    <section class="section" id="identity" aria-labelledby="idTitle">
+      <div class="container identity">
+        <div class="identity__visual reveal">
+          <svg id="idSvg" viewBox="-270 -235 540 470" role="img" aria-label="Your cell in the centre, surrounded by six facets of you. Shared facets glow honey; private ones are sealed."></svg>
+        </div>
+        <div class="identity__copy">
+          <header class="reveal">
+            <p class="eyebrow">Individual identity, guaranteed</p>
+            <h2 id="idTitle">Linked, <em>never merged.</em></h2>
+            <p class="lede">Your cell is yours. Choose which facets of you the hive can borrow — everything else stays behind the wax.</p>
+          </header>
+          <ul class="facets reveal" id="facets">
+            <li class="facet" data-i="0"><div><b>Work skills</b><span>Everything someone pays you to know.</span></div><label class="switch"><input type="checkbox" checked aria-label="Share work skills"><span></span></label></li>
+            <li class="facet" data-i="1"><div><b>Languages</b><span>Every word, accent and swear word you’ve got.</span></div><label class="switch"><input type="checkbox" checked aria-label="Share languages"><span></span></label></li>
+            <li class="facet" data-i="2"><div><b>How-tos &amp; hobbies</b><span>Knots, recipes, the right way to hang a picture.</span></div><label class="switch"><input type="checkbox" checked aria-label="Share how-tos and hobbies"><span></span></label></li>
+            <li class="facet" data-i="3"><div><b>Hot takes</b><span>Pineapple on pizza, tabs vs. spaces, that film’s ending.</span></div><label class="switch"><input type="checkbox" aria-label="Share hot takes"><span></span></label></li>
+            <li class="facet" data-i="4"><div><b>Memories</b><span>Holidays, heartbreaks, that one karaoke night.</span></div><label class="switch"><input type="checkbox" aria-label="Share memories"><span></span></label></li>
+            <li class="facet facet--locked" data-i="5"><div><b>Inner monologue</b><span>Always private. We couldn’t switch this on if we tried.</span></div><span class="lockchip"><svg class="i"><use href="#i-lock"/></svg>Locked</span></li>
+          </ul>
+          <div class="meters reveal">
+            <div class="meter">
+              <div class="meter__top"><span>Borrowable by the hive</span><b id="shareOut">3 of 6 facets</b></div>
+              <div class="meter__bar"><i id="shareBar" style="--p:50%"></i></div>
+            </div>
+            <div class="meter meter--you">
+              <div class="meter__top"><span>Identity integrity</span><b>100%</b></div>
+              <div class="meter__bar"><i style="--p:100%"></i></div>
+              <small id="integrityNote">Doesn’t move, whatever you toggle. We’ve tried.</small>
+            </div>
+          </div>
+          <p class="fineprint reveal">Never shareable, by design: your search history, your passwords, and what you really think of your cousin’s band.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- YOUR WEEK -->
+    <section class="section section--tint" id="week" aria-labelledby="weekTitle">
+      <div class="container">
+        <header class="section__head section__head--split reveal">
+          <div>
+            <p class="eyebrow">One day a week, 9 to 5</p>
+            <h2 id="weekTitle">The hive gets a day. <em>You get the week.</em></h2>
+          </div>
+          <p class="lede">Hive Day runs 9 to 5 with lunch on the hive. Choose the day that suits you, swap it with two weeks’ notice, and never think about hive work outside those hours.</p>
+        </header>
+        <div class="week">
+          <div class="week__main reveal">
+            <div class="daypick" role="radiogroup" aria-label="Choose your Hive Day" id="daypick"></div>
+            <div class="cal" id="cal" aria-label="Your week"></div>
+            <div class="week__stats">
+              <div><b>8 h</b><span>for the hive</span></div>
+              <div><b>160 h</b><span>for you</span></div>
+              <div><b>95.2%</b><span>of your week is yours</span></div>
+              <p class="week__next" id="weekNext">Your next Hive Day: Thursday · 9:00–17:00</p>
+            </div>
+          </div>
+          <aside class="objectives card reveal" aria-labelledby="objTitle">
+            <header>
+              <h3 id="objTitle">This quarter’s objectives</h3>
+              <span class="tag tag--honey tag--sm">Voted by quorum</span>
+            </header>
+            <ul id="objectives"></ul>
+            <p class="objectives__foot">Proposals need 60% of active members to pass. Yes, you get a vote. No, you can’t propose “a second day off”.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="section" id="pricing" aria-labelledby="priceTitle">
+      <div class="container">
+        <header class="section__head section__head--center reveal">
+          <p class="eyebrow">Membership</p>
+          <h2 id="priceTitle">One price: <em>5% of income.</em></h2>
+          <p class="lede">No tiers. No upsells. No premium plan to unlock your own thoughts.</p>
+        </header>
+        <div class="pricing">
+          <div class="calc card reveal">
+            <div class="calc__top">
+              <label for="income">Your annual income</label>
+              <output id="incomeOut" for="income">$65,000</output>
+            </div>
+            <input type="range" id="income" min="0" max="400000" step="1000" value="65000">
+            <div class="calc__presets" id="presets">
+              <button type="button" data-v="0">Student · $0</button>
+              <button type="button" data-v="52000">Teacher · $52k</button>
+              <button type="button" data-v="78000">Nurse · $78k</button>
+              <button type="button" data-v="140000">Engineer · $140k</button>
+              <button type="button" data-v="380000">Surgeon · $380k</button>
+            </div>
+            <div class="calc__result">
+              <div class="donut">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                  <circle class="donut__you" cx="60" cy="60" r="50" pathLength="100"/>
+                  <circle class="donut__hive" cx="60" cy="60" r="50" pathLength="100"/>
+                </svg>
+                <div class="donut__label"><b>95%</b><span id="keepOut">$61,750 stays yours</span></div>
+              </div>
+              <dl class="calc__nums">
+                <div><dt>To the hive, per year</dt><dd id="perYear">$3,250</dd></div>
+                <div><dt>Per month</dt><dd id="perMonth">$270.83</dd></div>
+                <div><dt>Per week</dt><dd id="perWeek">$62.50</dd></div>
+              </dl>
+            </div>
+            <div class="calc__compare">
+              <p class="calc__h">Knowing things the old way, per year</p>
+              <ul>
+                <li><span>A lawyer, six hours</span><b>$2,100</b></li>
+                <li><span>Weekly language lessons</span><b>$2,600</b></li>
+                <li><span>Career coach, eight sessions</span><b>$1,600</b></li>
+                <li><span>Someone to do your taxes</span><b>$450</b></li>
+                <li><span>Emergency plumber, twice</span><b>$640</b></li>
+                <li><span>“Quick questions” for your doctor friend</span><b>3 friendships</b></li>
+              </ul>
+              <p class="calc__verdict" id="verdict">Quorum costs you $4,140 less than knowing things the old way — and saves three friendships.</p>
+            </div>
+          </div>
+          <div class="plan card reveal">
+            <p class="eyebrow eyebrow--light">Full membership</p>
+            <p class="plan__price"><b>5%</b><span>of income</span></p>
+            <p class="plan__sub">Everything, for everyone. A student and a surgeon get exactly the same hive.</p>
+            <ul class="plan__list">
+              <li><svg class="i"><use href="#i-check"/></svg>Access to every member’s shared mind</li>
+              <li><svg class="i"><use href="#i-check"/></svg>Opportunity matching in 190 countries</li>
+              <li><svg class="i"><use href="#i-check"/></svg>The Individuality Guarantee</li>
+              <li><svg class="i"><use href="#i-check"/></svg>25 Hive Days off a year, plus sick days</li>
+              <li><svg class="i"><use href="#i-check"/></svg>A vote on every objective</li>
+              <li><svg class="i"><use href="#i-check"/></svg>Free unsync, any time, 30 days’ notice</li>
+            </ul>
+            <div class="plan__joined">
+              <span class="plan__avs" data-avs="Ines Duarte|Kofi Mensah|Aiko Nishimura|Mateo Silva|Priya Raman"></span>
+              <p><b>12,408 minds</b> joined this week.<br>Every one of them still themselves.</p>
+            </div>
+            <a class="btn btn--honey btn--block" href="#apply">Apply to join <svg class="i"><use href="#i-arrow"/></svg></a>
+            <p class="plan__fine">Collected monthly, before tax. Lottery wins count. Inheritances don’t — we’re a hive, not vultures.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NETWORK -->
+    <section class="section section--honey" id="network" aria-labelledby="netTitle">
+      <div class="container">
+        <header class="section__head section__head--split reveal">
+          <div>
+            <p class="eyebrow eyebrow--ink">The network</p>
+            <h2 id="netTitle">Know everyone. <em>Literally.</em></h2>
+          </div>
+          <p class="lede">Every member is a professional contact you already know intimately — so networking is less “nice to meet you” and more “oh, it’s you”.</p>
+        </header>
+        <div class="netstats reveal">
+          <div><b data-count="2400000" data-format="short">2.4M</b><span>professionals</span></div>
+          <div><b data-count="190">190</b><span>countries</span></div>
+          <div><b data-count="31000" data-format="k">31k</b><span>opportunities shared a day</span></div>
+          <div><b data-count="4" data-suffix=" min">4 min</b><span>median time to a warm intro</span></div>
+        </div>
+        <div class="net">
+          <div class="net__dir card reveal">
+            <div class="net__head">
+              <h3>Who’s in the hive</h3>
+              <div class="chips" id="netChips" role="group" aria-label="Filter by field"></div>
+            </div>
+            <div class="tiles" id="tiles"></div>
+          </div>
+          <aside class="net__feed card reveal" aria-labelledby="feedTitle">
+            <header><h3 id="feedTitle"><i class="live"></i>Live opportunities</h3><span>matched as they happen</span></header>
+            <div class="feed"><ul class="feed__track" id="feed"></ul></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- VOICES -->
+    <section class="section" id="voices" aria-labelledby="voicesTitle">
+      <div class="container">
+        <header class="section__head section__head--center reveal">
+          <p class="eyebrow">Members</p>
+          <h2 id="voicesTitle">In their own words. <em>Still their own.</em></h2>
+        </header>
+        <div class="voices">
+          <figure class="voice reveal"><blockquote>“I was worried I’d lose myself. Turns out I’m exactly as annoying as before — I just also speak Portuguese now.”</blockquote><figcaption><span class="voice__av" data-avatar="Tomás Reyes"></span><span><b>Tomás Reyes</b>Structural engineer · Monterrey</span></figcaption></figure>
+          <figure class="voice voice--you reveal"><blockquote>“I fixed my sink with the memory of a plumber in Glasgow. I thanked him. He sent back a thumbs-up. From inside my head.”</blockquote><figcaption><span class="voice__av" data-avatar="Grace Kim"></span><span><b>Grace Kim</b>UX researcher · Seoul</span></figcaption></figure>
+          <figure class="voice reveal"><blockquote>“Hive Day is the most useful eight hours of my week. Then I go home and I’m just me, being mediocre at pottery. It’s perfect.”</blockquote><figcaption><span class="voice__av" data-avatar="Deborah Okafor"></span><span><b>Deborah Okafor</b>Pediatrician · Lagos</span></figcaption></figure>
+          <figure class="voice reveal"><blockquote>“Five percent felt steep until April, when I borrowed a tax accountant’s entire brain for an afternoon.”</blockquote><figcaption><span class="voice__av" data-avatar="Ravi Menon"></span><span><b>Ravi Menon</b>Restaurant owner · Kochi</span></figcaption></figure>
+          <figure class="voice voice--honey reveal"><blockquote>“Networking used to mean lanyards and small talk. Now I wonder ‘who knows a good patent attorney?’ and 312 people do.”</blockquote><figcaption><span class="voice__av" data-avatar="Saoirse Byrne"></span><span><b>Saoirse Byrne</b>Founder · Galway</span></figcaption></figure>
+          <figure class="voice reveal"><blockquote>“My grandkids say I’m exactly the same. My chess rating says otherwise.”</blockquote><figcaption><span class="voice__av" data-avatar="Walter Brandt"></span><span><b>Walter Brandt</b>Retired postman · Hamburg</span></figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARE -->
+    <section class="section section--tint" id="compare" aria-labelledby="cmpTitle">
+      <div class="container">
+        <header class="section__head section__head--center reveal">
+          <p class="eyebrow">Compare</p>
+          <h2 id="cmpTitle">The hive mind, minus <em>the bad parts.</em></h2>
+        </header>
+        <div class="compare reveal">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col"><span class="sr-only">Feature</span></th>
+                <th scope="col" class="is-us"><span class="compare__badge">Recommended by 2.4M minds</span>Quorum</th>
+                <th scope="col">Classic hive mind</th>
+                <th scope="col">Going it alone</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Keep your individual identity</th><td class="is-us"><span class="yes"><svg class="i"><use href="#i-check"/></svg>Always</span></td><td><span class="no"><svg class="i"><use href="#i-cross"/></svg>Absorbed</span></td><td><span class="yes"><svg class="i"><use href="#i-check"/></svg>Yes</span></td></tr>
+              <tr><th scope="row">Access to everyone’s know-how</th><td class="is-us"><span class="yes"><svg class="i"><use href="#i-check"/></svg>Pretty much all of it</span></td><td><span class="yes"><svg class="i"><use href="#i-check"/></svg>All of it, always, loudly</span></td><td><span class="no"><svg class="i"><use href="#i-cross"/></svg>Search engines, mostly</span></td></tr>
+              <tr><th scope="row">Time commitment</th><td class="is-us">1 day a week, 9 to 5</td><td>Every waking moment</td><td>None (and it shows)</td></tr>
+              <tr><th scope="row">Cost</th><td class="is-us">5% of income</td><td>Your soul, non-refundable</td><td>Every mistake, full price</td></tr>
+              <tr><th scope="row">Professional network</th><td class="is-us">2.4M members, 190 countries</td><td>One. It’s all one.</td><td>A few hundred contacts</td></tr>
+              <tr><th scope="row">Weekends</th><td class="is-us">Yours</td><td>What’s a weekend?</td><td>Yours, alone</td></tr>
+              <tr><th scope="row">Leaving</th><td class="is-us">30 days’ notice</td><td>There is no leaving</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq" aria-labelledby="faqTitle">
+      <div class="container faq">
+        <header class="faq__head reveal">
+          <p class="eyebrow">Questions</p>
+          <h2 id="faqTitle">Reasonable questions, <em>honest answers.</em></h2>
+          <p class="lede">Can’t find yours? Wonder it out loud once you’ve synced — about 40,000 members work in customer support.</p>
+          <a class="btn btn--ink" href="#apply">Apply to join <svg class="i"><use href="#i-arrow"/></svg></a>
+        </header>
+        <div class="faq__list reveal">
+          <details open>
+            <summary>Will I lose my personality?<svg class="i"><use href="#i-plus"/></svg></summary>
+            <p>No. Quorum is a link, not a blender. Members score 100% themselves on the Individuality Index before and after syncing. You’ll still be you — just better informed.</p>
+          </details>
+          <details>
+            <summary>So can everyone read my mind?<svg class="i"><use href="#i-plus"/></svg></summary>
+            <p>Pretty much everyone can access what you’ve chosen to share: skills, languages, know-how — the stuff you’d happily explain at a party. Memories and hot takes are private until you say otherwise, and your inner monologue can’t be shared at all.</p>
+          </details>
+          <details>
+            <summary>What actually happens on Hive Day?<svg class="i"><use href="#i-plus"/></svg></summary>
+            <p>From 9 to 5 on your chosen day you work on objectives voted in by quorum — mapping, teaching, research, restoration and the occasional collective crossword. You’ll feel pleasantly purposeful. At 5 p.m. it stops. Mid-sentence, if necessary.</p>
+          </details>
+          <details>
+            <summary>What if I’m sick, on holiday, or just not feeling very hive-y?<svg class="i"><use href="#i-plus"/></svg></summary>
+            <p>You get 25 Hive Days off a year, plus sick days. Another member covers for you — they’ll remember exactly how you’d have done it.</p>
+          </details>
+          <details>
+            <summary>Is the 5% before or after tax?<svg class="i"><use href="#i-plus"/></svg></summary>
+            <p>Before. It’s collected monthly, scales with what you earn and drops to zero if you earn nothing. Nobody is ever priced out of knowing things.</p>
+          </details>
+          <details>
+            <summary>Can I leave?<svg class="i"><use href="#i-plus"/></svg></summary>
+            <p>Any time, with 30 days’ notice. You keep everything you learned about yourself. Borrowed skills fade over about a month, like a language you stop practising.</p>
+          </details>
+          <details>
+            <summary>Is this a cult?<svg class="i"><use href="#i-plus"/></svg></summary>
+            <p>Cults don’t have a 9-to-5, a published fee schedule or a cancellation policy. We have all three. Also, cults hate it when you ask. We genuinely don’t mind.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPLY -->
+    <section class="section section--dark apply" id="apply" aria-labelledby="applyTitle">
+      <canvas class="hexfield" data-hexfield aria-hidden="true"></canvas>
+      <div class="container apply__grid">
+        <div class="apply__copy reveal">
+          <p class="eyebrow">Resistance is optional</p>
+          <h2 id="applyTitle">Your cell is <em>waiting.</em></h2>
+          <p class="lede">Cohort 27 syncs on 1 October. Applying takes two minutes, syncing takes forty, and being yourself takes no effort at all — that part’s included.</p>
+          <div class="cellwait" id="cellwait">
+            <svg viewBox="-130 -130 260 260" aria-hidden="true" id="cellSvg"></svg>
+            <p class="cellwait__label" id="cellLabel">Sized for exactly one individual.</p>
+          </div>
+        </div>
+        <div class="apply__panel reveal">
+          <form class="apply__form" id="applyForm">
+            <h3>Apply to join Quorum</h3>
+            <div class="field-row">
+              <label class="field"><span>Your name</span><input name="name" type="text" autocomplete="name" placeholder="Ada Okonkwo" required maxlength="60"></label>
+              <label class="field"><span>Email</span><input name="email" type="email" autocomplete="email" placeholder="ada@example.com" required></label>
+            </div>
+            <div class="field-row">
+              <label class="field"><span>What do you do?</span><input name="role" type="text" placeholder="Structural engineer, part-time DJ" maxlength="80"></label>
+              <label class="field"><span>Preferred Hive Day</span>
+                <select name="day">
+                  <option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3" selected>Thursday</option><option value="4">Friday</option><option value="5">Saturday</option><option value="6">Sunday</option>
+                </select>
+              </label>
+            </div>
+            <label class="field"><span>One thing you could teach the hive</span><input name="teach" type="text" placeholder="How to make a perfect jollof" maxlength="100"></label>
+            <label class="check"><input type="checkbox" name="terms" required><span class="check__box"><svg class="i"><use href="#i-check"/></svg></span><span>I’ll give the hive one day a week, 9 to 5, and 5% of my income.</span></label>
+            <label class="check check--locked"><input type="checkbox" checked disabled><span class="check__box"><svg class="i"><use href="#i-check"/></svg></span><span>I’d like to remain myself. <em>(Not optional.)</em></span></label>
+            <button class="btn btn--honey btn--block btn--lg" type="submit">Apply to join Quorum <svg class="i"><use href="#i-arrow"/></svg></button>
+            <p class="apply__fine">We read every application individually. Obviously.</p>
+          </form>
+          <div class="sync" id="sync" hidden>
+            <div class="sync__spinner" aria-hidden="true"><span></span><span></span><span></span></div>
+            <ol class="sync__steps" id="syncSteps"></ol>
+          </div>
+          <div class="welcome" id="welcome" hidden>
+            <p class="eyebrow">Application received</p>
+            <h3 id="welcomeTitle">Welcome to Quorum.</h3>
+            <p id="welcomeText"></p>
+            <p class="welcome__still"><svg class="i"><use href="#i-smile"/></svg>You’re still 100% you. We checked twice.</p>
+            <button class="btn btn--ghost-light" type="button" id="applyAgain">Apply another mind</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__brand">
+        <a class="brand brand--light" href="#top" aria-label="Quorum home">
+          <svg class="mark" viewBox="0 0 44 44" aria-hidden="true"><path class="mark__hive" d="M20 4 33.9 12v16L20 36 6.1 28V12z"/><circle cx="15.5" cy="19" r="2"/><circle cx="24.5" cy="19" r="2"/><path class="mark__you" d="M34 26.5 40.5 30.3v7.4L34 41.5l-6.5-3.8v-7.4z"/></svg>
+          <span>Quorum</span>
+        </a>
+        <p>Many minds. Still you.</p>
+        <p class="footer__count"><i class="live"></i><span data-minds>2,481,337</span>&nbsp;minds and counting</p>
+      </div>
+      <nav class="footer__col" aria-label="Product"><h4>Membership</h4><a href="#how">How it works</a><a href="#week">Hive Day</a><a href="#pricing">The 5%</a><a href="#network">The network</a></nav>
+      <nav class="footer__col" aria-label="Company"><h4>The hive</h4><a href="#voices">Members</a><a href="#network">Nodes near you</a><a href="#faq">Careers <em>(we already know)</em></a><a href="#faq">Press</a></nav>
+      <nav class="footer__col" aria-label="Legal"><h4>Fine print</h4><a href="#faq">Terms of Sync</a><a href="#identity">Privacy (yours)</a><a href="#identity">Individuality Guarantee</a><a href="#faq">Unsyncing</a></nav>
+    </div>
+    <div class="container footer__legal">
+      <p>© 2026 Quorum Collective, a benefit corporation. Quorum is not a cult, a religion or a pyramid scheme; it is a hexagon scheme. Borrowed skills are provided as-is — please don’t perform surgery on the strength of a borrowed memory. Individual results may vary. Individuals won’t.</p>
+    </div>
+  </footer>
+</body>
+</html>

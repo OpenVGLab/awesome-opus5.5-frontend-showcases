@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>A road that forgets which way is down</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --ink: #231f2e;
+    --ink-soft: rgba(35, 31, 46, 0.72);
+    --paper: rgba(248, 242, 228, 0.9);
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #efe6d2; color: var(--ink); font-family: var(--serif); }
+  canvas#gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
+  .paper {
+    background: var(--paper);
+    border: 1.5px solid rgba(35, 31, 46, 0.78);
+    border-radius: 3px 7px 4px 6px;
+    box-shadow: 3px 4px 0 rgba(35, 31, 46, 0.12);
+  }
+
+  #title {
+    position: fixed; inset: 0; z-index: 5; display: flex; align-items: center;
+    padding-left: clamp(24px, 5vw, 90px);
+    background: linear-gradient(90deg, rgba(246, 239, 222, 0.94) 0%, rgba(246, 239, 222, 0.78) 30%, rgba(246, 239, 222, 0) 58%);
+    cursor: pointer; transition: opacity 0.9s ease; user-select: none;
+  }
+  #title.gone { opacity: 0; pointer-events: none; }
+  #title .panel { max-width: min(540px, 44vw); }
+  #title .kicker { font-style: italic; font-size: clamp(14px, 1.25vw, 20px); color: var(--ink-soft); letter-spacing: 0.02em; }
+  #title h1 {
+    margin: 0.2em 0 0.35em; font-weight: 600; font-style: italic; line-height: 1.02;
+    font-size: clamp(38px, 4.6vw, 84px); letter-spacing: -0.01em;
+  }
+  #title .lede { font-size: clamp(16px, 1.45vw, 24px); line-height: 1.45; margin: 0 0 1.2em; max-width: 30em; }
+  #title .start {
+    display: inline-block; font-size: clamp(16px, 1.35vw, 22px); padding: 0.5em 1.1em;
+    border: 2px solid var(--ink); border-radius: 30px 26px 32px 24px; background: rgba(255, 250, 238, 0.7);
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  #title .start span { color: var(--ink-soft); font-style: italic; }
+  #title .keys { list-style: none; padding: 0; margin: 1.3em 0 0; font-size: clamp(13px, 1.05vw, 17px); line-height: 1.75; color: var(--ink-soft); }
+  #title .keys b { color: var(--ink); font-weight: 700; }
+  @keyframes breathe { 50% { transform: translateY(-2px) rotate(-0.6deg); } }
+
+  #hud { position: fixed; inset: 0; z-index: 3; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
+  #hud.on { opacity: 1; }
+  #card { position: absolute; left: 18px; top: 16px; width: clamp(280px, 24vw, 380px); padding: 10px 14px 8px; }
+  #card .small { font-size: clamp(12px, 0.95vw, 15px); color: var(--ink-soft); }
+  #card .name { font-size: clamp(22px, 2vw, 32px); font-style: italic; font-weight: 600; line-height: 1.1; margin: 1px 0 2px; }
+  #card .italic { font-style: italic; }
+  #staff { display: block; width: 100%; height: clamp(62px, 5.4vw, 86px); margin-top: 4px; }
+  #score { position: absolute; right: 18px; top: 16px; padding: 10px 16px 9px; text-align: right; min-width: 170px; }
+  #score .big { font-size: clamp(30px, 2.8vw, 46px); font-weight: 600; line-height: 1; }
+  #score .of { font-size: 0.5em; color: var(--ink-soft); font-weight: 400; }
+  #score .small { font-size: clamp(12px, 0.95vw, 15px); color: var(--ink-soft); margin-top: 3px; }
+  #auto { display: none; color: #b0412c; font-style: italic; }
+  #auto.on { display: inline; }
+  #caption {
+    position: absolute; left: 50%; top: 19%; transform: translate(-50%, -6px); text-align: center;
+    opacity: 0; transition: opacity 0.7s ease, transform 0.7s ease; text-shadow: 0 0 18px rgba(250, 244, 230, 0.95), 0 0 4px rgba(250, 244, 230, 0.9);
+    white-space: nowrap; padding: 22px 80px;
+    background: radial-gradient(ellipse at center, rgba(250, 244, 230, 0.82) 0%, rgba(250, 244, 230, 0.55) 45%, rgba(250, 244, 230, 0) 72%);
+  }
+  #caption.on { opacity: 1; transform: translate(-50%, 0); }
+  #cap-no { font-size: clamp(13px, 1.1vw, 18px); font-style: italic; color: var(--ink-soft); }
+  #cap-name { font-size: clamp(34px, 3.8vw, 64px); font-style: italic; font-weight: 600; line-height: 1.05; }
+  #cap-tag { font-size: clamp(15px, 1.3vw, 21px); font-style: italic; }
+  #toast {
+    position: absolute; left: 50%; bottom: 76px; transform: translateX(-50%); padding: 8px 18px;
+    background: var(--paper); border: 1.5px solid var(--ink); border-radius: 18px 14px 20px 12px;
+    font-size: clamp(15px, 1.2vw, 20px); font-style: italic; opacity: 0; transition: opacity 0.6s ease; white-space: nowrap;
+  }
+  #toast.on { opacity: 1; }
+  #hint {
+    position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); font-size: clamp(12px, 0.95vw, 15px);
+    font-style: italic; color: var(--ink); background: rgba(248, 242, 228, 0.75); padding: 4px 14px; border-radius: 14px;
+    white-space: nowrap; transition: opacity 1s ease;
+  }
+  #hint.off { opacity: 0; }
+  #buttons { position: absolute; right: 18px; bottom: 14px; display: flex; gap: 8px; pointer-events: auto; }
+  #buttons button {
+    font-family: var(--serif); font-style: italic; font-size: clamp(12px, 0.95vw, 15px); color: var(--ink);
+    background: var(--paper); border: 1.5px solid var(--ink); border-radius: 14px 11px 15px 10px; padding: 4px 11px; cursor: pointer;
+  }
+  #buttons button.on { background: #f3d57a; }
+  @media (max-width: 760px) {
+    #hint { display: none; }
+    #title .panel { max-width: 88vw; }
+    #title { background: linear-gradient(180deg, rgba(246, 239, 222, 0.92), rgba(246, 239, 222, 0.55)); }
+  }
+</style>
+<script type="importmap">
+{ "imports": { "three": "../vendor/three/build/three.module.js", "three/addons/": "../vendor/three/jsm/" } }
+</script>
+</head>
+<body>
+<div id="title">
+  <div class="panel">
+    <div class="kicker">watercolour · ink · a radio on the roof</div>
+    <h1>A road that forgets which way is down</h1>
+    <p class="lede">It folds 90° up a yellow wall, runs upside down across a ceiling, and turns into sheet music. Steer through the notes to play each street’s melody.</p>
+    <div class="start">Click, tap or press any key to drive <span>· sound on</span></div>
+    <ul class="keys">
+      <li><b>← →</b> or <b>A D</b> or the mouse: steer (the left lanes are the high notes)</li>
+      <li><b>↑ ↓</b>: speed, which is also the tempo</li>
+      <li><b>C</b>: camera · <b>Space</b>: autopilot · <b>M</b>: mute</li>
+    </ul>
+  </div>
+</div>
+<div id="hud">
+  <div id="card" class="paper">
+    <div id="st-no" class="small"></div>
+    <div id="st-name" class="name"></div>
+    <div id="st-tag" class="small italic"></div>
+    <canvas id="staff"></canvas>
+  </div>
+  <div id="score" class="paper">
+    <div class="big"><span id="hits">0</span><span class="of"> / <span id="total">0</span></span></div>
+    <div class="small">notes played · lap <span id="lap">1</span></div>
+    <div class="small">tempo <span id="bpm">120</span> bpm <span id="auto">· autopilot</span></div>
+  </div>
+  <div id="caption"><div id="cap-no"></div><div id="cap-name"></div><div id="cap-tag"></div></div>
+  <div id="toast"></div>
+  <div id="hint">← → steer (left is higher) · ↑ ↓ tempo · C camera · Space autopilot · M mute</div>
+  <div id="buttons">
+    <button type="button" data-act="cam">camera</button>
+    <button type="button" data-act="auto">autopilot</button>
+    <button type="button" data-act="mute">sound on</button>
+  </div>
+</div>
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>

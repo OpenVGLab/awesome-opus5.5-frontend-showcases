@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Water Cycle · a seamless loop in code</title>
+<meta name="description" content="A seamless looping animation of the water cycle, rendered entirely in code with Three.js.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "../vendor/three/build/three.module.js",
+    "three/addons/": "../vendor/three/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="labels" aria-hidden="true"></div>
+
+<header class="title">
+  <div class="eyebrow">A seamless 32-second loop &middot; drawn entirely in code</div>
+  <h1>The Water Cycle</h1>
+</header>
+
+<section class="panel" id="panel" aria-live="polite">
+  <div class="panel-head">
+    <svg class="dial" id="dial" viewBox="-50 -50 100 100" role="img" aria-label="Position in the loop (click to jump)">
+      <circle class="dial-track" r="40"></circle>
+      <g id="dialArcs"></g>
+      <path id="dialTail" class="dial-tail"></path>
+      <circle id="dialKnob" class="dial-knob" r="5.5" cx="0" cy="-40"></circle>
+      <text id="dialNum" class="dial-num" x="0" y="3">01</text>
+      <text class="dial-sub" x="0" y="17">OF 04</text>
+    </svg>
+    <div class="head-text">
+      <div class="kicker">Stage <b id="stageNum">1</b> of 4</div>
+      <h2 id="stageName">Evaporation</h2>
+    </div>
+  </div>
+  <p class="stage-text" id="stageText"></p>
+  <nav class="chips" id="chips" aria-label="Jump to a stage"></nav>
+  <div class="legend"><i></i>Follow the glowing drop around the cycle</div>
+</section>
+
+<div class="controls">
+  <div class="btns">
+    <button class="btn" id="btnPlay" type="button">Pause</button>
+    <button class="btn on" id="btnLabels" type="button">Labels</button>
+    <button class="btn" id="btnSound" type="button">Sound</button>
+  </div>
+  <div class="keys">Space pause &middot; &larr; &rarr; scrub &middot; 1&ndash;4 stages &middot; drag to orbit &middot; scroll to zoom</div>
+</div>
+
+<noscript><p class="noscript">This animation needs JavaScript and WebGL.</p></noscript>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

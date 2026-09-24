@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中秋专题 · Opus Showcases</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='14' width='56' height='36' rx='14' fill='%231d1a16'/%3E%3Ccircle cx='22' cy='32' r='6' fill='%23ff9f1c'/%3E%3Ccircle cx='44' cy='28' r='4' fill='%233fb950'/%3E%3Ccircle cx='50' cy='36' r='4' fill='%231e9bf0'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f4efe6; --ink: #1d1a16; --muted: #7a7166; --line: #e4dbcc; --card: #fffdf9;
+    --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Helvetica Neue", Arial, sans-serif;
+    --latin: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; color: var(--ink); font-family: var(--sans);
+    background-color: var(--bg);
+    background-image: radial-gradient(rgba(29, 26, 22, .07) 1px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1340px; margin: 0 auto; padding: 60px 28px 72px; }
+
+  header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; }
+  .eyebrow { font: 800 12px/1 var(--latin); letter-spacing: .3em; color: var(--muted); }
+  h1 { margin: 16px 0 18px; font-size: clamp(40px, 6vw, 76px); line-height: 1.02; font-weight: 900; letter-spacing: -.02em; }
+  h1 .svg {
+    background: linear-gradient(95deg, #e8483b 0%, #ff9f1c 28%, #3fb950 52%, #1e9bf0 76%, #7b61ff 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lead { max-width: 760px; margin: 0; font-size: 17px; line-height: 1.8; color: #4a443c; }
+  .lead code { font: 700 .92em/1 var(--latin); background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .stat { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 15px; font-size: 13px; color: #4a443c; }
+  .stat b { font: 900 15px/1 var(--latin); color: var(--ink); margin-right: 4px; }
+  .strip { display: flex; gap: 8px; }
+  .strip i { width: 14px; height: 64px; border-radius: 8px; transform: skewX(-12deg); }
+
+  .grid { display: grid; grid-template-columns: 1fr; gap: 26px; margin-top: 48px; }
+  @media (min-width: 760px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .card:last-child:nth-child(odd) { grid-column: span 2; }
+  }
+  @media (min-width: 1180px) {
+    .grid { grid-template-columns: repeat(6, 1fr); }
+    .grid .card { grid-column: span 2; }
+    .grid .card:nth-child(-n+2) { grid-column: span 3; }
+  }
+  .card {
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -20px rgba(60, 40, 10, .38);
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 26px 44px -22px rgba(60, 40, 10, .5); }
+  .thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #1f1b17; border-bottom: 4px solid var(--accent); }
+  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .35s ease, transform .6s ease; }
+  .thumb img.alt { opacity: 0; }
+  .card:hover .thumb img { transform: scale(1.035); }
+  .card:hover .thumb img.alt { opacity: 1; }
+  .thumb .go {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.9); opacity: 0;
+    background: var(--accent); color: #fff; font-weight: 900; font-size: 15px; padding: 12px 22px; border-radius: 999px;
+    box-shadow: 0 12px 26px -10px rgba(0, 0, 0, .6); transition: opacity .25s ease, transform .25s ease; white-space: nowrap;
+  }
+  .card:hover .thumb .go { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .body { display: flex; flex-direction: column; gap: 12px; flex: 1; padding: 20px 22px 22px; }
+  .meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+  .no { font: 900 13px/1 var(--latin); letter-spacing: .08em; color: var(--accent-ink); }
+  .chip { border-radius: 999px; padding: 4px 10px; font-weight: 800; background: var(--accent-soft); color: var(--accent-ink); }
+  .insp { margin-left: auto; }
+  h3 { margin: 0; font-size: 25px; font-weight: 900; letter-spacing: .01em; }
+  h3 small { display: block; margin-top: 3px; font: 800 12px/1.5 var(--latin); letter-spacing: .22em; color: var(--muted); }
+  .pitch { margin: 0; font-size: 15px; line-height: 1.7; color: #3d372f; }
+  .style { font-size: 13px; color: var(--muted); }
+  .style b { color: #4a443c; font-weight: 700; }
+  .keys { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: #4a443c; }
+  .keys span { white-space: nowrap; }
+  kbd {
+    display: inline-block; margin-right: 6px; padding: 5px 8px; min-width: 26px; text-align: center;
+    font: 800 12px/1 var(--sans); color: var(--ink); background: #fff;
+    border: 1px solid #d9cfbf; border-bottom-width: 3px; border-radius: 7px;
+  }
+  .foot { display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 8px; }
+  .size { margin-right: auto; font: 700 12px/1.4 var(--latin); color: var(--muted); }
+  .btn { text-decoration: none; font-weight: 900; font-size: 14px; border-radius: 12px; padding: 10px 16px; white-space: nowrap; }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.06); }
+  .btn.ghost { background: #fff; border: 1.5px solid var(--line); color: var(--ink); }
+  .btn.ghost:hover { border-color: var(--accent); }
+  .card.pending .thumb {
+    display: grid; place-items: center; color: var(--muted); font-weight: 900; letter-spacing: .1em;
+    background: repeating-linear-gradient(45deg, #ece5d8 0 14px, #e5dccd 14px 28px);
+  }
+  .card.pending .btn { pointer-events: none; opacity: .45; }
+
+  .prompt-peek {
+    display: block; width: 100%; margin-top: auto; padding: 12px 14px; text-align: left; cursor: pointer;
+    font: inherit; color: inherit; background: #faf6ee; border: 1.5px dashed #ddd2c0; border-radius: 14px;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .prompt-peek:hover, .prompt-peek:focus-visible { border-color: var(--accent); background: #fff; outline: none; }
+  .prompt-peek + .foot { margin-top: 0; }
+  .pp-head { display: flex; align-items: center; gap: 8px; }
+  .pp-label { font: 900 12px/1 var(--latin); letter-spacing: .16em; color: var(--accent-ink); }
+  .agentic { border-radius: 999px; padding: 4px 9px; font: 800 11px/1 var(--sans); color: #fff; background: var(--ink); white-space: nowrap; }
+  .pp-more { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--accent-ink); white-space: nowrap; }
+  .pp-text {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+    margin-top: 8px; font-size: 13px; line-height: 1.65; color: #5a5249;
+  }
+
+  .prompt-dialog {
+    --accent: var(--ink); --accent-ink: var(--ink);
+    width: min(880px, calc(100vw - 28px)); max-height: min(88vh, 960px); padding: 0; border: 0; border-radius: 22px;
+    overflow: hidden; color: var(--ink); background: var(--card); box-shadow: 0 40px 90px -30px rgba(20, 12, 4, .6);
+  }
+  .prompt-dialog[open] { display: flex; flex-direction: column; }
+  .prompt-dialog::backdrop { background: rgba(29, 26, 22, .55); backdrop-filter: blur(3px); }
+  .pd-head { display: flex; align-items: center; gap: 14px; padding: 18px 24px 16px; border-top: 6px solid var(--accent); border-bottom: 1px solid var(--line); }
+  .pd-meta { display: flex; align-items: center; gap: 8px; font: 900 12px/1 var(--latin); letter-spacing: .14em; color: var(--accent-ink); }
+  .pd-head h2 { margin: 8px 0 0; font-size: 24px; font-weight: 900; }
+  .pd-actions { display: flex; gap: 8px; margin-left: auto; }
+  .pd-actions button { font-family: inherit; cursor: pointer; }
+  .pd-actions .btn.primary { border: 0; }
+  .pd-body {
+    flex: 1 1 auto; min-height: 0; margin: 0; padding: 20px 24px 28px; overflow: auto;
+    white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.85 var(--sans); color: #2f2a24;
+  }
+
+  a.stat { text-decoration: none; border-color: var(--ink); font-weight: 800; }
+  a.stat:hover { background: var(--ink); color: #fff; }
+  .versus { margin-top: 72px; scroll-margin-top: 24px; }
+  .versus h2 { margin: 14px 0 12px; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.1; font-weight: 900; letter-spacing: -.01em; }
+  .versus .vs-lead { max-width: 860px; margin: 0; font-size: 15px; line-height: 1.8; color: #4a443c; }
+  .vs-list { display: grid; gap: 18px; margin-top: 28px; }
+  .vs-row {
+    display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr) minmax(0, 1fr); gap: 20px;
+    padding: 18px; background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--accent); border-radius: 20px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -26px rgba(60, 40, 10, .38);
+  }
+  .vs-game { display: flex; flex-direction: column; gap: 10px; padding: 4px 2px; }
+  .vs-game h3 { font-size: 22px; }
+  .vs-game .pitch { font-size: 13px; line-height: 1.65; color: #5a5249; }
+  .vs-prompt {
+    align-self: flex-start; margin-top: auto; padding: 7px 12px; cursor: pointer; font: 800 12px/1 var(--sans);
+    color: var(--accent-ink); background: #fff; border: 1.5px dashed #ddd2c0; border-radius: 999px;
+  }
+  .vs-prompt:hover, .vs-prompt:focus-visible { border-color: var(--accent); outline: none; }
+  .vs-cell { display: flex; flex-direction: column; gap: 10px; margin: 0; min-width: 0; }
+  .vs-cell .thumb { border-radius: 14px; border-bottom: 0; }
+  .vs-cap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .vs-model { font-size: 15px; font-weight: 900; }
+  .vs-model small { display: block; margin-top: 2px; font: 700 12px/1.4 var(--latin); color: var(--muted); }
+  .vs-cap .btn { margin-left: auto; padding: 8px 14px; font-size: 13px; }
+  .vs-qa { display: block; margin-top: 2px; font-size: 12px; font-weight: 700; color: #2d8539; }
+  .vs-qa.bad { color: #c0392b; }
+
+  @media (min-width: 1180px) {
+    .grid.three .card, .grid.three .card:nth-child(-n+2) { grid-column: span 2; }
+  }
+  .gal { margin-top: 72px; scroll-margin-top: 24px; }
+  .gal h2 { margin: 14px 0 12px; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.1; font-weight: 900; letter-spacing: -.01em; }
+  .gal .gal-lead { max-width: 860px; margin: 0; font-size: 15px; line-height: 1.8; color: #4a443c; }
+  .g-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min, 260px)), 1fr)); gap: 20px; margin-top: 26px; }
+  .g-item {
+    display: flex; flex-direction: column; overflow: hidden; background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -24px rgba(60, 40, 10, .38);
+  }
+  .g-media { position: relative; display: grid; place-items: center; aspect-ratio: var(--ratio, 4 / 3); background: #fff; border-bottom: 3px solid var(--accent); }
+  .g-media img, .g-media .lottie { width: 100%; height: 100%; object-fit: contain; }
+  .g-media .g-open { position: absolute; right: 10px; top: 10px; padding: 5px 10px; border-radius: 999px; font: 800 11px/1 var(--sans); color: #fff; background: rgba(29, 26, 22, .72); text-decoration: none; }
+  .g-body { display: flex; flex-direction: column; gap: 6px; flex: 1; padding: 14px 16px 16px; }
+  .g-body h3 { font-size: 17px; }
+  .g-body p { margin: 0; font-size: 13px; line-height: 1.65; color: #5a5249; }
+  .g-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 11px; color: var(--muted); }
+  .g-meta span { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; background: #fff; }
+  .g-body .vs-prompt { margin-top: auto; }
+  .gal-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .gal-nav a { text-decoration: none; font-size: 13px; font-weight: 800; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; background: #fff; }
+  .gal-nav a:hover { border-color: var(--ink); }
+
+  .site-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .site-nav a { text-decoration: none; font-weight: 800; font-size: 14px; padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: #fff; }
+  .site-nav a:hover { border-color: var(--ink); }
+  .site-nav a.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 24px; margin-top: 44px; }
+  .hub-card {
+    display: flex; flex-direction: column; overflow: hidden; text-decoration: none; color: inherit;
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -20px rgba(60, 40, 10, .38); transition: transform .25s ease, box-shadow .25s ease;
+  }
+  a.hub-card:hover { transform: translateY(-4px); box-shadow: 0 26px 44px -22px rgba(60, 40, 10, .5); }
+  .hub-media { display: grid; place-items: center; aspect-ratio: 16 / 9; overflow: hidden; background: #1f1b17; border-bottom: 4px solid var(--accent); }
+  .hub-media img { width: 100%; height: 100%; object-fit: cover; }
+  .hub-card.pending .hub-media { color: var(--muted); font-weight: 900; letter-spacing: .1em; background: repeating-linear-gradient(45deg, #ece5d8 0 14px, #e5dccd 14px 28px); }
+  .hub-body { display: flex; flex-direction: column; gap: 8px; flex: 1; padding: 20px 22px 22px; }
+  .hub-sub { font: 800 11px/1 var(--latin); letter-spacing: .2em; color: var(--muted); }
+  .hub-body h2 { margin: 0; font-size: 30px; font-weight: 900; }
+  .hub-body p { margin: 0; font-size: 14px; line-height: 1.7; color: #4a443c; }
+  .hub-go { margin-top: auto; padding-top: 8px; font-weight: 900; color: var(--accent); }
+  a.g-media { text-decoration: none; }
+  .g-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: auto; }
+  .g-actions .vs-prompt { margin-top: 0; text-decoration: none; }
+  .g-actions .btn { margin-left: auto; padding: 8px 14px; font-size: 13px; }
+  .vs-cell.pending .thumb {
+    display: grid; place-items: center; color: var(--muted); font-weight: 900; letter-spacing: .08em;
+    background: repeating-linear-gradient(45deg, #ece5d8 0 14px, #e5dccd 14px 28px);
+  }
+  @media (max-width: 1080px) {
+    .vs-row { grid-template-columns: 1fr 1fr; }
+    .vs-game { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .vs-row { grid-template-columns: 1fr; }
+  }
+
+  .tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; margin-top: 56px; }
+  .tip { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; font-size: 14px; line-height: 1.75; color: #4a443c; }
+  .tip b { display: block; margin-bottom: 4px; color: var(--ink); }
+  footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 36px; font-size: 12px; color: var(--muted); }
+  @media (max-width: 720px) {
+    header { grid-template-columns: 1fr; }
+    .strip { display: none; }
+    .wrap { padding-top: 36px; }
+    .pd-head { flex-wrap: wrap; padding: 16px 18px 14px; }
+    .pd-actions { width: 100%; margin-left: 0; }
+    .pd-actions .btn { flex: 1; text-align: center; }
+    .pd-body { padding: 16px 18px 22px; }
+  }
+
+  .gal h2 small { margin-left: 10px; font-size: 14px; font-weight: 700; color: var(--muted); }
+  .g-credit, .g-note { margin: 0; font-size: 12px; line-height: 1.6; color: var(--muted); }
+  .g-credit a { color: var(--accent-ink); font-weight: 700; }
+  .g-media.dark { background: #16131a; }
+  .toc { margin-top: 28px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">OPUS SHOWCASES · MID-AUTUMN</div>
+      <h1>中秋专题</h1>
+      <p class="lead">9 月 25 日中秋。这一组全部由 Claude Opus 5.5 用代码生成，不用图像模型、不用外部素材：一支拼贴风短片、一集竖屏小剧场、同一个“中秋月夜”画面的 SVG 与 Lottie 两版，以及一座 256³ 体素赏月亭。灵感来自 Ring Hyacinth 用 Opus 5.5 做的拼贴风中秋片。</p>
+      <nav class="site-nav"><a href="../">总览</a><a href="../svg/">SVG</a><a href="../lottie/">Lottie</a><a href="../voxel/">Voxel</a><a href="../repro/">复刻</a><a href="../midautumn/" class="on">中秋</a></nav>
+    </div>
+  </header>
+
+  <section class="gal" id="midautumn" style="--accent:#e8483b;--accent-soft:#e8483b1f;--accent-ink:#a7332a"><div class="eyebrow">MID-AUTUMN · CLAUDE OPUS 5.5</div><h2>🥮 中秋专题<small>5 个</small></h2><p class="gal-lead">短片和小剧场点开是实时播放的网页（有声），不是视频文件；月夜的 Lottie 版在页面上实时播放。</p><div class="g-grid" style="--min: 420px"><article class="g-item" data-title="月圆" data-no="M1"><a class="g-media dark" style="--ratio: 16 / 9" href="short/" target="_blank" rel="noopener"><img src="_covers/short.jpg?v=1790244671" alt="月圆" loading="lazy"><span class="g-open">▶ 播放</span></a><div class="g-body"><h3>《月圆》<small> Full Moon, Full Table</small></h3><p>一支 59.5 秒的中秋拼贴动画短片，脚本、分镜、画面、纸张纹理、毛笔字、配乐和音效全部由代码生成：在异乡加班的她，中秋前夜收到妈妈的消息；月亮带她回到童年的院子和外婆讲过的玉兔、嫦娥；她坐上回家的高铁，一家人围着圆桌分月饼、放孔明灯，最后毛笔一笔一笔写下“中秋快乐”。剪纸、撕纸边、纸纹颗粒、网点和错版印刷，Canvas 2D 逐帧绘制；Web Audio 实时合成古筝、笙、笛子和纸张、铃铛、烟花音效，与画面同一条时间线；支持 1080×1920 竖版。</p><div class="g-meta"><span>拼贴风短片</span><span>59.5 秒</span><span>1920x1080（竖版 1080x1920）</span><span>画面、配乐、音效全部由代码生成</span></div><p class="g-note">操作：点击画面开始（有声）；空格 播放/暂停；← → 后退/前进 5 秒；Home 回到开头；拖动进度条跳转；F 全屏；M 静音；“竖版”按钮或 ?aspect=9:16 切换竖版；?t=秒数 跳到指定时刻</p><div class="g-actions"><a class="vs-prompt" href="short/SCRIPT.md" target="_blank" rel="noopener">分镜脚本</a><a class="btn primary" href="short/" target="_blank" rel="noopener">播放</a></div></div></article><article class="g-item" data-title="月宫小剧场 · 谁咬了月亮" data-no="M2"><a class="g-media dark" style="--ratio: 16 / 9" href="theater/" target="_blank" rel="noopener"><img src="_covers/theater.jpg?v=1790244675" alt="月宫小剧场 · 谁咬了月亮" loading="lazy"><span class="g-open">▶ 播放</span></a><div class="g-body"><h3>《月宫小剧场 · 谁咬了月亮》<small> Moon Palace Theater: Who Bit the Moon?</small></h3><p>中秋竖屏小剧场第 1 集。广寒宫里，嫦娥叮嘱玉兔团团“全人类都在看月亮，一口都不许吃”，团团嘴上说“对月饼毫无兴趣”，转身就把挂在天上的月亮（其实是一块巨型月饼）咬了一口；人间的豆豆第一个发现“月亮缺了一口”，还上了热搜。嫦娥补完妆回来当场破防，团团甩锅“是天狗”，一粒月饼渣从嘴边掉下来出卖了他；最后团团把自己团成一团塞进缺口，月亮重新变圆，人间欢呼“月亮上有只兔子！”。结尾打出“中秋快乐”，下集预告里背着大铁锅的天狗喊冤：“这锅我不背！”四个角色全部用 Canvas 2D 代码绘制，画面是时间 t 的纯函数（renderFrame(t)），对白气泡逐字弹出；五声音阶配乐、音效和每个角色的说话音都用 Web Audio 实时合成；对白字体是内嵌的霞鹜文楷子集，不联网、不用 CDN。</p><div class="g-meta"><span>竖屏小剧场</span><span>44.5 秒</span><span>画面、配乐、音效全部由代码生成</span></div><p class="g-note">操作：点击画面或中间的播放键开始；空格 / K 播放暂停，R 重播，← → 快退快进 2 秒，M 静音，H 隐藏界面；底部进度条可拖动。URL 加 ?t=秒数 停在指定时刻，加 ?clean 隐藏界面。</p><div class="g-actions"><a class="vs-prompt" href="theater/SCRIPT.md" target="_blank" rel="noopener">分镜脚本</a><a class="btn primary" href="theater/" target="_blank" rel="noopener">播放</a></div></div></article><article class="g-item" data-title="中秋月夜（SVG）" data-no="M3"><div class="g-media" style="--ratio: 1280 / 720"><img src="svg/midautumn.svg?v=1790238004" alt="中秋月夜 SVG" loading="lazy"><a class="g-open" href="svg/midautumn.svg" target="_blank" rel="noopener">打开 ↗</a></div><div class="g-body"><h3>中秋月夜（SVG 版）</h3><p>国潮扁平插画风的中秋月夜：靛蓝夜空里一轮大满月悬在描金祥云之上，满树桂花开成金色小簇、细碎花瓣随风飘落，玉兔在树下一下下捣药、药臼里溅起金色小星；屋檐下三盏红灯笼连着穗子与檐角风铃随风轻摆，远处月亮桥下每 6.7 秒漂出一盏莲花河灯，孔明灯从远山后缓缓升空；前景矮桌上摆着月饼（切开露出咸蛋黄）、柚子和青瓷茶具，茶气袅袅。20 秒一个循环：第 10–14 秒三层云带合拢遮月、夜色转暗，随后月亮从云层后升起、月光重新洒满湖面，「中秋快乐」随之逐笔写出并落下朱印。单文件 SMIL 动画，不写脚本、不引用外部资源和字体，放进 &lt;img&gt; 也能动。</p><div class="g-meta"><span>SVG</span><span>纯 SMIL 动画</span><span>20 秒循环</span><span>305 KB</span></div></div></article><article class="g-item" data-title="中秋月夜（Lottie）" data-no="M4"><div class="g-media dark" style="--ratio: 1280 / 720"><div class="lottie" data-src="lottie/midautumn.json?v=1790238004" role="img" aria-label="中秋月夜 Lottie"></div><a class="g-open" href="lottie/midautumn.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>中秋月夜（Lottie 版）</h3><p>与 SVG 版同一构图的原生 Lottie：靛蓝夜空、描金祥云上的大满月，开满金色小花的桂树与飘落的桂花，树下捣药的玉兔，屋檐下随风摆动的三盏红灯笼和风铃，月亮桥下漂出的莲花河灯、远山后升空的孔明灯，以及前景矮桌上的月饼、柚子、青瓷茶具与袅袅茶气。20 秒一个循环：云带合拢遮月、夜色转暗，月亮从云层后升起、月光洒满湖面。Lottie 特长：题字「中秋快乐」和云上祥云卷纹用 trim path 逐笔画出，茶气与水面月影用路径变形，玉兔手臂/耳朵和灯笼穗子用父子层级绑定，莲花灯与孔明灯做成局部矢量预合成复用，檐枋彩画用 repeater。只用形状图层、空对象、预合成、变换与关键帧，无表达式、无图片、无字体，未经 SVG 转换。</p><div class="g-meta"><span>Lottie</span><span>原生形状图层</span><span>20 秒循环</span><span>86 个顶层图层</span><span>1419 KB</span></div></div></article><article class="g-item" data-title="中秋赏月" data-no="M5"><a class="g-media" style="--ratio: 576 / 456" href="voxel/view.html" target="_blank" rel="noopener"><img src="voxel/animation.webp?v=1790238224" alt="中秋赏月" loading="lazy"><span class="g-open">3D 查看 ↗</span></a><div class="g-body"><h3>中秋赏月（体素）</h3><p>临水的六角赏月亭：青灰瓦顶飞檐翘角、朱红立柱、雕花栏杆，亭中石桌上摆着月饼、柚子和一套茶具；亭后桂花树枝干虬曲，层层树冠缀满金黄小花；岸边石上玉兔捣药，池中莲花河灯绕着荷叶小岛漂流，水面铺着满月的倒影与碎银般的月光；太湖石后悬着一轮有厚度的大满月。动画：亭檐与桂枝上的灯笼随风轻摆，玉兔抖耳捣药，河灯绕岛漂流，桂花从树冠飘落入土。</p><div class="g-meta"><span>256³ 体素</span><span>循环动画</span><span>455,544 体素</span><span>40 色</span></div><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="mid-voxel">查看 prompt</button><a class="btn primary" href="voxel/view.html" target="_blank" rel="noopener">3D 查看</a></div></div></article></div></section>
+
+  <footer>
+    <span>Generated by Claude Opus · 2026-09-24</span>
+    <span><a href="https://github.com/OpenVGLab/awesome-opus5.5-frontend-showcases">github.com/OpenVGLab/awesome-opus5.5-frontend-showcases</a></span>
+  </footer>
+</div>
+
+<dialog class="prompt-dialog" id="prompt-dialog" aria-labelledby="pd-title">
+  <div class="pd-head">
+    <div>
+      <div class="pd-meta"><span id="pd-no">01</span><span>PROMPT</span><span class="agentic">Agentic 生成</span></div>
+      <h2 id="pd-title"></h2>
+    </div>
+    <div class="pd-actions">
+      <button class="btn primary" type="button" id="pd-copy">复制</button>
+      <button class="btn ghost" type="button" id="pd-close">关闭</button>
+    </div>
+  </div>
+  <pre class="pd-body" id="pd-body"></pre>
+</dialog>
+
+<script type="text/plain" id="prompt-mid-voxel">
+You are the current coding model creating a collection of beautiful real 3D voxel dioramas. For each assigned scene produce an original executable JavaScript program. Make each composition distinct in silhouette, spatial layout, materials, focal object and secondary details. Build complete volumes that remain convincing when rotated. Do not use a stock scene generator or repeated semantic templates.
+
+The program runs in an isolated VM on a 256 x 256 x 256 grid. Integer x,y,z coordinates are 0..255. Y is up, +Z is front. Keep all occupied cells within x,z=10..245 and y=4..245. Compose within about 160..210 cells of width/depth. Aim for 60,000..700,000 occupied voxels and no more than 1,500,000. No clipping, invalid coordinates, enormous bases, or detached accidental pieces. All visible details must be true voxels.
+
+Available generic geometry primitives:
+block(x,y,z,color): one integer voxel; color '#RRGGBB'; null erases.
+box(x0,y0,z0,x1,y1,z1,color): inclusive filled box, all corner coordinates integers, either order accepted.
+line(x0,y0,z0,x1,y1,z1,color): thin line, rounds sample positions.
+ellipsoid(cx,cy,cz,rx,ry,rz,color): filled ellipsoid; radii strictly positive; floats allowed.
+cylinder(cx,y0,cz,radius,height,color): filled vertical cylinder starting at y0.
+cone(cx,y0,cz,bottomRadius,topRadius,height,color): vertical truncated cone; radius can reach zero at an end.
+beam(x0,y0,z0,x1,y1,z1,radius,color): filled round beam/capsule between endpoints, floats allowed.
+ring(cx,cy,cz,majorRadius,tubeRadius,color,axis='y'): filled torus, axis is the normal of its ring plane.
+rng(): seeded deterministic random number [0,1).
+Math, arrays, objects, loops and local functions are available. No other globals. No imports, require, DOM, network, filesystem, process, eval, external assets or async. Do not redefine the primitives. Box coordinates MUST be rounded if computed from trigonometry or division. Helpers that operate on continuous geometry accept floats and rasterize to integer voxels.
+
+Use a limited, harmonious, purposeful palette (roughly 12..40 colors), sophisticated silhouettes, detailed structural elements, readable focal subjects, careful negative space, integrated secondary objects and clean material differentiation. Prefer layered architectural shapes, rounded/tapered organic shapes, and details with a clear purpose. A base may unify a diorama but should not dominate it. Avoid sparse generic boxes, random confetti, flat cutouts, featureless slabs and oversized empty ground. No text, logos, company names, personal names, handles or trademarks anywhere in the program, comments or geometry. Avoid unnecessary prose in code comments.
+
+Do not investigate the workspace or read unrelated files. The entire scene brief and API are supplied here. Output the requested JSON schema with one entry per assigned scene; each code value contains complete executable JavaScript with top-level construction calls. Do not just define an uncalled build function. Do not output a fabricated render/quality score. The caller will execute and render your actual code and return failures for repair.
+
+Use only the supplied seeded rng() for randomness. Do not use Math.random(), Date or time-dependent geometry. The saved scene code must reproduce the same voxel model on rerun.
+
+JavaScript syntax: unary minus may not be used immediately before exponentiation. For a negative square use -(u*u), -Math.pow(u,2), or -(u**2). For a Gaussian use Math.exp(-(u*u)); never emit Math.exp(-u**2) or Math.exp(-((x-c)/r)**2).
+
+
+
+ANIMATED SCENES: Return complete rest-pose voxel scene code AND a matching motion object for each scene. The model is rendered as rigid voxel components: objects move, the camera does not need to move. Do not change or import the runtime.
+
+Motion schema: version=1; duration in seconds (use 12 unless the scene benefits from 6); description; parts array. Each part has a unique ASCII id, parent=null or another part id, box=[xmin,ymin,zmin,xmax,ymax,zmax] INCLUSIVE integer rest-pose coordinates, colors=[#RRGGBB strings], channels=[...]. A voxel matches a part only when it lies inside its box AND its color is one of those colors (empty colors selects all colors). No two part selections may overlap. Every part must contain real voxels from your code. Use DISTINCT subtle colors for moving parts when a bounding box contains other objects. Static voxels outside all part selections stay fixed. Parent chains transform children too, all construction coordinates and pivots are expressed in the original common coordinate system. No parent cycles.
+
+Each channel has type, axis ('x','y','z'), pivot=[x,y,z], amount, period, phase (a number in radians).
+- spin: rotates about axis through pivot by amount*t/period. Use amount=6.283185307179586 or its negative for a complete turn.
+- swing: rotates about pivot by amount*(sin(2*pi*t/period+phase)-sin(phase)). amount is radians.
+- bob: translates along axis by amount*(sin(2*pi*t/period+phase)-sin(phase)). amount is grid units.
+- flow: translates along axis by amount*((t/period)%1), then resets. Only use for flowing particles whose reset is intentionally hidden inside a spout, chute or other object.
+All periods must divide duration exactly (for 12 seconds use 1,2,3,4,6,12). At time 0 all transforms are identity, matching the static .vox download. For a hinged part that should swing only in a positive range, set phase=-1.5707963267948966; then the displacement factor is 1-cos(t). Keep motions modest and physically connected: hinges stay attached, wheels rotate about axles, supporting beams remain fixed. Do not create a disassembled explosion unless the brief explicitly asks for it.
+
+Design a complete, distinct, source-related composition with 2–14 animated pieces where appropriate. All moving objects must remain in a comfortable view and avoid the static geometry during their full cycle. Never animate the entire scene as the only motion. Add no company names, real person names, source handles, logos or identifying text. Keep comments neutral. Output JSON only through the schema.
+
+KEYFRAMES, when choreography needs ordered actions: each channel also includes keys (use [] for ordinary spin/swing/bob/flow). Type move_keys translates along axis; turn_keys rotates around pivot and axis. keys is [[seconds,value], ...], strictly increasing, starts [0,0], ends [duration,0], maximum 32 pairs. Values are grid-unit offsets for move_keys or radians for turn_keys; multiplied by amount (normally 1). Interpolation is smoothstep between pairs. Set period=duration, phase=0. Use this to coordinate an actual sequence such as a football player advancing, kicking, ball flight, goalkeeper action and return to start. Parent motion propagates to child limbs; keep pivots in the original rest-pose world coordinates. Avoid discontinuous resets visible in open space.
+
+
+Produce the scene programs directly. Tools are disabled for this generation call. The caller executes and visually checks your code after you return it; do not claim you ran tests.
+
+Assigned scenes:
+[
+  {
+    "id": "midautumn",
+    "title": "中秋赏月",
+    "brief": "题材为“中秋赏月”。一座临水的赏月亭：飞檐翘角、朱红柱子、雕花栏杆、青灰瓦顶，亭中石桌上摆着月饼、柚子和一套茶具；亭边一棵开满金黄小花的桂花树，枝干虬曲、树冠层次丰富；玉兔坐在岸边石头上；几盏红灯笼挂在亭檐和桂花树枝上；水面上漂着几盏莲花河灯；场景后上方悬着一轮有厚度的大满月（做成立体的圆盘，而不是贴片），水面用浅色体素做出月亮的倒影。配色：夜色靛蓝、月亮米黄、灯笼朱红、桂花金黄、石材灰白，统一而干净。保持所有角度的完整体积，避免大块空底座与平面贴片，不添加文字、品牌标识、真实人名、账号。",
+    "motion_plan": "灯笼随风轻轻摆动（绕挂点摆动，不同灯笼相位不同）；玉兔耳朵轻抖、捣药杵上下；河灯沿水面缓慢漂流，循环重置位置藏在荷叶或亭子遮挡后；几片桂花从树冠飘落，重置位置藏在树冠内部。",
+    "required_objects": [
+      "赏月亭",
+      "桂花树",
+      "玉兔",
+      "灯笼",
+      "石桌与月饼",
+      "河灯",
+      "满月"
+    ]
+  }
+]
+</script>
+
+<script src="vendor/lottie.min.js?v=1790217916" defer></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const players = new Map();
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+    const a = players.get(e.target);
+    if (!e.isIntersecting) { if (a) a.pause(); return; }
+    if (a) { a.play(); return; }
+    players.set(e.target, lottie.loadAnimation({ container: e.target, renderer: 'svg', loop: true, autoplay: true, path: e.target.dataset.src }));
+  }), { rootMargin: '200px' });
+  document.querySelectorAll('.lottie[data-src]').forEach((el) => io.observe(el));
+});
+</script>
+<script>
+(() => {
+  const dlg = document.getElementById('prompt-dialog');
+  const body = document.getElementById('pd-body');
+  const copyBtn = document.getElementById('pd-copy');
+  document.querySelectorAll('[data-prompt]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.card, .vs-row, .g-item');
+      const css = getComputedStyle(card);
+      dlg.style.setProperty('--accent', css.getPropertyValue('--accent'));
+      dlg.style.setProperty('--accent-ink', css.getPropertyValue('--accent-ink'));
+      document.getElementById('pd-no').textContent = card.dataset.no || card.querySelector('.no').textContent;
+      document.getElementById('pd-title').textContent = card.dataset.title || card.querySelector('h3').firstChild.textContent;
+      body.textContent = document.getElementById('prompt-' + btn.dataset.prompt).textContent.trim();
+      copyBtn.textContent = '复制';
+      dlg.showModal();
+      body.scrollTop = 0;
+    });
+  });
+  document.getElementById('pd-close').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(body.textContent);
+    } catch (err) {
+      // navigator.clipboard only exists in secure contexts; this page is served over plain http.
+      const range = document.createRange();
+      range.selectNodeContents(body);
+      const sel = getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+    }
+    copyBtn.textContent = '已复制';
+  });
+})();
+</script>
+</body>
+</html>

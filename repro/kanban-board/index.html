@@ -1,0 +1,1972 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="三列任务看板：待办 / 进行中 / 完成。卡片可拖拽跨列，每列都能添加卡片，数据保存在浏览器 localStorage。">
+<title>任务看板 · 待办 / 进行中 / 完成</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%231c1f26'/%3E%3Crect x='9' y='10' width='6' height='15' rx='2.2' fill='%238d80ff'/%3E%3Crect x='17' y='10' width='6' height='11' rx='2.2' fill='%23ffb454'/%3E%3Crect x='25' y='10' width='6' height='20' rx='2.2' fill='%233dd598'/%3E%3C/svg%3E">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+:root {
+  --font: "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, Consolas, "Noto Sans Mono CJK SC", monospace;
+
+  --bg: #f5f4f0;
+  --panel: #ecebe6;
+  --card: #ffffff;
+  --card-border: rgba(26, 29, 38, .08);
+  --card-border-hover: rgba(26, 29, 38, .15);
+  --text: #1b1e25;
+  --text-2: #4a4f59;
+  --muted: #858a93;
+  --line: rgba(26, 29, 38, .085);
+  --line-strong: rgba(26, 29, 38, .16);
+  --chip-bg: rgba(26, 29, 38, .055);
+  --hover: rgba(26, 29, 38, .06);
+  --input-bg: #fbfaf8;
+  --ink: #1d2027;
+  --ink-text: #ffffff;
+  --done: #17a26b;
+  --focus-rgb: 59 130 246;
+  --danger: #d23f37;
+  --danger-rgb: 210 63 55;
+  --warn: #b86a08;
+  --warn-rgb: 226 138 20;
+  --p-high: #cf3b33;
+  --p-high-bg: rgba(207, 59, 51, .1);
+  --p-mid: #b86a08;
+  --p-mid-bg: rgba(226, 138, 20, .13);
+  --p-low: #3a6fc0;
+  --p-low-bg: rgba(58, 111, 192, .1);
+  --shadow-sm: 0 1px 2px rgba(26, 29, 45, .06), 0 1px 1px rgba(26, 29, 45, .03);
+  --shadow-md: 0 10px 24px -12px rgba(26, 29, 45, .28), 0 2px 5px rgba(26, 29, 45, .06);
+  --shadow-lg: 0 30px 56px -18px rgba(26, 29, 55, .42), 0 12px 22px -12px rgba(26, 29, 55, .22);
+  --toast-bg: #1f2229;
+  --radius: 12px;
+  --ease: cubic-bezier(.2, .75, .25, 1);
+}
+
+[data-col="todo"]  { --accent: #6b5cf6; --accent-rgb: 107 92 246; --accent-ink: #5443e0; }
+[data-col="doing"] { --accent: #ec8a17; --accent-rgb: 236 138 23; --accent-ink: #b05f04; }
+[data-col="done"]  { --accent: #17a26b; --accent-rgb: 23 162 107; --accent-ink: #0d8354; }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121317;
+    --panel: #1a1c21;
+    --card: #23262c;
+    --card-border: rgba(255, 255, 255, .07);
+    --card-border-hover: rgba(255, 255, 255, .15);
+    --text: #eceef1;
+    --text-2: #b9bdc5;
+    --muted: #80858f;
+    --line: rgba(255, 255, 255, .075);
+    --line-strong: rgba(255, 255, 255, .16);
+    --chip-bg: rgba(255, 255, 255, .07);
+    --hover: rgba(255, 255, 255, .07);
+    --input-bg: #1c1f24;
+    --ink: #eceef1;
+    --ink-text: #15171b;
+    --done: #2fbf83;
+    --danger: #ff6b63;
+    --danger-rgb: 255 107 99;
+    --warn: #f0a445;
+    --warn-rgb: 240 164 69;
+    --p-high: #ff7b72;
+    --p-high-bg: rgba(255, 107, 99, .15);
+    --p-mid: #f2a950;
+    --p-mid-bg: rgba(240, 164, 69, .15);
+    --p-low: #86adf0;
+    --p-low-bg: rgba(127, 169, 238, .15);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .35);
+    --shadow-md: 0 12px 26px -12px rgba(0, 0, 0, .7), 0 2px 6px rgba(0, 0, 0, .3);
+    --shadow-lg: 0 32px 60px -18px rgba(0, 0, 0, .8), 0 12px 24px -12px rgba(0, 0, 0, .55);
+    --toast-bg: #2d3139;
+  }
+  [data-col="todo"]  { --accent: #8f82ff; --accent-rgb: 143 130 255; --accent-ink: #aea6ff; }
+  [data-col="doing"] { --accent: #f29a36; --accent-rgb: 242 154 54; --accent-ink: #f6b366; }
+  [data-col="done"]  { --accent: #2fbf83; --accent-rgb: 47 191 131; --accent-ink: #62d7a5; }
+}
+
+html { height: 100%; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100%;
+  font: 14px/1.5 var(--font);
+  color: var(--text);
+  background:
+    radial-gradient(900px 480px at 6% -10%, rgba(107, 92, 246, .075), transparent 65%),
+    radial-gradient(900px 480px at 98% -12%, rgba(236, 138, 23, .06), transparent 65%),
+    var(--bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+svg { display: block; }
+:focus-visible { outline: 2px solid rgb(var(--focus-rgb)); outline-offset: 2px; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- 布局 ---------- */
+.app {
+  height: 100vh;
+  height: 100dvh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  flex-direction: column;
+}
+.topbar { flex: none; display: flex; align-items: center; gap: 20px; padding: 20px 2px 16px; }
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.logo { width: 40px; height: 40px; flex: none; border-radius: 11px; box-shadow: 0 8px 18px -8px rgba(20, 22, 30, .55); }
+.brand-text { min-width: 0; }
+.brand h1 { margin: 0; font-size: 20px; line-height: 1.25; font-weight: 700; letter-spacing: .02em; }
+.brand p { margin: 3px 0 0; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+.stat {
+  display: flex; align-items: center; gap: 10px;
+  height: 44px; padding: 0 16px 0 7px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+}
+.ring { width: 30px; height: 30px; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 4.2; }
+.ring-bg { stroke: var(--chip-bg); }
+.ring-fg {
+  stroke: var(--done); stroke-linecap: round;
+  stroke-dasharray: 100; stroke-dashoffset: 100;
+  transition: stroke-dashoffset .8s var(--ease), opacity .3s;
+}
+.stat-text { display: flex; flex-direction: column; line-height: 1.2; }
+.stat-text b { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat-text span { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.save-state { display: inline-flex; align-items: center; gap: 7px; height: 44px; padding: 0 2px; font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.save-icon { width: 18px; height: 18px; flex: none; border-radius: 50%; display: grid; place-items: center; background: rgba(23, 162, 107, .14); color: var(--done); }
+.save-icon svg { width: 11px; height: 11px; }
+.save-state.is-pulse .save-icon { animation: pulse .6s var(--ease); }
+.save-state.is-error { color: var(--danger); }
+.save-state.is-error .save-icon { background: rgb(var(--danger-rgb) / .14); color: var(--danger); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 34px; padding: 0 14px;
+  border-radius: 10px; border: 1px solid transparent; background: transparent;
+  font-size: 13px; font-weight: 500; white-space: nowrap;
+  transition: background .15s, color .15s, border-color .15s, box-shadow .15s, opacity .15s;
+}
+.btn svg { width: 15px; height: 15px; flex: none; }
+.btn-quiet { color: var(--text-2); }
+.btn-quiet:hover { background: var(--hover); color: var(--text); }
+.btn-outline { color: var(--text-2); background: var(--card); border-color: var(--card-border); box-shadow: var(--shadow-sm); }
+.btn-outline:hover { color: var(--text); border-color: var(--card-border-hover); }
+.btn-primary { background: var(--ink); color: var(--ink-text); font-weight: 600; }
+.btn-primary:hover { opacity: .88; }
+.btn-danger { color: var(--danger); padding: 0 12px 0 10px; }
+.btn-danger:hover { background: rgb(var(--danger-rgb) / .1); }
+
+/* ---------- 看板与列 ---------- */
+.board {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding-bottom: 12px;
+}
+.column {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgb(var(--accent-rgb) / .085), rgb(var(--accent-rgb) / .025) 200px),
+    var(--panel);
+}
+.column::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: rgb(var(--accent-rgb) / .07);
+  box-shadow: inset 0 0 0 2px rgb(var(--accent-rgb) / .42);
+  opacity: 0;
+  transition: opacity .2s var(--ease);
+  pointer-events: none;
+}
+.column.is-over::before { opacity: 1; }
+
+.col-head { flex: none; display: flex; align-items: center; gap: 9px; padding: 13px 12px 9px 18px; }
+.col-dot { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3.5px rgb(var(--accent-rgb) / .18); }
+.column[data-col="doing"] .col-dot { animation: breathe 2.4s ease-in-out infinite; }
+.col-title { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .03em; white-space: nowrap; }
+.col-count {
+  min-width: 22px; height: 20px; padding: 0 7px;
+  border-radius: 999px;
+  background: rgb(var(--accent-rgb) / .13);
+  color: var(--accent-ink);
+  font-size: 12px; font-weight: 700; line-height: 20px; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.col-count.is-bump { animation: bump .45s var(--ease); }
+.add-btn {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 32px; padding: 0 12px 0 9px;
+  border: 0; border-radius: 10px; background: transparent;
+  color: var(--text-2); font-size: 13px; font-weight: 600; white-space: nowrap;
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+.add-btn svg { width: 16px; height: 16px; }
+.add-btn:hover, .add-btn[aria-expanded="true"] { background: var(--card); color: var(--accent-ink); box-shadow: var(--shadow-sm); }
+.add-btn:focus-visible { outline-color: rgb(var(--accent-rgb)); }
+
+.composer {
+  flex: none;
+  margin: 2px 10px 10px;
+  padding: 10px 10px 8px 12px;
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 0 0 2px rgb(var(--accent-rgb) / .5), var(--shadow-md);
+  animation: drop-in .22s var(--ease);
+}
+.composer textarea {
+  display: block; width: 100%;
+  min-height: 44px; max-height: 160px;
+  padding: 2px 2px 6px;
+  border: 0; outline: none; resize: none; background: transparent;
+  font-size: 14px; line-height: 1.55; color: var(--text);
+}
+.composer textarea::placeholder { color: var(--muted); }
+.composer-bar { display: flex; align-items: center; gap: 6px; }
+.composer-tip { margin-right: auto; min-width: 0; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.composer .btn { height: 30px; padding: 0 12px; border-radius: 8px; }
+
+.list-wrap { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.list {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 10px 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable both-edges;
+}
+.list::-webkit-scrollbar { width: 6px; }
+.list::-webkit-scrollbar-thumb { border-radius: 6px; background: var(--line-strong); }
+.list::-webkit-scrollbar-track { background: transparent; }
+@supports (-moz-appearance: none) { .list { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; } }
+.list.fade-top { -webkit-mask-image: linear-gradient(transparent, #000 22px); mask-image: linear-gradient(transparent, #000 22px); }
+.list.fade-bottom { -webkit-mask-image: linear-gradient(#000 calc(100% - 30px), transparent); mask-image: linear-gradient(#000 calc(100% - 30px), transparent); }
+.list.fade-top.fade-bottom {
+  -webkit-mask-image: linear-gradient(transparent, #000 22px, #000 calc(100% - 30px), transparent);
+  mask-image: linear-gradient(transparent, #000 22px, #000 calc(100% - 30px), transparent);
+}
+
+.empty-hint {
+  position: absolute; left: 14px; right: 14px; top: 4px; height: 128px;
+  display: none; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  padding: 0 12px;
+  border: 1.5px dashed var(--line-strong); border-radius: var(--radius);
+  color: var(--muted); text-align: center; pointer-events: none;
+}
+.column.is-empty .empty-hint { display: flex; animation: fade-in .3s ease; }
+.empty-hint svg { width: 26px; height: 26px; margin-bottom: 4px; opacity: .75; }
+.empty-hint b { font-size: 13px; font-weight: 600; color: var(--text-2); }
+.empty-hint span { font-size: 12px; }
+
+/* ---------- 卡片 ---------- */
+.card {
+  position: relative;
+  flex: none;
+  padding: 11px 14px 12px;
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: box-shadow .2s var(--ease), border-color .2s var(--ease), translate .2s var(--ease), scale .2s var(--ease), rotate .2s var(--ease);
+}
+.card:hover { box-shadow: var(--shadow-md); border-color: var(--card-border-hover); translate: 0 -1px; }
+body.is-dragging .card:hover { box-shadow: var(--shadow-sm); border-color: var(--card-border); translate: none; }
+.card:focus-visible { outline: 2px solid rgb(var(--accent-rgb)); outline-offset: 2px; }
+.card-head { display: flex; align-items: flex-start; gap: 10px; }
+.card-title {
+  flex: 1; min-width: 0; margin: 0;
+  font-size: 14px; line-height: 1.55; font-weight: 500; color: var(--text);
+  overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden;
+}
+.done-mark { display: none; width: 16px; height: 16px; margin-right: 6px; vertical-align: -3px; color: var(--accent); }
+.done-mark svg { width: 100%; height: 100%; }
+.card[data-col="done"] .done-mark { display: inline-block; }
+.card[data-col="done"] .card-title { color: var(--text-2); }
+.card-no { flex: none; margin-top: 2px; font: 500 11px/18px var(--mono); letter-spacing: .02em; color: var(--muted); transition: opacity .15s; }
+.card-desc {
+  margin: 3px 0 0;
+  font-size: 12.5px; line-height: 1.6; color: var(--muted);
+  overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+.card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 22px; padding: 0 8px;
+  border-radius: 6px;
+  background: var(--chip-bg); color: var(--text-2);
+  font-size: 12px; line-height: 1; white-space: nowrap;
+}
+.chip svg { width: 12px; height: 12px; flex: none; }
+.chip.tag i { width: 6px; height: 6px; margin-right: 1px; border-radius: 50%; background: var(--tag); }
+.prio[data-prio="high"] { color: var(--p-high); background: var(--p-high-bg); }
+.prio[data-prio="mid"] { color: var(--p-mid); background: var(--p-mid-bg); }
+.prio[data-prio="low"] { color: var(--p-low); background: var(--p-low-bg); }
+.due { margin-left: auto; font-variant-numeric: tabular-nums; }
+.due.is-soon { color: var(--warn); background: rgb(var(--warn-rgb) / .13); }
+.due.is-overdue { color: var(--danger); background: rgb(var(--danger-rgb) / .1); }
+.card[data-col="done"] .due { color: var(--muted); background: var(--chip-bg); }
+
+.card-del {
+  position: absolute; top: 6px; right: 7px;
+  width: 28px; height: 28px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 8px;
+  background: var(--card); color: var(--muted);
+  opacity: 0; pointer-events: none;
+  transition: opacity .15s, background .15s, color .15s;
+}
+.card-del svg { width: 16px; height: 16px; }
+.card-del:hover { background: rgb(var(--danger-rgb) / .1); color: var(--danger); }
+.card:hover .card-del, .card:focus-visible .card-del { opacity: 1; pointer-events: auto; }
+.card:hover .card-no, .card:focus-visible .card-no { opacity: 0; }
+body.is-dragging .card:hover .card-del { opacity: 0; pointer-events: none; }
+body.is-dragging .card:hover .card-no { opacity: 1; }
+.grip {
+  display: none;
+  position: absolute; top: 4px; right: 4px;
+  width: 36px; height: 36px;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--muted);
+  touch-action: none;
+  cursor: grab;
+}
+.grip svg { width: 18px; height: 18px; }
+@media (pointer: coarse) {
+  .grip { display: grid; }
+  .card-no, .card-del { display: none; }
+  .card-head { padding-right: 26px; }
+  .card:hover { box-shadow: var(--shadow-sm); border-color: var(--card-border); translate: none; }
+}
+
+.card.is-lifted {
+  z-index: 5;
+  scale: 1.02;
+  rotate: -1.2deg;
+  box-shadow: var(--shadow-lg);
+  outline: 2px solid rgb(var(--accent-rgb));
+  outline-offset: 2px;
+  cursor: grabbing;
+}
+.card.just-done { animation: done-glow .9s ease-out; }
+.card.just-done .done-mark { animation: pop .55s cubic-bezier(.3, 1.4, .5, 1); }
+
+/* ---------- 拖拽 ---------- */
+body.is-dragging { user-select: none; -webkit-user-select: none; }
+body.is-dragging, body.is-dragging * { cursor: grabbing !important; }
+.card.is-source { display: none; }
+.placeholder {
+  flex: none;
+  border-radius: var(--radius);
+  border: 2px dashed rgb(var(--accent-rgb) / .5);
+  background: rgb(var(--accent-rgb) / .07);
+}
+.card.ghost {
+  position: fixed; left: 0; top: 0; z-index: 1000;
+  margin: 0;
+  pointer-events: none;
+  translate: none;
+  border-color: var(--card-border-hover);
+  box-shadow: var(--shadow-lg);
+  will-change: transform;
+  transition: box-shadow .22s var(--ease);
+}
+.card.ghost.is-dropping { box-shadow: var(--shadow-sm); }
+.card.ghost .card-del { display: none; }
+.card.ghost .card-no { opacity: 1; }
+.card.card-exit { position: fixed; z-index: 900; margin: 0; pointer-events: none; translate: none; }
+
+/* ---------- 编辑对话框 ---------- */
+.editor {
+  width: min(560px, calc(100vw - 24px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 40px 90px -24px rgba(12, 14, 22, .5), 0 0 0 1px var(--card-border);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.editor::backdrop { background: rgba(16, 18, 26, .42); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.editor[open] { animation: dlg-in .24s var(--ease); }
+.editor[open]::backdrop { animation: fade-in .24s ease; }
+.editor form { display: flex; flex-direction: column; gap: 16px; padding: 18px 22px 18px; }
+.dlg-head { display: flex; align-items: center; gap: 10px; }
+.dlg-head h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.dlg-no { padding: 2px 7px; border-radius: 6px; background: var(--chip-bg); color: var(--muted); font: 500 12px/18px var(--mono); }
+.icon-btn {
+  width: 32px; height: 32px; flex: none;
+  display: grid; place-items: center;
+  border: 0; border-radius: 9px; background: transparent; color: var(--muted);
+  transition: background .15s, color .15s;
+}
+.icon-btn:hover { background: var(--hover); color: var(--text); }
+.icon-btn svg { width: 16px; height: 16px; }
+.dlg-head .icon-btn { margin-left: auto; margin-right: -6px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field-label { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.input {
+  width: 100%; min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  background: var(--input-bg); color: var(--text);
+  font-size: 14px; line-height: 1.55;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.input::placeholder { color: var(--muted); }
+.input:focus, .input:focus-visible { border-color: rgb(var(--accent-rgb) / .75); box-shadow: 0 0 0 3.5px rgb(var(--accent-rgb) / .16); background: var(--card); outline: none; }
+textarea.input { resize: vertical; min-height: 44px; max-height: 260px; }
+.title-input { font-size: 16px; font-weight: 600; resize: none !important; }
+.field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; }
+.seg { display: flex; gap: 2px; width: max-content; max-width: 100%; padding: 3px; border-radius: 11px; background: var(--chip-bg); }
+.seg label { position: relative; flex: 1 1 auto; }
+.seg input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.seg span {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  height: 30px; padding: 0 12px;
+  border-radius: 8px;
+  font-size: 13px; color: var(--text-2); white-space: nowrap;
+  pointer-events: none;
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+.seg label:hover span { color: var(--text); }
+.seg input:checked + span { background: var(--card); color: var(--text); font-weight: 600; box-shadow: var(--shadow-sm), 0 0 0 1px var(--card-border); }
+.seg input:focus-visible + span { box-shadow: 0 0 0 2px rgb(var(--focus-rgb)); }
+.seg [data-col] i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.seg [data-prio="high"] input:checked + span { color: var(--p-high); }
+.seg [data-prio="mid"] input:checked + span { color: var(--p-mid); }
+.seg [data-prio="low"] input:checked + span { color: var(--p-low); }
+.due-field { position: relative; display: flex; }
+.due-btn { display: flex; align-items: center; gap: 8px; padding-right: 38px; text-align: left; cursor: pointer; white-space: nowrap; overflow: hidden; }
+.due-btn svg { width: 16px; height: 16px; flex: none; color: var(--muted); }
+.due-btn.is-empty { color: var(--muted); }
+.due-native { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
+.due-native.is-fallback { position: static; opacity: 1; pointer-events: auto; }
+.due-clear { position: absolute; top: 50%; right: 4px; width: 28px; height: 28px; translate: 0 -50%; }
+.due-quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.due-quick button {
+  height: 26px; padding: 0 10px;
+  border: 1px solid var(--line-strong); border-radius: 7px; background: transparent;
+  font-size: 12px; color: var(--text-2);
+  transition: background .15s, color .15s;
+}
+.due-quick button:hover { background: var(--hover); color: var(--text); }
+.dlg-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 2px; }
+.dlg-meta { flex: 1; min-width: 0; margin-right: 6px; font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- 提示 ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 26px; z-index: 2000;
+  display: flex; align-items: center; gap: 14px;
+  max-width: calc(100vw - 32px);
+  padding: 9px 9px 9px 16px;
+  border-radius: 12px;
+  background: var(--toast-bg); color: #f3f4f6;
+  font-size: 13.5px;
+  box-shadow: 0 18px 36px -14px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .06);
+  opacity: 0; visibility: hidden;
+  transform: translate(-50%, 14px);
+  transition: opacity .2s, transform .28s var(--ease), visibility 0s linear .28s;
+}
+.toast.is-show { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: 0s; }
+.toast span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toast button {
+  flex: none; height: 30px; padding: 0 12px;
+  border: 0; border-radius: 8px;
+  background: rgba(255, 255, 255, .12); color: #fff;
+  font-size: 13px; font-weight: 600;
+}
+.toast button:hover { background: rgba(255, 255, 255, .2); }
+
+.hints { flex: none; display: flex; align-items: center; flex-wrap: wrap; gap: 6px 18px; padding: 0 6px 14px; font-size: 12px; color: var(--muted); }
+.hints > span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.hints kbd {
+  min-width: 20px; padding: 3px 6px;
+  border-radius: 5px;
+  background: var(--card); color: var(--text-2);
+  border: 1px solid var(--card-border); box-shadow: 0 1px 0 var(--line-strong);
+  font: 500 11px/1 var(--font); text-align: center;
+}
+.hints .hints-right { margin-left: auto; }
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 1100px) { .hints .hints-right { display: none; } }
+@media (max-width: 980px), (pointer: coarse) { .hints { display: none; } .app { padding-bottom: 6px; } }
+@media (max-width: 980px) {
+  .app { padding: 0 18px; }
+  .brand p, .save-text { display: none; }
+  .board { gap: 14px; }
+}
+@media (max-width: 760px) {
+  .app { height: auto; min-height: 100vh; min-height: 100dvh; padding: 0 12px; }
+  .topbar { flex-wrap: wrap; gap: 12px; padding: 14px 2px 12px; }
+  .top-actions { margin-left: 0; width: 100%; }
+  .top-actions .btn { margin-left: auto; }
+  .board { display: flex; flex-direction: column; gap: 14px; padding-bottom: 24px; }
+  .list-wrap { flex: none; }
+  .list { flex: none; overflow: visible; min-height: 56px; }
+  .column.is-empty .list { min-height: 140px; }
+  .list.fade-top, .list.fade-bottom { -webkit-mask-image: none; mask-image: none; }
+  .field-grid { grid-template-columns: minmax(0, 1fr); }
+  .toast { bottom: 18px; }
+}
+
+/* ---------- 动画 ---------- */
+@keyframes drop-in { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+@keyframes dlg-in { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes pulse { 40% { transform: scale(1.3); } }
+@keyframes bump { 35% { transform: scale(1.28); } }
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0 3.5px rgb(var(--accent-rgb) / .18); }
+  50% { box-shadow: 0 0 0 6.5px rgb(var(--accent-rgb) / .05); }
+}
+@keyframes pop { 0% { transform: scale(0) rotate(-45deg); } 60% { transform: scale(1.25) rotate(8deg); } 100% { transform: none; } }
+@keyframes done-glow {
+  0% { box-shadow: 0 0 0 0 rgb(var(--accent-rgb) / .5), var(--shadow-sm); }
+  100% { box-shadow: 0 0 0 14px rgb(var(--accent-rgb) / 0), var(--shadow-sm); }
+}
+@keyframes shake { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+.shake { animation: shake .32s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+        <defs>
+          <linearGradient id="logoBg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2b2e38"/>
+            <stop offset="1" stop-color="#15171d"/>
+          </linearGradient>
+        </defs>
+        <rect width="40" height="40" rx="11" fill="url(#logoBg)"/>
+        <rect x="9" y="10" width="6" height="15" rx="2.2" fill="#8d80ff"/>
+        <rect x="17" y="10" width="6" height="11" rx="2.2" fill="#ffb454"/>
+        <rect x="25" y="10" width="6" height="20" rx="2.2" fill="#3dd598"/>
+      </svg>
+      <div class="brand-text">
+        <h1>任务看板</h1>
+        <p><span id="today"></span> · 拖动卡片即可更新进度，改动自动保存在本地</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="stat" id="progress">
+        <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+          <circle class="ring-bg" cx="18" cy="18" r="14"/>
+          <circle class="ring-fg" id="ringFg" cx="18" cy="18" r="14" pathLength="100"/>
+        </svg>
+        <div class="stat-text"><b id="pctText">0%</b><span id="doneText">已完成 0 / 0</span></div>
+      </div>
+      <div class="save-state" id="saveState">
+        <span class="save-icon" id="saveIcon" aria-hidden="true"></span>
+        <span class="save-text" id="saveText">已自动保存</span>
+      </div>
+      <button type="button" class="btn btn-outline" id="resetBtn" title="用示例数据替换当前看板（可撤销）">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.6"/><path d="M4 4v4.6h4.6"/></svg>
+        <span>恢复示例</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="board" id="board">
+    <section class="column" data-col="todo" aria-labelledby="t-todo">
+      <header class="col-head">
+        <span class="col-dot" aria-hidden="true"></span>
+        <h2 class="col-title" id="t-todo">待办</h2>
+        <span class="col-count" aria-hidden="true">0</span>
+        <button type="button" class="add-btn" aria-expanded="false" aria-label="在「待办」中添加卡片">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span>添加</span>
+        </button>
+      </header>
+      <form class="composer" hidden autocomplete="off">
+        <textarea rows="1" maxlength="200" placeholder="输入卡片标题…" aria-label="新卡片标题（待办）" enterkeyhint="done"></textarea>
+        <div class="composer-bar">
+          <span class="composer-tip">Enter 添加 · Shift + Enter 换行</span>
+          <button type="button" class="btn btn-quiet" data-cancel>取消</button>
+          <button type="submit" class="btn btn-primary">添加</button>
+        </div>
+      </form>
+      <div class="list-wrap">
+        <div class="list" role="list" aria-label="待办"></div>
+        <div class="empty-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5l2.4-7.1A2 2 0 0 1 7.8 5h8.4a2 2 0 0 1 1.9 1.4l2.4 7.1"/><path d="M3.5 13.5V18a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4.5h-5l-1.5 2.5h-4L8.5 13.5z"/></svg>
+          <b>暂无卡片</b><span>拖拽卡片到这里，或点击「添加」</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="column" data-col="doing" aria-labelledby="t-doing">
+      <header class="col-head">
+        <span class="col-dot" aria-hidden="true"></span>
+        <h2 class="col-title" id="t-doing">进行中</h2>
+        <span class="col-count" aria-hidden="true">0</span>
+        <button type="button" class="add-btn" aria-expanded="false" aria-label="在「进行中」中添加卡片">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span>添加</span>
+        </button>
+      </header>
+      <form class="composer" hidden autocomplete="off">
+        <textarea rows="1" maxlength="200" placeholder="输入卡片标题…" aria-label="新卡片标题（进行中）" enterkeyhint="done"></textarea>
+        <div class="composer-bar">
+          <span class="composer-tip">Enter 添加 · Shift + Enter 换行</span>
+          <button type="button" class="btn btn-quiet" data-cancel>取消</button>
+          <button type="submit" class="btn btn-primary">添加</button>
+        </div>
+      </form>
+      <div class="list-wrap">
+        <div class="list" role="list" aria-label="进行中"></div>
+        <div class="empty-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5l2.4-7.1A2 2 0 0 1 7.8 5h8.4a2 2 0 0 1 1.9 1.4l2.4 7.1"/><path d="M3.5 13.5V18a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4.5h-5l-1.5 2.5h-4L8.5 13.5z"/></svg>
+          <b>暂无卡片</b><span>拖拽卡片到这里，或点击「添加」</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="column" data-col="done" aria-labelledby="t-done">
+      <header class="col-head">
+        <span class="col-dot" aria-hidden="true"></span>
+        <h2 class="col-title" id="t-done">完成</h2>
+        <span class="col-count" aria-hidden="true">0</span>
+        <button type="button" class="add-btn" aria-expanded="false" aria-label="在「完成」中添加卡片">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span>添加</span>
+        </button>
+      </header>
+      <form class="composer" hidden autocomplete="off">
+        <textarea rows="1" maxlength="200" placeholder="输入卡片标题…" aria-label="新卡片标题（完成）" enterkeyhint="done"></textarea>
+        <div class="composer-bar">
+          <span class="composer-tip">Enter 添加 · Shift + Enter 换行</span>
+          <button type="button" class="btn btn-quiet" data-cancel>取消</button>
+          <button type="submit" class="btn btn-primary">添加</button>
+        </div>
+      </form>
+      <div class="list-wrap">
+        <div class="list" role="list" aria-label="完成"></div>
+        <div class="empty-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 13.5l2.4-7.1A2 2 0 0 1 7.8 5h8.4a2 2 0 0 1 1.9 1.4l2.4 7.1"/><path d="M3.5 13.5V18a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4.5h-5l-1.5 2.5h-4L8.5 13.5z"/></svg>
+          <b>暂无卡片</b><span>拖拽卡片到这里，或点击「添加」</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="hints" aria-hidden="true">
+    <span><kbd>N</kbd>新建待办</span>
+    <span><kbd>空格</kbd>拿起 / 放下卡片</span>
+    <span><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd>移动</span>
+    <span><kbd>Enter</kbd>编辑</span>
+    <span><kbd>Delete</kbd>删除</span>
+    <span><kbd class="kbd-mod">Ctrl</kbd><kbd>Z</kbd>撤销</span>
+    <span><kbd>Esc</kbd>取消拖动</span>
+    <span class="hints-right">数据只保存在当前浏览器的 localStorage 中</span>
+  </footer>
+</div>
+
+<dialog class="editor" id="editor" aria-labelledby="editorTitle">
+  <form id="editorForm" novalidate autocomplete="off">
+    <div class="dlg-head">
+      <h2 id="editorTitle">编辑卡片</h2>
+      <span class="dlg-no" id="editorNo"></span>
+      <button type="button" class="icon-btn" data-close aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <label class="field">
+      <span class="field-label">标题</span>
+      <textarea class="input title-input" name="title" rows="1" maxlength="200" placeholder="卡片标题"></textarea>
+    </label>
+    <label class="field">
+      <span class="field-label">描述</span>
+      <textarea class="input" name="desc" rows="3" maxlength="1000" placeholder="补充细节（可选）"></textarea>
+    </label>
+    <div class="field-grid">
+      <div class="field">
+        <span class="field-label" id="colLabel">状态</span>
+        <div class="seg" role="radiogroup" aria-labelledby="colLabel">
+          <label data-col="todo"><input type="radio" name="col" value="todo"><span><i></i>待办</span></label>
+          <label data-col="doing"><input type="radio" name="col" value="doing"><span><i></i>进行中</span></label>
+          <label data-col="done"><input type="radio" name="col" value="done"><span><i></i>完成</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="field-label" id="prioLabel">优先级</span>
+        <div class="seg" role="radiogroup" aria-labelledby="prioLabel">
+          <label><input type="radio" name="prio" value=""><span>无</span></label>
+          <label data-prio="low"><input type="radio" name="prio" value="low"><span>低</span></label>
+          <label data-prio="mid"><input type="radio" name="prio" value="mid"><span>中</span></label>
+          <label data-prio="high"><input type="radio" name="prio" value="high"><span>高</span></label>
+        </div>
+      </div>
+      <label class="field">
+        <span class="field-label">标签</span>
+        <input class="input" name="tags" maxlength="80" placeholder="用空格或逗号分隔，如：设计 前端">
+      </label>
+      <div class="field">
+        <span class="field-label" id="dueLabel">截止日期</span>
+        <div class="due-field">
+          <button type="button" class="input due-btn" id="dueBtn" aria-labelledby="dueLabel dueText">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+            <span id="dueText">未设置</span>
+          </button>
+          <input type="date" class="due-native" id="dueNative" tabindex="-1" aria-label="选择截止日期">
+          <button type="button" class="icon-btn due-clear" id="dueClear" aria-label="清除截止日期" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>
+          </button>
+        </div>
+        <div class="due-quick" id="dueQuick">
+          <button type="button" data-days="0">今天</button>
+          <button type="button" data-days="1">明天</button>
+          <button type="button" data-days="7">一周后</button>
+        </div>
+      </div>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn btn-danger" id="editorDelete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5.2c0-.7.5-1.2 1.2-1.2h2.6c.7 0 1.2.5 1.2 1.2V7M6.5 7l.8 11.3c.1 1 .9 1.7 1.9 1.7h5.6c1 0 1.8-.7 1.9-1.7L17.5 7M10 11v5.5M14 11v5.5"/></svg>
+        删除
+      </button>
+      <span class="dlg-meta" id="editorMeta"></span>
+      <button type="button" class="btn btn-quiet" data-close>取消</button>
+      <button type="submit" class="btn btn-primary">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span id="toastMsg"></span>
+  <button type="button" id="toastAction" hidden>撤销</button>
+</div>
+<p id="dragHelp" class="sr-only">按空格键拿起卡片，用方向键移动，再按空格键放下，按 Esc 取消；按回车键编辑，按 Delete 键删除。</p>
+<div id="live" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+<script>
+(() => {
+  'use strict';
+
+  /* ================= 常量 ================= */
+  const STORAGE_KEY = 'repro.kanban-board.v1';
+  const COLS = ['todo', 'doing', 'done'];
+  const COL_NAME = { todo: '待办', doing: '进行中', done: '完成' };
+  const PRIO_NAME = { high: '高', mid: '中', low: '低' };
+  const WEEK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  const TAG_COLOR = { 设计: '#e0457b', 前端: '#6b5cf6', 后端: '#0f9d9a', 文档: '#1f8fe0', 缺陷: '#e5484d', 调研: '#e8850f', 数据: '#12a5b8', 产品: '#17a26b', 合规: '#9a6b3f' };
+  const TAG_PALETTE = ['#6b5cf6', '#e0457b', '#1f8fe0', '#17a26b', '#e8850f', '#0f9d9a', '#a45de0', '#c99a0c'];
+  const EASE = 'cubic-bezier(.2, .75, .25, 1)';
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const still = () => reducedMotion.matches;
+
+  const ICON = {
+    check: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.4 12.4l3.1 3.1 6.1-6.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 7h15M9.5 7V5.2c0-.7.5-1.2 1.2-1.2h2.6c.7 0 1.2.5 1.2 1.2V7M6.5 7l.8 11.3c.1 1 .9 1.7 1.9 1.7h5.6c1 0 1.8-.7 1.9-1.7L17.5 7M10 11v5.5M14 11v5.5"/></svg>',
+    flag: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 21a1 1 0 0 1-1-1V4.6c0-.4.2-.7.6-.9C7 3 8.6 2.8 10.4 3.4c1.7.6 3 .9 4.8.3 1-.3 1.9.4 1.9 1.4v7.6c0 .5-.3.9-.7 1.1-2.2.9-4 .7-5.8.1-1.4-.5-2.7-.7-3.6-.4V20a1 1 0 0 1-1 1z"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+    grip: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
+    ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5.5v8M12 18.5v.01"/></svg>',
+  };
+
+  /* ================= 元素 ================= */
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const board = $('#board');
+  const columns = {}, lists = {}, counts = {}, composers = {}, addBtns = {};
+  for (const col of COLS) {
+    const el = $(`.column[data-col="${col}"]`);
+    columns[col] = el;
+    lists[col] = $('.list', el);
+    counts[col] = $('.col-count', el);
+    composers[col] = $('.composer', el);
+    addBtns[col] = $('.add-btn', el);
+  }
+  const ringFg = $('#ringFg');
+  const pctText = $('#pctText');
+  const doneText = $('#doneText');
+  const progressEl = $('#progress');
+  const saveEl = $('#saveState');
+  const saveIcon = $('#saveIcon');
+  const saveText = $('#saveText');
+  const live = $('#live');
+
+  /* ================= 运行时状态 ================= */
+  let state = null;          // { v, seq, lists: { todo: Card[], doing: Card[], done: Card[] } }
+  let storageOK = true;
+  let lastSaved = null;
+  let pendingSync = null;    // 其他标签页写入、但当前正忙（拖拽 / 编辑）时暂存
+  let lift = null;           // 键盘“拿起”模式
+  let firstRender = true;
+  const undoStack = [];
+  const redoStack = [];
+  const cardEls = new Map(); // card.id -> 元素
+
+  /* ================= 工具函数 ================= */
+  const esc = (s) => String(s).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const pad = (n) => String(n).padStart(2, '0');
+  const uid = () => 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const parseYmd = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const startOfToday = () => { const t = new Date(); t.setHours(0, 0, 0, 0); return t; };
+  const addDays = (n) => { const t = startOfToday(); t.setDate(t.getDate() + n); return ymd(t); };
+  const dayDiff = (s) => Math.round((parseYmd(s) - startOfToday()) / 864e5);
+  const short = (s, n = 14) => { const chars = Array.from(s); return chars.length > n ? chars.slice(0, n).join('') + '…' : s; };
+  const target = (e) => (e.target instanceof Element ? e.target : document.body);
+
+  function tagColor(tag) {
+    if (TAG_COLOR[tag]) return TAG_COLOR[tag];
+    let h = 0;
+    for (const ch of tag) h = (h * 31 + ch.codePointAt(0)) >>> 0;
+    return TAG_PALETTE[h % TAG_PALETTE.length];
+  }
+
+  function parseTags(text) {
+    const tags = String(text).split(/[\s,，、;；]+/).map((t) => t.replace(/^#+/, '').trim().slice(0, 12)).filter(Boolean);
+    return Array.from(new Set(tags)).slice(0, 5);
+  }
+
+  function fmtDate(s, withYear) {
+    const d = parseYmd(s);
+    const year = withYear || d.getFullYear() !== new Date().getFullYear() ? `${d.getFullYear()}年` : '';
+    return `${year}${d.getMonth() + 1}月${d.getDate()}日`;
+  }
+
+  function fmtTime(ts) {
+    const d = new Date(ts);
+    return `${d.getMonth() + 1}月${d.getDate()}日 ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function dueInfo(due, col) {
+    const n = dayDiff(due);
+    const full = `${fmtDate(due, true)} ${WEEK[parseYmd(due).getDay()]}`;
+    let label = n === 0 ? '今天' : n === 1 ? '明天' : n === -1 ? '昨天' : fmtDate(due);
+    let cls = '';
+    let title = `截止：${full}`;
+    if (col !== 'done') {
+      if (n < 0) { cls = ' is-overdue'; title += `（已逾期 ${-n} 天）`; }
+      else if (n <= 1) cls = ' is-soon';
+    }
+    if (n === 0 && col !== 'done') label = '今天到期';
+    return { label, cls, title };
+  }
+
+  function announce(msg) {
+    live.textContent = '';
+    setTimeout(() => { live.textContent = msg; }, 40);
+  }
+
+  function restartClass(el, cls) {
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+  }
+
+  function shake(el) {
+    restartClass(el, 'shake');
+    el.addEventListener('animationend', () => el.classList.remove('shake'), { once: true });
+  }
+
+  function autosize(ta) {
+    if (!ta.offsetParent) return;
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 2 + 'px';
+  }
+
+  /* ================= 数据 ================= */
+  function seedState() {
+    const base = startOfToday().getTime();
+    const mk = (no, title, prio, tags, due, desc = '', ageDays = 0) => ({
+      id: 'demo-' + no, no, title, desc, prio, tags,
+      due: due === null ? '' : addDays(due),
+      created: base - ageDays * 864e5 + (9 + (no % 9)) * 36e5,
+    });
+    return {
+      v: 1,
+      seq: 13,
+      lists: {
+        todo: [
+          mk(12, '修复 Safari 中日期选择器错位的问题', 'high', ['缺陷'], 1, '', 1),
+          mk(11, '撰写 2.0 版本发布说明', 'mid', ['文档'], 5, '涵盖新功能、迁移指南与已知问题', 1),
+          mk(10, '更新隐私政策与用户协议文案', 'mid', ['合规'], -1, '', 2),
+          mk(9, '调研离线同步方案', 'low', ['调研', '后端'], null, '对比 CRDT 与操作日志两种合并策略', 2),
+          mk(8, '设计空状态插画', 'low', ['设计'], null, '', 3),
+        ],
+        doing: [
+          mk(7, '重构卡片拖拽排序逻辑', 'high', ['前端'], 2, '改用 Pointer 事件，兼顾鼠标、触屏与键盘', 4),
+          mk(6, '接入埋点并校验数据口径', 'mid', ['数据'], 0, '', 4),
+          mk(5, '准备用户访谈提纲', '', ['调研'], 3, '', 5),
+        ],
+        done: [
+          mk(4, '评审首页改版视觉稿', 'low', ['设计'], null, '', 6),
+          mk(3, '搭建本地存储与数据迁移', 'high', ['前端'], null, '', 7),
+          mk(2, '确定看板的信息架构', 'mid', ['产品'], null, '', 8),
+          mk(1, '整理需求池并排好优先级', '', ['产品'], null, '', 9),
+        ],
+      },
+    };
+  }
+
+  function normalize(raw) {
+    if (!raw || typeof raw !== 'object' || !raw.lists || typeof raw.lists !== 'object') return null;
+    const out = { v: 1, seq: 1, lists: { todo: [], doing: [], done: [] } };
+    const seen = new Set();
+    let maxNo = 0;
+    for (const col of COLS) {
+      const arr = Array.isArray(raw.lists[col]) ? raw.lists[col] : [];
+      for (const c of arr) {
+        if (!c || typeof c !== 'object') continue;
+        const title = String(c.title ?? '').trim().slice(0, 200);
+        if (!title) continue;
+        let id = typeof c.id === 'string' && c.id ? c.id.slice(0, 64) : uid();
+        if (seen.has(id)) id = uid();
+        seen.add(id);
+        const no = Number.isInteger(c.no) && c.no > 0 ? c.no : 0;
+        maxNo = Math.max(maxNo, no);
+        out.lists[col].push({
+          id, no, title,
+          desc: String(c.desc ?? '').trim().slice(0, 1000),
+          prio: PRIO_NAME[c.prio] ? c.prio : '',
+          tags: Array.isArray(c.tags) ? parseTags(c.tags.join(' ')) : [],
+          due: typeof c.due === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(c.due) ? c.due : '',
+          created: Number.isFinite(c.created) ? c.created : Date.now(),
+        });
+      }
+    }
+    for (const col of COLS) for (const c of out.lists[col]) if (!c.no) c.no = ++maxNo;
+    out.seq = Math.max(Number.isInteger(raw.seq) ? raw.seq : 0, maxNo + 1);
+    return out;
+  }
+
+  function readStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? normalize(JSON.parse(raw)) : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function save(pulse = true) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      storageOK = true;
+      lastSaved = new Date();
+    } catch (_) {
+      storageOK = false;
+    }
+    paintSaveState(pulse);
+  }
+
+  let saveTextTimer = 0;
+  function paintSaveState(pulse, text) {
+    saveEl.classList.toggle('is-error', !storageOK);
+    saveIcon.innerHTML = storageOK ? ICON.ok : ICON.alert;
+    saveText.textContent = text || (storageOK ? '已自动保存' : '无法保存到本地');
+    saveEl.title = !storageOK
+      ? '当前环境无法写入 localStorage，刷新页面后改动会丢失'
+      : lastSaved
+        ? `已保存到浏览器 localStorage（${pad(lastSaved.getHours())}:${pad(lastSaved.getMinutes())}:${pad(lastSaved.getSeconds())}）`
+        : '数据保存在浏览器 localStorage 中';
+    if (pulse && !still()) restartClass(saveEl, 'is-pulse');
+    clearTimeout(saveTextTimer);
+    if (text) saveTextTimer = setTimeout(() => paintSaveState(false), 2600);
+  }
+
+  function findCard(id, s = state) {
+    for (const list of COLS) {
+      const index = s.lists[list].findIndex((c) => c.id === id);
+      if (index > -1) return { list, index, card: s.lists[list][index] };
+    }
+    return null;
+  }
+
+  function moveCard(s, id, list, index) {
+    const pos = findCard(id, s);
+    if (!pos) return;
+    s.lists[pos.list].splice(pos.index, 1);
+    const arr = s.lists[list];
+    arr.splice(clamp(index, 0, arr.length), 0, pos.card);
+  }
+
+  function pushUndo(snapshot) {
+    undoStack.push(snapshot);
+    if (undoStack.length > 100) undoStack.shift();
+    redoStack.length = 0;
+  }
+
+  /** 所有会改动数据的操作都走这里：记录撤销快照 → 修改 → 保存 → 渲染 */
+  function commit(mutate, opts = {}) {
+    if (pendingSync) { state = pendingSync; pendingSync = null; }
+    const before = JSON.stringify(state);
+    mutate(state);
+    if (JSON.stringify(state) === before) return false;
+    pushUndo(before);
+    save();
+    render(opts);
+    return true;
+  }
+
+  /* ================= 渲染 ================= */
+  function cardInner(card, col) {
+    const meta = [];
+    if (card.prio) meta.push(`<span class="chip prio" data-prio="${card.prio}" title="优先级：${PRIO_NAME[card.prio]}">${ICON.flag}${PRIO_NAME[card.prio]}</span>`);
+    for (const t of card.tags) meta.push(`<span class="chip tag" style="--tag:${tagColor(t)}"><i></i>${esc(t)}</span>`);
+    if (card.due) {
+      const d = dueInfo(card.due, col);
+      meta.push(`<span class="chip due${d.cls}" title="${esc(d.title)}">${ICON.cal}${esc(d.label)}</span>`);
+    }
+    return `<div class="card-head"><h3 class="card-title"><span class="done-mark" aria-hidden="true">${ICON.check}</span>${esc(card.title)}</h3><span class="card-no">#${card.no}</span></div>`
+      + (card.desc ? `<p class="card-desc">${esc(card.desc)}</p>` : '')
+      + (meta.length ? `<div class="card-meta">${meta.join('')}</div>` : '')
+      + `<button class="card-del" type="button" tabindex="-1" data-action="delete" aria-label="删除卡片" title="删除">${ICON.trash}</button>`
+      + `<span class="grip" aria-hidden="true">${ICON.grip}</span>`;
+  }
+
+  const flips = new WeakMap();
+
+  function measureRects(els) {
+    const map = new Map();
+    for (const el of els) {
+      if (!el.isConnected) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width || r.height) map.set(el, r);
+    }
+    return map;
+  }
+
+  function cancelFlips(els) {
+    for (const el of els) {
+      const a = flips.get(el);
+      if (a) { a.cancel(); flips.delete(el); }
+    }
+  }
+
+  function playFlip(first, els, duration = 280) {
+    if (!first || still()) return;
+    const moves = [];
+    for (const el of els) {
+      const a = first.get(el);
+      if (!a || !el.isConnected) continue;
+      const b = el.getBoundingClientRect();
+      if (!b.width && !b.height) continue;
+      const dx = a.left - b.left;
+      const dy = a.top - b.top;
+      if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) moves.push([el, dx, dy]);
+    }
+    for (const [el, dx, dy] of moves) {
+      const anim = el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration, easing: EASE });
+      flips.set(el, anim);
+      anim.onfinish = () => { if (flips.get(el) === anim) flips.delete(el); };
+    }
+  }
+
+  function flipAround(els, mutate) {
+    if (still()) { mutate(); return; }
+    const first = measureRects(els);
+    cancelFlips(els);
+    mutate();
+    playFlip(first, els, 220);
+  }
+
+  function exitClone(el, rect) {
+    if (still() || !rect.width) return;
+    const clone = el.cloneNode(true);
+    clone.classList.add('card-exit');
+    clone.classList.remove('is-lifted', 'just-done');
+    clone.removeAttribute('tabindex');
+    clone.setAttribute('aria-hidden', 'true');
+    Object.assign(clone.style, { left: rect.left + 'px', top: rect.top + 'px', width: rect.width + 'px', height: rect.height + 'px' });
+    document.body.appendChild(clone);
+    const anim = clone.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.92)' }], { duration: 220, easing: 'ease-in', fill: 'forwards' });
+    anim.onfinish = () => clone.remove();
+  }
+
+  /**
+   * 按 state 同步 DOM：复用已有卡片元素（按 id），只在内容变化时重写内部。
+   * animate 时先记录旧位置，改完 DOM 后用 FLIP 让卡片平滑移到新位置。
+   */
+  function render({ animate = true, stagger = false, beforePlay = null } = {}) {
+    const motion = animate && !still();
+    const before = [...cardEls.values()];
+    const first = motion ? measureRects(before) : null;
+    if (motion) cancelFlips(before);
+    const today = ymd(new Date());
+    const alive = new Set();
+    const entering = [];
+
+    for (const col of COLS) {
+      const listEl = lists[col];
+      let cursor = listEl.firstElementChild;
+      for (const card of state.lists[col]) {
+        alive.add(card.id);
+        let el = cardEls.get(card.id);
+        if (!el) {
+          el = document.createElement('article');
+          el.className = 'card';
+          el.tabIndex = 0;
+          el.setAttribute('role', 'listitem');
+          el.setAttribute('aria-describedby', 'dragHelp');
+          el.dataset.id = card.id;
+          cardEls.set(card.id, el);
+          entering.push(el);
+        }
+        const sig = [card.title, card.desc, card.prio, card.tags.join('\u0001'), card.due, card.no, col, today].join('\u0002');
+        if (el._sig !== sig) { el.innerHTML = cardInner(card, col); el._sig = sig; }
+        if (el.dataset.col !== col) el.dataset.col = col;
+        if (el === cursor) cursor = cursor.nextElementSibling;
+        else listEl.insertBefore(el, cursor);
+      }
+    }
+
+    for (const [id, el] of cardEls) {
+      if (alive.has(id)) continue;
+      if (first && first.has(el)) exitClone(el, first.get(el));
+      el.remove();
+      cardEls.delete(id);
+    }
+
+    if (beforePlay) beforePlay();
+
+    if (motion) {
+      playFlip(first, before.filter((el) => el.isConnected));
+      entering.forEach((el, i) => {
+        el.animate(
+          [{ opacity: 0, transform: 'translateY(10px) scale(.97)' }, { opacity: 1, transform: 'none' }],
+          { duration: 340, delay: stagger ? 60 + i * 30 : 0, easing: EASE, fill: 'backwards' }
+        );
+      });
+    }
+    updateChrome();
+    firstRender = false;
+  }
+
+  function setCount(col, n) {
+    const el = counts[col];
+    if (el.textContent === String(n)) return;
+    el.textContent = String(n);
+    el.title = `${n} 张卡片`;
+    if (!firstRender && !still()) restartClass(el, 'is-bump');
+  }
+
+  function updateChrome() {
+    let total = 0;
+    for (const col of COLS) {
+      const n = state.lists[col].length;
+      total += n;
+      setCount(col, n);
+      lists[col].setAttribute('aria-label', `${COL_NAME[col]}，${n} 张卡片`);
+      columns[col].classList.toggle('is-empty', n === 0);
+    }
+    const done = state.lists.done.length;
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    if (firstRender) getComputedStyle(ringFg).strokeDashoffset;
+    ringFg.style.strokeDashoffset = String(100 - pct);
+    ringFg.style.opacity = pct ? '1' : '0';
+    pctText.textContent = `${pct}%`;
+    doneText.textContent = `已完成 ${done} / ${total}`;
+    progressEl.title = `共 ${total} 张卡片，已完成 ${done} 张`;
+    requestAnimationFrame(updateFades);
+  }
+
+  function updateFade(list) {
+    const max = list.scrollHeight - list.clientHeight;
+    list.classList.toggle('fade-top', max > 1 && list.scrollTop > 1);
+    list.classList.toggle('fade-bottom', max > 1 && list.scrollTop < max - 1);
+  }
+  function updateFades() { for (const col of COLS) updateFade(lists[col]); }
+  for (const col of COLS) lists[col].addEventListener('scroll', () => updateFade(lists[col]), { passive: true });
+  window.addEventListener('resize', () => requestAnimationFrame(updateFades));
+
+  function celebrate(el) {
+    if (!el || still()) return;
+    restartClass(el, 'just-done');
+    clearTimeout(el._doneTimer);
+    el._doneTimer = setTimeout(() => el.classList.remove('just-done'), 1100);
+  }
+
+  /* ================= 拖拽（Pointer 事件） =================
+   * 鼠标 / 触控笔：按住卡片任意位置移动 5px 后开始拖拽。
+   * 触屏：按住卡片右上角的把手拖拽，卡片其余区域保留页面滚动。
+   */
+  const drag = { phase: 'idle' };
+  let suppressClickUntil = 0;
+
+  board.addEventListener('pointerdown', onPointerDown);
+  board.addEventListener('dragstart', (e) => e.preventDefault());
+
+  function onPointerDown(e) {
+    if (drag.phase !== 'idle' || !e.isPrimary) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    const t = target(e);
+    const card = t.closest('.card');
+    if (!card || !board.contains(card)) return;
+    if (t.closest('button, a, input, textarea, select, label')) return;
+    if (e.pointerType === 'touch' && !t.closest('.grip')) return;
+    if (lift) dropLift();
+    drag.phase = 'pending';
+    drag.pointerId = e.pointerId;
+    drag.pointerType = e.pointerType;
+    drag.startX = drag.x = e.clientX;
+    drag.startY = drag.y = e.clientY;
+    drag.card = card;
+    drag.id = card.dataset.id;
+    window.addEventListener('pointermove', onPointerMove, { passive: false });
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerCancel);
+    if (e.pointerType === 'touch') e.preventDefault();
+  }
+
+  function onPointerMove(e) {
+    if (e.pointerId !== drag.pointerId) return;
+    drag.x = e.clientX;
+    drag.y = e.clientY;
+    if (drag.phase === 'pending') {
+      const min = drag.pointerType === 'mouse' ? 5 : 3;
+      if (Math.hypot(drag.x - drag.startX, drag.y - drag.startY) < min) return;
+      beginDrag();
+    }
+    if (drag.phase === 'dragging' && e.cancelable) e.preventDefault();
+  }
+
+  function onPointerUp(e) {
+    if (e.pointerId !== drag.pointerId) return;
+    if (drag.phase === 'dragging') {
+      drag.x = e.clientX;
+      drag.y = e.clientY;
+      updatePlacement();
+      suppressClickUntil = performance.now() + 250;
+      finishDrag(false);
+    } else if (drag.phase === 'pending') {
+      resetPointer();
+    }
+  }
+
+  function onPointerCancel(e) {
+    if (e.pointerId !== drag.pointerId) return;
+    if (drag.phase === 'dragging') finishDrag(true);
+    else if (drag.phase === 'pending') resetPointer();
+  }
+
+  function detachPointer() {
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+    window.removeEventListener('pointercancel', onPointerCancel);
+  }
+
+  function resetPointer() {
+    detachPointer();
+    drag.phase = 'idle';
+    drag.card = null;
+  }
+
+  function visibleCards(col) {
+    return Array.from(lists[col].children).filter((el) => el.classList.contains('card') && !el.classList.contains('is-source'));
+  }
+
+  function beginDrag() {
+    const card = drag.card;
+    const pos = findCard(drag.id);
+    if (!pos) { resetPointer(); return; }
+    cancelFlips([card]);
+    const rect = card.getBoundingClientRect();
+    Object.assign(drag, {
+      fromList: pos.list, fromIndex: pos.index,
+      overList: pos.list, overIndex: pos.index,
+      offX: drag.startX - rect.left, offY: drag.startY - rect.top,
+      w: rect.width, h: rect.height,
+      lastX: drag.x, vx: 0, tilt: 0, scale: 1,
+    });
+
+    const ghost = card.cloneNode(true);
+    ghost.classList.remove('is-lifted', 'just-done');
+    ghost.classList.add('ghost');
+    ghost.removeAttribute('tabindex');
+    ghost.removeAttribute('role');
+    ghost.removeAttribute('aria-describedby');
+    ghost.setAttribute('aria-hidden', 'true');
+    ghost.style.width = rect.width + 'px';
+    ghost.style.transformOrigin = `${drag.offX}px ${drag.offY}px`;
+    ghost.style.transform = `translate3d(${rect.left}px, ${rect.top}px, 0)`;
+    document.body.appendChild(ghost);
+    drag.ghost = ghost;
+
+    const ph = document.createElement('div');
+    ph.className = 'placeholder';
+    ph.setAttribute('aria-hidden', 'true');
+    ph.style.height = rect.height + 'px';
+    card.before(ph);
+    card.classList.add('is-source');
+    drag.ph = ph;
+
+    try { board.setPointerCapture(drag.pointerId); } catch (_) { /* 合成事件没有真实指针 */ }
+    document.body.classList.add('is-dragging');
+    columns[pos.list].classList.add('is-over');
+    drag.phase = 'dragging';
+    announce(`已拿起「${short(pos.card.title)}」`);
+    drag.raf = requestAnimationFrame(dragFrame);
+  }
+
+  function ghostTransform() {
+    const x = drag.x - drag.offX;
+    const y = drag.y - drag.offY;
+    return `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${drag.tilt.toFixed(2)}deg) scale(${drag.scale.toFixed(3)})`;
+  }
+
+  /** 每帧：卡片跟手并按水平速度倾斜，处理边缘滚动，更新落点 */
+  function dragFrame() {
+    if (drag.phase !== 'dragging') return;
+    const calm = still();
+    const dx = drag.x - drag.lastX;
+    drag.lastX = drag.x;
+    drag.vx += (dx - drag.vx) * 0.35;
+    const tiltTarget = calm ? 0 : clamp(drag.vx * 0.9, -10, 10) + 2;
+    drag.tilt += (tiltTarget - drag.tilt) * 0.22;
+    drag.scale += ((calm ? 1 : 1.035) - drag.scale) * 0.3;
+    drag.ghost.style.transform = ghostTransform();
+    autoScroll();
+    updatePlacement();
+    drag.raf = requestAnimationFrame(dragFrame);
+  }
+
+  function nearestColumn(x, y) {
+    let best = drag.overList;
+    let bestD = Infinity;
+    for (const col of COLS) {
+      const r = columns[col].getBoundingClientRect();
+      const dx = x < r.left ? r.left - x : x > r.right ? x - r.right : 0;
+      const dy = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0;
+      const d = dx * dx + dy * dy;
+      if (d < bestD) { bestD = d; best = col; }
+    }
+    return best;
+  }
+
+  /** 以拖拽卡片的中心判断落在哪一列、插在哪张卡片之前（用布局位置，不受动画位移影响） */
+  function updatePlacement() {
+    const cx = drag.x - drag.offX + drag.w / 2;
+    const cy = drag.y - drag.offY + drag.h / 2;
+    const col = nearestColumn(cx, cy);
+    const list = lists[col];
+    const cards = visibleCards(col);
+    const lr = list.getBoundingClientRect();
+    const originY = lr.top + list.clientTop - list.scrollTop;
+    let index = cards.length;
+    for (let i = 0; i < cards.length; i++) {
+      const c = cards[i];
+      if (cy < originY + c.offsetTop + c.offsetHeight / 2) { index = i; break; }
+    }
+    if (col !== drag.overList || index !== drag.overIndex) movePlaceholder(col, index);
+  }
+
+  function movePlaceholder(col, index) {
+    const prev = drag.overList;
+    const listChanged = col !== prev;
+    const targetCards = visibleCards(col);
+    const affected = listChanged ? targetCards.concat(visibleCards(prev)) : targetCards;
+    let newHeight = null;
+    if (listChanged) {
+      // 悬停到哪一列，浮起的卡片就预览成哪一列的样式（比如拖进「完成」会出现勾）
+      drag.ghost.dataset.col = col;
+      const gh = drag.ghost.offsetHeight;
+      if (Math.abs(gh - drag.h) > 0.5) { drag.h = gh; newHeight = gh; }
+      columns[prev].classList.remove('is-over');
+      columns[col].classList.add('is-over');
+    }
+    flipAround(affected, () => {
+      lists[col].insertBefore(drag.ph, targetCards[index] || null);
+      if (newHeight !== null) drag.ph.style.height = newHeight + 'px';
+    });
+    if (listChanged && !still()) {
+      drag.ph.animate([{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 200, easing: EASE });
+    }
+    drag.overList = col;
+    drag.overIndex = index;
+    for (const c of COLS) {
+      const n = visibleCards(c).length + (drag.ph.parentElement === lists[c] ? 1 : 0);
+      columns[c].classList.toggle('is-empty', n === 0);
+      setCount(c, n);
+    }
+  }
+
+  function edgeSpeed(depth, edge, max) {
+    return Math.ceil(max * Math.min(1, depth / edge) ** 2);
+  }
+
+  function autoScroll() {
+    const list = lists[drag.overList];
+    const EDGE = 64;
+    const MAX = 16;
+    if (list.scrollHeight > list.clientHeight + 1) {
+      const r = list.getBoundingClientRect();
+      if (drag.y < r.top + EDGE && list.scrollTop > 0) list.scrollTop -= edgeSpeed(r.top + EDGE - drag.y, EDGE, MAX);
+      else if (drag.y > r.bottom - EDGE) list.scrollTop += edgeSpeed(drag.y - (r.bottom - EDGE), EDGE, MAX);
+    }
+    const root = document.scrollingElement || document.documentElement;
+    if (root.scrollHeight > window.innerHeight + 1) {
+      const EDGE2 = 80;
+      if (drag.y < EDGE2 && root.scrollTop > 0) window.scrollBy(0, -edgeSpeed(EDGE2 - drag.y, EDGE2, MAX));
+      else if (drag.y > window.innerHeight - EDGE2) window.scrollBy(0, edgeSpeed(drag.y - (window.innerHeight - EDGE2), EDGE2, MAX));
+    }
+  }
+
+  function ensureVisible(el) {
+    const list = el.parentElement;
+    if (list && list.scrollHeight > list.clientHeight) {
+      const top = el.offsetTop;
+      const bottom = top + el.offsetHeight;
+      if (top < list.scrollTop) list.scrollTop = top - 8;
+      else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight + 8;
+    }
+    const r = el.getBoundingClientRect();
+    if (r.top < 0 || r.bottom > window.innerHeight) el.scrollIntoView({ block: 'nearest' });
+  }
+
+  /** 松手或取消：浮起的卡片飞回占位处，再把真实卡片放进去 */
+  function finishDrag(cancelled) {
+    cancelAnimationFrame(drag.raf);
+    detachPointer();
+    try { board.releasePointerCapture(drag.pointerId); } catch (_) { /* 同上 */ }
+    if (cancelled && (drag.overList !== drag.fromList || drag.overIndex !== drag.fromIndex)) {
+      movePlaceholder(drag.fromList, drag.fromIndex);
+    }
+    drag.phase = 'dropping';
+    drag.cancelled = cancelled;
+    const ph = drag.ph;
+    ph.getAnimations().forEach((a) => a.finish());
+    ensureVisible(ph);
+    const r = ph.getBoundingClientRect();
+    const ghost = drag.ghost;
+    ghost.classList.add('is-dropping');
+    if (still()) { completeDrop(); return; }
+    const anim = ghost.animate(
+      [{ transform: ghostTransform() }, { transform: `translate3d(${r.left}px, ${r.top}px, 0) rotate(0deg) scale(1)` }],
+      { duration: cancelled ? 280 : 220, easing: 'cubic-bezier(.2, .8, .25, 1)', fill: 'forwards' }
+    );
+    anim.onfinish = completeDrop;
+    anim.oncancel = completeDrop;
+  }
+
+  function completeDrop() {
+    if (drag.phase !== 'dropping') return;
+    const { card, id, ghost, ph, fromList, fromIndex, overList, overIndex, cancelled } = drag;
+    drag.phase = 'idle';
+    drag.card = drag.ghost = drag.ph = null;
+    const moved = !cancelled && (overList !== fromList || overIndex !== fromIndex);
+    const others = [...cardEls.values()].filter((el) => el !== card);
+    const first = still() ? null : measureRects(others);
+    if (first) cancelFlips(others);
+    ghost.remove();
+    ph.remove();
+    card.classList.remove('is-source');
+    document.body.classList.remove('is-dragging');
+    for (const c of COLS) columns[c].classList.remove('is-over');
+
+    let changed = false;
+    if (moved) changed = commit((s) => moveCard(s, id, overList, overIndex), { animate: false });
+    else if (pendingSync) { state = pendingSync; pendingSync = null; }
+    if (!changed) render({ animate: false });
+    if (first) playFlip(first, others);
+
+    if (!still() && card.isConnected) {
+      card.animate([{ transform: 'scale(1.025)' }, { transform: 'none' }], { duration: 260, easing: EASE });
+    }
+    if (changed) {
+      const pos = findCard(id);
+      if (pos && pos.list === 'done' && fromList !== 'done') celebrate(card);
+      if (pos) announce(`已移动到「${COL_NAME[pos.list]}」第 ${pos.index + 1} 张`);
+    } else if (cancelled) {
+      announce('已取消拖动，卡片回到原位');
+    }
+  }
+
+  window.addEventListener('blur', () => {
+    if (drag.phase === 'dragging') finishDrag(true);
+    else if (drag.phase === 'pending') resetPointer();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (performance.now() < suppressClickUntil) {
+      suppressClickUntil = 0;
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
+
+  /* ================= 键盘：拿起 / 移动 / 放下 ================= */
+  function liftCard(el) {
+    const pos = findCard(el.dataset.id);
+    if (!pos) return;
+    lift = { id: pos.card.id, el, before: JSON.stringify(state), from: pos.list, rendering: false };
+    el.classList.add('is-lifted');
+    announce(`已拿起「${short(pos.card.title)}」，位于「${COL_NAME[pos.list]}」第 ${pos.index + 1} 张，共 ${state.lists[pos.list].length} 张。方向键移动，空格键放下，Esc 取消。`);
+  }
+
+  function moveLift(key) {
+    const pos = findCard(lift.id);
+    if (!pos) { lift = null; return; }
+    let list = pos.list;
+    let index = pos.index;
+    if (key === 'ArrowUp') index -= 1;
+    else if (key === 'ArrowDown') index += 1;
+    else {
+      const ci = COLS.indexOf(list) + (key === 'ArrowLeft' ? -1 : 1);
+      if (ci < 0 || ci >= COLS.length) return;
+      list = COLS[ci];
+    }
+    const max = list === pos.list ? state.lists[list].length - 1 : state.lists[list].length;
+    index = clamp(index, 0, max);
+    if (list === pos.list && index === pos.index) return;
+    moveCard(state, lift.id, list, index);
+    const el = lift.el;
+    lift.rendering = true;
+    render({
+      beforePlay: () => {
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({ block: 'nearest' });
+      },
+    });
+    lift.rendering = false;
+    announce(`「${COL_NAME[list]}」第 ${index + 1} 张，共 ${state.lists[list].length} 张`);
+  }
+
+  function dropLift() {
+    if (!lift) return;
+    const { id, el, before, from } = lift;
+    lift = null;
+    el.classList.remove('is-lifted');
+    if (pendingSync) {
+      const pos = findCard(id);
+      state = pendingSync;
+      pendingSync = null;
+      if (pos) moveCard(state, id, pos.list, pos.index);
+      render();
+    }
+    const pos = findCard(id);
+    if (JSON.stringify(state) !== before) {
+      pushUndo(before);
+      save();
+      if (pos && pos.list === 'done' && from !== 'done') celebrate(el);
+      if (pos) announce(`已放下，位于「${COL_NAME[pos.list]}」第 ${pos.index + 1} 张`);
+    } else {
+      announce('已放下，位置未变');
+    }
+  }
+
+  function cancelLift() {
+    if (!lift) return;
+    const { el, before } = lift;
+    lift = null;
+    el.classList.remove('is-lifted');
+    state = pendingSync || JSON.parse(before);
+    pendingSync = null;
+    render({ beforePlay: () => { if (el.isConnected) el.focus({ preventScroll: true }); } });
+    announce('已取消移动');
+  }
+
+  board.addEventListener('focusout', (e) => {
+    if (lift && !lift.rendering && e.target === lift.el) dropLift();
+  });
+
+  function focusNeighbor(card, key) {
+    const pos = findCard(card.dataset.id);
+    if (!pos) return;
+    let next = null;
+    if (key === 'ArrowUp' || key === 'ArrowDown') {
+      next = state.lists[pos.list][pos.index + (key === 'ArrowUp' ? -1 : 1)];
+    } else {
+      const step = key === 'ArrowLeft' ? -1 : 1;
+      for (let ci = COLS.indexOf(pos.list) + step; ci >= 0 && ci < COLS.length; ci += step) {
+        const arr = state.lists[COLS[ci]];
+        if (arr.length) { next = arr[Math.min(pos.index, arr.length - 1)]; break; }
+      }
+    }
+    if (next) cardEls.get(next.id).focus();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (drag.phase === 'dragging' || drag.phase === 'dropping') {
+      if (e.key === 'Escape' && drag.phase === 'dragging') { e.preventDefault(); finishDrag(true); }
+      return;
+    }
+    if (editor.open || e.isComposing || e.keyCode === 229) return;
+    if (lift) {
+      if (e.key.startsWith('Arrow')) { e.preventDefault(); moveLift(e.key); }
+      else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); dropLift(); }
+      else if (e.key === 'Escape') { e.preventDefault(); cancelLift(); }
+      else if (e.key === 'Tab') dropLift();
+      return;
+    }
+    const t = target(e);
+    if (t.closest('input, textarea, select, [contenteditable="true"]')) return;
+    const mod = e.ctrlKey || e.metaKey;
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (mod && !e.altKey && key === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
+    if (mod && !e.altKey && key === 'y') { e.preventDefault(); redo(); return; }
+    if (mod || e.altKey) return;
+    const card = t.closest('.card');
+    if (card && board.contains(card)) {
+      if (e.key === ' ') { e.preventDefault(); liftCard(card); return; }
+      if (e.key === 'Enter') { e.preventDefault(); openEditor(card.dataset.id); return; }
+      if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteCard(card.dataset.id, true); return; }
+      if (e.key.startsWith('Arrow')) { e.preventDefault(); focusNeighbor(card, e.key); return; }
+    }
+    if (key === 'n') { e.preventDefault(); openComposer('todo'); }
+  });
+
+  /* ================= 添加卡片 ================= */
+  function openComposer(col) {
+    for (const c of COLS) if (c !== col) closeComposer(c, { onlyIfEmpty: true });
+    const form = composers[col];
+    const ta = form.querySelector('textarea');
+    if (form.hidden) {
+      form.hidden = false;
+      addBtns[col].setAttribute('aria-expanded', 'true');
+    }
+    autosize(ta);
+    ta.focus({ preventScroll: true });
+    if (lists[col].scrollTop > 0) lists[col].scrollTo({ top: 0, behavior: still() ? 'auto' : 'smooth' });
+    const r = form.getBoundingClientRect();
+    if (r.top < 0 || r.bottom > window.innerHeight) form.scrollIntoView({ block: 'nearest' });
+  }
+
+  function closeComposer(col, { onlyIfEmpty = false, restoreFocus = false } = {}) {
+    const form = composers[col];
+    if (form.hidden) return;
+    const ta = form.querySelector('textarea');
+    if (onlyIfEmpty && ta.value.trim()) return;
+    form.hidden = true;
+    ta.value = '';
+    addBtns[col].setAttribute('aria-expanded', 'false');
+    if (restoreFocus) addBtns[col].focus();
+  }
+
+  function submitComposer(col) {
+    const form = composers[col];
+    const ta = form.querySelector('textarea');
+    const title = ta.value.trim().slice(0, 200);
+    if (!title) { shake(form); ta.focus(); return; }
+    commit((s) => {
+      s.lists[col].unshift({ id: uid(), no: s.seq, title, desc: '', prio: '', tags: [], due: '', created: Date.now() });
+      s.seq += 1;
+    });
+    ta.value = '';
+    autosize(ta);
+    ta.focus({ preventScroll: true });
+    lists[col].scrollTo({ top: 0, behavior: still() ? 'auto' : 'smooth' });
+    announce(`已在「${COL_NAME[col]}」添加「${short(title)}」`);
+  }
+
+  for (const col of COLS) {
+    const form = composers[col];
+    const ta = form.querySelector('textarea');
+    const btn = addBtns[col];
+    // 记录按下时的展开状态：失焦会先把空的输入框收起，点击时据此判断是“收起”还是“展开”
+    btn.addEventListener('pointerdown', () => { btn._wasOpen = !form.hidden; });
+    btn.addEventListener('click', () => {
+      const wasOpen = btn._wasOpen ?? !form.hidden;
+      btn._wasOpen = undefined;
+      if (wasOpen && !ta.value.trim()) closeComposer(col);
+      else openComposer(col);
+    });
+    ta.addEventListener('input', () => autosize(ta));
+    ta.addEventListener('keydown', (e) => {
+      // 中文输入法选词时的回车不提交
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
+        e.preventDefault();
+        submitComposer(col);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        closeComposer(col, { restoreFocus: true });
+      }
+    });
+    form.addEventListener('submit', (e) => { e.preventDefault(); submitComposer(col); });
+    form.querySelector('[data-cancel]').addEventListener('click', () => closeComposer(col, { restoreFocus: true }));
+    form.addEventListener('focusout', () => {
+      setTimeout(() => {
+        if (!form.hidden && !form.contains(document.activeElement)) closeComposer(col, { onlyIfEmpty: true });
+      }, 0);
+    });
+  }
+
+  /* ================= 编辑对话框 ================= */
+  const editor = $('#editor');
+  const ef = $('#editorForm');
+  const dueBtn = $('#dueBtn');
+  const dueText = $('#dueText');
+  const dueNative = $('#dueNative');
+  const dueClear = $('#dueClear');
+  let editingId = null;
+  let editorDue = '';
+  let backdropDown = false;
+
+  function setEditorDue(value) {
+    editorDue = value || '';
+    dueNative.value = editorDue;
+    if (editorDue) {
+      const n = dayDiff(editorDue);
+      const rel = n === 0 ? '今天' : n === 1 ? '明天' : n === -1 ? '昨天' : n > 0 ? `${n} 天后` : `已过 ${-n} 天`;
+      dueText.textContent = `${fmtDate(editorDue)} ${WEEK[parseYmd(editorDue).getDay()]} · ${rel}`;
+    } else {
+      dueText.textContent = '未设置';
+    }
+    dueBtn.classList.toggle('is-empty', !editorDue);
+    dueClear.hidden = !editorDue;
+  }
+
+  function checkRadio(name, value) {
+    for (const r of ef.querySelectorAll(`input[name="${name}"]`)) r.checked = r.value === value;
+  }
+
+  function openEditor(id) {
+    const pos = findCard(id);
+    if (!pos || editor.open) return;
+    if (lift) dropLift();
+    const c = pos.card;
+    editingId = id;
+    ef.elements.title.value = c.title;
+    ef.elements.desc.value = c.desc;
+    ef.elements.tags.value = c.tags.join(' ');
+    checkRadio('col', pos.list);
+    checkRadio('prio', c.prio);
+    setEditorDue(c.due);
+    $('#editorNo').textContent = `#${c.no}`;
+    $('#editorMeta').textContent = `创建于 ${fmtTime(c.created)}`;
+    editor.dataset.col = pos.list;
+    editor.showModal();
+    const t = ef.elements.title;
+    autosize(t);
+    t.focus();
+    t.setSelectionRange(t.value.length, t.value.length);
+  }
+
+  function saveEditor() {
+    const f = ef.elements;
+    const title = f.title.value.trim().slice(0, 200);
+    if (!title) { shake(f.title); f.title.focus(); return; }
+    const col = (ef.querySelector('input[name="col"]:checked') || {}).value || 'todo';
+    const prio = (ef.querySelector('input[name="prio"]:checked') || {}).value || '';
+    const desc = f.desc.value.trim().slice(0, 1000);
+    const tags = parseTags(f.tags.value);
+    const due = editorDue;
+    const id = editingId;
+    let toDone = false;
+    commit((s) => {
+      const pos = findCard(id, s);
+      if (!pos) return;
+      Object.assign(pos.card, { title, desc, prio, tags, due });
+      if (col !== pos.list) {
+        s.lists[pos.list].splice(pos.index, 1);
+        s.lists[col].unshift(pos.card);
+        toDone = col === 'done';
+      }
+    });
+    editor.close();
+    if (toDone) celebrate(cardEls.get(id));
+  }
+
+  ef.addEventListener('submit', (e) => { e.preventDefault(); saveEditor(); });
+  ef.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229) return;
+    if (e.ctrlKey || e.metaKey || (e.target === ef.elements.title && !e.shiftKey)) {
+      e.preventDefault();
+      saveEditor();
+    }
+  });
+  ef.elements.title.addEventListener('input', (e) => autosize(e.target));
+  for (const b of ef.querySelectorAll('[data-close]')) b.addEventListener('click', () => editor.close());
+  ef.addEventListener('change', (e) => {
+    if (e.target.name === 'col') editor.dataset.col = e.target.value;
+  });
+  editor.addEventListener('pointerdown', (e) => { backdropDown = e.target === editor; });
+  editor.addEventListener('click', (e) => {
+    if (e.target === editor && backdropDown) editor.close();
+    backdropDown = false;
+  });
+  editor.addEventListener('close', () => {
+    const id = editingId;
+    editingId = null;
+    if (pendingSync) { state = pendingSync; pendingSync = null; render(); }
+    const el = id && cardEls.get(id);
+    if (el && el.isConnected) el.focus({ preventScroll: true });
+  });
+  $('#editorDelete').addEventListener('click', () => {
+    const id = editingId;
+    editor.close();
+    if (id) deleteCard(id, true);
+  });
+
+  dueBtn.addEventListener('click', () => {
+    try {
+      dueNative.showPicker();
+    } catch (_) {
+      dueNative.classList.add('is-fallback');
+      dueBtn.hidden = true;
+      dueNative.focus();
+    }
+  });
+  dueNative.addEventListener('change', () => setEditorDue(dueNative.value));
+  dueClear.addEventListener('click', () => setEditorDue(''));
+  $('#dueQuick').addEventListener('click', (e) => {
+    const b = target(e).closest('[data-days]');
+    if (b) setEditorDue(addDays(Number(b.dataset.days)));
+  });
+
+  /* ================= 卡片点击 / 删除 ================= */
+  board.addEventListener('click', (e) => {
+    const t = target(e);
+    const del = t.closest('[data-action="delete"]');
+    if (del) { deleteCard(del.closest('.card').dataset.id, false); return; }
+    const card = t.closest('.card');
+    if (card && board.contains(card) && !t.closest('.grip')) openEditor(card.dataset.id);
+  });
+
+  function deleteCard(id, moveFocus) {
+    const pos = findCard(id);
+    if (!pos) return;
+    const arr = state.lists[pos.list];
+    const neighbor = arr[pos.index + 1] || arr[pos.index - 1];
+    const title = pos.card.title;
+    commit((s) => { const p = findCard(id, s); if (p) s.lists[p.list].splice(p.index, 1); });
+    if (moveFocus) {
+      const el = neighbor && cardEls.get(neighbor.id);
+      if (el) el.focus({ preventScroll: true }); else addBtns[pos.list].focus();
+    }
+    toast(`已删除「${short(title)}」`, { label: '撤销', run: undo });
+    announce(`已删除「${short(title)}」`);
+  }
+
+  /* ================= 撤销 / 重做 ================= */
+  function undo() {
+    if (!undoStack.length) { toast('没有可以撤销的操作'); return; }
+    redoStack.push(JSON.stringify(state));
+    state = JSON.parse(undoStack.pop());
+    save();
+    render();
+    toast('已撤销', { label: '重做', run: redo });
+  }
+
+  function redo() {
+    if (!redoStack.length) { toast('没有可以重做的操作'); return; }
+    undoStack.push(JSON.stringify(state));
+    state = JSON.parse(redoStack.pop());
+    save();
+    render();
+    toast('已重做', { label: '撤销', run: undo });
+  }
+
+  /* ================= 提示条 ================= */
+  const toastEl = $('#toast');
+  const toastMsg = $('#toastMsg');
+  const toastBtn = $('#toastAction');
+  let toastTimer = 0;
+  let toastAction = null;
+
+  function toast(msg, action = null) {
+    toastMsg.textContent = msg;
+    toastAction = action;
+    toastBtn.hidden = !action;
+    if (action) toastBtn.textContent = action.label;
+    restartClass(toastEl, 'is-show');
+    armToast(action ? 5200 : 2400);
+  }
+  function armToast(ms) { clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, ms); }
+  function hideToast() { clearTimeout(toastTimer); toastEl.classList.remove('is-show'); toastAction = null; }
+  toastBtn.addEventListener('click', () => { const a = toastAction; hideToast(); if (a) a.run(); });
+  toastEl.addEventListener('pointerenter', () => clearTimeout(toastTimer));
+  toastEl.addEventListener('pointerleave', () => { if (toastEl.classList.contains('is-show')) armToast(2400); });
+
+  /* ================= 恢复示例 ================= */
+  $('#resetBtn').addEventListener('click', () => {
+    const seed = seedState();
+    const changed = commit((s) => { s.v = seed.v; s.seq = seed.seq; s.lists = seed.lists; });
+    toast(changed ? '已恢复示例数据' : '当前已经是示例数据', changed ? { label: '撤销', run: undo } : null);
+  });
+
+  /* ================= 多标签页同步 ================= */
+  window.addEventListener('storage', (e) => {
+    if (e.key !== STORAGE_KEY || !e.newValue) return;
+    let next = null;
+    try { next = normalize(JSON.parse(e.newValue)); } catch (_) { return; }
+    if (!next) return;
+    if (drag.phase !== 'idle' || lift || editor.open) { pendingSync = next; return; }
+    state = next;
+    pendingSync = null;
+    render();
+    paintSaveState(true, '已同步其他标签页的改动');
+  });
+
+  /* ================= 初始化 ================= */
+  state = readStorage();
+  if (!state) {
+    state = seedState();
+    save(false);
+  } else {
+    paintSaveState(false);
+  }
+  const now = new Date();
+  $('#today').textContent = `${now.getMonth() + 1}月${now.getDate()}日 ${WEEK[now.getDay()]}`;
+  if (/Mac|iPhone|iPad|iPod/.test(navigator.platform || '')) {
+    for (const k of document.querySelectorAll('.kbd-mod')) k.textContent = '⌘';
+  }
+  render({ stagger: true });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1334 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f3f0e8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1310" media="(prefers-color-scheme: dark)">
+<meta name="description" content="乔木 LLM 擂台登录页：每个控件都有标签，错误通过 aria-live 播报，显示密码按钮使用 aria-pressed，键盘焦点清晰可见，提交时校验邮箱格式。">
+<title>登录 · 乔木 LLM 擂台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%230b5d3b'/%3E%3Cpath d='M20 30.5V20' stroke='%23fff' stroke-width='3.2' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='14.5' r='6.5' fill='%23fff'/%3E%3Ccircle cx='13.5' cy='18.5' r='4.6' fill='%23fff'/%3E%3Ccircle cx='26.5' cy='18.5' r='4.6' fill='%23fff'/%3E%3Cpath d='M9.5 31h21' stroke='%23f2b53a' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Mono CJK SC", monospace;
+  --bg: #f3f0e8;
+  --glow-1: rgba(11, 93, 59, .13);
+  --glow-2: rgba(236, 168, 30, .17);
+  --dot: rgba(23, 34, 28, .09);
+  --surface: #ffffff;
+  --surface-2: #f5f3ed;
+  --surface-3: #ebe9e1;
+  --text: #17221c;
+  --text-muted: #4b5a52;
+  --border: #6c7a72;
+  --border-strong: #37443d;
+  --line: #e3dfd4;
+  --primary: #0b5d3b;
+  --primary-hover: #084a2f;
+  --primary-active: #063a25;
+  --primary-soft: #e2f0e8;
+  --on-primary: #ffffff;
+  --link: #0b5d3b;
+  --danger: #b42318;
+  --danger-soft: #fdf2f0;
+  --warn-text: #6b4300;
+  --warn-soft: #fff3d1;
+  --tag-text: #7a3410;
+  --tag-bg: #fcefe3;
+  --focus-ring: #13201a;
+  --focus-halo: rgba(242, 170, 20, .5);
+  --notes-a: #0e6443;
+  --notes-b: #0a4d33;
+  --notes-c: #083c28;
+  --shadow: 0 1px 2px rgba(16, 28, 22, .06), 0 28px 64px -28px rgba(16, 44, 30, .38);
+  --radius: .75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c1310;
+    --glow-1: rgba(76, 197, 139, .10);
+    --glow-2: rgba(255, 196, 80, .07);
+    --dot: rgba(229, 238, 233, .06);
+    --surface: #141d18;
+    --surface-2: #1b2620;
+    --surface-3: #24322b;
+    --text: #e5eee9;
+    --text-muted: #a9b9b0;
+    --border: #84978c;
+    --border-strong: #b8c7bf;
+    --line: #2a3831;
+    --primary: #4cc58b;
+    --primary-hover: #66d29d;
+    --primary-active: #3cb07a;
+    --primary-soft: #183a2a;
+    --on-primary: #04160e;
+    --link: #7ddcad;
+    --danger: #ff8e84;
+    --danger-soft: #2a1614;
+    --warn-text: #ffd98a;
+    --warn-soft: #2e2410;
+    --tag-text: #ffc9a3;
+    --tag-bg: #3a2418;
+    --focus-ring: #ffd36b;
+    --focus-halo: rgba(255, 211, 107, .28);
+    --notes-a: #0d4a33;
+    --notes-b: #0a3a28;
+    --notes-c: #072c1e;
+    --shadow: 0 0 0 1px #24322b, 0 28px 64px -28px rgba(0, 0, 0, .75);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root { --text-muted: var(--text); --border: var(--border-strong); --line: var(--border); }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+[hidden] { display: none !important; }
+h1, h2, h3, p { margin: 0; }
+p, li { text-wrap: pretty; }
+button, input { font: inherit; color: inherit; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  background:
+    radial-gradient(56rem 32rem at 6% -12%, var(--glow-1), transparent 62%),
+    radial-gradient(46rem 30rem at 102% 108%, var(--glow-2), transparent 60%),
+    var(--bg);
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.3px);
+  background-size: 1.375rem 1.375rem;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 10%, transparent 80%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 10%, transparent 80%);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.i {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- 焦点：双色焦点环，仅在键盘等需要时出现 ---------- */
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 8px var(--focus-halo);
+}
+[tabindex="-1"]:focus { outline: none; box-shadow: none; }
+
+.skip-link {
+  position: absolute;
+  top: .75rem;
+  left: 1rem;
+  z-index: 100;
+  padding: .625rem 1rem;
+  border-radius: .625rem;
+  background: var(--text);
+  color: var(--surface);
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-180%);
+  transition: transform .15s ease-out;
+}
+.skip-link:focus { transform: none; }
+
+/* ---------- 页眉 ---------- */
+.site-header {
+  width: 100%;
+  max-width: 73rem;
+  margin-inline: auto;
+  padding: .875rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.brand { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+.logo { width: 2.25rem; height: 2.25rem; flex: none; }
+.brand-name { font-size: 1.1875rem; font-weight: 800; letter-spacing: .02em; white-space: nowrap; }
+.brand-name .sub { color: var(--primary); }
+.brand-tagline {
+  font-size: .84375rem;
+  color: var(--text-muted);
+  padding-left: .75rem;
+  border-left: 1px solid var(--line);
+  white-space: nowrap;
+}
+.header-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  min-height: 2.75rem;
+  padding: 0 .75rem;
+  border-radius: .625rem;
+  color: var(--link);
+  font-size: .90625rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+  white-space: nowrap;
+}
+.header-link:hover { background: var(--glow-1); }
+
+/* ---------- 主体卡片 ---------- */
+.stage {
+  flex: 1 0 auto;
+  display: grid;
+  place-items: center;
+  padding: .25rem 1.5rem 1.25rem;
+}
+.shell {
+  width: 100%;
+  max-width: 70rem;
+  display: grid;
+  grid-template-columns: minmax(0, 30rem) minmax(0, 1fr);
+  background: var(--surface);
+  border-radius: 1.75rem;
+  box-shadow: var(--shadow);
+  outline: 1px solid transparent;
+  animation: rise .55s cubic-bezier(.2, .7, .2, 1) both;
+}
+@keyframes rise { from { opacity: 0; transform: translateY(.75rem); } }
+
+.pane-form {
+  min-width: 0;
+  padding: 2.5rem 3rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.intro { margin-bottom: 1.5rem; }
+.intro h1 { font-size: 1.875rem; line-height: 1.25; font-weight: 800; letter-spacing: .03em; }
+.lede { margin-top: .5rem; color: var(--text-muted); font-size: .9375rem; }
+
+/* 错误摘要（视觉版；读屏播报走下方的 aria-live 区域） */
+.error-summary {
+  margin-bottom: 1.25rem;
+  padding: .875rem 1rem .875rem 1.125rem;
+  border: 2px solid var(--danger);
+  border-left-width: .375rem;
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  animation: fade-in .2s ease-out;
+}
+.summary-title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--danger);
+  font-size: .96875rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.summary-list { margin: .375rem 0 0; padding-left: 1.75rem; color: var(--danger); font-size: .875rem; line-height: 1.55; }
+.summary-list li + li { margin-top: .125rem; }
+.summary-list a { color: var(--danger); font-weight: 500; text-decoration: underline; text-underline-offset: .2em; overflow-wrap: anywhere; border-radius: .25rem; }
+.summary-list a:hover { text-decoration-thickness: 2px; }
+@keyframes fade-in { from { opacity: 0; transform: translateY(-.25rem); } }
+
+/* 表单字段 */
+.form { display: grid; gap: 1.125rem; }
+.label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .125rem .75rem;
+  margin-bottom: .5rem;
+}
+.label { font-size: .9375rem; font-weight: 700; line-height: 1.4; cursor: pointer; }
+.req {
+  display: inline-block;
+  margin-left: .5rem;
+  padding: 0 .4375rem;
+  border-radius: 999px;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  font-size: .75rem;
+  font-weight: 700;
+  line-height: 1.5;
+  vertical-align: .0625rem;
+}
+.hint { font-size: .84375rem; color: var(--text-muted); line-height: 1.4; }
+
+.input-wrap { position: relative; flex: 1 1 auto; min-width: 0; }
+.input-icon {
+  position: absolute;
+  left: .875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.input {
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+  padding: .625rem .875rem .625rem 2.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color .15s, background-color .15s;
+}
+.input:hover { border-color: var(--border-strong); }
+.input:focus-visible { border-color: var(--primary); }
+.field.has-error .input {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  box-shadow: inset 0 0 0 1px var(--danger);
+}
+.field.has-error .input:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--danger), 0 0 0 2px var(--surface), 0 0 0 8px var(--focus-halo);
+}
+.field.has-error .input-icon { color: var(--danger); }
+
+.field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: .375rem;
+  margin-top: .5rem;
+  color: var(--danger);
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.field-error:empty { display: none; }
+.field-error .i { width: 1.125rem; height: 1.125rem; margin-top: .09rem; }
+
+.caps-hint {
+  display: flex;
+  align-items: center;
+  gap: .375rem;
+  margin-top: .5rem;
+  padding: .3125rem .625rem;
+  border-radius: .5rem;
+  background: var(--warn-soft);
+  color: var(--warn-text);
+  font-size: .84375rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.caps-hint:empty { display: none; }
+.caps-hint .i { width: 1.125rem; height: 1.125rem; }
+
+/* 密码 + 显示密码开关 */
+.pw-group { display: flex; gap: .5rem; align-items: stretch; }
+.reveal {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .375rem;
+  min-height: 3rem;
+  min-width: 3rem;
+  padding: 0 .875rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: .90625rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.reveal:hover { background: var(--surface-3); border-color: var(--border-strong); }
+.reveal .pupil { fill: none; transition: fill .15s; }
+.reveal[aria-pressed="true"] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, .22);
+}
+.reveal[aria-pressed="true"]:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+.reveal[aria-pressed="true"] .pupil { fill: currentColor; }
+.reveal[aria-pressed="true"]:focus-visible {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, .22), 0 0 0 2px var(--surface), 0 0 0 8px var(--focus-halo);
+}
+
+/* 记住我 / 忘记密码 */
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .25rem 1rem;
+  margin-top: -.25rem;
+}
+.check { display: flex; align-items: center; gap: .625rem; min-height: 2.75rem; }
+.check input { width: 1.25rem; height: 1.25rem; margin: 0; flex: none; accent-color: var(--primary); cursor: pointer; }
+.check label { font-size: .90625rem; cursor: pointer; }
+.link-btn {
+  min-height: 2.75rem;
+  padding: 0 .25rem;
+  border: 0;
+  border-radius: .375rem;
+  background: none;
+  color: var(--link);
+  font-size: .90625rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+  cursor: pointer;
+}
+.link-btn:hover { text-decoration-thickness: 2px; }
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .625rem;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, transform .05s;
+}
+.btn-primary { background: var(--primary); color: var(--on-primary); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:active { background: var(--primary-active); transform: translateY(1px); }
+.btn-block { width: 100%; min-height: 3.125rem; font-size: 1.03125rem; letter-spacing: .12em; }
+.btn-secondary { background: var(--surface); color: var(--text); border: 1.5px solid var(--border); }
+.btn-secondary:hover { background: var(--surface-2); border-color: var(--border-strong); }
+.btn[aria-disabled="true"] { cursor: progress; }
+.btn[aria-disabled="true"]:active { transform: none; }
+.spinner {
+  display: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  border: 2.5px solid currentColor;
+  border-right-color: transparent;
+  animation: spin .8s linear infinite;
+}
+.is-loading .spinner { display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.invite {
+  margin-top: 1.25rem;
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--line);
+  color: var(--text-muted);
+  font-size: .875rem;
+  text-align: center;
+}
+
+/* 登录成功 */
+.success { display: flex; flex-direction: column; align-items: center; gap: .75rem; text-align: center; padding: 1rem 0; }
+.success-icon {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  color: var(--primary);
+  animation: pop .35s cubic-bezier(.2, .9, .3, 1.3) both;
+}
+.success-icon .i { width: 2.5rem; height: 2.5rem; stroke-width: 2.4; }
+.success-icon.small { width: 3.5rem; height: 3.5rem; }
+.success-icon.small .i { width: 1.875rem; height: 1.875rem; }
+.success h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: .03em; }
+.success strong { overflow-wrap: anywhere; }
+.muted { color: var(--text-muted); font-size: .90625rem; }
+.success .btn { margin-top: .75rem; }
+@keyframes pop { from { opacity: 0; transform: scale(.6); } }
+
+/* ---------- 右栏：无障碍说明 ---------- */
+.pane-notes {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  padding: 2.25rem 2.5rem 2.25rem;
+  border-radius: 0 1.75rem 1.75rem 0;
+  background: linear-gradient(155deg, var(--notes-a) 0%, var(--notes-b) 50%, var(--notes-c) 100%);
+  color: #e8f3ed;
+}
+.pane-notes::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -15rem;
+  right: -13rem;
+  width: 34rem;
+  height: 34rem;
+  background: repeating-radial-gradient(circle, rgba(255, 255, 255, .075) 0 1.5px, transparent 1.5px 2.125rem);
+  -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 20%, transparent 68%);
+  pointer-events: none;
+}
+.notes-tag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  padding: .125rem .625rem;
+  border-radius: 999px;
+  background: #ffd27a;
+  color: #3a2600;
+  font-size: .78125rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+.pane-notes h2 { font-size: 1.5rem; line-height: 1.35; font-weight: 800; color: #fff; letter-spacing: .02em; margin-top: -.375rem; }
+.features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.375rem;
+}
+.feature { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); gap: .75rem; align-items: start; }
+.f-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: .625rem;
+  background: rgba(255, 255, 255, .1);
+  border: 1px solid rgba(255, 255, 255, .18);
+  color: #ffd27a;
+}
+.feature strong { display: block; color: #fff; font-size: .9375rem; line-height: 1.45; margin-bottom: .125rem; }
+.feature p { color: #d3e6db; font-size: .8125rem; line-height: 1.6; }
+.pane-notes code {
+  font-family: var(--mono);
+  font-size: .86em;
+  padding: .05em .35em;
+  border-radius: .3em;
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* 读屏语音查看器（视觉演示，对读屏隐藏以免重复朗读） */
+.viewer {
+  flex: 1 1 auto;
+  min-height: 9.5rem;
+  display: flex;
+  flex-direction: column;
+  margin-top: .25rem;
+  padding: .75rem 1rem .875rem;
+  border-radius: 1rem;
+  background: rgba(2, 22, 14, .5);
+  border: 1px solid rgba(255, 255, 255, .14);
+}
+.viewer-head { display: flex; align-items: center; gap: .5rem; color: #fff; font-size: .8125rem; font-weight: 700; letter-spacing: .04em; }
+.viewer-head .i { width: 1.125rem; height: 1.125rem; color: #ffd27a; }
+.viewer-dot { width: .5rem; height: .5rem; border-radius: 50%; background: #5ee0a0; box-shadow: 0 0 0 3px rgba(94, 224, 160, .2); }
+.viewer-badge { margin-left: auto; padding: 0 .5rem; border-radius: 999px; background: rgba(255, 255, 255, .12); color: #d3e6db; font-size: .71875rem; font-weight: 600; line-height: 1.6; }
+.viewer-log {
+  flex: 1 1 0;
+  min-height: 0;
+  list-style: none;
+  margin: .625rem 0 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: .4375rem;
+  font-size: .8125rem;
+  line-height: 1.55;
+  -webkit-mask-image: linear-gradient(to top, transparent 0, #000 1.75rem);
+  mask-image: linear-gradient(to top, transparent 0, #000 1.75rem);
+}
+.viewer-log li { flex: none; }
+.v-empty { margin: auto 0; padding: 0 1rem 1rem; color: #b9d3c6; text-align: center; }
+.v-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .5rem; align-items: baseline; color: #c2d9cc; animation: log-in .25s ease-out; }
+.v-item:first-child .v-text { color: #fff; }
+.v-tag { padding: 0 .4375rem; border-radius: .375rem; font-size: .6875rem; font-weight: 800; line-height: 1.6; white-space: nowrap; }
+.v-focus .v-tag { background: #cfe0ff; color: #12306b; }
+.v-live .v-tag { background: #ffd27a; color: #3a2600; }
+.v-state .v-tag { background: #bdebd3; color: #0b3a27; }
+.v-text { overflow-wrap: anywhere; }
+@keyframes log-in { from { opacity: 0; transform: translateY(-.375rem); } }
+
+/* ---------- 页脚 ---------- */
+.site-footer {
+  padding: 0 1.5rem 1.125rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: .8125rem;
+}
+
+/* ---------- 找回密码对话框 ---------- */
+.dialog {
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 30px 80px -24px rgba(0, 0, 0, .5);
+}
+.dialog[open] { animation: dialog-in .2s ease-out; }
+.dialog::backdrop { background: rgba(10, 20, 15, .55); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(.5rem) scale(.98); } }
+.dialog-inner { padding: 1.5rem 1.75rem 1.75rem; }
+.dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .375rem; }
+.dialog-head h2 { font-size: 1.3125rem; font-weight: 800; }
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-right: -.625rem;
+  border: 2px solid transparent;
+  border-radius: .625rem;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+.dialog-desc { color: var(--text-muted); font-size: .90625rem; margin-bottom: 1.125rem; }
+.dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; }
+.forgot-done { display: flex; flex-direction: column; align-items: center; gap: .625rem; text-align: center; padding-top: .5rem; }
+.forgot-done h3 { font-size: 1.1875rem; font-weight: 800; }
+.forgot-done p { color: var(--text-muted); font-size: .90625rem; overflow-wrap: anywhere; }
+.forgot-done .btn { margin-top: .75rem; min-width: 8rem; }
+
+.noscript { max-width: 40rem; margin: 0 auto 1rem; padding: .75rem 1rem; border-radius: var(--radius); background: var(--warn-soft); color: var(--warn-text); text-align: center; }
+
+/* ---------- 响应式：放大到 200% / 400% 时自动变为单栏 ---------- */
+@media (min-width: 100em) and (min-height: 58em) {
+  html { font-size: 106.25%; }
+}
+@media (min-width: 110em) and (min-height: 62em) {
+  html { font-size: 112.5%; }
+}
+@media (max-width: 58em) {
+  .shell { grid-template-columns: minmax(0, 1fr); max-width: 34rem; }
+  .pane-notes { border-radius: 0 0 1.75rem 1.75rem; }
+  .stage { place-items: start center; }
+}
+@media (max-width: 40em) {
+  .brand-tagline { display: none; }
+}
+@media (max-width: 30em) {
+  .site-header { padding: .625rem 1rem; }
+  .stage { padding: .25rem .75rem 1rem; }
+  .shell { border-radius: 1.375rem; }
+  .pane-form { padding: 1.75rem 1.25rem 1.5rem; }
+  .pane-notes { padding: 1.75rem 1.25rem; border-radius: 0 0 1.375rem 1.375rem; }
+  .features { grid-template-columns: minmax(0, 1fr); }
+  .intro h1 { font-size: 1.625rem; }
+  .dialog-inner { padding: 1.25rem 1.25rem 1.5rem; }
+  .badge-extra { display: none; }
+}
+@media (max-width: 22em) {
+  .brand-name { font-size: 1.0625rem; }
+  .header-link { padding: 0 .5rem; }
+  .reveal { padding: 0 .75rem; }
+  .reveal-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* ---------- Windows 高对比度 / 强制颜色 ---------- */
+@media (forced-colors: active) {
+  :focus-visible { outline: 3px solid Highlight; outline-offset: 2px; }
+  .reveal[aria-pressed="true"],
+  .reveal[aria-pressed="true"]:hover { forced-color-adjust: none; background: Highlight; color: HighlightText; border-color: Highlight; }
+  .field.has-error .input { border-width: 3px; }
+  .error-summary, .caps-hint, .pane-notes, .viewer { border: 1px solid CanvasText; }
+  .notes-tag, .v-tag, .req { border: 1px solid CanvasText; }
+}
+
+/* ---------- 减少动态效果 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .spinner { border-style: dotted; }
+}
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.8 7.2 8.2 5.8 8.2-5.8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10.5" rx="2.5"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/><path d="M12 14.2v2.4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle class="pupil" cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.2"/><path d="M12 16.2v.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-caps" viewBox="0 0 24 24"><path d="M12 4.5 4.8 11.7h3.9V15h6.6v-3.3h3.9Z"/><path d="M8.7 19h6.6"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4Z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5"/><path d="M18 7a7 7 0 0 1 0 10"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3.5 12.2V5A1.5 1.5 0 0 1 5 3.5h7.2l8.3 8.3-8.7 8.7Z"/><circle cx="8" cy="8" r="1.4"/></symbol>
+  <symbol id="i-toggle" viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="5.5"/><circle cx="16" cy="12" r="3"/></symbol>
+  <symbol id="i-focus" viewBox="0 0 24 24"><path d="M4 8.5V6a2 2 0 0 1 2-2h2.5M15.5 4H18a2 2 0 0 1 2 2v2.5M20 15.5V18a2 2 0 0 1-2 2h-2.5M8.5 20H6a2 2 0 0 1-2-2v-2.5"/><circle cx="12" cy="12" r="3.2"/></symbol>
+  <symbol id="i-at" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.8"/><path d="M15.8 8.2v5.3a2.7 2.7 0 0 0 5.4 0V12a9.2 9.2 0 1 0-3.6 7.3"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">跳到登录表单</a>
+
+<header class="site-header">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+      <rect width="40" height="40" rx="11" fill="#0b5d3b"/>
+      <path d="M20 30.5V20" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+      <circle cx="20" cy="14.5" r="6.5" fill="#fff"/>
+      <circle cx="13.5" cy="18.5" r="4.6" fill="#fff"/>
+      <circle cx="26.5" cy="18.5" r="4.6" fill="#fff"/>
+      <path d="M9.5 31h21" stroke="#f2b53a" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-name">乔木 <span class="sub">LLM 擂台</span></span>
+    <span class="brand-tagline">大模型匿名对战 · 人人都是评委</span>
+  </div>
+  <a class="header-link" href="#a11y-notes">无障碍说明</a>
+</header>
+
+<noscript><p class="noscript">本页的校验与演示功能需要启用 JavaScript。</p></noscript>
+
+<div class="stage">
+  <div class="shell">
+    <main id="main" class="pane-form">
+      <div id="login-view">
+        <div class="intro">
+          <h1 id="login-title">登录</h1>
+          <p class="lede">欢迎回到乔木 LLM 擂台，继续为大模型对决投票。</p>
+        </div>
+
+        <div id="error-summary" class="error-summary" hidden>
+          <h2 class="summary-title"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg><span id="summary-title-text"></span></h2>
+          <ul id="summary-list" class="summary-list"></ul>
+        </div>
+
+        <form id="login-form" class="form" method="post" action="#" aria-labelledby="login-title">
+          <div class="field">
+            <div class="label-row">
+              <label class="label" for="email">邮箱<span class="req" aria-hidden="true">必填</span></label>
+              <span class="hint" id="email-hint">例如 name@example.com</span>
+            </div>
+            <div class="input-wrap">
+              <svg class="i input-icon" aria-hidden="true"><use href="#i-mail"/></svg>
+              <input class="input" id="email" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" enterkeyhint="next" required aria-describedby="email-error email-hint">
+            </div>
+            <p class="field-error" id="email-error"></p>
+          </div>
+
+          <div class="field">
+            <div class="label-row">
+              <label class="label" for="password">密码<span class="req" aria-hidden="true">必填</span></label>
+              <span class="hint" id="password-hint">区分大小写</span>
+            </div>
+            <div class="pw-group">
+              <div class="input-wrap">
+                <svg class="i input-icon" aria-hidden="true"><use href="#i-lock"/></svg>
+                <input class="input" id="password" name="password" type="password" autocomplete="current-password" enterkeyhint="go" required aria-describedby="password-error password-caps password-hint">
+              </div>
+              <button class="reveal" id="toggle-password" type="button" aria-pressed="false" aria-controls="password">
+                <svg class="i" aria-hidden="true"><use href="#i-eye"/></svg>
+                <span class="reveal-text">显示密码</span>
+              </button>
+            </div>
+            <p class="caps-hint" id="password-caps"></p>
+            <p class="field-error" id="password-error"></p>
+          </div>
+
+          <div class="form-row">
+            <div class="check">
+              <input type="checkbox" id="remember" name="remember">
+              <label for="remember">30 天内保持登录</label>
+            </div>
+            <button class="link-btn" id="forgot-open" type="button">忘记密码？</button>
+          </div>
+
+          <button class="btn btn-primary btn-block" id="submit-btn" type="submit">
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="submit-label">登录</span>
+          </button>
+        </form>
+
+        <p class="invite">还没有账号？擂台目前采用邀请制，可向管理员申请邀请码。</p>
+      </div>
+
+      <div id="success-view" class="success" hidden>
+        <div class="success-icon" aria-hidden="true"><svg class="i"><use href="#i-check"/></svg></div>
+        <h1 id="success-title" tabindex="-1">登录成功</h1>
+        <p>欢迎回来，<strong id="success-email"></strong>。</p>
+        <p class="muted" id="success-remember" hidden>已开启「30 天内保持登录」。</p>
+        <p class="muted">这是纯前端演示，没有真实的账号系统；你输入的内容不会离开这个页面。</p>
+        <button class="btn btn-secondary" id="logout-btn" type="button">退出登录，返回表单</button>
+      </div>
+
+      <div id="live-region" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+    </main>
+
+    <aside id="a11y-notes" class="pane-notes" aria-labelledby="notes-title">
+      <p class="notes-tag">无障碍设计</p>
+      <h2 id="notes-title">每一位评委，都能顺利进场</h2>
+      <ul class="features" role="list">
+        <li class="feature">
+          <span class="f-icon" aria-hidden="true"><svg class="i"><use href="#i-tag"/></svg></span>
+          <div><strong>每个控件都有标签</strong><p>输入框用 <code lang="en">&lt;label&gt;</code> 关联，按钮都有可读的名称。</p></div>
+        </li>
+        <li class="feature">
+          <span class="f-icon" aria-hidden="true"><svg class="i"><use href="#i-speaker"/></svg></span>
+          <div><strong>错误用 <code lang="en">aria-live</code> 播报</strong><p>提交后朗读错误摘要，并聚焦到第一个出错项。</p></div>
+        </li>
+        <li class="feature">
+          <span class="f-icon" aria-hidden="true"><svg class="i"><use href="#i-toggle"/></svg></span>
+          <div><strong>开关状态用 <code lang="en">aria-pressed</code></strong><p>「显示密码」报告已按下 / 未按下，名称保持不变。</p></div>
+        </li>
+        <li class="feature">
+          <span class="f-icon" aria-hidden="true"><svg class="i"><use href="#i-focus"/></svg></span>
+          <div><strong>焦点始终清晰可见</strong><p>键盘操作时出现双色焦点环，由 <code lang="en">:focus-visible</code> 控制。</p></div>
+        </li>
+        <li class="feature">
+          <span class="f-icon" aria-hidden="true"><svg class="i"><use href="#i-at"/></svg></span>
+          <div><strong>提交时校验邮箱格式</strong><p>指出具体哪里不对，并给出正确写法示例。</p></div>
+        </li>
+        <li class="feature">
+          <span class="f-icon" aria-hidden="true"><svg class="i"><use href="#i-sliders"/></svg></span>
+          <div><strong>尊重系统偏好设置</strong><p>适配深色、高对比度、减少动态效果与页面放大。</p></div>
+        </li>
+      </ul>
+
+      <div class="viewer" aria-hidden="true">
+        <div class="viewer-head">
+          <span class="viewer-dot"></span>
+          <svg class="i"><use href="#i-speaker"/></svg>
+          <span>读屏语音查看器</span>
+          <span class="viewer-badge">模拟<span class="badge-extra"> · 对读屏隐藏</span></span>
+        </div>
+        <ol class="viewer-log" id="viewer-log">
+          <li class="v-empty">按 Tab 键浏览表单，或直接点击「登录」，这里会实时显示读屏软件将要朗读的内容。</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>© 2026 乔木 LLM 擂台 · 纯前端演示：不连接后端，你输入的内容不会离开本页面。</p>
+</footer>
+
+<dialog id="forgot-dialog" class="dialog" aria-labelledby="forgot-title" aria-describedby="forgot-desc">
+  <div class="dialog-inner">
+    <div class="dialog-head">
+      <h2 id="forgot-title">找回密码</h2>
+      <button class="icon-btn" id="forgot-close" type="button" aria-label="关闭"><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <form id="forgot-form" method="post" action="#">
+      <p class="dialog-desc" id="forgot-desc">输入注册时使用的邮箱，我们会发送一封重置密码的邮件。</p>
+      <div class="field">
+        <div class="label-row">
+          <label class="label" for="forgot-email">注册邮箱<span class="req" aria-hidden="true">必填</span></label>
+        </div>
+        <div class="input-wrap">
+          <svg class="i input-icon" aria-hidden="true"><use href="#i-mail"/></svg>
+          <input class="input" id="forgot-email" name="forgot-email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" enterkeyhint="send" required aria-describedby="forgot-email-error">
+        </div>
+        <p class="field-error" id="forgot-email-error"></p>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn btn-secondary" id="forgot-cancel" type="button">取消</button>
+        <button class="btn btn-primary" type="submit">发送重置邮件</button>
+      </div>
+    </form>
+    <div id="forgot-done" class="forgot-done" hidden>
+      <div class="success-icon small" aria-hidden="true"><svg class="i"><use href="#i-check"/></svg></div>
+      <h3 id="forgot-done-title" tabindex="-1">请查收邮件</h3>
+      <p id="forgot-done-text"></p>
+      <button class="btn btn-primary" id="forgot-finish" type="button">完成</button>
+    </div>
+    <div id="forgot-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  'use strict';
+
+  const $ = (selector) => document.querySelector(selector);
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const baseTitle = document.title;
+
+  const el = {
+    form: $('#login-form'),
+    email: $('#email'),
+    password: $('#password'),
+    toggle: $('#toggle-password'),
+    remember: $('#remember'),
+    submit: $('#submit-btn'),
+    submitLabel: $('#submit-label'),
+    summary: $('#error-summary'),
+    summaryText: $('#summary-title-text'),
+    summaryList: $('#summary-list'),
+    live: $('#live-region'),
+    caps: $('#password-caps'),
+    loginView: $('#login-view'),
+    successView: $('#success-view'),
+    successTitle: $('#success-title'),
+    successEmail: $('#success-email'),
+    successRemember: $('#success-remember'),
+    logout: $('#logout-btn'),
+    forgotOpen: $('#forgot-open'),
+    dialog: $('#forgot-dialog'),
+    forgotForm: $('#forgot-form'),
+    forgotEmail: $('#forgot-email'),
+    forgotLive: $('#forgot-live'),
+    forgotDone: $('#forgot-done'),
+    forgotDoneTitle: $('#forgot-done-title'),
+    forgotDoneText: $('#forgot-done-text'),
+    viewerLog: $('#viewer-log'),
+  };
+
+  // 有 JS 时接管校验；没有 JS 时仍保留浏览器原生的必填 / 邮箱校验。
+  el.form.noValidate = true;
+  el.forgotForm.noValidate = true;
+
+  function icon(name) {
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', 'i');
+    svg.setAttribute('aria-hidden', 'true');
+    const use = document.createElementNS(SVG_NS, 'use');
+    use.setAttribute('href', '#' + name);
+    svg.append(use);
+    return svg;
+  }
+
+  /* ---------- 读屏语音查看器：把焦点、状态变化和实时区域的播报可视化 ---------- */
+  const speech = (() => {
+    const TAGS = { focus: '焦点', live: '实时播报', state: '状态' };
+    let muted = false;
+    return {
+      say(kind, text) {
+        if (muted || !text) return;
+        const empty = el.viewerLog.querySelector('.v-empty');
+        if (empty) empty.remove();
+        const item = document.createElement('li');
+        item.className = 'v-item v-' + kind;
+        const tag = document.createElement('span');
+        tag.className = 'v-tag';
+        tag.textContent = TAGS[kind];
+        const body = document.createElement('span');
+        body.className = 'v-text';
+        body.textContent = text;
+        item.append(tag, body);
+        el.viewerLog.prepend(item);
+        while (el.viewerLog.children.length > 8) el.viewerLog.lastElementChild.remove();
+      },
+      quietly(fn) {
+        muted = true;
+        try { fn(); } finally { muted = false; }
+      },
+    };
+  })();
+
+  function textOf(node) {
+    let out = '';
+    for (const child of node.childNodes) {
+      if (child.nodeType === Node.TEXT_NODE) out += child.nodeValue;
+      else if (child.nodeType === Node.ELEMENT_NODE && !child.hidden
+        && child.getAttribute('aria-hidden') !== 'true' && child.localName !== 'svg') out += textOf(child);
+    }
+    return out.replace(/\s+/g, ' ').trim();
+  }
+
+  function textOfIds(ids) {
+    return (ids || '').split(/\s+/).filter(Boolean)
+      .map((id) => { const node = document.getElementById(id); return node ? textOf(node) : ''; })
+      .filter(Boolean).join(' ');
+  }
+
+  function nameOf(node) {
+    if (node.hasAttribute('aria-labelledby')) return textOfIds(node.getAttribute('aria-labelledby'));
+    if (node.hasAttribute('aria-label')) return node.getAttribute('aria-label').trim();
+    if (node.labels && node.labels.length) return textOf(node.labels[0]);
+    return /^(A|BUTTON|H[1-6])$/.test(node.tagName) ? textOf(node) : '';
+  }
+
+  function roleOf(node) {
+    switch (node.tagName) {
+      case 'A': return '链接';
+      case 'BUTTON': return node.hasAttribute('aria-pressed') ? '切换按钮' : '按钮';
+      case 'INPUT':
+        if (node.type === 'checkbox') return '复选框';
+        return node.type === 'password' ? '密码编辑框' : '编辑框';
+      case 'MAIN': return '主要内容 地标';
+      case 'ASIDE': return '补充内容 地标';
+      case 'DIALOG': return '对话框';
+      default: return /^H[1-6]$/.test(node.tagName) ? `标题 ${node.tagName[1]} 级` : '';
+    }
+  }
+
+  function describe(node) {
+    const parts = [nameOf(node), roleOf(node)];
+    if (node.hasAttribute('aria-pressed')) parts.push(node.getAttribute('aria-pressed') === 'true' ? '已按下' : '未按下');
+    if (node.type === 'checkbox') parts.push(node.checked ? '已勾选' : '未勾选');
+    if (node.required) parts.push('必填');
+    if (node.getAttribute('aria-invalid') === 'true') parts.push('无效输入');
+    if (node.getAttribute('aria-disabled') === 'true') parts.push('不可用');
+    if (node.tagName === 'INPUT' && node.type !== 'checkbox') {
+      if (!node.value) parts.push('空白');
+      else parts.push(node.type === 'password' ? `已输入 ${[...node.value].length} 个字符` : node.value);
+    }
+    parts.push(textOfIds(node.getAttribute('aria-describedby')));
+    return parts.filter(Boolean).join('，');
+  }
+
+  document.addEventListener('focusin', (event) => {
+    const target = event.target;
+    if (target instanceof HTMLElement && target !== document.body) speech.say('focus', describe(target));
+  });
+
+  // 页内跳转把焦点真正移到目标区域；tabindex 只临时加上，免得鼠标点空白处也把整块区域聚焦。
+  for (const link of document.querySelectorAll('.skip-link, .header-link')) {
+    link.addEventListener('click', (event) => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+      event.preventDefault();
+      target.setAttribute('tabindex', '-1');
+      target.focus();
+      target.addEventListener('blur', () => target.removeAttribute('tabindex'), { once: true });
+    });
+  }
+
+  /* ---------- 实时区域：先清空再写入，保证相同的消息也会被再次朗读 ---------- */
+  function announce(region, message) {
+    clearTimeout(region.announceTimer);
+    region.textContent = '';
+    region.announceTimer = setTimeout(() => {
+      region.textContent = message;
+      speech.say('live', message);
+    }, 150);
+  }
+
+  /* ---------- 校验规则 ---------- */
+  const LOCAL_BAD_CHAR = /[^A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]/;
+  const DOMAIN_LABEL = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/;
+  const TLD = /^(?:[A-Za-z]{2,63}|xn--[A-Za-z0-9-]{1,59})$/;
+  const clip = (text) => (text.length > 32 ? text.slice(0, 31) + '…' : text);
+
+  // 每条提示都能独立成句：既用于字段下方，也原样用于错误摘要和实时播报。
+  function emailProblem(raw) {
+    const value = raw.trim();
+    if (!value) return '请输入邮箱地址。';
+    const wide = value.match(/[\u3000\u3002\uFF01-\uFF5E]/);
+    if (wide) return `邮箱地址含有全角字符「${wide[0] === '\u3000' ? '全角空格' : wide[0]}」，请切换到英文（半角）输入。`;
+    if (/[^\x00-\x7F]/.test(value)) return '邮箱地址不能包含中文等非英文字符，请检查输入法是否处于英文状态。';
+    if (/\s/.test(value)) return '邮箱地址中间不能有空格。';
+    const parts = value.split('@');
+    if (parts.length === 1) return '邮箱地址缺少「@」符号。';
+    if (parts.length > 2) return '邮箱地址只能包含一个「@」。';
+    const [local, domain] = parts;
+    if (!local) return '请在「@」前面填写用户名。';
+    if (!domain) return '请在「@」后面填写域名，例如 example.com。';
+    if (local.length > 64 || value.length > 254) return '邮箱地址过长，请检查是否输入有误。';
+    const bad = local.match(LOCAL_BAD_CHAR);
+    if (bad) return `「@」前面不能使用字符「${bad[0]}」。`;
+    if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) {
+      return '「@」前面的部分不能以「.」开头或结尾，也不能连续出现「..」。';
+    }
+    if (!domain.includes('.')) return `域名「${clip(domain)}」不完整，缺少「.com」「.cn」这样的后缀。`;
+    const labels = domain.split('.');
+    if (labels.some((label) => !label)) return `域名「${clip(domain)}」中「.」的位置不对。`;
+    if (!labels.every((label) => DOMAIN_LABEL.test(label))) {
+      return `域名「${clip(domain)}」只能包含字母、数字和「-」，且「-」不能在开头或结尾。`;
+    }
+    const tld = labels[labels.length - 1];
+    if (!TLD.test(tld)) return `域名后缀「.${clip(tld)}」不正确，常见的有 .com 和 .cn。`;
+    return '';
+  }
+
+  const passwordProblem = (value) => (value ? '' : '请输入密码。');
+
+  const checks = [
+    { input: el.email, check: emailProblem },
+    { input: el.password, check: passwordProblem },
+  ];
+
+  /* ---------- 字段错误：aria-invalid + aria-describedby 指向错误文字 ---------- */
+  function setFieldError(input, message) {
+    const box = document.getElementById(input.id + '-error');
+    box.replaceChildren();
+    if (message) {
+      const prefix = document.createElement('span');
+      prefix.className = 'visually-hidden';
+      prefix.textContent = '错误：';
+      const text = document.createElement('span');
+      text.append(prefix, message);
+      box.append(icon('i-alert'), text);
+      input.setAttribute('aria-invalid', 'true');
+    } else {
+      input.removeAttribute('aria-invalid');
+    }
+    input.closest('.field').classList.toggle('has-error', Boolean(message));
+  }
+
+  function renderSummary(problems) {
+    el.summaryList.replaceChildren(...problems.map(({ input, message }) => {
+      const item = document.createElement('li');
+      item.dataset.field = input.id;
+      const link = document.createElement('a');
+      link.href = '#' + input.id;
+      link.textContent = message;
+      item.append(link);
+      return item;
+    }));
+    el.summary.hidden = false;
+    updateSummaryHeading();
+  }
+
+  function updateSummaryHeading() {
+    const count = el.summaryList.children.length;
+    if (!count) {
+      el.summary.hidden = true;
+      document.title = baseTitle;
+      return;
+    }
+    el.summaryText.textContent = `有 ${count} 处需要修改`;
+    document.title = `（${count} 处错误）${baseTitle}`;
+  }
+
+  // 修正后只静默更新界面，不再播报，避免边输入边打断。
+  function syncField(input, message) {
+    setFieldError(input, message);
+    const item = el.summaryList.querySelector(`[data-field="${input.id}"]`);
+    if (!item) return;
+    if (message) item.firstChild.textContent = message;
+    else item.remove();
+    updateSummaryHeading();
+  }
+
+  for (const { input, check } of checks) {
+    input.addEventListener('input', () => {
+      if (input.getAttribute('aria-invalid') === 'true' && !check(input.value)) syncField(input, '');
+    });
+    input.addEventListener('blur', () => {
+      if (input.getAttribute('aria-invalid') === 'true') syncField(input, check(input.value));
+    });
+  }
+
+  el.summaryList.addEventListener('click', (event) => {
+    const link = event.target.closest('a');
+    if (!link) return;
+    event.preventDefault();
+    const target = document.getElementById(link.getAttribute('href').slice(1));
+    target.focus({ preventScroll: true });
+    target.closest('.field').scrollIntoView({ block: 'nearest' });
+  });
+
+  /* ---------- 显示 / 隐藏密码：名称不变，只切换 aria-pressed ---------- */
+  function setReveal(show) {
+    el.toggle.setAttribute('aria-pressed', String(show));
+    el.password.type = show ? 'text' : 'password';
+  }
+
+  el.toggle.addEventListener('click', () => {
+    const show = el.toggle.getAttribute('aria-pressed') !== 'true';
+    setReveal(show);
+    if (document.activeElement === el.toggle) speech.say('state', `${nameOf(el.toggle)}，${show ? '已按下' : '未按下'}`);
+  });
+
+  el.remember.addEventListener('change', () => {
+    speech.say('state', `${nameOf(el.remember)}，${el.remember.checked ? '已勾选' : '未勾选'}`);
+  });
+
+  /* ---------- 大写锁定提示 ---------- */
+  let capsOn = false;
+  function setCaps(on) {
+    if (on === capsOn) return;
+    capsOn = on;
+    el.caps.replaceChildren();
+    if (!on) return;
+    const text = document.createElement('span');
+    text.textContent = '大写锁定已开启。';
+    el.caps.append(icon('i-caps'), text);
+    announce(el.live, '大写锁定已开启');
+  }
+  const readCaps = (event) => {
+    if (typeof event.getModifierState === 'function') setCaps(event.getModifierState('CapsLock'));
+  };
+  el.password.addEventListener('keydown', readCaps);
+  el.password.addEventListener('keyup', readCaps);
+  el.password.addEventListener('blur', () => setCaps(false));
+
+  /* ---------- 提交 ---------- */
+  let busy = false;
+
+  el.form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (busy) return;
+    el.email.value = el.email.value.trim();
+
+    const problems = [];
+    for (const { input, check } of checks) {
+      const message = check(input.value);
+      setFieldError(input, message);
+      if (message) problems.push({ input, message });
+    }
+
+    if (problems.length) {
+      renderSummary(problems);
+      problems[0].input.focus();
+      announce(el.live, `登录未完成，有 ${problems.length} 处需要修改：${problems.map((p) => p.message).join('')}`);
+      return;
+    }
+
+    el.summaryList.replaceChildren();
+    updateSummaryHeading();
+    startLogin();
+  });
+
+  function startLogin() {
+    busy = true;
+    setReveal(false);
+    el.form.setAttribute('aria-busy', 'true');
+    el.submit.setAttribute('aria-disabled', 'true');
+    el.submit.classList.add('is-loading');
+    el.submitLabel.textContent = '正在登录…';
+    announce(el.live, '正在登录，请稍候。');
+
+    setTimeout(() => {
+      busy = false;
+      el.form.removeAttribute('aria-busy');
+      el.submit.removeAttribute('aria-disabled');
+      el.submit.classList.remove('is-loading');
+      el.submitLabel.textContent = '登录';
+
+      el.successEmail.textContent = el.email.value;
+      el.successRemember.hidden = !el.remember.checked;
+      el.successView.hidden = false;
+      el.loginView.hidden = true;
+      document.title = `登录成功 · ${baseTitle.split(' · ')[1]}`;
+      el.successTitle.focus();
+      announce(el.live, `欢迎回来，${el.email.value}。`);
+    }, 1300);
+  }
+
+  el.logout.addEventListener('click', () => {
+    el.form.reset();
+    setReveal(false);
+    for (const { input } of checks) setFieldError(input, '');
+    el.summaryList.replaceChildren();
+    updateSummaryHeading();
+    el.loginView.hidden = false;
+    el.successView.hidden = true;
+    el.email.focus();
+    announce(el.live, '已退出登录，可以重新填写。');
+  });
+
+  /* ---------- 找回密码对话框（原生 dialog：焦点限制在框内，Esc 关闭） ---------- */
+  el.forgotOpen.addEventListener('click', () => {
+    el.forgotForm.reset();
+    setFieldError(el.forgotEmail, '');
+    clearTimeout(el.forgotLive.announceTimer);
+    el.forgotLive.textContent = '';
+    el.forgotForm.hidden = false;
+    el.forgotDone.hidden = true;
+    const typed = el.email.value.trim();
+    if (typed && !emailProblem(typed)) el.forgotEmail.value = typed;
+
+    speech.quietly(() => el.dialog.showModal());
+    speech.say('focus', describe(el.dialog));
+    if (document.activeElement === el.forgotEmail) speech.say('focus', describe(el.forgotEmail));
+    else el.forgotEmail.focus();
+  });
+
+  const closeDialog = () => el.dialog.close();
+  $('#forgot-close').addEventListener('click', closeDialog);
+  $('#forgot-cancel').addEventListener('click', closeDialog);
+  $('#forgot-finish').addEventListener('click', closeDialog);
+
+  let pressedOnBackdrop = false;
+  el.dialog.addEventListener('pointerdown', (event) => { pressedOnBackdrop = event.target === el.dialog; });
+  el.dialog.addEventListener('click', (event) => {
+    if (pressedOnBackdrop && event.target === el.dialog) closeDialog();
+    pressedOnBackdrop = false;
+  });
+
+  el.dialog.addEventListener('close', () => {
+    const active = document.activeElement;
+    if (!active || active === document.body || el.dialog.contains(active)) el.forgotOpen.focus();
+  });
+
+  el.forgotEmail.addEventListener('input', () => {
+    if (el.forgotEmail.getAttribute('aria-invalid') === 'true' && !emailProblem(el.forgotEmail.value)) {
+      setFieldError(el.forgotEmail, '');
+    }
+  });
+
+  el.forgotForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    el.forgotEmail.value = el.forgotEmail.value.trim();
+    const message = emailProblem(el.forgotEmail.value);
+    setFieldError(el.forgotEmail, message);
+    if (message) {
+      el.forgotEmail.focus();
+      announce(el.forgotLive, `无法发送：${message}`);
+      return;
+    }
+    el.forgotDoneText.textContent = `如果 ${el.forgotEmail.value} 已注册，几分钟内会收到一封重置密码的邮件。（演示环境不会真的发送。）`;
+    el.forgotForm.hidden = true;
+    el.forgotDone.hidden = false;
+    el.forgotDoneTitle.focus();
+    announce(el.forgotLive, el.forgotDoneText.textContent);
+  });
+})();
+</script>
+</body>
+</html>

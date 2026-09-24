@@ -1,0 +1,1872 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>口袋宠物 POCKET PAL</title>
+<link rel="icon" href="data:,">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#2a1c14;touch-action:none;-webkit-tap-highlight-color:transparent;}
+#stage{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;overflow:hidden;
+  font-family:"Noto Sans CJK SC","Source Han Sans SC","PingFang SC","Microsoft YaHei",sans-serif;color:#5A3421;
+  user-select:none;-webkit-user-select:none;}
+#stage.nocursor,#stage.nocursor *{cursor:none!important;}
+.layer{position:absolute;left:0;top:0;width:1280px;height:720px;}
+#hud,#screens,#overlay,#cursorLayer{pointer-events:none;}
+.L{position:absolute;left:0;top:0;pointer-events:none;}
+.L svg{display:block;}
+.pe{pointer-events:auto;}
+.t{position:absolute;white-space:nowrap;pointer-events:none;line-height:1.25;}
+.btn{position:absolute;cursor:pointer;}
+.btn .blab{position:absolute;left:0;right:0;text-align:center;font-weight:700;pointer-events:none;color:#5A3421;}
+.btn.sel .blab{color:#fff;text-shadow:0 1px 0 #b0561f;}
+.btn.off .blab{color:#9d8f82;}
+.hidden{display:none!important;}
+#loading{position:absolute;left:0;top:0;width:1280px;height:720px;display:flex;align-items:center;justify-content:center;
+  color:#f4d9b8;font-size:28px;letter-spacing:4px;}
+.ribbon{position:absolute;text-align:center;color:#fff;font-weight:900;font-size:25px;text-shadow:0 2px 0 #b84a34;pointer-events:none;}
+.ptext{position:absolute;pointer-events:none;color:#5A3421;}
+input#nameInput{position:absolute;border:0;outline:0;background:transparent;font:700 30px "Noto Sans CJK SC","PingFang SC",sans-serif;
+  color:#5A3421;text-align:center;caret-color:#E0874C;padding:0;}
+.help h3{margin:0 0 8px;font-size:21px;color:#C0622A;font-weight:900;}
+.help p{margin:0 0 7px;font-size:15.5px;line-height:1.45;white-space:normal;}
+.help b{color:#7A3E1E;}
+.stat{font-size:17px;line-height:1.62;white-space:nowrap;}
+.stat b{color:#C0622A;}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="world" class="layer"></div>
+  <div id="mini" class="layer hidden"></div>
+  <div id="hud" class="layer hidden"></div>
+  <div id="screens" class="layer"></div>
+  <div id="overlay" class="layer" style="pointer-events:none"></div>
+  <div id="cursorLayer" class="layer" style="pointer-events:none"></div>
+  <div id="loading">加载中……</div>
+</div>
+<script src="../vendor/lottie.min.js"></script>
+<script>
+'use strict';
+(() => {
+// ============================================================ constants
+const FILES = ['room', 'window', 'lights', 'clock', 'pet_baby', 'pet_teen', 'pet_star', 'pet_cream', 'pet_cloud', 'pet_imp',
+  'egg', 'food', 'fx_hearts', 'fx_sparkle', 'fx_evolve', 'fx_bubble', 'fx_dirt', 'fx_confetti', 'fx_hand', 'fx_shower',
+  'tub', 'gift', 'star', 'playfield', 'title', 'icons_act', 'icons_ui', 'icons_need', 'btn_round', 'btn_pill',
+  'panel_l', 'panel_m', 'panel_s', 'toast', 'bar', 'field', 'dim', 'dock', 'card_needs', 'card_info', 'chip', 'emote', 'sponge'];
+const PINFO = { baby: { mouth: 253, top: 188, h: 104 }, teen: { mouth: 242, top: 158, h: 134 },
+  star: { mouth: 232, top: 132, h: 160 }, cream: { mouth: 234, top: 136, h: 156 },
+  cloud: { mouth: 232, top: 132, h: 160 }, imp: { mouth: 233, top: 134, h: 158 } };
+const FORMS = {
+  star: { name: '星光团子', desc: '你经常陪它玩耍，它变得活力满满，头顶长出了会发光的星星。' },
+  cream: { name: '奶油团子', desc: '你总给它准备好吃的，它变得甜甜软软，头上堆起了奶油和草莓。' },
+  cloud: { name: '云朵团子', desc: '它总是洗得干干净净、睡得香甜，长成了像云朵一样轻盈的样子。' },
+  imp: { name: '淘气团子', desc: '它经历过不少生病和闹脾气，长出了小角和尾巴，变成了调皮的小恶魔。' },
+};
+const STAGE_NAME = { egg: '蛋', baby: '幼年', teen: '少年', adult: '成年' };
+const NEEDS = ['food', 'mood', 'clean', 'energy'];
+const NEED_NAME = { food: '饱食', mood: '心情', clean: '清洁', energy: '体力' };
+const DIFF = {
+  easy: { name: '轻松', desc: '需求下降很慢，适合悠闲地慢慢养。', decay: 0.55, sick: [15, 60], starve: null, angry: [15, 45], stuffLimit: 99 },
+  normal: { name: '普通', desc: '标准节奏，需要时常回来照看它。', decay: 1.0, sick: [20, 35], starve: null, angry: [20, 30], stuffLimit: 3 },
+  hard: { name: '硬核', desc: '需求下降很快，饿太久还会饿出病来！', decay: 1.6, sick: [25, 25], starve: [15, 20], angry: [25, 22], stuffLimit: 2 },
+};
+const BASE_DECAY = { food: 0.28, mood: 0.22, clean: 0.17, energy: 0.2 };
+const GROW_TEEN = 90, GROW_ADULT = 230;
+const FOODS = {
+  berry: { name: '酸甜浆果', eff: { food: 15, mood: 6 }, text: '饱食 +15　心情 +6' },
+  rice: { name: '饱饱饭团', eff: { food: 32, energy: 6 }, text: '饱食 +32　体力 +6' },
+  cake: { name: '草莓蛋糕', eff: { food: 14, mood: 20, clean: -6 }, text: '饱食 +14　心情 +20　清洁 -6' },
+};
+const NAMES = ['团团', '麻薯', '豆包', '糯米', '布丁', '可可', '汤圆', '奶糖', '小暖', '波波', '圆圆', '球球', '栗子', '米粒'];
+const SAVE_KEY = 'pocketpal.save.v1', DEX_KEY = 'pocketpal.dex.v1', PREF_KEY = 'pocketpal.pref.v1';
+const GROUND = 590, BED = { x: 978, y: 508 }, TUB = { x: 640, rim: 508 };
+
+// ============================================================ utils
+const $ = (s) => document.querySelector(s);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+function div(parent, cls, style, html) {
+  const d = document.createElement('div');
+  if (cls) d.className = cls;
+  if (style) Object.assign(d.style, style);
+  if (html != null) d.innerHTML = html;
+  parent.appendChild(d);
+  return d;
+}
+function px(v) { return v + 'px'; }
+function text(parent, str, x, y, o = {}) {
+  const d = div(parent, 't ' + (o.cls || ''), { left: px(x), top: px(y), fontSize: px(o.size || 18), fontWeight: o.weight || 500,
+    color: o.color || '#5A3421' });
+  if (o.w) { d.style.width = px(o.w); d.style.textAlign = o.align || 'center'; }
+  if (o.shadow) d.style.textShadow = o.shadow;
+  if (o.ls) d.style.letterSpacing = px(o.ls);
+  d.textContent = str;
+  return d;
+}
+const stage = $('#stage');
+const LAY = { world: $('#world'), mini: $('#mini'), hud: $('#hud'), screens: $('#screens'), overlay: $('#overlay'), cursor: $('#cursorLayer') };
+
+// ============================================================ Lottie assets
+const LIB = {};
+const LSTAT = { files: FILES.length, fetched: 0, failed: [], probed: 0, probeOk: [], probeFail: [], instances: 0, domLoaded: 0 };
+async function loadAssets() {
+  await Promise.all(FILES.map(async (n) => {
+    try {
+      const r = await fetch('assets/' + n + '.json');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const t = await r.text();
+      const d = JSON.parse(t);
+      const markers = {};
+      (d.markers || []).forEach((m) => { markers[m.cm] = [m.tm, m.tm + m.dr]; });
+      LIB[n] = { text: t, w: d.w, h: d.h, op: d.op, markers };
+      LSTAT.fetched++;
+    } catch (e) {
+      LSTAT.failed.push(n);
+      console.error('Lottie asset failed: ' + n, e);
+    }
+  }));
+}
+const WORLD_ANIMS = new Set();
+class Anim {
+  constructor(parent, name, o = {}) {
+    const lib = LIB[name];
+    this.name = name;
+    this.m = lib.markers;
+    const w = o.w || lib.w;
+    const h = o.h || Math.round(w * lib.h / lib.w);
+    this.w = w; this.h = h;
+    this.el = div(parent, 'L ' + (o.cls || ''), { width: px(w), height: px(h), left: px(o.x || 0), top: px(o.y || 0) });
+    if (o.z != null) this.el.style.zIndex = o.z;
+    this.a = lottie.loadAnimation({ container: this.el, renderer: 'svg', loop: false, autoplay: false,
+      animationData: JSON.parse(lib.text), rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: false } });
+    this.a.setSubframe(false);
+    this._done = null;
+    this.segKey = null;
+    this.a.addEventListener('complete', () => { const f = this._done; this._done = null; if (f) f(); });
+    this.a.addEventListener('DOMLoaded', () => { LSTAT.domLoaded++; });
+    LSTAT.instances++;
+    if (o.world) { this.world = true; this.mini = !!o.mini; this.fx = !!o.fx; WORLD_ANIMS.add(this); }
+  }
+  play(seg, o = {}) {
+    const s = this.m[seg];
+    if (!s) { console.warn('no segment', this.name, seg); return this; }
+    this.cur = seg; this.segKey = seg;
+    this._done = o.done || null;
+    this.a.loop = o.loop === undefined ? false : o.loop;
+    this.a.setSpeed(o.speed || 1);
+    this.a.playSegments(s, true);
+    return this;
+  }
+  // play a segment backwards once (used for closing panels / lights on)
+  reverse(seg, done) {
+    const s = this.m[seg];
+    this.cur = seg; this.segKey = seg;
+    this.a.loop = false;
+    this._done = done || null;
+    this.a.playSegments(s, true);
+    this.a.setDirection(-1);
+    this.a.goToAndPlay(s[1] - s[0] - 1, true);
+    return this;
+  }
+  show(seg, offset = 0) {
+    const s = this.m[seg];
+    this._done = null;
+    this.cur = seg;
+    if (this.segKey !== seg) { this.a.playSegments(s, true); this.segKey = seg; }
+    this.a.goToAndStop(offset, true);
+    return this;
+  }
+  pos(x, y) { this.el.style.left = px(x); this.el.style.top = px(y); return this; }
+  vis(on) { this.el.style.display = on ? '' : 'none'; if (!on) this.a.pause(); return this; }
+  destroy() { this.a.destroy(); this.el.remove(); WORLD_ANIMS.delete(this); }
+}
+async function probeAssets() {
+  const box = div(document.body, '', { position: 'absolute', left: '-4000px', top: '0', width: '64px', height: '64px', overflow: 'hidden' });
+  await Promise.all(FILES.filter((n) => LIB[n]).map((n) => new Promise((res) => {
+    let a;
+    const fin = (ok) => { if (!a) return; (ok ? LSTAT.probeOk : LSTAT.probeFail).push(n); LSTAT.probed++; const aa = a; a = null; setTimeout(() => aa.destroy(), 0); res(); };
+    const c = div(box, '', { width: '64px', height: '64px' });
+    try {
+      a = lottie.loadAnimation({ container: c, renderer: 'svg', loop: false, autoplay: false, animationData: JSON.parse(LIB[n].text) });
+      a.addEventListener('DOMLoaded', () => {
+        a.goToAndStop(Math.floor(LIB[n].op / 2), true);
+        const bad = (a.renderer.elements || []).some((e) => e === true);
+        fin(!bad);
+      });
+      a.addEventListener('data_failed', () => fin(false));
+      setTimeout(() => fin(false), 4000);
+    } catch (e) { console.error('probe failed', n, e); LSTAT.probeFail.push(n); res(); }
+  })));
+  box.remove();
+}
+
+// ============================================================ audio (Web Audio, synthesized)
+const AU = {
+  ctx: null, master: null, sfx: null, mus: null, muted: false, noiseBuf: null, rainSrc: null, rainGain: null,
+  init() {
+    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return;
+    const c = this.ctx = new C();
+    const comp = c.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.ratio.value = 4;
+    comp.connect(c.destination);
+    this.master = c.createGain(); this.master.connect(comp);
+    this.master.gain.value = this.muted ? 0 : 0.85;
+    this.sfx = c.createGain(); this.sfx.gain.value = 0.75; this.sfx.connect(this.master);
+    this.mus = c.createGain(); this.mus.gain.value = 0.3; this.mus.connect(this.master);
+    const buf = c.createBuffer(1, c.sampleRate, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    this.noiseBuf = buf;
+    Music.start();
+    if (G.rainOn) this.rain(true);
+  },
+  setMuted(m) {
+    this.muted = m;
+    if (this.master) this.master.gain.setTargetAtTime(m ? 0 : 0.85, this.ctx.currentTime, 0.05);
+    savePref();
+  },
+  tone(f, d, o = {}) {
+    const c = this.ctx; if (!c) return;
+    const t = c.currentTime + (o.when || 0);
+    const osc = c.createOscillator(), g = c.createGain();
+    osc.type = o.type || 'sine';
+    osc.frequency.setValueAtTime(f, t);
+    if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + (o.slide || d));
+    if (o.vib) { const l = c.createOscillator(), lg = c.createGain(); l.frequency.value = o.vib; lg.gain.value = f * 0.02; l.connect(lg); lg.connect(osc.frequency); l.start(t); l.stop(t + d + 0.1); }
+    const v = o.vol || 0.2;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v, t + (o.a || 0.008));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    osc.connect(g); g.connect(o.dest || this.sfx);
+    osc.start(t); osc.stop(t + d + 0.05);
+  },
+  noise(d, o = {}) {
+    const c = this.ctx; if (!c) return;
+    const t = c.currentTime + (o.when || 0);
+    const src = c.createBufferSource(); src.buffer = this.noiseBuf;
+    const f = c.createBiquadFilter(); f.type = o.type || 'bandpass'; f.frequency.setValueAtTime(o.f || 1200, t); f.Q.value = o.q || 1;
+    if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + d);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(o.vol || 0.2, t + (o.a || 0.005));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    src.connect(f); f.connect(g); g.connect(o.dest || this.sfx);
+    src.start(t, Math.random() * 0.5); src.stop(t + d + 0.05);
+  },
+  rain(on) {
+    const c = this.ctx; if (!c) return;
+    if (on && !this.rainSrc) {
+      const src = c.createBufferSource(); src.buffer = this.noiseBuf; src.loop = true;
+      const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1100;
+      const g = c.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(0.07, c.currentTime, 0.6);
+      src.connect(f); f.connect(g); g.connect(this.sfx); src.start();
+      this.rainSrc = src; this.rainGain = g;
+    } else if (!on && this.rainSrc) {
+      const s = this.rainSrc; this.rainGain.gain.setTargetAtTime(0.0001, c.currentTime, 0.4);
+      setTimeout(() => { try { s.stop(); } catch (e) { /* already stopped */ } }, 1500);
+      this.rainSrc = null;
+    }
+  },
+};
+const mf = (m) => 440 * Math.pow(2, (m - 69) / 12);
+const SFX = {
+  click() { AU.tone(760, 0.08, { type: 'triangle', to: 1100, vol: 0.16 }); },
+  hover() { AU.tone(1320, 0.05, { vol: 0.05 }); },
+  back() { AU.tone(700, 0.09, { type: 'triangle', to: 480, vol: 0.14 }); },
+  error() { AU.tone(330, 0.12, { type: 'square', vol: 0.06 }); AU.tone(262, 0.16, { type: 'square', vol: 0.06, when: 0.11 }); },
+  eat() { for (let i = 0; i < 4; i++) { AU.noise(0.07, { f: 900, q: 2, vol: 0.18, when: 0.5 + i * 0.23 }); AU.tone(180, 0.06, { vol: 0.12, when: 0.5 + i * 0.23 }); } },
+  happy() { [72, 76, 79, 84].forEach((m, i) => AU.tone(mf(m), 0.18, { type: 'triangle', vol: 0.13, when: i * 0.07 })); },
+  chirp() { AU.tone(900, 0.09, { to: 1500, vol: 0.12 }); AU.tone(1200, 0.1, { to: 1800, vol: 0.1, when: 0.1 }); },
+  bubble() { AU.tone(rand(380, 520), 0.09, { to: rand(900, 1300), vol: 0.1 }); },
+  pop() { AU.noise(0.05, { type: 'highpass', f: 2500, vol: 0.14 }); AU.tone(rand(900, 1300), 0.04, { vol: 0.06 }); },
+  star(n) { const sc = [72, 74, 76, 79, 81, 84, 86, 88]; const m = sc[Math.min(n, sc.length - 1)]; AU.tone(mf(m), 0.22, { type: 'triangle', vol: 0.15 }); AU.tone(mf(m + 12), 0.18, { vol: 0.06, when: 0.02 }); },
+  gold() { [79, 84, 88, 91].forEach((m, i) => AU.tone(mf(m), 0.2, { type: 'triangle', vol: 0.12, when: i * 0.05 })); },
+  miss() { AU.tone(200, 0.16, { to: 110, vol: 0.12 }); },
+  crack() { AU.noise(0.12, { f: 2200, q: 0.8, vol: 0.22 }); AU.noise(0.08, { f: 3400, q: 1, vol: 0.12, when: 0.05 }); },
+  hatch() { AU.noise(0.25, { f: 1800, q: 0.6, vol: 0.2 }); [67, 72, 76, 79, 84].forEach((m, i) => AU.tone(mf(m), 0.35, { type: 'triangle', vol: 0.12, when: 0.15 + i * 0.09 })); },
+  evolve() { for (let i = 0; i < 10; i++) AU.tone(mf(64 + i * 3), 0.3, { type: 'sine', vol: 0.08, when: i * 0.08 }); [76, 79, 84, 88].forEach((m, i) => AU.tone(mf(m), 0.6, { type: 'triangle', vol: 0.1, when: 0.9 + i * 0.1 })); },
+  sick() { AU.tone(520, 0.4, { to: 260, vol: 0.1, vib: 7 }); },
+  angry() { AU.tone(140, 0.3, { type: 'sawtooth', vol: 0.05, vib: 18 }); AU.tone(120, 0.3, { type: 'sawtooth', vol: 0.05, vib: 14, when: 0.25 }); },
+  gift() { [84, 88, 91, 96].forEach((m, i) => { AU.tone(mf(m), 0.3, { vol: 0.08, when: i * 0.08 }); AU.tone(mf(m + 7), 0.2, { vol: 0.04, when: i * 0.08 + 0.02 }); }); },
+  cure() { [76, 81, 85, 88].forEach((m, i) => AU.tone(mf(m), 0.25, { type: 'triangle', vol: 0.1, when: i * 0.08 })); },
+  pat() { AU.tone(620, 0.1, { to: 880, vol: 0.1 }); },
+  lights() { AU.noise(0.03, { type: 'highpass', f: 3000, vol: 0.2 }); AU.tone(220, 0.25, { vol: 0.06, when: 0.02 }); },
+  splash() { AU.noise(1.6, { type: 'bandpass', f: 1500, q: 0.5, vol: 0.12, a: 0.2 }); },
+  scrub() { AU.noise(0.09, { f: rand(1800, 2600), q: 3, vol: 0.05 }); },
+  whoosh() { AU.noise(0.3, { type: 'bandpass', f: 600, to: 2400, q: 1.2, vol: 0.1 }); },
+  count() { AU.tone(660, 0.1, { type: 'triangle', vol: 0.12 }); },
+  go() { AU.tone(990, 0.25, { type: 'triangle', vol: 0.14 }); },
+  fanfare() { [[72, 0], [76, 0.12], [79, 0.24], [84, 0.36], [79, 0.52], [84, 0.64]].forEach(([m, w]) => AU.tone(mf(m), 0.3, { type: 'triangle', vol: 0.14, when: w })); },
+};
+const TRACKS = {
+  day: { bpm: 96, chords: [[48, 60, 64, 67], [45, 60, 64, 69], [41, 60, 65, 69], [43, 59, 62, 67], [48, 60, 64, 67], [45, 60, 64, 69], [50, 62, 65, 69], [43, 59, 62, 67]],
+    mel: [76, 0, 79, 0, 84, 0, 79, 76, 72, 0, 76, 0, 81, 0, 79, 76, 77, 0, 81, 0, 84, 81, 77, 0, 79, 0, 74, 0, 71, 74, 79, 0,
+      76, 79, 84, 0, 83, 0, 79, 0, 81, 0, 79, 76, 72, 0, 76, 0, 74, 0, 77, 81, 79, 77, 74, 0, 71, 74, 79, 0, 0, 0, 0, 0] },
+  night: { bpm: 68, chords: [[41, 65, 69, 72], [50, 62, 65, 69], [46, 62, 65, 70], [48, 64, 67, 72]],
+    mel: [81, 0, 0, 0, 79, 0, 77, 0, 77, 0, 0, 0, 74, 0, 0, 0, 74, 0, 77, 0, 79, 0, 0, 0, 76, 0, 0, 0, 0, 0, 0, 0] },
+  game: { bpm: 132, chords: [[43, 67, 71, 74], [40, 64, 67, 71], [36, 64, 67, 72], [38, 66, 69, 74]],
+    mel: [79, 0, 83, 86, 0, 83, 79, 0, 76, 0, 79, 83, 0, 79, 76, 0, 76, 79, 84, 0, 83, 79, 76, 0, 78, 0, 81, 0, 86, 0, 84, 83] },
+};
+const Music = {
+  track: 'day', step: 0, next: 0, timer: null,
+  start() { if (this.timer) return; this.next = AU.ctx.currentTime + 0.15; this.timer = setInterval(() => this.tick(), 40); },
+  set(tr) { if (tr !== this.track) { this.track = tr; this.step = 0; if (AU.ctx) this.next = AU.ctx.currentTime + 0.1; } },
+  tick() {
+    const c = AU.ctx; if (!c) return;
+    const T = TRACKS[this.track];
+    const stepDur = 60 / T.bpm / 2;
+    while (this.next < c.currentTime + 0.25) {
+      this.playStep(T, this.step, this.next, stepDur);
+      this.next += stepDur; this.step++;
+    }
+  },
+  playStep(T, i, t, sd) {
+    const when = t - AU.ctx.currentTime;
+    const bar = Math.floor(i / 8) % T.chords.length, s = i % 8;
+    const ch = T.chords[bar];
+    const m = T.mel[i % T.mel.length];
+    const D = AU.mus;
+    if (this.track === 'night') {
+      const arp = [ch[1], ch[2], ch[3], ch[2] + 12, ch[3], ch[2], ch[1] + 12, ch[2]];
+      AU.tone(mf(arp[s]), sd * 3, { vol: 0.07, when, dest: D, a: 0.01 });
+      if (s === 0) AU.tone(mf(ch[0]), sd * 7, { vol: 0.09, when, dest: D, a: 0.05 });
+      if (m) AU.tone(mf(m), sd * 5, { type: 'triangle', vol: 0.06, when, dest: D, a: 0.03 });
+      return;
+    }
+    if (m) { AU.tone(mf(m), sd * 1.6, { type: 'triangle', vol: this.track === 'game' ? 0.09 : 0.08, when, dest: D }); AU.tone(mf(m + 12), sd * 1.2, { vol: 0.025, when, dest: D }); }
+    if (this.track === 'game') {
+      if (s % 2 === 0) AU.tone(mf(ch[0] + (s % 4 === 2 ? 12 : 0)), sd * 0.9, { type: 'triangle', vol: 0.12, when, dest: D });
+      if (s % 2 === 1) AU.noise(0.04, { type: 'highpass', f: 6000, vol: 0.05, when, dest: D });
+      if (s % 4 === 0) AU.tone(140, 0.12, { to: 50, vol: 0.2, when, dest: D });
+      if (s === 0) [1, 2, 3].forEach((k) => AU.tone(mf(ch[k]), sd * 4, { vol: 0.025, when, dest: D }));
+    } else {
+      if (s === 0 || s === 4) AU.tone(mf(ch[0]), sd * 3, { type: 'triangle', vol: 0.1, when, dest: D });
+      if (s === 0) [1, 2, 3].forEach((k) => AU.tone(mf(ch[k]), sd * 7, { vol: 0.03, when, dest: D, a: 0.08 }));
+      if (s === 2 || s === 6) AU.tone(mf(ch[2] + 12), sd * 0.8, { vol: 0.025, when, dest: D });
+    }
+  },
+};
+
+// ============================================================ scaling
+function fit() {
+  const W = window.innerWidth, H = window.innerHeight;
+  const s = Math.min(W / 1280, H / 720);
+  G.scale = s;
+  stage.style.transform = `translate(${(W - 1280 * s) / 2}px, ${(H - 720 * s) / 2}px) scale(${s})`;
+}
+function toStage(e) {
+  const r = stage.getBoundingClientRect();
+  return { x: (e.clientX - r.left) / G.scale, y: (e.clientY - r.top) / G.scale };
+}
+
+// ============================================================ game state
+const G = { scale: 1, screen: 'loading', paused: false, overlay: null, timeScale: 1, rainOn: false, lastTick: performance.now(),
+  diff: 'normal', tweens: [], msgQ: [], msgT: 0, saveT: 5, emoteT: 8, reevalT: 0, warned: {}, freezeList: [] };
+let S = null;
+function newSave(diff) {
+  return { v: 1, name: '', diff, stage: 'egg', form: null, needs: { food: 80, mood: 80, clean: 85, energy: 85 }, growth: 0,
+    sick: false, angry: false, stuffedT: 0, stuffCount: 0, lowClean: 0, lowFood: 0, lowMood: 0, sleeping: false,
+    gameMin: 8 * 60, hatchMin: 8 * 60, done: false, saved: Date.now(), rain: 0, gift: 0, eventT: 45,
+    stats: { feed: 0, berry: 0, rice: 0, cake: 0, plays: 0, stars: 0, baths: 0, sleeps: 0, sick: 0, angry: 0, cures: 0,
+      soothes: 0, gifts: 0, stuffed: 0, neglect: 0, nightmares: 0 } };
+}
+function loadSave() {
+  try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (s && s.v === 1 && s.name && !s.done) return s; } catch (e) { /* corrupt save */ }
+  return null;
+}
+function writeSave() {
+  if (!S || !S.name || S.done) return;
+  S.saved = Date.now();
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { /* storage full or blocked */ }
+}
+function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* ignore */ } }
+function loadDex() { try { return JSON.parse(localStorage.getItem(DEX_KEY) || '[]'); } catch (e) { return []; } }
+function savePref() { try { localStorage.setItem(PREF_KEY, JSON.stringify({ muted: AU.muted, diff: G.diff })); } catch (e) { /* ignore */ } }
+function loadPref() { try { const p = JSON.parse(localStorage.getItem(PREF_KEY) || '{}'); AU.muted = !!p.muted; if (DIFF[p.diff]) G.diff = p.diff; } catch (e) { /* ignore */ } }
+const dayNum = () => Math.floor((S.gameMin - S.hatchMin + 8 * 60) / 1440) + 1;
+const hourNow = () => (S ? (S.gameMin / 60) % 24 : 10);
+const isNight = () => { const h = hourNow(); return h >= 19 || h < 6; };
+const clockText = () => { const m = Math.floor(S.gameMin % 1440); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+
+// ============================================================ tweens
+function tween(o) { o.t = 0; G.tweens.push(o); return o; }
+function runTweens(dt) {
+  for (let i = G.tweens.length - 1; i >= 0; i--) {
+    const tw = G.tweens[i];
+    if (tw.world && G.paused) continue;
+    tw.t += dt;
+    const p = clamp(tw.t / tw.dur, 0, 1);
+    tw.step(p);
+    if (p >= 1) { G.tweens.splice(i, 1); if (tw.done) tw.done(); }
+  }
+}
+function after(sec, fn, world = true) { return tween({ dur: sec, step() {}, done: fn, world }); }
+
+// ============================================================ buttons & panels
+const BTNS = [];
+class Btn {
+  constructor(parent, o) {
+    this.o = o;
+    BTNS.push(this);
+    const kind = o.kind || 'pill';
+    const w = o.w, h = o.h || (kind === 'round' ? o.w : Math.round(o.w * 84 / 320));
+    this.el = div(parent, 'btn pe ' + (o.cls || ''), { left: px(o.x), top: px(o.y), width: px(w), height: px(h) });
+    if (o.id) this.el.id = o.id;
+    this.bg = new Anim(this.el, kind === 'round' ? 'btn_round' : 'btn_pill', { w, h });
+    this.mode = 'idle';
+    this.bg.show('idle');
+    if (o.icon) {
+      const iw = o.iw || Math.round(w * 0.56);
+      const iy = o.iy != null ? o.iy : (h - iw) / 2;
+      this.icon = new Anim(this.el, o.icon[0], { w: iw, x: o.ix != null ? o.ix : (w - iw) / 2, y: iy });
+      this.icon.show(o.icon[1]);
+    }
+    if (o.label != null) {
+      this.lab = div(this.el, 'blab', { top: px(o.ly != null ? o.ly : h / 2 - (o.size || 22) * 0.68 - (o.sub != null ? 9 : 0)), fontSize: px(o.size || 22) });
+      this.lab.textContent = o.label;
+      if (o.sub != null) {
+        this.subEl = div(this.el, 'blab', { top: px(h / 2 + 6), fontSize: px(o.subSize || 14), fontWeight: 500 });
+        this.subEl.textContent = o.sub;
+      }
+    }
+    this.hover = false;
+    this.el.addEventListener('pointerenter', () => { this.hover = true; if (this.mode === 'off') return; this.bg.play('hover', { loop: true }); if (this.icon) this.icon.play(this.icon.cur); SFX.hover(); });
+    this.el.addEventListener('pointerleave', () => { this.hover = false; this.base(); });
+    this.el.addEventListener('pointerdown', (e) => { AU.init(); if (this.mode === 'off') return; this.bg.play('press', { done: () => (this.hover ? this.bg.play('hover', { loop: true }) : this.base()) }); });
+    this.el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.mode === 'off' && !o.clickOff) { SFX.error(); return; }
+      if (this.mode !== 'off') SFX.click();
+      if (o.onClick) o.onClick(this);
+    });
+  }
+  base() {
+    const m = this.mode === 'alert' && !this.bg.m.alert ? 'sel' : this.mode;
+    if (m === 'alert' || m === 'sel') this.bg.play(m, { loop: true }); else this.bg.show(m);
+  }
+  setMode(m) {
+    if (m === this.mode) return;
+    this.mode = m;
+    this.el.classList.toggle('sel', m === 'sel');
+    this.el.classList.toggle('off', m === 'off');
+    if (!this.hover || m === 'off') this.base();
+  }
+  setIcon(file, seg) { if (this.icon && this.icon.cur !== seg) this.icon.show(seg); }
+  setLabel(t, sub) { if (this.lab) this.lab.textContent = t; if (sub != null && this.subEl) this.subEl.textContent = sub; }
+  show(on) { this.el.classList.toggle('hidden', !on); }
+}
+class Panel {
+  constructor(parent, file, x, y, w, title) {
+    this.root = div(parent, 'layer hidden', { pointerEvents: 'auto' });
+    this.dim = new Anim(this.root, 'dim', { w: 1280, h: 720 });
+    this.box = div(this.root, '', { position: 'absolute', left: px(x), top: px(y) });
+    this.p = new Anim(this.box, file, { w });
+    this.w = w; this.h = this.p.h;
+    this.content = div(this.box, '', { position: 'absolute', left: '0', top: '0', width: px(w), height: px(this.h) });
+    if (title) this.title = div(this.content, 'ribbon', { left: '0', width: px(w), top: px(18), fontSize: '25px' }, title);
+    this.root.addEventListener('click', (e) => e.stopPropagation());
+    this.root.addEventListener('pointerdown', (e) => e.stopPropagation());
+  }
+  open() {
+    this.root.classList.remove('hidden');
+    this.dim.play('in');
+    this.content.style.visibility = 'hidden';
+    this.p.play('in', { done: () => this.p.play('idle', { loop: true }) });
+    after(0.18, () => { this.content.style.visibility = ''; }, false);
+    this.isOpen = true;
+  }
+  close(done) {
+    if (!this.isOpen) { if (done) done(); return; }
+    this.isOpen = false;
+    this.content.style.visibility = 'hidden';
+    this.dim.reverse('in');
+    this.p.reverse('in', () => { this.root.classList.add('hidden'); if (done) done(); });
+  }
+}
+
+// ============================================================ world
+const W = {};
+function buildWorld() {
+  const L = LAY.world;
+  W.room = new Anim(L, 'room', { w: 1280, h: 720, world: true });
+  W.win = new Anim(L, 'window', { w: 420, h: 320, x: 240, y: 100, world: true });
+  W.clock = new Anim(L, 'clock', { w: 120, h: 120, x: 690, y: 150 });
+  W.giftBox = div(L, 'layer', { pointerEvents: 'none' });
+  W.tubBackL = div(L, 'layer', { pointerEvents: 'none' });
+  W.petL = div(L, 'layer', { pointerEvents: 'none' });
+  W.tubFrontL = div(L, 'layer', { pointerEvents: 'none' });
+  W.fxL = div(L, 'layer', { pointerEvents: 'none' });
+  W.dirt = new Anim(W.fxL, 'fx_dirt', { w: 220, h: 200, world: true }).vis(false);
+  W.emote = new Anim(W.fxL, 'emote', { w: 150, h: 140, world: true }).vis(false);
+  W.lights = new Anim(L, 'lights', { w: 1280, h: 720, world: true }).vis(false);
+  W.room.play('loop', { loop: true });
+  W.scene = null;
+  W.lightState = 'on';
+}
+function setScene(sc) {
+  if (W.scene === sc) return;
+  W.scene = sc;
+  W.win.play(sc, { loop: true });
+}
+function sceneFor() {
+  if (S && S.sleeping) return 'night';
+  if (S && S.rain > 0) return 'rain';
+  const h = hourNow();
+  if (h >= 6 && h < 17) return 'day';
+  if (h >= 17 && h < 19) return 'dusk';
+  return 'night';
+}
+function setLights(state) {
+  if (W.lightState === state) return;
+  const prev = W.lightState;
+  W.lightState = state;
+  const L = W.lights;
+  if (state === 'dark') { L.vis(true); L.play('fade', { done: () => { if (W.lightState === 'dark') L.play('dark', { loop: true }); } }); }
+  else if (state === 'eve') {
+    if (prev === 'dark') L.reverse('fade', () => { if (W.lightState === 'eve') { L.vis(true); L.play('eve', { loop: true }); } });
+    else { L.vis(true); L.play('eve', { loop: true }); }
+  } else {
+    if (prev === 'dark') L.reverse('fade', () => { if (W.lightState === 'on') L.vis(false); });
+    else L.vis(false);
+  }
+}
+
+// ------------------------------------------------------------ pet
+const PET = { anim: null, form: null, x: 640, y: GROUND, face: 1, seg: null, busy: false, walking: false, tx: 0, walkDone: null,
+  wanderT: 5, jump: null, speed: 1 };
+function petLoad(form) {
+  if (PET.anim) PET.anim.destroy();
+  PET.anim = new Anim(W.petL, 'pet_' + form, { w: 320, h: 320, world: true });
+  PET.anim.el.style.transformOrigin = '160px 0';
+  PET.form = form;
+  PET.info = PINFO[form];
+  PET.seg = null;
+  petPlace();
+}
+function petPlace() {
+  if (!PET.anim) return;
+  PET.anim.el.style.transform = `translate(${PET.x - 160}px,${PET.y - 292}px) scaleX(${PET.face})`;
+  const top = PET.y - 292 + PET.info.top;
+  if (W.emote.el.style.display !== 'none') W.emote.pos(PET.x + 6, top - 128);
+  W.dirt.pos(PET.x - 110, PET.y - PET.info.h * (PET.form === 'baby' ? 1 : 1.12) / 2 - 110);
+}
+const petMouth = () => ({ x: PET.x, y: PET.y - 292 + PET.info.mouth });
+const petTop = () => PET.y - 292 + PET.info.top;
+const petCenter = () => ({ x: PET.x, y: PET.y - PET.info.h * 0.55 });
+function petSeg(seg, o = {}) { PET.reacting = false; PET.seg = seg; PET.anim.play(seg, { loop: o.loop !== undefined ? o.loop : true, speed: o.speed || 1, done: o.done }); }
+function idleSeg() {
+  const N = S.needs;
+  if (S.sleeping) return 'sleep';
+  if (S.sick) return 'sick';
+  if (S.angry) return 'angry';
+  if (S.stuffedT > 0) return 'stuffed';
+  if (N.energy < 18) return 'sleepy';
+  if (N.food < 22) return 'hungry';
+  if (N.mood < 22) return 'sad';
+  return 'idle';
+}
+function petIdle(force) {
+  if (!PET.anim || PET.busy || PET.walking || PET.jump || PET.reacting) return;
+  const s = idleSeg();
+  const sp = (S.sick || S.needs.mood < 35 || S.needs.energy < 25) ? 0.8 : 1;
+  if (force || PET.seg !== s || PET.speed !== sp) { PET.speed = sp; petSeg(s, { loop: true, speed: sp }); }
+}
+// a short celebration that any new action may interrupt
+function petReact(seg, times = 1) {
+  if (!PET.anim || PET.busy || PET.jump) return;
+  PET.walking = false;
+  PET.seg = seg;
+  PET.anim.play(seg, { loop: times > 1 ? times - 1 : false, done: () => { PET.reacting = false; PET.seg = null; petIdle(true); } });
+  PET.reacting = true;
+}
+function petDo(seg, o = {}) {
+  PET.busy = true; PET.walking = false; PET.reacting = false;
+  PET.anim.play(seg, { loop: o.times > 1 ? o.times - 1 : false, speed: o.speed || 1,
+    done: () => { PET.busy = false; PET.seg = null; if (o.then) o.then(); else petIdle(true); } });
+  PET.seg = seg;
+}
+function petWalkTo(x, done) {
+  PET.tx = clamp(x, 120, 1160);
+  PET.walkDone = done || null;
+  PET.reacting = false;
+  PET.walking = true;
+  PET.face = PET.tx < PET.x ? -1 : 1;
+  petSeg('walk', { loop: true });
+}
+function petJump(x, y, dur, done) {
+  PET.walking = false; PET.reacting = false;
+  PET.face = x < PET.x ? -1 : 1;
+  PET.jump = { x0: PET.x, y0: PET.y, x1: x, y1: y, t: 0, dur, done };
+  petSeg('play', { loop: true });
+}
+function petUpdate(dt) {
+  if (!PET.anim) return;
+  if (PET.jump) {
+    const j = PET.jump; j.t += dt;
+    const p = clamp(j.t / j.dur, 0, 1);
+    PET.x = lerp(j.x0, j.x1, p);
+    PET.y = lerp(j.y0, j.y1, p) - Math.sin(p * Math.PI) * 70;
+    if (p >= 1) { PET.jump = null; PET.y = j.y1; if (j.done) j.done(); }
+    petPlace();
+    return;
+  }
+  if (PET.walking) {
+    const v = (PET.form === 'baby' ? 80 : 100) * dt;
+    const d = PET.tx - PET.x;
+    if (Math.abs(d) <= v) {
+      PET.x = PET.tx; PET.walking = false;
+      const f = PET.walkDone; PET.walkDone = null;
+      if (f) f(); else petIdle(true);
+    } else PET.x += Math.sign(d) * v;
+    petPlace();
+  }
+}
+function petEmote(kind) {
+  if (!PET.anim) return;
+  W.emote.vis(true);
+  petPlace();
+  W.emote.play(kind, { done: () => W.emote.vis(false) });
+}
+
+// ------------------------------------------------------------ one-shot effects
+function fx(file, seg, x, y, w, o = {}) {
+  const a = new Anim(o.layer || W.fxL, file, { w, x, y, world: true, fx: true });
+  a.play(seg, { speed: o.speed || 1, done: () => { a.destroy(); if (o.done) o.done(); } });
+  return a;
+}
+function hearts(x, y) { fx('fx_hearts', 'burst', x - 110, y - 200, 220); }
+function sparkle(x, y, seg = 'pop', size = 200) { fx('fx_sparkle', seg, x - size / 2, y - size / 2, size); }
+
+// ============================================================ HUD
+const H = {};
+function buildHUD() {
+  const L = LAY.hud;
+  H.needsCard = new Anim(L, 'card_needs', { w: 560, h: 120, x: 14, y: 10 });
+  H.needs = {};
+  NEEDS.forEach((n, i) => {
+    const x = 32 + (i % 2) * 272, y = 22 + Math.floor(i / 2) * 50;
+    const icon = new Anim(L, 'icons_need', { w: 46, x, y });
+    icon.show(n);
+    text(L, NEED_NAME[n], x + 50, y + 1, { size: 17, weight: 700 });
+    const val = text(L, '100', x + 196, y + 1, { size: 17, weight: 700, w: 44, align: 'right', color: '#8A5A3C' });
+    const bar = new Anim(L, 'bar', { w: 194, x: x + 46, y: y + 23 });
+    H.needs[n] = { icon, val, bar, lv: -1, warn: false };
+  });
+  H.infoCard = new Anim(L, 'card_info', { w: 340, h: 104, x: 590, y: 10 });
+  H.name = text(L, '', 606, 14, { size: 21, weight: 900, w: 308, align: 'left' });
+  H.day = text(L, '', 606, 43, { size: 15, weight: 500, w: 200, align: 'left', color: '#8A5A3C' });
+  H.status = text(L, '', 714, 43, { size: 15, weight: 900, w: 200, align: 'right', color: '#E0584F' });
+  H.growIcon = new Anim(L, 'icons_need', { w: 34, x: 602, y: 63 });
+  H.growIcon.show('grow');
+  H.growBar = new Anim(L, 'bar', { w: 196, x: 638, y: 70 });
+  H.growTxt = text(L, '', 838, 72, { size: 15, weight: 700, w: 84, align: 'left', color: '#8A5A3C' });
+  H.growLv = -1;
+  H.help = new Btn(L, { kind: 'round', w: 70, x: 1030, y: 22, icon: ['icons_ui', 'help'], onClick: () => openHelp() });
+  H.mute = new Btn(L, { kind: 'round', w: 70, x: 1110, y: 22, icon: ['icons_ui', AU.muted ? 'sound_off' : 'sound_on'], onClick: () => toggleMute() });
+  H.pause = new Btn(L, { kind: 'round', w: 70, x: 1190, y: 22, icon: ['icons_ui', 'pause'], onClick: () => openPause() });
+  H.dock = new Anim(L, 'dock', { w: 840, h: 120, x: 220, y: 598 });
+  H.dock.show('idle');
+  const acts = [['feed', '喂食', 'feed', doFeedMenu], ['play', '玩耍', 'play', doPlay], ['bath', '洗澡', 'bath', doBath],
+    ['sleep', '关灯', 'sleep', doSleep], ['heal', '治疗', 'heal', doHeal], ['soothe', '哄哄', 'soothe', doSoothe]];
+  H.acts = {};
+  acts.forEach(([key, label, icon, fn], i) => {
+    const cx = 323 + i * 126;
+    H.acts[key] = new Btn(L, { kind: 'round', w: 92, x: cx - 46, y: 604, icon: ['icons_act', icon], iw: 50, iy: 8, label, size: 16, ly: 60,
+      clickOff: true, id: 'act_' + key, onClick: () => fn() });
+  });
+  H.rinse = new Btn(L, { kind: 'pill', w: 300, x: 490, y: 624, label: '冲水', icon: ['icons_act', 'shower'], iw: 52, ix: 36, iy: 14,
+    id: 'rinseBtn', onClick: () => bathRinse() });
+  H.rinse.show(false);
+  H.bathTxt = text(L, '', 490, 596, { size: 17, weight: 700, w: 300, color: '#5A3421', shadow: '0 1px 0 #fff' });
+  H.toast = div(L, 'layer', { pointerEvents: 'none' });
+  H.toastA = new Anim(H.toast, 'toast', { w: 640, h: 76, x: 320, y: 132 });
+  H.toastT = text(H.toast, '', 400, 151, { size: 20, weight: 700, w: 540, align: 'left' });
+  H.toast.classList.add('hidden');
+}
+// newest message wins; a message stays up at least 0.8 s before the next one replaces it
+// important messages (sickness, tantrums, growth, events) are not cut short by minor hints
+function toast(msg, sec = 2.8, imp = false) {
+  if (!msg || !H.toast) return;
+  if (H.cur === msg && G.msgT > 0) { G.msgT = Math.max(G.msgT, sec * 0.6); return; }
+  G.msgQ = [{ msg, sec, imp }];
+  if (G.curImp && G.msgT > 0 && !imp) return;
+  if (G.msgT <= 0 || G.msgShown >= 0.8) nextToast();
+}
+function nextToast() {
+  const m = G.msgQ.shift();
+  if (!m) { H.toast.classList.add('hidden'); H.cur = null; G.curImp = false; H.toastA.a.pause(); G.msgT = 0; return; }
+  const fresh = H.toast.classList.contains('hidden');
+  H.cur = m.msg;
+  G.curImp = !!m.imp;
+  H.toast.classList.remove('hidden');
+  H.toastT.textContent = m.msg;
+  if (fresh) H.toastA.play('in', { done: () => H.toastA.play('idle', { loop: true }) });
+  G.msgT = m.sec;
+  G.msgShown = 0;
+}
+function updateToast(dt) {
+  if (G.msgT > 0 || G.msgQ.length) {
+    G.msgShown = (G.msgShown || 0) + dt;
+    G.msgT -= dt;
+    if (G.msgT <= 0 || (G.msgQ.length && G.msgShown >= 0.8 && (!G.curImp || G.msgQ[0].imp))) nextToast();
+  }
+}
+function updateHUD() {
+  if (!S) return;
+  NEEDS.forEach((n) => {
+    const h = H.needs[n];
+    const lv = Math.round(S.needs[n]);
+    if (lv !== h.lv) { h.lv = lv; h.val.textContent = lv; h.bar.show(n, lv); }
+    const warn = lv < 25;
+    if (warn !== h.warn) { h.warn = warn; if (warn) h.icon.play(n, { loop: true }); else h.icon.show(n); h.val.style.color = warn ? '#E0584F' : '#8A5A3C'; }
+  });
+  const status = [S.sick && '生病中', S.angry && '闹脾气', S.stuffedT > 0 && '吃撑了', S.sleeping && '睡觉中'].filter(Boolean).join(' · ');
+  if (H.status.textContent !== status) H.status.textContent = status;
+  const nm = S.name + ' · ' + STAGE_NAME[S.stage];
+  if (H.name.textContent !== nm) H.name.textContent = nm;
+  const dt = '第 ' + dayNum() + ' 天 ' + clockText();
+  if (H.day.textContent !== dt) H.day.textContent = dt;
+  const gp = S.stage === 'baby' ? S.growth / GROW_TEEN : S.stage === 'teen' ? (S.growth - GROW_TEEN) / (GROW_ADULT - GROW_TEEN) : 1;
+  const glv = Math.round(clamp(gp, 0, 1) * 100);
+  if (glv !== H.growLv) { H.growLv = glv; H.growBar.show('grow', glv); H.growTxt.textContent = '成长 ' + glv + '%'; }
+  // action buttons state
+  const A = H.acts;
+  A.sleep.setIcon('icons_act', S.sleeping ? 'wake' : 'sleep');
+  A.sleep.setLabel(S.sleeping ? '开灯' : '关灯');
+  const busy = PET.busy || BATH.on;
+  A.feed.setMode(S.sleeping || busy ? 'off' : (S.needs.food < 25 && !S.angry ? 'alert' : 'idle'));
+  A.play.setMode(S.sleeping || busy || S.sick ? 'off' : (S.needs.mood < 25 && !S.angry ? 'alert' : 'idle'));
+  A.bath.setMode(S.sleeping || busy ? 'off' : (S.needs.clean < 25 && !S.angry ? 'alert' : 'idle'));
+  A.sleep.setMode(busy && !S.sleeping ? 'off' : (!S.sleeping && S.needs.energy < 20 ? 'alert' : 'idle'));
+  A.heal.setMode(S.sick && !busy ? 'alert' : 'off');
+  A.soothe.setMode(S.angry && !busy ? 'alert' : (busy || S.sleeping ? 'off' : 'idle'));
+}
+
+// ============================================================ screens
+const SC = {};
+function showLayer(el, on) { el.classList.toggle('hidden', !on); }
+function worldSleep(on) {
+  if (on) {
+    G.sleepList = [];
+    WORLD_ANIMS.forEach((a) => { if (!a.mini && !a.a.isPaused) { G.sleepList.push(a); a.a.pause(); } });
+    LAY.world.classList.add('hidden');
+  } else {
+    LAY.world.classList.remove('hidden');
+    (G.sleepList || []).forEach((a) => { if (WORLD_ANIMS.has(a)) a.a.play(); });
+    G.sleepList = [];
+  }
+}
+function resetWorld() {
+  G.tweens = G.tweens.filter((t) => !t.world);
+  WORLD_ANIMS.forEach((a) => { if (a.fx) a.destroy(); });
+  G.nightmare = null; PAT.on = false; G.evolving = false; G.giftOpening = false; G.warned = {};
+  G.msgQ = []; G.msgT = 0; nextToast();
+}
+function setScreen(s) {
+  if (G.screen === 'ending' && s !== 'ending') { (SC.endAnims || []).forEach((a) => a.destroy()); SC.endAnims = []; }
+  if (s !== 'title' && SC.logo) SC.logo.a.pause();
+  G.screen = s;
+  showLayer(SC.title, s === 'title');
+  showLayer(SC.hatch, s === 'hatch' || s === 'name');
+  showLayer(LAY.hud, s === 'room');
+  showLayer(LAY.mini, s === 'mini');
+  showLayer(SC.ending, s === 'ending');
+  stage.classList.toggle('nocursor', false);
+}
+function buildTitle() {
+  const L = SC.title = div(LAY.screens, 'layer hidden');
+  SC.logo = new Anim(L, 'title', { w: 640, x: 320, y: 4 });
+  text(L, '口袋宠物', 320, 142, { size: 70, weight: 900, w: 640, color: '#7A3E1E', ls: 10, shadow: '0 3px 0 #FFD9A8' });
+  text(L, 'POCKET PAL', 320, 257, { size: 26, weight: 900, w: 640, color: '#FFFFFF', ls: 8, shadow: '0 2px 0 #B84A34' });
+  SC.cont = new Btn(L, { w: 330, x: 475, y: 318, label: '继续养育', sub: '', size: 25, id: 'btnContinue', onClick: () => continueGame() });
+  SC.newg = new Btn(L, { w: 330, x: 475, y: 406, label: '新的开始', size: 25, id: 'btnNew', onClick: () => newGameClick() });
+  SC.diffBtns = {};
+  ['easy', 'normal', 'hard'].forEach((d, i) => {
+    SC.diffBtns[d] = new Btn(L, { w: 180, x: 355 + i * 190, y: 496, label: DIFF[d].name, size: 20, id: 'diff_' + d,
+      onClick: () => { G.diff = d; savePref(); refreshTitle(); } });
+  });
+  SC.diffDesc = text(L, '', 320, 548, { size: 17, weight: 700, w: 640, color: '#6B3F2E', shadow: '0 1px 0 #FFF3E0' });
+  SC.helpBtn = new Btn(L, { w: 220, x: 530, y: 582, label: '帮助', size: 21, icon: ['icons_ui', 'help'], iw: 36, ix: 30, iy: 11, id: 'btnHelp', onClick: () => openHelp() });
+  text(L, 'P 暂停 · H 帮助 · M 静音　　鼠标 / 触屏点击操作', 320, 672, { size: 15, weight: 700, w: 640, color: '#7A4B36', shadow: '0 1px 0 #FFE9D0' });
+}
+function refreshTitle() {
+  const sv = loadSave();
+  SC.cont.show(!!sv);
+  if (sv) SC.cont.setLabel('继续养育', sv.name + ' · ' + (STAGE_NAME[sv.stage] || '') + ' · 难度' + DIFF[sv.diff].name);
+  SC.newg.el.style.top = px(sv ? 406 : 352);
+  SC.newg.setLabel(G.confirmNew ? '再点一次，覆盖存档' : '新的开始');
+  Object.entries(SC.diffBtns).forEach(([d, b]) => b.setMode(d === G.diff ? 'sel' : 'idle'));
+  SC.diffDesc.textContent = DIFF[G.diff].name + '：' + DIFF[G.diff].desc;
+}
+function showTitle() {
+  closeAllPanels();
+  G.paused = false;
+  bathEnd(true);
+  if (MG.on) miniEnd(true);
+  resetWorld();
+  S = null;
+  G.confirmNew = false;
+  setScreen('title');
+  refreshTitle();
+  SC.logo.play('loop', { loop: true });
+  setScene('day'); setLights('on'); G.rainOn = false; AU.rain(false);
+  W.clock.show('day', 10 * 60);
+  const sv = loadSave();
+  if (W.egg) { W.egg.destroy(); W.egg = null; }
+  if (W.gift) { W.gift.destroy(); W.gift = null; }
+  W.dirt.vis(false); W.dirtOn = false; W.emote.vis(false); W.clockMin = -1;
+  const form = sv ? (sv.stage === 'adult' ? sv.form : sv.stage) : 'baby';
+  petLoad(form);
+  PET.busy = false; PET.walking = false; PET.jump = null;
+  PET.x = 1090; PET.y = 604; PET.face = -1; petPlace();
+  PET.anim.play(sv && (sv.sick || sv.angry) ? (sv.sick ? 'sick' : 'angry') : 'idle', { loop: true });
+  Music.set('day');
+}
+function newGameClick() {
+  if (loadSave() && !G.confirmNew) { G.confirmNew = true; refreshTitle(); after(3, () => { G.confirmNew = false; if (G.screen === 'title') refreshTitle(); }, false); return; }
+  G.confirmNew = false;
+  startNew(G.diff);
+}
+
+// ------------------------------------------------------------ hatch + naming
+function buildHatch() {
+  const L = SC.hatch = div(LAY.screens, 'layer hidden');
+  SC.eggHit = div(L, 'pe', { position: 'absolute', left: '520px', top: '300px', width: '240px', height: '270px', cursor: 'pointer' });
+  SC.eggHit.id = 'eggHit';
+  SC.eggHit.addEventListener('click', (e) => { e.stopPropagation(); AU.init(); tapEgg(); });
+  SC.hatchTip = div(L, 'layer', { pointerEvents: 'none' });
+  SC.tipA = new Anim(SC.hatchTip, 'toast', { w: 640, h: 76, x: 320, y: 132 });
+  SC.tipT = text(SC.hatchTip, '', 400, 151, { size: 21, weight: 700, w: 540, align: 'left' });
+  // name panel
+  const P = SC.namePanel = new Panel(L, 'panel_s', 360, 186, 560, '给它起个名字吧');
+  const c = P.content;
+  SC.field = new Anim(c, 'field', { w: 400, x: 60, y: 104 });
+  SC.field.show('idle');
+  const inp = SC.nameInput = document.createElement('input');
+  inp.id = 'nameInput'; inp.maxLength = 6; inp.autocomplete = 'off'; inp.spellcheck = false;
+  Object.assign(inp.style, { left: '84px', top: '114px', width: '300px', height: '46px' });
+  c.appendChild(inp);
+  inp.addEventListener('focus', () => SC.field.play('focus', { loop: true }));
+  inp.addEventListener('blur', () => SC.field.show('idle'));
+  inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); confirmName(); } e.stopPropagation(); });
+  new Btn(c, { kind: 'round', w: 66, x: 470, y: 108, icon: ['icons_ui', 'dice'], id: 'diceBtn', onClick: () => { inp.value = pick(NAMES.filter((n) => n !== inp.value)); } });
+  text(c, '最多 6 个字，点骰子随机取名', 0, 196, { size: 15, weight: 500, w: 560, color: '#9A6A4A' });
+  new Btn(c, { w: 280, x: 140, y: 226, label: '就叫这个！', size: 24, id: 'nameOk', onClick: () => confirmName() });
+}
+function startNew(diff) {
+  bathEnd(true);
+  if (MG.on) miniEnd(true);
+  resetWorld();
+  S = newSave(diff);
+  G.hatchTaps = 0; G.hatched = false;
+  setScreen('hatch');
+  closeAllPanels();
+  if (PET.anim) { PET.anim.destroy(); PET.anim = null; }
+  if (W.gift) { W.gift.destroy(); W.gift = null; }
+  G.rainOn = false; AU.rain(false);
+  W.dirt.vis(false); W.dirtOn = false; W.emote.vis(false); W.clockMin = -1;
+  if (W.egg) W.egg.destroy();
+  W.egg = new Anim(W.petL, 'egg', { w: 312, h: 360, x: 484, y: 262, world: true });
+  W.egg.play('idle0', { loop: true });
+  setScene('day'); setLights('on');
+  W.clock.show('day', 8 * 60);
+  SC.eggHit.classList.remove('hidden');
+  hatchTip('点一点蛋，帮它破壳吧！（0/5）');
+  Music.set('day');
+}
+function hatchTip(msg) {
+  SC.hatchTip.classList.toggle('hidden', !msg);
+  if (!msg) SC.tipA.a.pause();
+  if (msg) { SC.tipT.textContent = msg; SC.tipA.play('in', { done: () => SC.tipA.play('idle', { loop: true }) }); }
+}
+function tapEgg() {
+  if (G.screen !== 'hatch' || G.hatched || G.paused) return;
+  G.hatchTaps++;
+  const n = G.hatchTaps;
+  if (n <= 4) {
+    SFX.crack();
+    W.egg.play('hit' + n, { done: () => W.egg.play('idle' + n, { loop: true }) });
+    hatchTip(['', '它动了一下！继续点（1/5）', '裂开了一条缝！（2/5）', '里面好像有什么在动……（3/5）', '快要出来了！再点一下！（4/5）'][n]);
+    sparkle(640, 460, 'pop', 160);
+  } else {
+    G.hatched = true;
+    SFX.hatch();
+    hatchTip('');
+    SC.eggHit.classList.add('hidden');
+    W.egg.play('hatch', { done: () => { W.egg.destroy(); W.egg = null; } });
+    after(0.45, () => {
+      petLoad('baby');
+      PET.x = 640; PET.y = 572; PET.face = 1; petPlace();
+      PET.busy = false;
+      PET.anim.play('happy', { loop: 2, done: () => PET.anim.play('idle', { loop: true }) });
+      hearts(640, 440);
+      SFX.happy();
+    });
+    after(2.2, () => {
+      setScreen('name');
+      SC.nameInput.value = pick(NAMES);
+      SC.namePanel.open();
+      after(0.3, () => { try { SC.nameInput.focus(); SC.nameInput.select(); } catch (e) { /* ignore */ } }, false);
+    });
+  }
+}
+function confirmName() {
+  if (G.screen !== 'name') return;
+  let nm = (SC.nameInput.value || '').trim().replace(/[<>&"]/g, '').slice(0, 6);
+  if (!nm) nm = pick(NAMES);
+  S.name = nm;
+  S.stage = 'baby';
+  SC.nameInput.blur();
+  SC.namePanel.close(() => {
+    enterRoom(true);
+    toast('欢迎回家，' + nm + '！照顾好它的四项需求吧～', 3.4);
+  });
+}
+
+// ------------------------------------------------------------ room
+function enterRoom(fresh) {
+  setScreen('room');
+  G.paused = false;
+  const form = S.stage === 'adult' ? S.form : S.stage;
+  if (!PET.anim || PET.form !== form) petLoad(form);
+  PET.busy = false; PET.walking = false; PET.jump = null;
+  if (S.sleeping) { PET.x = BED.x; PET.y = BED.y; PET.face = 1; } else if (!fresh) { PET.x = 640; PET.y = GROUND; }
+  if (fresh) { PET.y = GROUND; }
+  petPlace();
+  petIdle(true);
+  W.scene = null; setScene(sceneFor());
+  setLights(S.sleeping ? 'dark' : (isNight() ? 'eve' : 'on'));
+  G.rainOn = S.rain > 0; AU.rain(G.rainOn);
+  if (S.gift > 0) spawnGift(true);
+  H.needs && NEEDS.forEach((n) => { H.needs[n].lv = -1; });
+  H.growLv = -1;
+  updateHUD();
+  Music.set(S.sleeping ? 'night' : 'day');
+  writeSave();
+}
+function continueGame() {
+  const sv = loadSave();
+  if (!sv) { refreshTitle(); return; }
+  S = sv;
+  G.diff = S.diff;
+  const before = Object.assign({}, S.needs);
+  const wasSick = S.sick, wasAngry = S.angry;
+  const away = Math.max(0, (Date.now() - S.saved) / 1000);
+  settle(away);
+  enterRoom(false);
+  if (away > 20) showWelcome(away, before, wasSick, wasAngry);
+}
+function settle(sec) {
+  const s = Math.min(sec, 1800);
+  let t = s;
+  G.offline = true;
+  while (t > 0) { const d = Math.min(1, t); sim(d, true); t -= d; }
+  G.offline = false;
+  return s;
+}
+
+// ------------------------------------------------------------ simulation
+function sim(dt, offline) {
+  const d = DIFF[S.diff];
+  const N = S.needs;
+  S.gameMin += dt * 6;
+  let k = d.decay * (S.sick ? 1.3 : 1);
+  const sl = S.sleeping ? 0.45 : 1;
+  N.food -= BASE_DECAY.food * k * sl * dt;
+  N.mood -= BASE_DECAY.mood * k * sl * (S.rain > 0 ? 1.4 : 1) * (S.angry ? 1.3 : 1) * dt;
+  N.clean -= BASE_DECAY.clean * k * sl * dt;
+  if (S.sleeping) N.energy += 1.25 * (S.sick ? 0.6 : 1) * dt;
+  else N.energy -= BASE_DECAY.energy * k * (isNight() ? 1.35 : 1) * dt;
+  NEEDS.forEach((n) => { N[n] = clamp(N[n], 0, 100); });
+  if (S.stuffedT > 0) S.stuffedT = Math.max(0, S.stuffedT - dt);
+  if (S.rain > 0) { S.rain -= dt; if (S.rain <= 0) { S.rain = 0; if (!offline) rainEnd(); } }
+  if (S.gift > 0 && !offline) { S.gift -= dt; if (S.gift <= 0) { S.gift = 0; removeGift(); } }
+  S.lowClean = N.clean < d.sick[0] ? S.lowClean + dt : Math.max(0, S.lowClean - dt * 2);
+  S.lowMood = N.mood < d.angry[0] ? S.lowMood + dt : Math.max(0, S.lowMood - dt * 2);
+  S.lowFood = d.starve && N.food < d.starve[0] ? S.lowFood + dt : Math.max(0, S.lowFood - dt * 2);
+  if (!S.sick && S.lowClean > d.sick[1]) becomeSick('dirty');
+  if (!S.sick && d.starve && S.lowFood > d.starve[1]) becomeSick('hungry');
+  if (!S.angry && !S.sleeping && S.lowMood > d.angry[1]) becomeAngry();
+  if (Math.min(N.food, N.mood, N.clean, N.energy) < 20) S.stats.neglect += dt;
+  if (!offline && !S.sick && !S.angry && (S.stage === 'baby' || S.stage === 'teen')) {
+    const avg = (N.food + N.mood + N.clean + N.energy) / 4, mn = Math.min(N.food, N.mood, N.clean, N.energy);
+    let g = 0;
+    if (S.sleeping) g = 0.22;
+    else if (avg >= 60 && mn >= 30) g = 0.55 * avg / 100;
+    else if (avg >= 40) g = 0.12;
+    S.growth += g * dt;
+  }
+  if (S.sleeping && N.energy >= 100 && !offline) wake(true);
+  if (S.sleeping && N.energy >= 100 && offline) { S.sleeping = false; S.stats.sleeps++; }
+}
+function becomeSick(why) {
+  S.sick = true; S.lowClean = 0; S.lowFood = 0; S.stats.sick++;
+  if (G.offline) return;
+  SFX.sick();
+  toast(why === 'hungry' ? '饿太久了，' + S.name + '饿出病来了！快「治疗」吧' : why === 'stuffed' ? '吃得太撑，' + S.name + '肚子疼生病了！' : '身上太脏，' + S.name + '生病了！快「治疗」吧', 3.4, true);
+  if (!PET.busy && !S.sleeping) petIdle(true);
+  petEmote('sick');
+}
+function becomeAngry() {
+  S.angry = true; S.lowMood = 0; S.stats.angry++;
+  if (G.offline) return;
+  SFX.angry();
+  toast(S.name + '心情太差，开始闹脾气了！点「哄哄」安抚它', 3.4, true);
+  if (!PET.busy) petIdle(true);
+  petEmote('angry');
+}
+function needWarnings() {
+  const N = S.needs;
+  const tips = { food: [25, '肚子饿了，喂点东西吧', 'hungry'], mood: [25, '有点不开心，陪它玩一会儿吧', 'sad'], clean: [25, '身上脏脏的，该洗澡了', 'dirty'], energy: [20, '困了，关灯让它睡一觉吧', 'tired'] };
+  Object.entries(tips).forEach(([n, [th, msg, emo]]) => {
+    if (N[n] < th && !G.warned[n]) { G.warned[n] = true; if (!S.sleeping) { toast(S.name + msg); petEmote(emo); } }
+    if (N[n] > th + 15) G.warned[n] = false;
+  });
+}
+function roomTick(dt) {
+  sim(dt, false);
+  checkStage();
+  needWarnings();
+  // pet behaviour
+  G.reevalT -= dt;
+  if (G.reevalT <= 0) { G.reevalT = 0.8; petIdle(false); }
+  if (!PET.busy && !PET.walking && !PET.jump && !PET.reacting && !S.sleeping && !S.sick && !S.angry && idleSeg() === 'idle' && !BATH.on && !PAT.on) {
+    PET.wanderT -= dt;
+    if (PET.wanderT <= 0) { PET.wanderT = rand(4, 9); let tx = rand(250, 880); if (Math.abs(tx - PET.x) < 80) tx = PET.x > 560 ? tx - 200 : tx + 200; petWalkTo(tx); }
+  }
+  G.emoteT -= dt;
+  if (G.emoteT <= 0) {
+    G.emoteT = rand(12, 18);
+    if (!PET.busy && !S.sleeping && W.emote.el.style.display === 'none') {
+      const N = S.needs;
+      const low = NEEDS.filter((n) => N[n] < 35).sort((a, b) => N[a] - N[b])[0];
+      if (S.sick) petEmote('sick'); else if (S.angry) petEmote('angry');
+      else if (low) petEmote({ food: 'hungry', mood: 'sad', clean: 'dirty', energy: 'tired' }[low]);
+      else if (Math.random() < 0.5) petEmote(pick(['love', 'note']));
+    }
+  }
+  const dirty = S.needs.clean < 30 && !BATH.on && !S.sleeping;
+  if (dirty !== W.dirtOn) { W.dirtOn = dirty; W.dirt.vis(dirty); if (dirty) { petPlace(); W.dirt.play('loop', { loop: true }); } }
+  setScene(sceneFor());
+  setLights(S.sleeping ? 'dark' : (isNight() ? 'eve' : 'on'));
+  const cm = Math.floor(S.gameMin % 1440);
+  if (cm !== W.clockMin) { W.clockMin = cm; W.clock.show('day', cm); }
+  // events
+  if (!PET.busy && !BATH.on && !PAT.on && !G.evolving) {
+    S.eventT -= dt;
+    if (S.eventT <= 0) { S.eventT = rand(50, 85); randomEvent(); }
+  }
+  if (G.nightmare) { G.nightmare.t -= dt; if (G.nightmare.t <= 0) nightmareIgnored(); }
+  if (PAT.on) { PAT.t -= dt; if (PAT.t <= 0) patEnd(); }
+  G.saveT -= dt;
+  if (G.saveT <= 0) { G.saveT = 5; writeSave(); }
+  updateHUD();
+}
+
+// ------------------------------------------------------------ growth / evolution
+function checkStage() {
+  if (G.evolving || PET.busy || BATH.on || S.sleeping || PAT.on) return;
+  if (S.stage === 'baby' && S.growth >= GROW_TEEN) evolve('teen');
+  else if (S.stage === 'teen' && S.growth >= GROW_ADULT) evolve('adult');
+}
+function pickForm() {
+  const s = S.stats;
+  const sc = { star: s.plays * 3 + s.stars * 0.25 + s.soothes, cream: s.cake * 3 + s.feed * 0.6 + s.stuffed * 2,
+    cloud: s.baths * 3 + s.sleeps * 3, imp: s.sick * 5 + s.angry * 5 + s.neglect / 20 };
+  let best = 'star';
+  ['star', 'cream', 'cloud', 'imp'].forEach((f) => { if (sc[f] > sc[best]) best = f; });
+  return best;
+}
+function evolve(to) {
+  G.evolving = true;
+  PET.busy = true; PET.walking = false;
+  const form = to === 'adult' ? pickForm() : to;
+  toast('咦？' + S.name + '的身上发出了光……', 2.4, true);
+  petSeg('happy', { loop: true });
+  const c = petCenter();
+  after(1.0, () => {
+    if (!S || G.screen !== 'room') return;
+    SFX.evolve();
+    fx('fx_evolve', 'flash', c.x - 240, c.y - 240 - 10, 480);
+    after(0.85, () => {
+      S.stage = to;
+      if (to === 'adult') S.form = form;
+      petLoad(form);
+      PET.busy = true;
+      petSeg('happy', { loop: false, done: () => {
+        PET.busy = false; G.evolving = false;
+        hearts(PET.x, petTop() + 20);
+        if (to === 'adult') { toast(S.name + '长大成年了！变成了「' + FORMS[form].name + '」', 3, true); after(3.2, () => showEnding()); }
+        else { toast(S.name + '长成少年了！', 3, true); petIdle(true); }
+        writeSave();
+      } });
+    });
+  });
+}
+
+// ------------------------------------------------------------ refusal helper
+function blocked(what) {
+  if (G.evolving) { toast(S.name + '正在变身，等一等～'); return true; }
+  if (S.sleeping && what !== 'sleep') { toast('嘘——' + S.name + '正在睡觉'); SFX.error(); return true; }
+  if (PET.busy || BATH.on || MG.on) { SFX.error(); return true; }
+  if (S.angry && what !== 'soothe' && what !== 'heal') { toast(S.name + '在闹脾气，先「哄哄」它吧'); petEmote('angry'); SFX.error(); return true; }
+  return false;
+}
+
+// ------------------------------------------------------------ feeding
+function buildFeedMenu() {
+  const P = SC.feed = new Panel(LAY.overlay, 'panel_m', 340, 110, 600, '选择食物');
+  P.root.style.pointerEvents = 'auto';
+  const c = P.content;
+  Object.entries(FOODS).forEach(([k, f], i) => {
+    const y = 78 + i * 118;
+    const b = new Btn(c, { w: 440, h: 110, x: 80, y, id: 'food_' + k, onClick: () => { closeFeed(); feed(k); } });
+    const ic = new Anim(b.el, 'food', { w: 120, h: 90, x: 22, y: 8 });
+    ic.play(k + '_icon', { loop: true });
+    div(b.el, 'blab', { left: '150px', right: 'auto', top: '20px', fontSize: '24px', textAlign: 'left' }).textContent = f.name;
+    div(b.el, 'blab', { left: '150px', right: 'auto', top: '56px', fontSize: '15px', fontWeight: 500, textAlign: 'left', color: '#8A5A3C' }).textContent = f.text;
+  });
+  new Btn(c, { kind: 'round', w: 60, x: 520, y: 18, icon: ['icons_ui', 'close'], id: 'feedClose', onClick: () => closeFeed() });
+}
+function doFeedMenu() { if (blocked('feed')) return; G.overlay = 'feed'; SC.feed.open(); }
+function closeFeed() { if (G.overlay === 'feed') G.overlay = null; SC.feed.close(); }
+function feed(kind) {
+  if (blocked('feed')) return;
+  const N = S.needs;
+  if (S.stuffedT > 0) { toast(S.name + '已经撑得吃不下了……'); petDo('stuffed'); petEmote('love'); return; }
+  const f = FOODS[kind];
+  const willStuff = N.food >= 85;
+  const m = petMouth();
+  PET.walking = false;
+  PET.busy = true;
+  const food = new Anim(W.fxL, 'food', { w: 400, h: 300, x: m.x - 330, y: m.y - 92, world: true, fx: true });
+  food.play(kind + '_eat', { done: () => food.destroy() });
+  SFX.whoosh();
+  after(0.55, () => {
+    SFX.eat();
+    petDo('eat', { then: () => {
+      Object.entries(f.eff).forEach(([n, v]) => { N[n] = clamp(N[n] + v, 0, 100); });
+      S.stats.feed++; S.stats[kind]++;
+      if (willStuff) {
+        S.stuffedT = 25; S.stuffCount++; S.stats.stuffed++;
+        N.mood = clamp(N.mood - 8, 0, 100);
+        toast('吃得太撑了……' + S.name + '的肚子圆滚滚的（心情 -8）', 3);
+        if (S.stuffCount >= DIFF[S.diff].stuffLimit && !S.sick) { S.stuffCount = 0; becomeSick('stuffed'); }
+        petIdle(true);
+      } else {
+        S.growth += 3;
+        hearts(PET.x, petTop() + 30);
+        SFX.happy();
+        toast(S.name + '吃得好香！' + f.text.replace(/　/g, ' '));
+        petReact('happy');
+      }
+      writeSave();
+    } });
+  });
+}
+
+// ------------------------------------------------------------ heal / soothe / pat
+function doHeal() {
+  if (!S.sick) { toast(S.name + '很健康，不用吃药～'); SFX.error(); return; }
+  if (blocked('heal')) return;
+  const m = petMouth();
+  PET.busy = true;
+  const pill = new Anim(W.fxL, 'food', { w: 400, h: 300, x: m.x - 330, y: m.y - 92, world: true, fx: true });
+  pill.play('pill_eat', { done: () => pill.destroy() });
+  SFX.whoosh();
+  after(0.6, () => {
+    petDo('eat', { then: () => {
+      S.sick = false; S.lowClean = 0; S.lowFood = 0; S.stats.cures++; S.growth += 3;
+      S.needs.mood = clamp(S.needs.mood - 4, 0, 100);
+      sparkle(PET.x, petTop() + 30, 'cure', 220);
+      SFX.cure();
+      toast('吃了药，' + S.name + '的病好啦！');
+      petReact('happy');
+      writeSave();
+    } });
+  });
+}
+const PAT = { on: false, n: 0, t: 0, need: 5 };
+function doSoothe() {
+  if (blocked('soothe')) return;
+  PAT.on = true; PAT.n = 0; PAT.t = 9; PAT.need = S.angry ? 5 : 3;
+  toast(S.angry ? '轻点' + S.name + '安抚它（0/5）' : '轻点' + S.name + '，摸摸它～', 3);
+}
+function patPet() {
+  if (PET.busy || PET.jump) return;
+  SFX.pat();
+  const t = petTop();
+  fx('fx_hand', 'pat', PET.x - 80, t - 70, 160);
+  PET.walking = false;
+  petDo('pat', { then: () => petIdle(true) });
+  if (S.angry) {
+    PAT.n++; PAT.t = 9;
+    if (PAT.n >= PAT.need) {
+      S.angry = false; S.lowMood = 0; S.stats.soothes++; S.growth += 3;
+      S.needs.mood = clamp(S.needs.mood + 15, 0, 100);
+      PAT.on = false;
+      after(0.7, () => { hearts(PET.x, petTop() + 20); SFX.happy(); toast(S.name + '不生气啦！（心情 +15）'); petReact('happy'); });
+    } else toast('轻点' + S.name + '安抚它（' + PAT.n + '/5）', 2);
+  } else {
+    S.needs.mood = clamp(S.needs.mood + (PAT.on ? 3 : 1), 0, 100);
+    if (PAT.on) { PAT.n++; PAT.t = 9; if (PAT.n >= PAT.need) { PAT.on = false; S.stats.soothes++; after(0.6, () => { hearts(PET.x, petTop() + 20); SFX.chirp(); }); } }
+    else if (Math.random() < 0.5) after(0.4, () => hearts(PET.x, petTop() + 20));
+  }
+}
+function patEnd() { PAT.on = false; }
+// room objects are clickable too: toy box, food bowl, bed
+function itemClick(p) {
+  const inR = (x0, y0, x1, y1) => p.x > x0 && p.x < x1 && p.y > y0 && p.y < y1;
+  if (inR(36, 340, 206, 526)) {
+    sparkle(120, 400, 'pop', 160);
+    if (blocked('play') || G.toyCd > 0) return;
+    G.toyCd = 12;
+    SFX.chirp();
+    S.needs.mood = clamp(S.needs.mood + 3, 0, 100);
+    toast('从玩具箱里翻出了小皮球，' + S.name + '玩得很开心（心情 +3）');
+    petReact('play', 3);
+  } else if (inR(288, 570, 384, 616)) doFeedMenu();
+  else if (inR(880, 370, 1070, 552)) doSleep();
+}
+function worldClick(p) {
+  if (G.screen !== 'room' || G.paused || BATH.on || !PET.anim) return;
+  const c = petCenter();
+  const r = PET.info.h * 0.75;
+  if (Math.hypot(p.x - c.x, p.y - c.y) > r) { AU.init(); if (W.gift && giftHit(p)) openGift(); else itemClick(p); return; }
+  AU.init();
+  if (G.nightmare) { comfortNightmare(); return; }
+  if (S.sleeping) { toast('嘘——' + S.name + '睡得正香'); return; }
+  if (PET.busy || G.evolving) return;
+  if (G.patCd > 0 && !PAT.on && !S.angry) return;
+  G.patCd = 1.2;
+  patPet();
+}
+
+// ------------------------------------------------------------ sleep
+function doSleep() {
+  if (S.sleeping) { wake(false); return; }
+  if (blocked('sleep')) return;
+  if (S.needs.energy >= 90) { toast(S.name + '还不困呢，精神得很！'); petEmote('note'); return; }
+  S.sleeping = true;
+  PET.busy = true;
+  W.emote.vis(false);
+  SFX.lights();
+  toast('关灯啦，晚安～');
+  setLights('dark'); setScene('night'); Music.set('night');
+  const goBed = () => petJump(BED.x, BED.y, 0.55, () => { PET.face = 1; PET.busy = false; petIdle(true); petPlace(); writeSave(); });
+  if (Math.abs(PET.x - 930) > 10) petWalkTo(930, goBed); else goBed();
+}
+function wake(auto) {
+  if (!S.sleeping) return;
+  S.sleeping = false;
+  if (G.nightmare) G.nightmare = null;
+  S.stats.sleeps++;
+  SFX.lights();
+  Music.set('day');
+  if (auto) { S.growth += 5; toast(S.name + '睡饱啦！体力满满'); }
+  else if (S.needs.energy < 60) { S.needs.mood = clamp(S.needs.mood - 6, 0, 100); toast(S.name + '被吵醒了，有点不高兴（心情 -6）'); }
+  else toast('早上好，' + S.name + '！');
+  setLights(isNight() ? 'eve' : 'on');
+  setScene(sceneFor());
+  PET.busy = true;
+  petJump(860, GROUND, 0.55, () => { PET.busy = false; petReact(auto || S.needs.energy >= 60 ? 'happy' : 'sad'); });
+  writeSave();
+}
+
+// ------------------------------------------------------------ bath
+const BATH = { on: false, bubbles: [], count: 0, dist: 0, down: false, lx: 0, ly: 0, rinsing: false, max: 30 };
+function doBath() {
+  if (blocked('bath')) return;
+  BATH.on = true; BATH.count = 0; BATH.dist = 0; BATH.rinsing = false; BATH.bubbles = [];
+  PET.busy = true;
+  W.dirt.vis(false);
+  const start = () => {
+    W.tubBack = new Anim(W.tubBackL, 'tub', { w: 360, h: 260, x: TUB.x - 180, y: TUB.rim - 118, world: true });
+    W.tubFront = new Anim(W.tubFrontL, 'tub', { w: 360, h: 260, x: TUB.x - 180, y: TUB.rim - 118, world: true });
+    W.tubBack.play('back_in', { done: () => W.tubBack.play('back', { loop: true }) });
+    W.tubFront.play('front_in', { done: () => W.tubFront.play('front', { loop: true }) });
+    SFX.splash();
+    petJump(TUB.x, TUB.rim + PET.info.h * 0.36, 0.5, () => {
+      PET.face = 1;
+      petSeg('bath', { loop: true });
+      toast('按住鼠标在' + S.name + '身上来回搓，搓出泡泡！', 3.4);
+      H.rinse.show(true); H.rinse.setMode('off');
+      stage.classList.add('nocursor');
+      W.sponge = new Anim(LAY.cursor, 'sponge', { w: 110, h: 100, x: -200, y: -200 });
+      W.sponge.play('idle', { loop: true });
+      bathLabel();
+    });
+  };
+  if (Math.abs(PET.x - TUB.x) > 40) petWalkTo(TUB.x, start); else start();
+}
+function bathLabel() { H.bathTxt.textContent = BATH.on ? '泡泡 ' + BATH.count + ' / ' + BATH.max : ''; }
+function bathMove(p, down) {
+  if (!BATH.on || !W.sponge) return;
+  W.sponge.pos(p.x - 55, p.y - 50);
+  if (!down || BATH.rinsing) return;
+  const c = petCenter();
+  const near = Math.hypot(p.x - c.x, (p.y - c.y) * 1.2) < PET.info.h * 0.85;
+  const d = Math.hypot(p.x - BATH.lx, p.y - BATH.ly);
+  BATH.lx = p.x; BATH.ly = p.y;
+  if (!near) return;
+  BATH.dist += d;
+  if (W.sponge.cur !== 'scrub') W.sponge.play('scrub', { loop: true });
+  if (BATH.dist > 28 && BATH.count < BATH.max) {
+    BATH.dist = 0;
+    BATH.count++;
+    const b = new Anim(W.fxL, 'fx_bubble', { w: 90, h: 150, x: p.x - 45 + rand(-8, 8), y: p.y - 115 + rand(-8, 8), world: true });
+    b.play('spawn', { done: () => b.play('idle', { loop: true }) });
+    BATH.bubbles.push(b);
+    SFX.bubble();
+    if (BATH.count % 3 === 0) SFX.scrub();
+    if (BATH.count >= 3) H.rinse.setMode(BATH.count >= BATH.max ? 'alert' : 'idle');
+    bathLabel();
+    if (BATH.count >= BATH.max) toast('泡泡满满！点「冲水」冲干净吧');
+  }
+}
+function bathRinse() {
+  if (!BATH.on || BATH.rinsing) return;
+  if (BATH.count < 3) { toast('再多搓几下泡泡吧'); return; }
+  BATH.rinsing = true;
+  H.rinse.show(false); H.bathTxt.textContent = '';
+  stage.classList.remove('nocursor');
+  if (W.sponge) { W.sponge.destroy(); W.sponge = null; }
+  const shower = new Anim(W.fxL, 'fx_shower', { w: 320, h: 380, x: TUB.x - 200, y: petTop() - 110, world: true });
+  shower.play('in', { done: () => shower.play('on', { loop: true }) });
+  SFX.splash();
+  BATH.bubbles.forEach((b, i) => after(0.3 + i * 0.05, () => { b.play('rise', { done: () => b.destroy() }); after(1.6, () => SFX.pop()); }));
+  after(2.3, () => {
+    shower.destroy();
+    const gain = BATH.count * 100 / BATH.max;
+    S.needs.clean = clamp(S.needs.clean + gain, 0, 100);
+    S.needs.mood = clamp(S.needs.mood + 5, 0, 100);
+    S.growth += 4 * BATH.count / BATH.max;
+    S.stats.baths++;
+    toast('哗啦啦——洗得香喷喷！（清洁 +' + Math.round(gain) + '）');
+    W.tubBack.reverse('back_in', () => { if (W.tubBack) { W.tubBack.destroy(); W.tubBack = null; } });
+    W.tubFront.reverse('front_in', () => { if (W.tubFront) { W.tubFront.destroy(); W.tubFront = null; } });
+    petJump(TUB.x, GROUND, 0.5, () => { bathEnd(false); petReact('happy'); hearts(PET.x, petTop() + 20); SFX.happy(); });
+  });
+}
+function bathEnd(abort) {
+  if (!BATH.on) return;
+  BATH.on = false; BATH.rinsing = false; BATH.down = false;
+  PET.busy = false;
+  BATH.bubbles.forEach((b) => { try { b.destroy(); } catch (e) { /* already gone */ } });
+  BATH.bubbles = [];
+  if (abort) { ['tubBack', 'tubFront'].forEach((k) => { if (W[k]) { W[k].destroy(); W[k] = null; } }); }
+  if (W.sponge) { W.sponge.destroy(); W.sponge = null; }
+  H.rinse.show(false); H.bathTxt.textContent = '';
+  stage.classList.remove('nocursor');
+  writeSave();
+}
+
+// ------------------------------------------------------------ random events
+function randomEvent() {
+  if (S.sleeping) { if (Math.random() < 0.6) startNightmare(); return; }
+  const opts = [];
+  if (!W.gift && S.gift <= 0) opts.push('gift');
+  if (S.rain <= 0) opts.push('rain');
+  if (!opts.length) return;
+  const e = pick(opts);
+  if (e === 'gift') { S.gift = 60; spawnGift(false); } else startRain();
+}
+function spawnGift(silent) {
+  if (W.gift) return;
+  W.gift = new Anim(W.giftBox, 'gift', { w: 200, h: 200, x: 1058, y: 382, world: true });
+  W.gift.play(silent ? 'idle' : 'drop', { loop: silent, done: () => { if (W.gift) W.gift.play('idle', { loop: true }); } });
+  if (!silent) { SFX.gift(); toast('门口出现了一个礼物！点开看看吧', 2.8, true); if (!PET.busy && !S.sleeping) petEmote('gift'); }
+}
+const giftHit = (p) => p.x > 1070 && p.x < 1250 && p.y > 440 && p.y < 580;
+function openGift() {
+  if (!W.gift || G.giftOpening) return;
+  G.giftOpening = true;
+  const g = W.gift;
+  S.gift = 0;
+  SFX.gift();
+  const rewards = [['mood', 15, '一个小皮球！心情 +15'], ['food', 12, '一袋小饼干！饱食 +12'], ['clean', 12, '香香的泡泡浴球！清洁 +12'], ['energy', 12, '一个软软的抱枕！体力 +12']];
+  const r = pick(rewards);
+  S.needs[r[0]] = clamp(S.needs[r[0]] + r[1], 0, 100);
+  S.stats.gifts++; S.growth += 2;
+  g.play('open', { done: () => { g.destroy(); if (W.gift === g) W.gift = null; G.giftOpening = false; } });
+  sparkle(1158, 480, 'gold', 220);
+  toast('礼物里是' + r[2]);
+  if (!PET.busy && !S.sleeping && !S.angry) { petReact('happy'); }
+}
+function removeGift() { if (W.gift && !G.giftOpening) { const g = W.gift; W.gift = null; g.reverse('drop', () => g.destroy()); } }
+function startRain() {
+  S.rain = 45; G.rainOn = true; AU.rain(true);
+  setScene('rain');
+  toast('窗外下起了雨……' + S.name + '有点闷闷不乐', 3, true);
+  if (!PET.busy) petEmote('rain');
+}
+function rainEnd() { G.rainOn = false; AU.rain(false); if (G.screen === 'room') toast('雨停了～'); }
+function startNightmare() {
+  if (!S.sleeping || G.nightmare) return;
+  G.nightmare = { t: 12 };
+  S.stats.nightmares++;
+  petSeg('nightmare', { loop: true });
+  PET.busy = true;
+  SFX.sick();
+  toast(S.name + '做噩梦了！快轻点它安慰一下', 3.4, true);
+}
+function comfortNightmare() {
+  if (!G.nightmare) return;
+  G.nightmare = null;
+  SFX.pat();
+  fx('fx_hand', 'pat', PET.x - 80, petTop() - 70, 160);
+  PET.busy = false;
+  S.needs.mood = clamp(S.needs.mood + 6, 0, 100);
+  after(0.4, () => hearts(PET.x, petTop() + 10));
+  toast(S.name + '又睡得香甜了（心情 +6）');
+  petIdle(true);
+}
+function nightmareIgnored() {
+  G.nightmare = null;
+  PET.busy = false;
+  S.needs.mood = clamp(S.needs.mood - 12, 0, 100);
+  toast(S.name + '被噩梦吓醒了……（心情 -12）', 3);
+  wake(false);
+}
+
+// ============================================================ minigame
+const MG = { on: false, t: 30, score: 0, x: 640, keys: { l: false, r: false }, dragX: null, stars: [], spawnT: 0, ready: 0, pet: null, combo: 0, face: 1, ended: false };
+function buildMini() {
+  const L = LAY.mini;
+  MG.bg = new Anim(L, 'playfield', { w: 1280, h: 720, world: true, mini: true });
+  MG.starL = div(L, 'layer', { pointerEvents: 'none' });
+  MG.petL = div(L, 'layer', { pointerEvents: 'none' });
+  MG.chip1 = new Anim(L, 'chip', { w: 230, h: 70, x: 24, y: 18 });
+  MG.chip2 = new Anim(L, 'chip', { w: 230, h: 70, x: 1026, y: 18 });
+  new Anim(L, 'icons_ui', { w: 50, x: 42, y: 26 }).show('timer');
+  new Anim(L, 'icons_ui', { w: 50, x: 1044, y: 26 }).show('star');
+  MG.timeT = text(L, '30', 98, 30, { size: 30, weight: 900, w: 140, align: 'left' });
+  MG.scoreT = text(L, '0', 1100, 30, { size: 30, weight: 900, w: 140, align: 'left' });
+  MG.hint = text(L, '接住落下的星星！　← → / A D 或拖动控制', 290, 32, { size: 20, weight: 700, w: 700, color: '#FFFFFF', shadow: '0 2px 0 #6A5AB8' });
+  MG.big = text(L, '', 340, 260, { size: 72, weight: 900, w: 600, color: '#FFFFFF', shadow: '0 4px 0 #6A5AB8' });
+  L.addEventListener('pointerdown', (e) => { if (!MG.on) return; MG.dragX = toStage(e).x; });
+  L.addEventListener('pointermove', (e) => { if (MG.on && MG.dragX != null) MG.dragX = toStage(e).x; });
+  window.addEventListener('pointerup', () => { MG.dragX = null; });
+  // result panel
+  const P = SC.result = new Panel(LAY.overlay, 'panel_s', 360, 190, 560, '小游戏结束');
+  P.root.style.pointerEvents = 'auto';
+  SC.resStars = new Anim(P.content, 'icons_ui', { w: 70, x: 90, y: 92 });
+  SC.resStars.show('star');
+  SC.resT1 = text(P.content, '', 170, 98, { size: 28, weight: 900, w: 330, align: 'left' });
+  SC.resT2 = text(P.content, '', 170, 142, { size: 18, weight: 500, w: 360, align: 'left', color: '#8A5A3C' });
+  new Btn(P.content, { w: 260, x: 150, y: 222, label: '好开心！', size: 23, id: 'resultOk', onClick: () => miniClose() });
+}
+function doPlay() {
+  if (blocked('play')) return;
+  if (S.sick) { toast(S.name + '生病了，先「治疗」吧'); petEmote('sick'); SFX.error(); return; }
+  if (S.needs.energy < 15) { toast(S.name + '太累了，先让它睡一觉吧'); petEmote('tired'); SFX.error(); return; }
+  if (S.stuffedT > 0) { toast('刚吃撑了，歇一会儿再玩吧'); SFX.error(); return; }
+  miniStart();
+}
+function miniStart() {
+  MG.on = true; MG.ended = false; MG.t = 30; MG.score = 0; MG.combo = 0; MG.x = 640; MG.spawnT = 0.8; MG.ready = 2.2; MG.dragX = null;
+  MG.keys.l = MG.keys.r = false;
+  setScreen('mini');
+  worldSleep(true);
+  MG.bg.play('loop', { loop: true });
+  const form = S.stage === 'adult' ? S.form : S.stage;
+  if (MG.pet) MG.pet.destroy();
+  MG.pet = new Anim(MG.petL, 'pet_' + form, { w: 320, h: 320, world: true, mini: true });
+  MG.pet.el.style.transformOrigin = '160px 0';
+  MG.pet.play('play', { loop: true });
+  MG.info = PINFO[form];
+  miniPlace();
+  MG.timeT.textContent = '30'; MG.scoreT.textContent = '0';
+  MG.big.textContent = '准备……';
+  Music.set('game');
+  SFX.count();
+}
+function miniPlace() { MG.pet.el.style.transform = `translate(${MG.x - 160}px,${600 - 292}px) scaleX(${MG.face})`; }
+function miniTick(dt) {
+  if (!MG.on || MG.ended) return;
+  if (MG.ready > 0) {
+    const before = MG.ready;
+    MG.ready -= dt;
+    if (before > 1.0 && MG.ready <= 1.0) { MG.big.textContent = '开始！'; SFX.go(); }
+    if (MG.ready <= 0) MG.big.textContent = '';
+  }
+  // move
+  let vx = 0;
+  if (MG.keys.l) vx -= 1;
+  if (MG.keys.r) vx += 1;
+  if (vx) MG.x += vx * 460 * dt;
+  else if (MG.dragX != null) { const d = MG.dragX - MG.x; MG.x += Math.sign(d) * Math.min(Math.abs(d), 760 * dt); if (Math.abs(d) > 4) vx = Math.sign(d); }
+  MG.x = clamp(MG.x, 90, 1190);
+  if (vx) MG.face = vx < 0 ? -1 : 1;
+  miniPlace();
+  if (MG.ready > 0) return;
+  MG.t -= dt;
+  MG.timeT.textContent = Math.max(0, Math.ceil(MG.t));
+  // spawn
+  MG.spawnT -= dt;
+  if (MG.spawnT <= 0 && MG.t > 0.8) {
+    const prog = 1 - MG.t / 30;
+    MG.spawnT = rand(0.5, 0.85) - prog * 0.18;
+    spawnStar(prog);
+  }
+  const top = 600 - 292 + MG.info.top;
+  for (let i = MG.stars.length - 1; i >= 0; i--) {
+    const s = MG.stars[i];
+    if (s.dead) continue;
+    s.y += s.v * dt;
+    s.a.pos(s.x - 50, s.y - 50);
+    if (s.y > top - 10 && s.y < 600 && Math.abs(s.x - MG.x) < 72) {
+      s.dead = true;
+      MG.score += s.gold ? 3 : 1; MG.combo++;
+      MG.scoreT.textContent = MG.score;
+      if (s.gold) SFX.gold(); else SFX.star(MG.combo % 8);
+      s.a.play('catch', { done: () => removeStar(s) });
+      continue;
+    }
+    if (s.y >= 612) {
+      s.dead = true; MG.combo = 0;
+      SFX.miss();
+      s.a.play('miss', { done: () => removeStar(s) });
+    }
+  }
+  if (MG.t <= 0) miniFinish();
+}
+function spawnStar(prog) {
+  const gold = Math.random() < 0.13;
+  const a = new Anim(MG.starL, 'star', { w: 100, h: 100, world: true, mini: true });
+  a.play(gold ? 'gold' : 'fall', { loop: true });
+  const s = { a, gold, x: rand(80, 1200), y: -50, v: rand(210, 320) + prog * 120, dead: false };
+  a.pos(s.x - 50, s.y - 50);
+  MG.stars.push(s);
+}
+function removeStar(s) { s.a.destroy(); const i = MG.stars.indexOf(s); if (i >= 0) MG.stars.splice(i, 1); }
+function miniFinish() {
+  MG.ended = true;
+  MG.big.textContent = '时间到！';
+  SFX.fanfare();
+  MG.stars.forEach((s) => { if (!s.dead) { s.dead = true; s.a.play('miss', { done: () => removeStar(s) }); } });
+  MG.pet.play('happy', { loop: true });
+  const gain = Math.min(45, 6 + Math.round(MG.score * 1.6));
+  MG.gain = gain;
+  after(1.3, () => {
+    SC.resT1.textContent = '接到了 ' + MG.score + ' 颗星星！';
+    SC.resT2.textContent = '心情 +' + gain + '　体力 -12　饱食 -6';
+    G.overlay = 'result';
+    SC.result.open();
+  }, false);
+}
+function miniClose() {
+  if (!MG.on) return;
+  const N = S.needs;
+  N.mood = clamp(N.mood + MG.gain, 0, 100);
+  N.energy = clamp(N.energy - 12, 0, 100);
+  N.food = clamp(N.food - 6, 0, 100);
+  S.growth += 2 + MG.score * 0.3;
+  S.stats.plays++; S.stats.stars += MG.score;
+  G.overlay = null;
+  SC.result.close();
+  miniEnd(false);
+  hearts(PET.x, petTop() + 20);
+  petReact('happy', 2);
+  SFX.happy();
+  writeSave();
+}
+function miniEnd(abort) {
+  MG.on = false; MG.big.textContent = '';
+  MG.stars.slice().forEach(removeStar);
+  if (MG.pet) { MG.pet.destroy(); MG.pet = null; }
+  MG.bg.a.pause();
+  worldSleep(false);
+  if (!abort) { setScreen('room'); Music.set(S.sleeping ? 'night' : 'day'); }
+}
+
+// ============================================================ overlays: pause, help, welcome, ending
+function buildOverlays() {
+  // pause
+  const P = SC.pause = new Panel(LAY.overlay, 'panel_m', 340, 112, 600, '暂停');
+  P.root.style.pointerEvents = 'auto';
+  SC.pauseInfo = text(P.content, '', 0, 78, { size: 17, weight: 700, w: 600, color: '#8A5A3C' });
+  new Btn(P.content, { w: 330, x: 135, y: 124, label: '继续', size: 25, icon: ['icons_ui', 'resume'], iw: 44, ix: 40, iy: 20, id: 'pauseResume', onClick: () => closePause() });
+  SC.restartBtn = new Btn(P.content, { w: 330, x: 135, y: 222, label: '重新开始', size: 25, icon: ['icons_ui', 'restart'], iw: 44, ix: 40, iy: 20, id: 'pauseRestart', onClick: () => restartClick() });
+  new Btn(P.content, { w: 330, x: 135, y: 320, label: '返回标题', size: 25, icon: ['icons_ui', 'home'], iw: 44, ix: 40, iy: 20, id: 'pauseTitle', onClick: () => { writeSave(); showTitle(); } });
+  text(P.content, '进度会自动保存', 0, 426, { size: 15, weight: 500, w: 600, color: '#A07A5A' });
+  // help
+  const HP = SC.help = new Panel(LAY.overlay, 'panel_l', 120, 40, 1040, '玩法说明');
+  HP.root.style.pointerEvents = 'auto';
+  const c = div(HP.content, 'help', { position: 'absolute', left: '44px', top: '72px', width: '960px', height: '500px' });
+  const col = (x, w, html) => div(c, '', { position: 'absolute', left: px(x), top: '0', width: px(w), whiteSpace: 'normal' }, html);
+  col(0, 300, '<h3>四项需求</h3>' +
+    '<p style="padding-left:40px"><b>饱食</b>　会慢慢变饿，用「喂食」补充。吃太多会撑。</p>' +
+    '<p style="padding-left:40px"><b>心情</b>　陪它玩、摸摸它会开心；太低会闹脾气。</p>' +
+    '<p style="padding-left:40px"><b>清洁</b>　会慢慢变脏，要洗澡；太脏会生病。</p>' +
+    '<p style="padding-left:40px"><b>体力</b>　醒着会消耗，晚上更快；关灯睡觉恢复。</p>' +
+    '<h3 style="margin-top:14px">难度</h3><p><b>轻松</b> 需求下降慢　<b>普通</b> 标准<br><b>硬核</b> 下降快，饿太久会饿出病。</p>');
+  ['food', 'mood', 'clean', 'energy'].forEach((n, i) => { new Anim(c, 'icons_need', { w: 34, x: 0, y: 36 + i * 55 }).show(n); });
+  col(330, 300, '<h3>照顾方式</h3>' +
+    '<p><b>喂食</b>　浆果、饭团、蛋糕，补充的数值各不相同。</p>' +
+    '<p><b>玩耍</b>　30 秒接星星小游戏，接得越多心情涨得越多。</p>' +
+    '<p><b>洗澡</b>　按住鼠标在它身上来回搓出泡泡，泡泡越多越干净，最后点「冲水」。</p>' +
+    '<p><b>关灯</b>　房间变成夜晚，它会爬上小床睡觉恢复体力。</p>' +
+    '<p><b>治疗</b>　生病时喂它吃药。　<b>哄哄</b>　闹脾气时轻点它 5 次。</p>');
+  col(660, 300, '<h3>成长与事件</h3>' +
+    '<p>需求保持良好会积累成长值：<b>幼年 → 少年 → 成年</b>。照顾方式不同，成年后的样子也不同（共 4 种）。</p>' +
+    '<p>偶尔会有随机事件：门口出现<b>礼物</b>、窗外<b>下雨</b>、睡觉时<b>做噩梦</b>。</p>' +
+    '<p>游戏里 1 天 = 现实 4 分钟。关掉页面后再回来，会按离开的时间结算需求变化。</p>' +
+    '<h3 style="margin-top:14px">操作</h3><p>鼠标 / 触屏点击按钮和物品，点宠物可以摸摸它。小游戏用 <b>← →</b> / <b>A D</b> 或拖动。<b>P</b> 暂停　<b>H</b> 帮助　<b>M</b> 静音</p>');
+  new Btn(HP.content, { w: 260, x: 390, y: 556, label: '知道了', size: 23, id: 'helpOk', onClick: () => closeHelp() });
+  new Btn(HP.content, { kind: 'round', w: 62, x: 956, y: 20, icon: ['icons_ui', 'close'], id: 'helpClose', onClick: () => closeHelp() });
+  // welcome back
+  const WP = SC.welcome = new Panel(LAY.overlay, 'panel_m', 340, 112, 600, '欢迎回来');
+  WP.root.style.pointerEvents = 'auto';
+  SC.welT1 = text(WP.content, '', 0, 76, { size: 19, weight: 700, w: 600 });
+  SC.welRows = NEEDS.map((n, i) => {
+    new Anim(WP.content, 'icons_need', { w: 40, x: 150, y: 118 + i * 48 }).show(n);
+    return text(WP.content, '', 200, 124 + i * 48, { size: 19, weight: 700, w: 260, align: 'left' });
+  });
+  SC.welT2 = text(WP.content, '', 0, 318, { size: 18, weight: 700, w: 600, color: '#E0584F' });
+  new Btn(WP.content, { w: 280, x: 160, y: 360, label: '去看看它', size: 23, id: 'welcomeOk', onClick: () => { G.overlay = null; SC.welcome.close(); } });
+}
+function closeAllPanels() {
+  ['pause', 'help', 'welcome', 'feed', 'result'].forEach((k) => { if (SC[k] && SC[k].isOpen) { SC[k].isOpen = false; SC[k].root.classList.add('hidden'); } });
+  if (SC.namePanel && SC.namePanel.isOpen && G.screen !== 'name') { SC.namePanel.isOpen = false; SC.namePanel.root.classList.add('hidden'); }
+  G.overlay = null;
+  freeze(false);
+}
+function freeze(on) {
+  if (on === G.paused) return;
+  G.paused = on;
+  if (on) {
+    G.freezeList = [];
+    WORLD_ANIMS.forEach((a) => { if (!a.a.isPaused) { G.freezeList.push(a); a.a.pause(); } });
+  } else {
+    G.freezeList.forEach((a) => { if (WORLD_ANIMS.has(a)) a.a.play(); });
+    G.freezeList = [];
+  }
+}
+function openPause() {
+  if (!(G.screen === 'room' || G.screen === 'mini') || G.overlay === 'pause') return;
+  if (G.overlay === 'help') closeHelp();
+  if (G.overlay) return;
+  G.overlay = 'pause';
+  G.confirmRestart = false;
+  SC.restartBtn.setLabel('重新开始');
+  SC.pauseInfo.textContent = S ? S.name + ' · ' + STAGE_NAME[S.stage] + ' · 第 ' + dayNum() + ' 天 · 难度 ' + DIFF[S.diff].name : '';
+  freeze(true);
+  SC.pause.open();
+}
+function closePause() { if (G.overlay !== 'pause') return; G.overlay = null; SC.pause.close(() => freeze(false)); }
+function restartClick() {
+  if (!G.confirmRestart) { G.confirmRestart = true; SC.restartBtn.setLabel('再点一次确认'); return; }
+  const d = S ? S.diff : G.diff;
+  clearSave();
+  closeAllPanels();
+  bathEnd(true);
+  if (MG.on) miniEnd(true);
+  startNew(d);
+}
+function openHelp() {
+  if (G.overlay === 'help') return;
+  if (G.overlay && G.overlay !== 'pause') return;
+  G.helpFromPause = G.overlay === 'pause';
+  if (G.helpFromPause) { SC.pause.isOpen = false; SC.pause.root.classList.add('hidden'); }
+  G.overlay = 'help';
+  if (G.screen === 'room' || G.screen === 'mini') freeze(true);
+  SC.help.open();
+}
+function closeHelp() {
+  if (G.overlay !== 'help') return;
+  G.overlay = null;
+  SC.help.close(() => { if (G.helpFromPause) { G.overlay = 'pause'; SC.pause.open(); } else freeze(false); });
+}
+function showWelcome(away, before, wasSick, wasAngry) {
+  const min = Math.round(away / 60);
+  const days = away * 6 / 1440;
+  SC.welT1.textContent = '你离开了 ' + (min < 1 ? '不到 1' : min) + ' 分钟（游戏里过了 ' + (days < 0.1 ? '一会儿' : days.toFixed(1) + ' 天') + '）';
+  NEEDS.forEach((n, i) => { SC.welRows[i].textContent = NEED_NAME[n] + '　' + Math.round(before[n]) + ' → ' + Math.round(S.needs[n]); });
+  const probs = [];
+  if (S.sick && !wasSick) probs.push('它生病了，快治疗！');
+  if (S.angry && !wasAngry) probs.push('它在闹脾气，哄哄它吧！');
+  SC.welT2.textContent = probs.join('　') || (Math.min(...NEEDS.map((n) => S.needs[n])) < 30 ? '它有点想你了，快照顾它吧' : '');
+  SC.welT2.style.color = probs.length ? '#E0584F' : '#8A5A3C';
+  G.overlay = 'welcome';
+  SC.welcome.open();
+}
+function buildEnding() {
+  const L = SC.ending = div(LAY.screens, 'layer hidden');
+  SC.endConf = div(L, 'layer', { pointerEvents: 'none' });
+  SC.endPanel = new Anim(L, 'panel_l', { w: 1040, x: 120, y: 38 });
+  const c = SC.endC = div(L, '', { position: 'absolute', left: '120px', top: '38px', width: '1040px', height: '634px' });
+  SC.endRib = div(c, 'ribbon', { left: '0', width: '1040px', top: '18px' }, '长大啦！');
+  SC.endPetBox = div(c, '', { position: 'absolute', left: '40px', top: '96px', width: '400px', height: '400px' });
+  SC.endForm = text(c, '', 40, 488, { size: 30, weight: 900, w: 400, color: '#C0622A' });
+  SC.endDesc = div(c, 'ptext', { left: '60px', top: '532px', width: '360px', fontSize: '15px', lineHeight: '1.5', textAlign: 'center', whiteSpace: 'normal' });
+  SC.endTitle = text(c, '', 480, 88, { size: 30, weight: 900, w: 520, align: 'left' });
+  SC.endStats = div(c, 'ptext stat', { left: '480px', top: '140px', width: '520px' });
+  SC.endDex = div(c, 'ptext', { left: '480px', top: '440px', width: '520px', fontSize: '16px', lineHeight: '1.5', whiteSpace: 'normal', color: '#8A5A3C' });
+  new Btn(c, { w: 250, x: 480, y: 520, label: '再养一只', size: 23, icon: ['icons_act', 'soothe'], iw: 40, ix: 26, iy: 13, id: 'endAgain', onClick: () => { clearSave(); startNew(G.diff); } });
+  new Btn(c, { w: 250, x: 750, y: 520, label: '返回标题', size: 23, icon: ['icons_ui', 'home'], iw: 40, ix: 26, iy: 13, id: 'endTitle', onClick: () => showTitle() });
+}
+function showEnding() {
+  if (G.screen !== 'room') return;
+  const form = S.form;
+  S.done = true;
+  clearSave();
+  const dex = loadDex();
+  if (!dex.includes(form)) { dex.push(form); try { localStorage.setItem(DEX_KEY, JSON.stringify(dex)); } catch (e) { /* ignore */ } }
+  closeAllPanels();
+  bathEnd(true);
+  setScreen('ending');
+  G.diff = S.diff;
+  SC.endPanel.play('in', { done: () => SC.endPanel.play('idle', { loop: true }) });
+  (SC.endAnims || []).forEach((a) => a.destroy());
+  const conf = new Anim(SC.endConf, 'fx_confetti', { w: 1280, h: 720 });
+  conf.play('loop', { loop: true });
+  const pa = new Anim(SC.endPetBox, 'pet_' + form, { w: 400, h: 400 });
+  SC.endAnims = [conf, pa];
+  pa.play('happy', { loop: 1, done: () => pa.play('idle', { loop: true }) });
+  SC.endRib.textContent = S.name + '长大啦！';
+  SC.endForm.textContent = FORMS[form].name;
+  SC.endDesc.textContent = FORMS[form].desc;
+  SC.endTitle.textContent = '养育了 ' + dayNum() + ' 天';
+  const s = S.stats;
+  SC.endStats.innerHTML = [
+    '喂食 <b>' + s.feed + '</b> 次（浆果 ' + s.berry + ' · 饭团 ' + s.rice + ' · 蛋糕 ' + s.cake + '）',
+    '玩耍 <b>' + s.plays + '</b> 次，一共接住 <b>' + s.stars + '</b> 颗星星',
+    '洗澡 <b>' + s.baths + '</b> 次　　睡觉 <b>' + s.sleeps + '</b> 次',
+    '生病 <b>' + s.sick + '</b> 次，治疗 <b>' + s.cures + '</b> 次',
+    '闹脾气 <b>' + s.angry + '</b> 次，哄哄 <b>' + s.soothes + '</b> 次',
+    '收到礼物 <b>' + s.gifts + '</b> 个　　吃撑 <b>' + s.stuffed + '</b> 次',
+    '难度：<b>' + DIFF[S.diff].name + '</b>',
+  ].join('<br>');
+  const names = dex.map((f) => FORMS[f].name);
+  SC.endDex.textContent = '已解锁成年形态 ' + dex.length + ' / 4：' + names.join('、') + (dex.length < 4 ? '。换一种照顾方式，再养一只试试吧！' : '。全部集齐啦！');
+  Music.set('day');
+  SFX.fanfare();
+}
+function toggleMute() {
+  AU.init();
+  AU.setMuted(!AU.muted);
+  if (H.mute) H.mute.setIcon('icons_ui', AU.muted ? 'sound_off' : 'sound_on');
+  if (G.screen === 'room' || G.screen === 'title') toast(AU.muted ? '已静音（M 键切换）' : '声音已打开', 1.6);
+}
+
+// ============================================================ input
+function onKey(e, down) {
+  if (e.target && e.target.tagName === 'INPUT') return;
+  const k = e.key;
+  if (down) AU.init();
+  if (k === 'ArrowLeft' || k === 'a' || k === 'A') { MG.keys.l = down; if (MG.on) e.preventDefault(); }
+  if (k === 'ArrowRight' || k === 'd' || k === 'D') { MG.keys.r = down; if (MG.on) e.preventDefault(); }
+  if (!down || e.repeat) return;
+  if (k === 'm' || k === 'M') toggleMute();
+  else if (k === 'p' || k === 'P') { if (G.overlay === 'pause') closePause(); else openPause(); }
+  else if (k === 'h' || k === 'H') { if (G.overlay === 'help') closeHelp(); else if (G.screen !== 'loading') openHelp(); }
+  else if (k === 'Escape') { if (G.overlay === 'help') closeHelp(); else if (G.overlay === 'feed') closeFeed(); else if (G.overlay === 'pause') closePause(); else openPause(); }
+  else if ((k === ' ' || k === 'Enter') && G.screen === 'hatch') { e.preventDefault(); tapEgg(); }
+  else if ((k === ' ' || k === 'Enter') && G.overlay === 'result') { e.preventDefault(); miniClose(); }
+}
+window.addEventListener('keydown', (e) => onKey(e, true));
+window.addEventListener('keyup', (e) => onKey(e, false));
+window.addEventListener('blur', () => { MG.keys.l = MG.keys.r = false; });
+stage.addEventListener('pointerdown', (e) => {
+  AU.init();
+  const p = toStage(e);
+  if (BATH.on && G.screen === 'room' && !G.paused) { BATH.down = true; BATH.lx = p.x; BATH.ly = p.y; bathMove(p, false); }
+});
+stage.addEventListener('pointermove', (e) => { if (BATH.on) bathMove(toStage(e), BATH.down && !G.paused); });
+window.addEventListener('pointerup', () => { if (BATH.down) { BATH.down = false; if (W.sponge) W.sponge.play('idle', { loop: true }); } });
+LAY.world.addEventListener('click', (e) => worldClick(toStage(e)));
+window.addEventListener('resize', fit);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { writeSave(); G.hiddenAt = Date.now(); }
+  else if (G.hiddenAt && S && S.name && G.screen === 'room') { const away = (Date.now() - G.hiddenAt) / 1000; if (away > 5) settle(away); G.hiddenAt = 0; }
+});
+window.addEventListener('pagehide', writeSave);
+window.addEventListener('beforeunload', writeSave);
+
+// ============================================================ main loop
+function frame(now) {
+  const raw = Math.min(0.1, (now - G.lastTick) / 1000);
+  G.lastTick = now;
+  const dt = raw * G.timeScale;
+  runTweens(raw);
+  updateToast(raw);
+  if (G.patCd > 0) G.patCd -= raw;
+  if (G.toyCd > 0) G.toyCd -= raw;
+  G.btnT = (G.btnT || 0) - raw;
+  if (G.btnT <= 0) { G.btnT = 0.5; BTNS.forEach((b) => { if (b.hover && b.el.offsetParent === null) { b.hover = false; b.base(); } }); }
+  if (!G.paused) {
+    if (G.screen === 'room' && S) { petUpdate(raw); roomTick(dt); }
+    else if (G.screen === 'mini') miniTick(raw);
+    else if (G.screen === 'hatch' || G.screen === 'name' || G.screen === 'title') petUpdate(raw);
+  }
+  requestAnimationFrame(frame);
+}
+
+// ============================================================ test hooks
+window.__pp = {
+  state() {
+    return { screen: G.screen, overlay: G.overlay, paused: G.paused, name: S && S.name, diff: S && S.diff, stage: S && S.stage, form: S && S.form,
+      needs: S ? Object.fromEntries(NEEDS.map((n) => [n, Math.round(S.needs[n] * 10) / 10])) : null, sick: S && S.sick, angry: S && S.angry,
+      sleeping: S && S.sleeping, growth: S && Math.round(S.growth * 10) / 10, day: S && S.name ? dayNum() : 0, clock: S ? clockText() : '',
+      petSeg: PET.seg, petForm: PET.form, stats: S && S.stats, bath: BATH.on ? BATH.count : null, mini: MG.on ? { t: +MG.t.toFixed(1), score: MG.score } : null,
+      scene: W.scene, lights: W.lightState, muted: AU.muted, audio: AU.ctx ? AU.ctx.state : 'none' };
+  },
+  lottie() { return Object.assign({}, LSTAT, { svgCount: document.querySelectorAll('#stage svg').length }); },
+  skip(sec) { if (!S || G.screen !== 'room') return 'not in room'; let t = sec; while (t > 0) { const d = Math.min(1, t); sim(d, false); t -= d; } checkStage(); updateHUD(); return this.state(); },
+  speed(k) { G.timeScale = k; return k; },
+  setNeeds(o) { Object.assign(S.needs, o); updateHUD(); return this.state().needs; },
+  grow(n) { S.growth += n; checkStage(); return S.growth; },
+  event(name) { if (name === 'gift') { S.gift = 60; spawnGift(false); } else if (name === 'rain') startRain(); else if (name === 'nightmare') startNightmare(); return name; },
+  scrub(n = 30) {
+    const c = petCenter();
+    const r = stage.getBoundingClientRect();
+    const toClient = (x, y) => ({ clientX: r.left + x * G.scale, clientY: r.top + y * G.scale, bubbles: true, pointerId: 1 });
+    stage.dispatchEvent(new PointerEvent('pointerdown', toClient(c.x - 40, c.y)));
+    for (let i = 0; i < n * 3; i++) {
+      const x = c.x + Math.sin(i * 0.7) * 50, y = c.y + Math.cos(i * 1.3) * 22;
+      stage.dispatchEvent(new PointerEvent('pointermove', toClient(x, y)));
+    }
+    window.dispatchEvent(new PointerEvent('pointerup', toClient(c.x, c.y)));
+    return BATH.count;
+  },
+  tapPet() {
+    const c = petCenter(), r = stage.getBoundingClientRect();
+    LAY.world.dispatchEvent(new MouseEvent('click', { clientX: r.left + c.x * G.scale, clientY: r.top + c.y * G.scale, bubbles: true }));
+    return PET.seg;
+  },
+  forceForm(f) { S.stage = f === 'baby' || f === 'teen' ? f : 'adult'; if (FORMS[f]) S.form = f; petLoad(f); PET.busy = false; petIdle(true); updateHUD(); return f; },
+  save() { writeSave(); return localStorage.getItem(SAVE_KEY) ? 'saved' : 'none'; },
+  age(sec) { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); s.saved -= sec * 1000; localStorage.setItem(SAVE_KEY, JSON.stringify(s)); return 'aged'; },
+};
+
+// ============================================================ boot
+async function boot() {
+  loadPref();
+  fit();
+  await loadAssets();
+  await probeAssets();
+  if (LSTAT.failed.length) console.error('missing Lottie files: ' + LSTAT.failed.join(','));
+  buildWorld();
+  buildMini();
+  buildHUD();
+  buildTitle();
+  buildHatch();
+  buildFeedMenu();
+  buildOverlays();
+  buildEnding();
+  $('#loading').remove();
+  showTitle();
+  G.lastTick = performance.now();
+  requestAnimationFrame(frame);
+}
+boot();
+})();
+</script>
+</body>
+</html>

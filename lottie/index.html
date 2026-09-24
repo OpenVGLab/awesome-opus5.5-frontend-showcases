@@ -229,6 +229,12 @@
     .pd-actions .btn { flex: 1; text-align: center; }
     .pd-body { padding: 16px 18px 22px; }
   }
+
+  .gal h2 small { margin-left: 10px; font-size: 14px; font-weight: 700; color: var(--muted); }
+  .g-credit, .g-note { margin: 0; font-size: 12px; line-height: 1.6; color: var(--muted); }
+  .g-credit a { color: var(--accent-ink); font-weight: 700; }
+  .g-media.dark { background: #16131a; }
+  .toc { margin-top: 28px; }
 </style>
 </head>
 <body>
@@ -237,12 +243,12 @@
     <div>
       <div class="eyebrow">OPUS SHOWCASES · LOTTIE</div>
       <h1>Lottie 动画</h1>
-      <p class="lead">5 个由 Claude Opus 5.5 写成的 Lottie 动画：每个都是一份 Bodymovin JSON，只用形状图层，页面上用 lottie-web 实时播放。点“查看 prompt”看完整需求，点“JSON”下载原文件。</p>
-      <nav class="site-nav"><a href="../">总览</a><a href="../svg/">SVG</a><a href="../lottie/" class="on">Lottie</a><a href="../voxel/">Voxel</a></nav>
+      <p class="lead">43 个由 Claude Opus 5.5 写成的 Lottie 作品：复杂场景、Lottie 小游戏、数据集题目复刻和 UI 微动效。全部是原生 Bodymovin JSON，只用形状图层；页面上用 lottie-web 实时播放，滚出屏幕自动暂停。点“查看 prompt”看完整需求，点“JSON”拿原文件。</p>
+      <nav class="site-nav"><a href="../">总览</a><a href="../svg/">SVG</a><a href="../lottie/" class="on">Lottie</a><a href="../voxel/">Voxel</a><a href="../repro/">复刻</a><a href="../midautumn/">中秋</a></nav>
     </div>
   </header>
 
-  <section class="gal" id="lottie" aria-labelledby="gal-lottie" style="--accent:#3fb950;--accent-soft:#3fb9501f;--accent-ink:#2d8539"><div class="eyebrow">LOTTIE · CLAUDE OPUS 5.5</div><h2 id="gal-lottie">🎞️ Lottie 动画</h2><p class="gal-lead">Bodymovin JSON，只用形状图层，不用图片和字体；页面上用 lottie-web 实时播放。这一类允许模型渲染截图、自己检查后再改。</p><div class="g-grid" style="--min: 240px"><article class="g-item" data-title="加载动画" data-no="L1"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/loading-morph.json?v=1790219684" role="img" aria-label="加载动画"></div><a class="g-open" href="rolls/lottie/loading-morph.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>加载动画</h3><p>珊瑚粉、琥珀黄、天蓝三个圆点带挤压拉伸依次弹跳，随后跃入环位、拖出尾迹拉长成三段彩色圆弧组成的旋转圆环，减速收拢回圆点后弹起落回一排。</p><div class="g-meta"><span>可渲染自检</span><span>3.5 秒循环</span><span>24 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-loading-morph">查看 prompt</button></div></article><article class="g-item" data-title="天气图标" data-no="L2"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/weather-cycle.json?v=1790219685" role="img" aria-label="天气图标"></div><a class="g-open" href="rolls/lottie/weather-cycle.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>天气图标</h3><p>晴空下光芒旋转的太阳被飘来的双色白云遮住，天色和云一起变灰并落下蓝色雨滴，雨停后云变白、中间一团先“啵”地消失、两侧分散淡出，太阳弹性跃回并依次伸出光芒、闪出小星光。</p><div class="g-meta"><span>可渲染自检</span><span>4 秒循环</span><span>62 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-weather-cycle">查看 prompt</button></div></article><article class="g-item" data-title="点赞" data-no="L3"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/like-burst.json?v=1790219685" role="img" aria-label="点赞"></div><a class="g-open" href="rolls/lottie/like-burst.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>点赞</h3><p>灰紫描边爱心先蓄力压扁，再弹性放大、红色从中心填满，伴随一圈冲击波、八组彩色粒子和旋转小星星迸出，心跳两下后红色缩回、描边变回灰色。</p><div class="g-meta"><span>可渲染自检</span><span>3 秒循环</span><span>27 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-like-burst">查看 prompt</button></div></article><article class="g-item" data-title="火箭发射" data-no="L4"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/rocket-launch.json?v=1790219686" role="img" aria-label="火箭发射"></div><a class="g-open" href="rolls/lottie/rocket-launch.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>火箭发射</h3><p>红白卡通火箭在发射台上越抖越烈，导流槽亮起橙光并点火，三层尾焰闪烁着加速冲出画面，地面烟团向两侧翻滚、身后留下随速度拉长的烟柱并渐渐消散，新火箭从发射井升起、轻弹落定。</p><div class="g-meta"><span>可渲染自检</span><span>4 秒循环</span><span>62 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-rocket-launch">查看 prompt</button></div></article><article class="g-item" data-title="一杯咖啡" data-no="L5"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/coffee-steam.json?v=1790219686" role="img" aria-label="一杯咖啡"></div><a class="g-open" href="rolls/lottie/coffee-steam.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>一杯咖啡</h3><p>暖橙背景里的薄荷绿咖啡杯冒出三缕向外散开、波纹不断上行并渐隐的热气，咖啡液面轻轻起伏泛出涟漪，桌上的银勺掠过一道高光并闪出星芒。</p><div class="g-meta"><span>可渲染自检</span><span>3 秒循环</span><span>53 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-coffee-steam">查看 prompt</button></div></article></div></section>
+  <div class="stats toc"><a class="stat" href="#lottie-scenes"><b>5</b>复杂场景</a><a class="stat" href="#lottie-games"><b>3</b>小游戏</a><a class="stat" href="#lottie-dataset"><b>30</b>数据集题目复刻</a><a class="stat" href="#lottie"><b>5</b>UI 微动效</a></div><section class="gal" id="lottie-scenes" style="--accent:#3fb950;--accent-soft:#3fb9501f;--accent-ink:#2d8539"><div class="eyebrow">COMPLEX LOTTIE SCENES · CLAUDE OPUS 5.5</div><h2>🎞️ 复杂 Lottie 场景<small>5 个</small></h2><p class="gal-lead">和 SVG 动画同一批 prompt，这次交付原生 Lottie JSON：只用形状图层，不转 SVG、不贴图，几何和关键帧都是字面值。下面是 lottie-web 实时播放，不是录屏。</p><div class="g-grid" style="--min: 460px"><article class="g-item" id="scene-clockwork" data-title="机械钟的齿轮" data-no="S1"><div class="g-media dark" style="--ratio: 1280 / 720; background:#111 url(rolls/lottie-scenes/clockwork.jpg?v=1790244511) center / contain no-repeat;"><div class="lottie" data-src="rolls/lottie-scenes/clockwork.json?v=1790233492" role="img" aria-label="机械钟的齿轮"></div><a class="g-open" href="rolls/lottie-scenes/clockwork.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>机械钟的齿轮</h3><p>深蓝夜色的钟表匠工作台上，一只挂在黄铜表架上、后盖打开的镂空怀表正在走时：摆轮以 1.5 Hz 来回摆动、擒纵叉左右拨动，15 齿擒纵轮每拍一跳 12°，按 10/60、10/60、12/80 的齿数比带动四轮（金色小秒针 60 秒一圈）、三轮和中心轮逐级反向减速，墙上挂钟的钟摆、表镜反光、墙面视差与灯下浮尘一起无缝循环。</p><div class="g-meta"><span>1280×720</span><span>60 fps</span><span>60 秒循环</span><span>30 个顶层图层</span><span>661 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-scene-clockwork">查看 prompt</button></div></article><article class="g-item" id="scene-lighthouse-sunset" data-title="海边灯塔的日落" data-no="S2"><div class="g-media dark" style="--ratio: 1280 / 720; background:#111 url(rolls/lottie-scenes/lighthouse-sunset.jpg?v=1790244518) center / contain no-repeat;"><div class="lottie" data-src="rolls/lottie-scenes/lighthouse-sunset.json?v=1790232071" role="img" aria-label="海边灯塔的日落"></div><a class="g-open" href="rolls/lottie-scenes/lighthouse-sunset.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>海边灯塔的日落</h3><p>暖橙到紫蓝的晚霞下，夕阳匀速沉入大海、再从云层下缘透出光芒完成无缝循环，一层层海浪依次起伏，灯塔光束来回扫过海面留下光斑，远处海鸥扑翼盘旋，渔夫抖竿、钟浮标摇铃、浪花拍岩等细节同步运转。</p><div class="g-meta"><span>1280×720</span><span>30 fps</span><span>20 秒循环</span><span>84 个顶层图层</span><span>1332 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-scene-lighthouse-sunset">查看 prompt</button></div></article><article class="g-item" id="scene-rainy-city" data-title="雨夜的城市窗景" data-no="S3"><div class="g-media dark" style="--ratio: 1280 / 720; background:#111 url(rolls/lottie-scenes/rainy-city.jpg?v=1790244522) center / contain no-repeat;"><div class="lottie" data-src="rolls/lottie-scenes/rainy-city.json?v=1790232454" role="img" aria-label="雨夜的城市窗景"></div><a class="g-open" href="rolls/lottie-scenes/rainy-city.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>雨夜的城市窗景</h3><p>透过挂着晴天娃娃的窗户望向雨夜街道：玻璃上的雨滴走走停停地滑落、留下串珠般的水痕，HOTEL、BAR 与“茶”字霓虹明灭闪烁，汽车、电车、外卖电动车和撑伞行人穿过倒映霓虹的湿街，窗台上的热茶袅袅冒着白汽，整幅冷蓝配霓虹粉，并随视线轻移呈现多层视差。</p><div class="g-meta"><span>1280×720</span><span>30 fps</span><span>12 秒循环</span><span>79 个顶层图层</span><span>1071 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-scene-rainy-city">查看 prompt</button></div></article><article class="g-item" id="scene-seed-to-bloom" data-title="一颗种子开花" data-no="S4"><div class="g-media dark" style="--ratio: 1280 / 720; background:#111 url(rolls/lottie-scenes/seed-to-bloom.jpg?v=1790244525) center / contain no-repeat;"><div class="lottie" data-src="rolls/lottie-scenes/seed-to-bloom.json?v=1790233085" role="img" aria-label="一颗种子开花"></div><a class="g-open" href="rolls/lottie-scenes/seed-to-bloom.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>一颗种子开花</h3><p>水彩纸上的乡野剖面：一场小雨唤醒土里的种子，它裂壳生根、顶土出苗、抽茎展叶，垂头的花苞挺直后绽放成红罂粟，蓝蝴蝶飞来停驻又离去，一阵风吹落花瓣、蒴果弹出新种子沉回土中，镜头随植株升起再落回种子，16 秒无缝循环。</p><div class="g-meta"><span>1280×720</span><span>30 fps</span><span>16 秒循环</span><span>7 个顶层图层</span><span>1447 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-scene-seed-to-bloom">查看 prompt</button></div></article><article class="g-item" id="scene-solar-system" data-title="太阳系" data-no="S5"><div class="g-media dark" style="--ratio: 1280 / 720; background:#111 url(rolls/lottie-scenes/solar-system.jpg?v=1790244528) center / contain no-repeat;"><div class="lottie" data-src="rolls/lottie-scenes/solar-system.json?v=1790232782" role="img" aria-label="太阳系"></div><a class="g-open" href="rolls/lottie-scenes/solar-system.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>太阳系</h3><p>倾斜俯视的太阳系：太阳居中发光、日冕与日珥以5秒周期缓慢脉动，八大行星沿椭圆轨道按内快外慢的周期（水星2秒到海王星60秒）公转并拖出彩色轨迹，行星自转且受光面始终朝向太阳，月球绕地球、巨行星卫星各自绕行，土星环前后遮挡，小行星带流动，一颗彗星掠过太阳且彗尾背向太阳，银河与星空闪烁、流星划过并带多层视差，每颗行星旁标有中文名字。</p><div class="g-meta"><span>1280×720</span><span>60 fps</span><span>60 秒循环</span><span>25 个顶层图层</span><span>801 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-scene-solar-system">查看 prompt</button></div></article></div></section><section class="gal" id="lottie-games" style="--accent:#12a4a8;--accent-soft:#12a4a81f;--accent-ink:#0b7275"><div class="eyebrow">LOTTIE GAMES · CLAUDE OPUS 5.5</div><h2>🕹️ Lottie 小游戏<small>3 个</small></h2><p class="gal-lead">画面里的角色、场景、特效、按钮全部是 Lottie 形状图层，HTML 只管布局和文字；游戏逻辑用 lottie-web 的片段播放切换动作。</p><div class="g-grid" style="--min: 340px"><article class="g-item" data-title="果冻跳跳 JELLY HOP" data-no="G1"><a class="g-media" style="--ratio: 16 / 9" href="../lottie-games/jelly-hop/" target="_blank" rel="noopener"><img src="rolls/lottie-games/jelly-hop.jpg?v=1790244530" alt="果冻跳跳 JELLY HOP" loading="lazy"><span class="g-open">▶ 开始游戏</span></a><div class="g-body"><h3>果冻跳跳 JELLY HOP</h3><p>一团半透明的草莓果冻在杯子蛋糕、布丁和糖果盒之间蓄力弹跳，踩中正中心连击翻倍，还得躲开会塌的饼干、看准左右滑动的托盘。</p><div class="g-meta"><span>蓄力跳跃 · 休闲平台</span><span>灵感 · 借鉴《跳一跳》的按住蓄力、松开起跳玩法；角色、名字与美术全部原创</span><span>40 个 Lottie 文件</span></div><p class="g-note">操作：按住空格 / 鼠标 / 触屏蓄力，松开起跳；P 暂停，H 帮助，M 静音</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="lottie-game-jelly-hop">查看 prompt</button><a class="btn primary" href="../lottie-games/jelly-hop/" target="_blank" rel="noopener">开始游戏</a></div></div></article><article class="g-item" data-title="萌鼠出洞 MOLE RUSH" data-no="G2"><a class="g-media" style="--ratio: 16 / 9" href="../lottie-games/mole-rush/" target="_blank" rel="noopener"><img src="rolls/lottie-games/mole-rush.jpg?v=1790244556" alt="萌鼠出洞 MOLE RUSH" loading="lazy"><span class="g-open">▶ 开始游戏</span></a><div class="g-body"><h3>萌鼠出洞 MOLE RUSH</h3><p>60 秒菜园大作战：抡起大木槌敲打探头的萌鼠，避开抱炸弹的刺猬，敲金鼠加时、敲冰晶花全场减速，连击到 10 进入狂热模式分数翻倍！</p><div class="g-meta"><span>限时反应 / 打地鼠</span><span>灵感 · 借鉴街机打地鼠的玩法（限时、九洞、敲中得分），角色、名字与美术全部原创</span><span>36 个 Lottie 文件</span></div><p class="g-note">操作：鼠标或触屏点击洞口挥锤；小键盘 1～9 或 Q W E / A S D / Z X C 对应九个洞；P 暂停，H 帮助，M 静音</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="lottie-game-mole-rush">查看 prompt</button><a class="btn primary" href="../lottie-games/mole-rush/" target="_blank" rel="noopener">开始游戏</a></div></div></article><article class="g-item" data-title="口袋宠物 POCKET PAL" data-no="G3"><a class="g-media" style="--ratio: 16 / 9" href="../lottie-games/pocket-pal/" target="_blank" rel="noopener"><img src="rolls/lottie-games/pocket-pal.jpg?v=1790244557" alt="口袋宠物 POCKET PAL" loading="lazy"><span class="g-open">▶ 开始游戏</span></a><div class="g-body"><h3>口袋宠物 POCKET PAL</h3><p>点开一颗会晃的蛋，孵出圆滚滚的团子：喂食、玩接星星、搓泡泡洗澡、关灯哄睡，照顾方式不同，它会长成四种不同的成年形态。</p><div class="g-meta"><span>养成 · 电子宠物</span><span>灵感 · 电子宠物类养成游戏：只借鉴照顾四项需求、随时间变化和成长分支的玩法，角色、名字和美术全部原创</span><span>43 个 Lottie 文件</span></div><p class="g-note">操作：鼠标 / 触屏点击按钮和物品（点宠物可以摸摸它）；洗澡时按住拖动搓泡泡；接星星小游戏用 ← → / A D 或拖动；P 暂停，H 帮助，M 静音</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="lottie-game-pocket-pal">查看 prompt</button><a class="btn primary" href="../lottie-games/pocket-pal/" target="_blank" rel="noopener">开始游戏</a></div></div></article></div></section><section class="gal" id="lottie-dataset" style="--accent:#7b61ff;--accent-soft:#7b61ff1f;--accent-ink:#5845b7"><div class="eyebrow">LOTTIE DATASET BRIEFS · CLAUDE OPUS 5.5</div><h2>📐 Lottie 数据集题目复刻<small>30 个</small></h2><p class="gal-lead">从一个 Lottie 数据集里挑了 30 道题（16 种画风、7 类动作），由 Claude Opus 5.5 按原题 brief 手写原生 Lottie：几何和关键帧都是字面值，不转 SVG、不贴图、不用脚本算坐标，每次改动都渲染看图再改。960×720、60 fps、6 秒循环。</p><div class="g-grid" style="--min: 300px"><article class="g-item" data-title="The underground subway platform" data-no="D1"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_d2b7b38f442e.json?v=1790236504" role="img" aria-label="The underground subway platform"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_d2b7b38f442e.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The underground subway platform</h3><div class="g-meta"><span>cinematic</span><span>vehicles</span><span>complex</span><span>50 层 · 380 个形状</span><span>138 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_d2b7b38f442e">查看原题 brief</button></div></article><article class="g-item" data-title="The chibi robot standing on the moon&#x27;s cratered surface" data-no="D2"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_20d3d348b14b.json?v=1790237534" role="img" aria-label="The chibi robot standing on the moon&#x27;s cratered surface"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_20d3d348b14b.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The chibi robot standing on the moon&#x27;s cratered surface</h3><div class="g-meta"><span>cinematic</span><span>mechanisms</span><span>complex</span><span>49 层 · 348 个形状</span><span>138 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_20d3d348b14b">查看原题 brief</button></div></article><article class="g-item" data-title="The misty loch and ruins at dawn" data-no="D3"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_f0f60dafb9de.json?v=1790238211" role="img" aria-label="The misty loch and ruins at dawn"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_f0f60dafb9de.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The misty loch and ruins at dawn</h3><div class="g-meta"><span>comic</span><span>architecture</span><span>complex</span><span>55 层 · 321 个形状</span><span>117 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_f0f60dafb9de">查看原题 brief</button></div></article><article class="g-item" data-title="A secret underwater dragon lair hidden in a volcanic trench" data-no="D4"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_4ec3ebefd8aa.json?v=1790238809" role="img" aria-label="A secret underwater dragon lair hidden in a volcanic trench"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_4ec3ebefd8aa.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>A secret underwater dragon lair hidden in a volcanic trench</h3><div class="g-meta"><span>comic</span><span>animals</span><span>complex</span><span>57 层 · 330 个形状</span><span>124 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_4ec3ebefd8aa">查看原题 brief</button></div></article><article class="g-item" data-title="The Sphinx and Great Pyramid rising through hazy desert fog" data-no="D5"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_4e1dc353e429.json?v=1790239837" role="img" aria-label="The Sphinx and Great Pyramid rising through hazy desert fog"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_4e1dc353e429.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The Sphinx and Great Pyramid rising through hazy desert fog</h3><div class="g-meta"><span>detailed_illustration</span><span>people</span><span>complex</span><span>40 层 · 410 个形状</span><span>134 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_4e1dc353e429">查看原题 brief</button></div></article><article class="g-item" data-title="A medieval tavern lit by firelight" data-no="D6"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_a413df2e085a.json?v=1790241057" role="img" aria-label="A medieval tavern lit by firelight"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_a413df2e085a.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>A medieval tavern lit by firelight</h3><div class="g-meta"><span>detailed_illustration</span><span>other</span><span>complex</span><span>61 层 · 543 个形状</span><span>224 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_a413df2e085a">查看原题 brief</button></div></article><article class="g-item" data-title="The small camp on sea ice under twilight" data-no="D7"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_50aec12c1f97.json?v=1790235814" role="img" aria-label="The small camp on sea ice under twilight"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_50aec12c1f97.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The small camp on sea ice under twilight</h3><div class="g-meta"><span>flat_vector</span><span>nature</span><span>complex</span><span>50 层 · 529 个形状</span><span>177 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_50aec12c1f97">查看原题 brief</button></div></article><article class="g-item" data-title="The earthen-walled Ethiopian kitchen" data-no="D8"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_a5ff0bf752e1.json?v=1790236544" role="img" aria-label="The earthen-walled Ethiopian kitchen"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_a5ff0bf752e1.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The earthen-walled Ethiopian kitchen</h3><div class="g-meta"><span>flat_vector</span><span>animals</span><span>complex</span><span>31 层 · 353 个形状</span><span>130 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_a5ff0bf752e1">查看原题 brief</button></div></article><article class="g-item" data-title="The submerged Mayan temple hall" data-no="D9"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_dbc022f7288e.json?v=1790237232" role="img" aria-label="The submerged Mayan temple hall"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_dbc022f7288e.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The submerged Mayan temple hall</h3><div class="g-meta"><span>isometric</span><span>architecture</span><span>complex</span><span>30 层 · 478 个形状</span><span>135 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_dbc022f7288e">查看原题 brief</button></div></article><article class="g-item" data-title="The caravan camp with the pyramids looming behind" data-no="D10"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_a8ba91d37eb0.json?v=1790237773" role="img" aria-label="The caravan camp with the pyramids looming behind"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_a8ba91d37eb0.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The caravan camp with the pyramids looming behind</h3><div class="g-meta"><span>isometric</span><span>nature</span><span>complex</span><span>34 层 · 461 个形状</span><span>139 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_a8ba91d37eb0">查看原题 brief</button></div></article><article class="g-item" data-title="The steampunk-machinery aquarium hall" data-no="D11"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_423331ab0499.json?v=1790238944" role="img" aria-label="The steampunk-machinery aquarium hall"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_423331ab0499.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The steampunk-machinery aquarium hall</h3><div class="g-meta"><span>line_art</span><span>mechanisms</span><span>complex</span><span>40 层 · 745 个形状</span><span>286 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_423331ab0499">查看原题 brief</button></div></article><article class="g-item" data-title="The glowing cavern laboratory" data-no="D12"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_072d15a7f6e3.json?v=1790239578" role="img" aria-label="The glowing cavern laboratory"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_072d15a7f6e3.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The glowing cavern laboratory</h3><div class="g-meta"><span>line_art</span><span>other</span><span>complex</span><span>23 层 · 400 个形状</span><span>117 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_072d15a7f6e3">查看原题 brief</button></div></article><article class="g-item" data-title="Produce an `svg` graphic showing a miner&#x27;s underground cave lit by carbide lamps." data-no="D13"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_593810975b3c.json?v=1790236305" role="img" aria-label="Produce an `svg` graphic showing a miner&#x27;s underground cave lit by carbide lamps."></div><a class="g-open" href="rolls/lottie-dataset/anim30k_593810975b3c.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>Produce an `svg` graphic showing a miner&#x27;s underground cave lit by carbide lamps.</h3><div class="g-meta"><span>low_poly</span><span>vehicles</span><span>complex</span><span>33 层 · 636 个形状</span><span>169 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_593810975b3c">查看原题 brief</button></div></article><article class="g-item" data-title="A hidden speakeasy lounge glowing with neon and jazz-era glamour" data-no="D14"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_4623d0beab4d.json?v=1790237304" role="img" aria-label="A hidden speakeasy lounge glowing with neon and jazz-era glamour"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_4623d0beab4d.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>A hidden speakeasy lounge glowing with neon and jazz-era glamour</h3><div class="g-meta"><span>low_poly</span><span>people</span><span>complex</span><span>39 层 · 755 个形状</span><span>208 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_4623d0beab4d">查看原题 brief</button></div></article><article class="g-item" data-title="A saxophonist playing in a dim jazz club" data-no="D15"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_dcc8c849facf.json?v=1790237629" role="img" aria-label="A saxophonist playing in a dim jazz club"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_dcc8c849facf.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>A saxophonist playing in a dim jazz club</h3><div class="g-meta"><span>monochrome</span><span>people</span><span>simple</span><span>14 层 · 194 个形状</span><span>62 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_dcc8c849facf">查看原题 brief</button></div></article><article class="g-item" data-title="The office set and surrounding stage darkness" data-no="D16"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_02b645422b97.json?v=1790237978" role="img" aria-label="The office set and surrounding stage darkness"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_02b645422b97.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The office set and surrounding stage darkness</h3><div class="g-meta"><span>monochrome</span><span>other</span><span>simple</span><span>19 层 · 250 个形状</span><span>59 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_02b645422b97">查看原题 brief</button></div></article><article class="g-item" data-title="A sleek futuristic space station galley" data-no="D17"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_497a54aca951.json?v=1790238549" role="img" aria-label="A sleek futuristic space station galley"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_497a54aca951.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>A sleek futuristic space station galley</h3><div class="g-meta"><span>neon</span><span>architecture</span><span>complex</span><span>32 层 · 320 个形状</span><span>103 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_497a54aca951">查看原题 brief</button></div></article><article class="g-item" data-title="The crowded street and parading dragon procession" data-no="D18"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_612d96f41d3d.json?v=1790240315" role="img" aria-label="The crowded street and parading dragon procession"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_612d96f41d3d.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The crowded street and parading dragon procession</h3><div class="g-meta"><span>neon</span><span>animals</span><span>complex</span><span>46 层 · 805 个形状</span><span>263 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_612d96f41d3d">查看原题 brief</button></div></article><article class="g-item" data-title="The deck lined with wounded sailors" data-no="D19"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_b394120f7276.json?v=1790236118" role="img" aria-label="The deck lined with wounded sailors"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_b394120f7276.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The deck lined with wounded sailors</h3><div class="g-meta"><span>painterly</span><span>vehicles</span><span>complex</span><span>47 层 · 662 个形状</span><span>222 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_b394120f7276">查看原题 brief</button></div></article><article class="g-item" data-title="Gondolas gliding near the lagoon&#x27;s edge toward open water" data-no="D20"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_0105ccf20b10.json?v=1790237138" role="img" aria-label="Gondolas gliding near the lagoon&#x27;s edge toward open water"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_0105ccf20b10.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>Gondolas gliding near the lagoon&#x27;s edge toward open water</h3><div class="g-meta"><span>painterly</span><span>nature</span><span>complex</span><span>44 层 · 730 个形状</span><span>214 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_0105ccf20b10">查看原题 brief</button></div></article><article class="g-item" data-title="The full steampunk gear-forging factory floor" data-no="D21"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_65357c80bd49.json?v=1790238634" role="img" aria-label="The full steampunk gear-forging factory floor"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_65357c80bd49.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The full steampunk gear-forging factory floor</h3><div class="g-meta"><span>paper_cut</span><span>mechanisms</span><span>complex</span><span>34 层 · 538 个形状</span><span>178 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_65357c80bd49">查看原题 brief</button></div></article><article class="g-item" data-title="The cloud-suspended airship dock market" data-no="D22"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_1c3e3f44c979.json?v=1790240187" role="img" aria-label="The cloud-suspended airship dock market"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_1c3e3f44c979.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The cloud-suspended airship dock market</h3><div class="g-meta"><span>paper_cut</span><span>vehicles</span><span>complex</span><span>50 层 · 834 个形状</span><span>254 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_1c3e3f44c979">查看原题 brief</button></div></article><article class="g-item" data-title="A sleek open-plan studio bathed in warm evening light" data-no="D23"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_6f314989f8b9.json?v=1790240925" role="img" aria-label="A sleek open-plan studio bathed in warm evening light"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_6f314989f8b9.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>A sleek open-plan studio bathed in warm evening light</h3><div class="g-meta"><span>pastel</span><span>architecture</span><span>complex</span><span>36 层 · 506 个形状</span><span>129 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_6f314989f8b9">查看原题 brief</button></div></article><article class="g-item" data-title="Draw an `svg` vector image of an abstract geometric composition depicting an Egyptian desert oasis at twilight." data-no="D24"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_e9dc38c3de1e.json?v=1790242101" role="img" aria-label="Draw an `svg` vector image of an abstract geometric composition depicting an Egyptian desert oasis at twilight."></div><a class="g-open" href="rolls/lottie-dataset/anim30k_e9dc38c3de1e.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>Draw an `svg` vector image of an abstract geometric composition depicting an Egyptian desert oasis at twilight.</h3><div class="g-meta"><span>pastel</span><span>nature</span><span>complex</span><span>31 层 · 304 个形状</span><span>124 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_e9dc38c3de1e">查看原题 brief</button></div></article><article class="g-item" data-title="Produce an `svg` graphic showing a Gothic stained glass window as an abstract geometric composition." data-no="D25"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_3caa08158632.json?v=1790237049" role="img" aria-label="Produce an `svg` graphic showing a Gothic stained glass window as an abstract geometric composition."></div><a class="g-open" href="rolls/lottie-dataset/anim30k_3caa08158632.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>Produce an `svg` graphic showing a Gothic stained glass window as an abstract geometric composition.</h3><div class="g-meta"><span>pixel_art</span><span>other</span><span>complex</span><span>36 层 · 163 个形状</span><span>77 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_3caa08158632">查看原题 brief</button></div></article><article class="g-item" data-title="Draw an `svg` vector image of a tangram puzzle animal as an abstract geometric composition." data-no="D26"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_00125d7ab1bf.json?v=1790237552" role="img" aria-label="Draw an `svg` vector image of a tangram puzzle animal as an abstract geometric composition."></div><a class="g-open" href="rolls/lottie-dataset/anim30k_00125d7ab1bf.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>Draw an `svg` vector image of a tangram puzzle animal as an abstract geometric composition.</h3><div class="g-meta"><span>pixel_art</span><span>animals</span><span>complex</span><span>15 层 · 81 个形状</span><span>41 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_00125d7ab1bf">查看原题 brief</button></div></article><article class="g-item" data-title="A lively New Orleans jazz club during Mardi Gras" data-no="D27"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_e429fdfc58bc.json?v=1790238466" role="img" aria-label="A lively New Orleans jazz club during Mardi Gras"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_e429fdfc58bc.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>A lively New Orleans jazz club during Mardi Gras</h3><div class="g-meta"><span>risograph</span><span>people</span><span>complex</span><span>37 层 · 446 个形状</span><span>140 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_e429fdfc58bc">查看原题 brief</button></div></article><article class="g-item" data-title="The round-doored underground kitchen" data-no="D28"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_de4f7793c35f.json?v=1790239037" role="img" aria-label="The round-doored underground kitchen"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_de4f7793c35f.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The round-doored underground kitchen</h3><div class="g-meta"><span>risograph</span><span>mechanisms</span><span>complex</span><span>30 层 · 349 个形状</span><span>104 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_de4f7793c35f">查看原题 brief</button></div></article><article class="g-item" data-title="The jellyfish bloom illuminated by moonlight" data-no="D29"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_1d80873fb824.json?v=1790239428" role="img" aria-label="The jellyfish bloom illuminated by moonlight"></div><a class="g-open" href="rolls/lottie-dataset/anim30k_1d80873fb824.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>The jellyfish bloom illuminated by moonlight</h3><div class="g-meta"><span>watercolor</span><span>animals</span><span>complex</span><span>49 层 · 176 个形状</span><span>81 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_1d80873fb824">查看原题 brief</button></div></article><article class="g-item" data-title="Draw an `svg` vector image of an Andean adobe home glowing during a nighttime festival." data-no="D30"><div class="g-media" style="--ratio: 4 / 3"><div class="lottie" data-src="rolls/lottie-dataset/anim30k_ab9c6723dee0.json?v=1790240276" role="img" aria-label="Draw an `svg` vector image of an Andean adobe home glowing during a nighttime festival."></div><a class="g-open" href="rolls/lottie-dataset/anim30k_ab9c6723dee0.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>Draw an `svg` vector image of an Andean adobe home glowing during a nighttime festival.</h3><div class="g-meta"><span>woodcut</span><span>people</span><span>complex</span><span>28 层 · 351 个形状</span><span>126 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-ds-anim30k_ab9c6723dee0">查看原题 brief</button></div></article></div></section><section class="gal" id="lottie" aria-labelledby="gal-lottie" style="--accent:#3fb950;--accent-soft:#3fb9501f;--accent-ink:#2d8539"><div class="eyebrow">LOTTIE · CLAUDE OPUS 5.5</div><h2 id="gal-lottie">🎛️ UI 微动效</h2><p class="gal-lead">最早的一批：加载、点赞、开关这类界面小动效。Bodymovin JSON，只用形状图层，不用图片和字体；允许模型渲染截图、自己检查后再改。</p><div class="g-grid" style="--min: 240px"><article class="g-item" data-title="加载动画" data-no="L1"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/loading-morph.json?v=1790219684" role="img" aria-label="加载动画"></div><a class="g-open" href="rolls/lottie/loading-morph.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>加载动画</h3><p>珊瑚粉、琥珀黄、天蓝三个圆点带挤压拉伸依次弹跳，随后跃入环位、拖出尾迹拉长成三段彩色圆弧组成的旋转圆环，减速收拢回圆点后弹起落回一排。</p><div class="g-meta"><span>可渲染自检</span><span>3.5 秒循环</span><span>24 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-loading-morph">查看 prompt</button></div></article><article class="g-item" data-title="天气图标" data-no="L2"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/weather-cycle.json?v=1790219685" role="img" aria-label="天气图标"></div><a class="g-open" href="rolls/lottie/weather-cycle.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>天气图标</h3><p>晴空下光芒旋转的太阳被飘来的双色白云遮住，天色和云一起变灰并落下蓝色雨滴，雨停后云变白、中间一团先“啵”地消失、两侧分散淡出，太阳弹性跃回并依次伸出光芒、闪出小星光。</p><div class="g-meta"><span>可渲染自检</span><span>4 秒循环</span><span>62 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-weather-cycle">查看 prompt</button></div></article><article class="g-item" data-title="点赞" data-no="L3"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/like-burst.json?v=1790219685" role="img" aria-label="点赞"></div><a class="g-open" href="rolls/lottie/like-burst.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>点赞</h3><p>灰紫描边爱心先蓄力压扁，再弹性放大、红色从中心填满，伴随一圈冲击波、八组彩色粒子和旋转小星星迸出，心跳两下后红色缩回、描边变回灰色。</p><div class="g-meta"><span>可渲染自检</span><span>3 秒循环</span><span>27 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-like-burst">查看 prompt</button></div></article><article class="g-item" data-title="火箭发射" data-no="L4"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/rocket-launch.json?v=1790219686" role="img" aria-label="火箭发射"></div><a class="g-open" href="rolls/lottie/rocket-launch.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>火箭发射</h3><p>红白卡通火箭在发射台上越抖越烈，导流槽亮起橙光并点火，三层尾焰闪烁着加速冲出画面，地面烟团向两侧翻滚、身后留下随速度拉长的烟柱并渐渐消散，新火箭从发射井升起、轻弹落定。</p><div class="g-meta"><span>可渲染自检</span><span>4 秒循环</span><span>62 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-rocket-launch">查看 prompt</button></div></article><article class="g-item" data-title="一杯咖啡" data-no="L5"><div class="g-media" style="--ratio: 1 / 1"><div class="lottie" data-src="rolls/lottie/coffee-steam.json?v=1790219686" role="img" aria-label="一杯咖啡"></div><a class="g-open" href="rolls/lottie/coffee-steam.json" target="_blank" rel="noopener">JSON ↗</a></div><div class="g-body"><h3>一杯咖啡</h3><p>暖橙背景里的薄荷绿咖啡杯冒出三缕向外散开、波纹不断上行并渐隐的热气，咖啡液面轻轻起伏泛出涟漪，桌上的银勺掠过一道高光并闪出星芒。</p><div class="g-meta"><span>可渲染自检</span><span>3 秒循环</span><span>53 KB</span></div><button class="vs-prompt" type="button" data-prompt="lottie-lottie-coffee-steam">查看 prompt</button></div></article></div></section>
 
   <footer>
     <span>Generated by Claude Opus · 2026-09-24</span>
@@ -264,6 +270,893 @@
   <pre class="pd-body" id="pd-body"></pre>
 </dialog>
 
+<script type="text/plain" id="prompt-lottie-scene-clockwork">
+一只打开后盖的机械怀表：大小齿轮按正确的传动比联动旋转（相互啮合的齿轮转向相反、齿数多的转得慢），擒纵轮一跳一跳，摆轮来回摆动，表盘指针走动；黄铜与深蓝配色，带金属高光。交付一个原生 Lottie（Bodymovin）JSON 文件：画布 1280×720（w=1280、h=720），帧率 30 或 60；直接写 Lottie JSON，不要先画 SVG 再转换，也不要用 HTML/CSS 或位图序列；只用 lottie-web 支持的原生特性（形状图层、纯色层、空对象、本地预合成、蒙版、遮罩、trim path、渐变、repeater 等），不用图片图层和表达式，不引用任何外部图片、字体或网络资源；需要文字时画成形状，或用系统字体的文本图层；画面是完整、细节丰富的插画场景，不是图标或示意图；动画首尾无缝循环，用 lottie-web 的 SVG 渲染器播放完整正确；文件不超过 2 MB；必须是合法的 JSON。
+</script>
+<script type="text/plain" id="prompt-lottie-scene-lighthouse-sunset">
+夕阳缓缓落下，海浪一层层起伏，灯塔的光束来回扫过海面，海鸥在远处盘旋；天空是暖橙到紫蓝的渐变；20 秒无缝循环。交付一个原生 Lottie（Bodymovin）JSON 文件：画布 1280×720（w=1280、h=720），帧率 30 或 60；直接写 Lottie JSON，不要先画 SVG 再转换，也不要用 HTML/CSS 或位图序列；只用 lottie-web 支持的原生特性（形状图层、纯色层、空对象、本地预合成、蒙版、遮罩、trim path、渐变、repeater 等），不用图片图层和表达式，不引用任何外部图片、字体或网络资源；需要文字时画成形状，或用系统字体的文本图层；画面是完整、细节丰富的插画场景，不是图标或示意图；动画首尾无缝循环，用 lottie-web 的 SVG 渲染器播放完整正确；文件不超过 2 MB；必须是合法的 JSON。
+</script>
+<script type="text/plain" id="prompt-lottie-scene-rainy-city">
+从室内窗户看出去的雨夜城市：雨滴沿玻璃滑落并留下水痕，远处霓虹招牌闪烁，车灯在街上流动，窗台上一杯热茶冒着热气；冷蓝与霓虹粉配色。交付一个原生 Lottie（Bodymovin）JSON 文件：画布 1280×720（w=1280、h=720），帧率 30 或 60；直接写 Lottie JSON，不要先画 SVG 再转换，也不要用 HTML/CSS 或位图序列；只用 lottie-web 支持的原生特性（形状图层、纯色层、空对象、本地预合成、蒙版、遮罩、trim path、渐变、repeater 等），不用图片图层和表达式，不引用任何外部图片、字体或网络资源；需要文字时画成形状，或用系统字体的文本图层；画面是完整、细节丰富的插画场景，不是图标或示意图；动画首尾无缝循环，用 lottie-web 的 SVG 渲染器播放完整正确；文件不超过 2 MB；必须是合法的 JSON。
+</script>
+<script type="text/plain" id="prompt-lottie-scene-seed-to-bloom">
+土里的种子发芽、抽茎、长叶、结花苞、绽放，一只蝴蝶飞来停留，然后花瓣飘落、画面回到种子，16 秒一个循环；水彩纸质感。交付一个原生 Lottie（Bodymovin）JSON 文件：画布 1280×720（w=1280、h=720），帧率 30 或 60；直接写 Lottie JSON，不要先画 SVG 再转换，也不要用 HTML/CSS 或位图序列；只用 lottie-web 支持的原生特性（形状图层、纯色层、空对象、本地预合成、蒙版、遮罩、trim path、渐变、repeater 等），不用图片图层和表达式，不引用任何外部图片、字体或网络资源；需要文字时画成形状，或用系统字体的文本图层；画面是完整、细节丰富的插画场景，不是图标或示意图；动画首尾无缝循环，用 lottie-web 的 SVG 渲染器播放完整正确；文件不超过 2 MB；必须是合法的 JSON。
+</script>
+<script type="text/plain" id="prompt-lottie-scene-solar-system">
+太阳居中发光并缓慢脉动，八大行星沿椭圆轨道以不同周期公转（内圈快、外圈慢，比例大致合理），土星带环，月球绕地球转，背景星空闪烁；每颗行星旁边有小小的中文名字。交付一个原生 Lottie（Bodymovin）JSON 文件：画布 1280×720（w=1280、h=720），帧率 30 或 60；直接写 Lottie JSON，不要先画 SVG 再转换，也不要用 HTML/CSS 或位图序列；只用 lottie-web 支持的原生特性（形状图层、纯色层、空对象、本地预合成、蒙版、遮罩、trim path、渐变、repeater 等），不用图片图层和表达式，不引用任何外部图片、字体或网络资源；需要文字时画成形状，或用系统字体的文本图层；画面是完整、细节丰富的插画场景，不是图标或示意图；动画首尾无缝循环，用 lottie-web 的 SVG 渲染器播放完整正确；文件不超过 2 MB；必须是合法的 JSON。
+</script>
+<script type="text/plain" id="prompt-lottie-game-jelly-hop">
+你负责独立完成一款浏览器小游戏《果冻跳跳 JELLY HOP》：按住蓄力、松开起跳的平台跳跃，玩法借鉴《跳一跳》，角色、名字和美术全部原创。画面里的一切图形都用 Lottie 动画做。
+
+【交付】
+- 交付目录里的 index.html 加若干 Lottie 动画文件（assets/*.json，Bodymovin 格式）；播放器用 lottie-web，浏览器通过 HTTP 打开 index.html 就能玩，不引用任何外网资源。
+- 画面里的所有图形元素——角色、平台、道具、特效、背景、按钮和面板——都必须是 Lottie 动画，只用形状图层，不用图片和字体图层；HTML/CSS 只负责布局和文字（分数、菜单文案、说明），不能用 CSS、Canvas 或手写 SVG 画图形来代替。
+- 游戏逻辑用 JavaScript，按玩家操作用 lottie-web 的 playSegments、goToAndStop、setSpeed、setDirection 等切换动画片段。角色至少有待机、蓄力、起跳、空中、落地、完美落地、跌落 7 个动作片段。
+- 页面按 16:9 画面居中缩放，窗口变化时画面完整不变形。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次交互后开始发声，M 键静音。
+- 所有 Lottie 文件都能被 lottie-web 单独正常播放，合计不超过 2 MB。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 主角是一团圆滚滚的果冻，站在一块平台上。按住蓄力时果冻被压扁、身体发颤，蓄力越久跳得越远；松开后果冻弹起，按抛物线落向下一块平台。
+- 落在平台上得 1 分；落在平台正中心算“完美”，得 2 分并连击加倍（2、4、8……封顶 32），平台上泛起一圈光环；落空就跌下去，本局结束。
+- 平台形状、大小、间距随机变化，越往后越小越远。特殊平台：弹簧垫（落上后自动小跳一次）、慢慢塌掉的饼干、左右移动的托盘、放着金币的蛋糕（落上加分）。
+- 镜头随果冻平滑推进，远景分层视差移动。
+- 难度：简单（平台大、间距小）、普通、困难（平台小、会移动的多）；用 localStorage 分难度记录最高分。
+
+【操作】按住空格 / 鼠标 / 触屏蓄力，松开起跳；P 暂停，H 帮助，M 静音。
+
+【画面】
+- 糖果甜点世界：奶油色天空、马卡龙色的甜点平台（杯子蛋糕、布丁、饼干、糖果盒），远景是棉花糖山和缓缓飘动的云。
+- 果冻半透明、有高光，蓄力时挤扁、起跳时拉长、落地时回弹（挤压与伸展），跌落时有惊慌表情。
+- 特效：起跳时的灰尘、完美落地的光环和星星、连击时逐级变大的数字背景、金币闪光。
+- HUD：分数、连击倍率、最高分，右上角有暂停和静音按钮（按钮本身也是带按下动画的 Lottie）。
+
+【流程与界面】
+- 标题页：难度选择、开始、帮助、各难度最高分，背景里果冻在自动演示。
+- 帮助页：操作说明和几种特殊平台的动画图示。
+- 暂停菜单有继续、重新开始、返回标题；结算页显示本局分数、最高连击、完美次数，破纪录时有庆祝动画，可以再来一局。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开局，实际蓄力起跳若干次（包括成功落地和跌落各至少一次）。要求 0 个 JS 报错、所有 Lottie 文件都成功加载、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+</script>
+<script type="text/plain" id="prompt-lottie-game-mole-rush">
+你负责独立完成一款浏览器小游戏《萌鼠出洞 MOLE RUSH》：限时反应游戏，玩法借鉴打地鼠，角色、名字和美术全部原创。画面里的一切图形都用 Lottie 动画做。
+
+【交付】
+- 交付目录里的 index.html 加若干 Lottie 动画文件（assets/*.json，Bodymovin 格式）；播放器用 lottie-web，浏览器通过 HTTP 打开 index.html 就能玩，不引用任何外网资源。
+- 画面里的所有图形元素——地鼠和其他角色、洞口、锤子、特效、背景、按钮和面板——都必须是 Lottie 动画，只用形状图层，不用图片和字体图层；HTML/CSS 只负责布局和文字（分数、时间、菜单文案、说明），不能用 CSS、Canvas 或手写 SVG 画图形来代替。
+- 游戏逻辑用 JavaScript，按玩家操作用 lottie-web 的 playSegments、goToAndStop、setSpeed、setDirection 等切换动画片段。每种地鼠至少有探头、张望/挑衅、被敲中、缩回 4 个动作片段；锤子有挥下和回弹片段。
+- 页面按 16:9 画面居中缩放，窗口变化时画面完整不变形。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次交互后开始发声，M 键静音。
+- 所有 Lottie 文件都能被 lottie-web 单独正常播放，合计不超过 2 MB。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 草地上 3×3 九个洞，地鼠随机探头又缩回，趁它露头时敲中得分；每局 60 秒。
+- 角色：普通地鼠（1 分）；戴头盔的地鼠（要敲两下，3 分）；金色地鼠（出现时间很短，10 分，还会加 3 秒）；抱着炸弹的刺猬（不能敲，敲了扣分并震屏）；冰晶花（敲中后 5 秒内所有地鼠变慢）。
+- 连续敲中不失手累积连击，分数倍率随连击上升；连击到 10 进入“狂热”状态，背景变色，地鼠出得更快、分数翻倍，失手即结束狂热。敲空洞口算失手。
+- 节奏随时间加快，最后 10 秒有倒计时提示。
+- 难度：简单（出洞慢、刺猬少）、普通、困难（出洞快、同时冒出多只、刺猬多）；用 localStorage 分难度记录最高分，结算按分数给 1～3 颗星。
+
+【操作】鼠标或触屏点击洞口挥锤；键盘用小键盘 1～9，或 Q W E / A S D / Z X C 对应九个洞；P 暂停，H 帮助，M 静音。
+
+【画面】
+- 阳光明媚的卡通菜园：远处的风车和篱笆、会随风摆动的向日葵和胡萝卜叶，九个洞口带泥土边缘。
+- 地鼠圆头圆脑、表情夸张：探头时东张西望，被敲中时眼冒金星、脑袋上鼓包；头盔、金色光泽、刺猬的炸弹引线这些区别一眼能看出来。
+- 锤子是一把跟随鼠标的大木槌，点击时挥下并回弹；特效有敲击星星、尘土、金币迸出、冰冻雪花、狂热状态的背景光效。
+- HUD：分数、剩余时间（带动画的计时器）、连击数和倍率，右上角有暂停和静音按钮（按钮本身也是带按下动画的 Lottie）。
+
+【流程与界面】
+- 标题页：难度选择、开始、帮助、各难度最高分，背景里地鼠在自动探头。
+- 帮助页：操作说明和每种角色的动画图示及分值。
+- 开局有 3、2、1 倒计时；暂停菜单有继续、重新开始、返回标题；结算页显示分数、星级、命中率、最高连击和各角色敲中次数，破纪录时有庆祝动画，可以再来一局。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开局，实际敲中和敲空若干次，触发一次连击和一次敲到刺猬，打完一整局看到结算页。要求 0 个 JS 报错、所有 Lottie 文件都成功加载、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+</script>
+<script type="text/plain" id="prompt-lottie-game-pocket-pal">
+你负责独立完成一款浏览器小游戏《口袋宠物 POCKET PAL》：照顾一只小宠物长大的养成游戏，玩法借鉴电子宠物，角色、名字和美术全部原创。画面里的一切图形都用 Lottie 动画做。
+
+【交付】
+- 交付目录里的 index.html 加若干 Lottie 动画文件（assets/*.json，Bodymovin 格式）；播放器用 lottie-web，浏览器通过 HTTP 打开 index.html 就能玩，不引用任何外网资源。
+- 画面里的所有图形元素——宠物、食物和玩具、房间背景、特效、按钮和面板——都必须是 Lottie 动画，只用形状图层，不用图片和字体图层；HTML/CSS 只负责布局和文字（数值、菜单文案、说明），不能用 CSS、Canvas 或手写 SVG 画图形来代替。
+- 游戏逻辑用 JavaScript，按玩家操作和宠物状态用 lottie-web 的 playSegments、goToAndStop、setSpeed、setDirection 等切换动画片段。宠物每个成长阶段至少有待机、开心、吃东西、玩耍、洗澡、困倦、睡觉、生病、闹脾气 9 个动作片段。
+- 页面按 16:9 画面居中缩放，窗口变化时画面完整不变形。
+- 界面文字用中文，标题配英文副标题。音效和背景音乐用 Web Audio 实时合成，第一次交互后开始发声，M 键静音。
+- 所有 Lottie 文件都能被 lottie-web 单独正常播放，合计不超过 2 MB。
+- 只借鉴玩法，不使用原作的角色、名字或标志性素材。
+
+【玩法】
+- 从一颗会晃动的蛋开始，点几下孵出小宠物，给它起名字。宠物有四项需求：饱食、心情、清洁、体力，随时间下降（游戏内 1 天 = 现实 4 分钟）。
+- 照顾方式：喂食（三种食物，各补不同数值，吃多了会撑）；玩耍（一个 30 秒小游戏：宠物左右移动接住落下的星星，接到越多心情涨得越多）；洗澡（用鼠标搓出泡泡，泡泡越多越干净）；关灯睡觉（房间切到夜晚，体力恢复）。
+- 需求长期过低会生病或闹脾气，这时要先治疗或哄好；偶尔会有随机事件（门口出现礼物、窗外下雨、宠物做噩梦）。
+- 照顾得好积累成长值：幼年 → 少年 → 成年，三个阶段外形不同；照顾方式不同，成年后的样子也不同（至少两种）。养到成年后显示结局。
+- 难度：轻松（需求下降慢）、普通、硬核（下降快，会饿病）；用 localStorage 存档，重新打开页面时按离开的时间结算需求变化。
+
+【操作】鼠标或触屏点击按钮和物品；洗澡时按住拖动搓泡泡；小游戏里 ← → / A D 或拖动控制宠物；P 暂停，H 帮助，M 静音。
+
+【画面】
+- 温暖的小房间：木地板、窗户（外面有白天、黄昏、夜晚和雨天）、小床、食盆和玩具箱；柔和的暖色调，圆润可爱。
+- 宠物是圆滚滚的原创小生物，表情丰富，眨眼、呼吸、四处张望这些细节一直在动；需求低时表情和动作会明显变化。
+- 特效：喂食时食物飞入、爱心冒出、泡泡升起和破裂、升阶段时的闪光变身。
+- 四项需求用带图标的进度条显示；底部一排动作按钮（带悬停和按下动画），右上角有暂停和静音按钮。
+
+【流程与界面】
+- 标题页：继续存档或新游戏、难度选择、帮助。
+- 帮助页：四项需求和各种照顾方式的说明。
+- 暂停菜单有继续、重新开始、返回标题；成年结局页展示宠物最终形态、养育天数和照顾统计，可以重新养一只。
+
+【验收】
+在无头 Chrome 里自动试玩：从标题页开始新游戏，孵蛋，完成喂食、玩一局小游戏、洗澡、睡觉各一次，再用测试钩子加速时间，确认需求下降、生病和成长阶段切换都能触发。要求 0 个 JS 报错、所有 Lottie 文件都成功加载、帧率不低于 55 fps；在 1280×720 和 1920×1080 两种分辨率下截图，确认画面完整、文字不溢出。
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_d2b7b38f442e">
+Design a native Lottie JSON graphic portraying a bustling New York subway platform lit by flickering fluorescent tube lights.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the underground subway platform.
+2. Clearly depict a long row of fluorescent tube lights along the ceiling.
+3. Clearly depict one flickering tube light casting an inconsistent glow.
+4. Clearly depict commuters waiting near the platform edge.
+5. Clearly depict a subway train arriving with illuminated windows.
+6. Clearly depict tiled walls reflecting the cool white light.
+7. Clearly depict a busker playing guitar under a dimmer light section.
+8. Clearly depict a vending machine glowing softly in the corner.
+9. Clearly depict a rat scurrying along the tracks below.
+10. Clearly depict a subway map illuminated by an overhead light.
+11. Clearly depict steam rising from a vent near the platform's edge.
+12. Clearly depict shadows stretching from support pillars across the floor.
+13. Clearly depict scattered newspapers glowing under the lights.
+14. Clearly depict a security camera mounted near the flickering light.
+15. Clearly depict reflections of the train's lights on the wet platform floor.
+16. Clearly depict a distant tunnel fading into darkness.
+17. Use a 3/4 perspective for a sense of depth.
+18. Apply dramatic cinematic lighting with strong contrast between flickering fluorescent light and dark tunnel shadows.
+19. Include small environmental details like flickering light glitches, steam, and dust in the beams.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a vehicle already central to this brief. Animate believable motion appropriate to its setting with its complete assembly, wheels/propellers/sails or other existing moving parts coordinated, and sensible relationships to the ground, track or water. A repeated local mechanism is preferable to a vehicle teleporting back across the frame.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_20d3d348b14b">
+Design a native Lottie JSON graphic portraying a chibi robot mascot planting flags on a lunar rover mission.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the chibi robot standing on the moon's cratered surface.
+2. Clearly depict the chibi robot planting a glowing flag into the lunar soil.
+3. Clearly depict a small rover-shaped companion robot rolling beside it.
+4. Clearly depict Earth glowing softly in the distant black sky.
+5. Clearly depict footprints trailing across the dusty moon surface.
+6. Clearly depict scattered moon rocks glinting under starlight.
+7. Clearly depict a lunar lander robot resting nearby with blinking lights.
+8. Clearly depict distant mountain ridges casting long shadows.
+9. Clearly depict the chibi robot's helmet visor reflecting the stars.
+10. Clearly depict a solar panel array glowing softly on the lander.
+11. Clearly depict fine moon dust kicked up around the robot's feet.
+12. Clearly depict a satellite dish robot transmitting a signal upward.
+13. Clearly depict distant craters layered with soft shadow gradients.
+14. Clearly depict thousands of stars scattered across the dark sky.
+15. Implement a die-cut sticker style with a thick white border and glossy highlights.
+16. Apply dramatic cinematic lighting with strong contrast between deep shadow and stark sunlight.
+17. Include small environmental details like floating dust and twinkling stars to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a mechanism already central to this brief. Animate its existing moving parts around stable pivots, with mechanically coherent linkage, rotations or repeatable operation. Attached pieces must remain attached and dependent parts should respond to the primary action.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_f0f60dafb9de">
+Create a native Lottie JSON illustration of a fog-shrouded morning over a Scottish highland loch with ghostly castle ruins.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the misty loch and ruins at dawn.
+2. Clearly depict thick rolling fog drifting low across the water's surface.
+3. Clearly depict crumbling castle ruins silhouetted against the mist.
+4. Clearly depict a lone piper standing on a rocky outcrop.
+5. Clearly depict a herd of shaggy highland cattle grazing near the shore.
+6. Clearly depict a small wooden rowboat tied to a mossy dock.
+7. Clearly depict ripples spreading across the still loch water.
+8. Clearly depict distant mountains fading into layered mist.
+9. Clearly depict a heron standing motionless in the shallows.
+10. Clearly depict soft golden light breaking faintly through the fog.
+11. Clearly depict gnarled heather bushes dotting the shoreline.
+12. Clearly depict a stone bridge arching over a narrow inlet.
+13. Clearly depict floating mist wisps curling around the ruins.
+14. Clearly depict small dew droplets glistening on grass blades.
+15. Clearly depict a flock of geese flying low through the fog.
+16. Apply a distinct cartoonish or comic-book art style with bold black outlines.
+17. Use soft muted grey-gold lighting with atmospheric fog layering.
+18. Include small environmental details like drifting mist, dew droplets, and faint light rays to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Keep buildings and fixed structures stationary. Choose an element actually present in the scene that can plausibly move, such as depicted people, vegetation, water, machinery, hanging elements or lighting. Do not invent an unrelated moving subject merely to fill an animation quota.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_4ec3ebefd8aa">
+Create a native Lottie JSON illustration of a secret underwater dragon lair hidden in a volcanic trench.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show a secret underwater dragon lair hidden in a volcanic trench.
+2. Clearly depict a massive sea dragon coiled around a glowing lava vent.
+3. Clearly depict piles of shimmering treasure scattered across the cave floor.
+4. Clearly depict jagged volcanic rock formations lining the lair walls.
+5. Clearly depict glowing embers drifting up from a crack in the seabed.
+6. Clearly depict a school of fire-colored fish swimming near the vent.
+7. Clearly depict stalactite-like mineral formations hanging from the ceiling.
+8. Clearly depict a hoard of ancient coins and jeweled goblets.
+9. Clearly depict wisps of heat distortion rising through the water.
+10. Clearly depict small bioluminescent creatures illuminating the cave corners.
+11. Clearly depict a cracked dragon egg resting near the treasure pile.
+12. Apply a distinct cartoonish or comic-book art style with bold black outlines.
+13. Implement an isometric perspective for a 3D effect.
+14. Use backlit rim-lighting at dusk to emphasize the fiery volcanic glow.
+15. Include small environmental details like drifting embers and sparkling treasure glints.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose an animal already central to this brief. Animate a complete connected body with an appropriate repeated action, coherent anatomy, correctly attached limbs/fins/wings and dependent motion. Use behavior appropriate to that species and scene; do not default to translating or bobbing the entire illustration.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_4e1dc353e429">
+Create a native Lottie JSON illustration of the Sphinx and Great Pyramid emerging from desert sandstorm mist at dawn.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the Sphinx and Great Pyramid rising through hazy desert fog.
+2. Clearly depict the Sphinx's carved features rendered in bold symmetric Art Deco angular geometry.
+3. Clearly depict gold-accented sunlight striking the pyramid's stepped stone edges.
+4. Clearly depict thin sand-mist drifting low across the desert plateau.
+5. Clearly depict a camel caravan crossing the dunes in the foreground.
+6. Clearly depict a Bedouin rider guiding the lead camel through haze.
+7. Clearly depict scattered broken columns lying near the Sphinx's paws.
+8. Clearly depict a falcon circling high above the pyramid's peak.
+9. Clearly depict distant smaller pyramids fading into the sandy haze.
+10. Clearly depict soft golden dawn light breaking through the drifting dust.
+11. Clearly depict a lone archaeologist figure examining carved hieroglyphs.
+12. Clearly depict scattered pottery shards half-buried in the sand.
+13. Clearly depict faint stars lingering in the brightening dawn sky.
+14. Clearly depict a distant Nile riverbank visible through the haze.
+15. Clearly depict small dust devils swirling near the plateau's edge.
+16. Clearly depict palm trees clustered at a faraway oasis silhouette.
+17. Use an Art Deco style with symmetric geometry, gold accents and bold arcs throughout the monuments.
+18. Render the atmosphere as misty and foggy with warm desert-gold tones and hazy dawn light.
+19. Include small environmental details like drifting sand-mist, circling falcons, and swirling dust devils to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a person or group already central to this brief. Design a readable repeatable action appropriate to the activity described, maintaining complete articulated bodies, stable contacts and coordinated held objects. Preserve the meaning of the scene rather than adding an unrelated performer.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_a413df2e085a">
+Produce a native Lottie JSON graphic showing a medieval tavern lit by firelight.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show a medieval tavern lit by firelight.
+2. Clearly depict a roaring stone hearth with an iron cooking pot.
+3. Clearly depict wooden mugs of ale lined along a rough-hewn bar.
+4. Clearly depict a bard strumming a lute near the fireplace.
+5. Clearly depict patrons in cloaks seated at long wooden tables.
+6. Clearly depict a barmaid carrying a tray of roasted meat.
+7. Clearly depict hanging iron chandeliers holding thick candles.
+8. Clearly depict a hound resting beneath one of the tables.
+9. Clearly depict a stuffed boar's head mounted above the hearth.
+10. Clearly depict scattered straw covering the wooden floorboards.
+11. Clearly depict a heavy wooden door bolted with iron hinges.
+12. Clearly depict shields and swords decorating the stone walls.
+13. Clearly depict a barrel of ale being tapped by the innkeeper.
+14. Clearly depict small shuttered windows letting in slivers of moonlight.
+15. Render it in a clean minimalist vector style with a limited palette.
+16. Use warm flickering firelight contrasted against the dark tavern corners.
+17. Include small environmental details like drifting smoke and dancing embers.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Identify what in this particular brief can plausibly move, articulate, unfold, rotate or change over time. Design a coherent subject-specific repeating action; fixed rigid objects should not deform or bob arbitrarily. Use restrained illumination or existing material effects when appropriate to an otherwise static composition.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_50aec12c1f97">
+Design a native Lottie JSON graphic portraying a solitary Inuit-guided scientific camp studying narwhal migration.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the small camp on sea ice under twilight.
+2. Clearly depict a cluster of insulated canvas tents arranged around a central fire pit.
+3. Clearly depict an Inuit guide examining tracks near an ice hole.
+4. Clearly depict a researcher recording narwhal calls with a hydrophone.
+5. Clearly depict a pod of narwhals surfacing through a break in the ice.
+6. Clearly depict a dog sled parked beside stacked supply bags.
+7. Clearly depict a smoking fire pit with a kettle hanging above it.
+8. Clearly depict a scientist adjusting an underwater camera rig.
+9. Clearly depict prayer flags or cultural markers fluttering near the tents.
+10. Clearly depict a seal skin drying rack near the camp's edge.
+11. Clearly depict the twilight sky glowing deep orange and purple.
+12. Clearly depict distant icebergs catching the last light.
+13. Clearly depict a stack of research notebooks weighted down by stones.
+14. Clearly depict a lantern hanging from a tripod pole.
+15. Clearly depict cracks of open water reflecting the sky's colors.
+16. Clearly depict paw prints of arctic hares crossing the snow.
+17. Use a flat-design illustration style with solid colors and no outlines.
+18. Apply an isometric perspective for a 3D layered effect.
+19. Include small environmental details like drifting snow and rippling water reflections to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a naturally moving element already present in this brief, such as the depicted water, foliage, weather, flame or celestial movement. Design structured, coherent motion rather than moving the complete background; relate secondary motion to the same wind, current or physical cause.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_a5ff0bf752e1">
+Produce a native Lottie JSON graphic showing a warm Ethiopian kitchen preparing injera over a clay stove.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the earthen-walled Ethiopian kitchen.
+2. Clearly depict a wide clay mitad griddle cooking a large round of injera.
+3. Clearly depict a woman pouring fermented batter in a spiral motion.
+4. Clearly depict a woven mesob basket table set for a shared meal.
+5. Clearly depict a clay jebena coffee pot brewing over hot coals.
+6. Clearly depict small ceramic cups arranged on a tray nearby.
+7. Clearly depict a simmering pot of spicy doro wat stew.
+8. Clearly depict a woven basket lid resting beside the mesob table.
+9. Clearly depict bundles of dried herbs hanging from the ceiling.
+10. Clearly depict a wooden stirring spoon resting in a clay bowl.
+11. Clearly depict incense smoke curling gently near the coffee pot.
+12. Clearly depict a patterned woven rug covering the earthen floor.
+13. Clearly depict a cat sitting near the warm stove.
+14. Clearly depict soft afternoon light filtering through a small window.
+15. Use a flat-design illustration style with solid colors and no outlines.
+16. Implement bright, clear daytime lighting with soft shadows.
+17. Include small environmental details like rising steam and drifting incense smoke to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose an animal already central to this brief. Animate a complete connected body with an appropriate repeated action, coherent anatomy, correctly attached limbs/fins/wings and dependent motion. Use behavior appropriate to that species and scene; do not default to translating or bobbing the entire illustration.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_dbc022f7288e">
+Draw a native Lottie JSON vector image of an underwater Mayan temple aquarium hall discovered beneath a jungle cenote.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the submerged Mayan temple hall.
+2. Clearly depict carved stone tanks housing blind cave fish.
+3. Clearly depict glowing bioluminescent algae clinging to ancient walls.
+4. Clearly depict an archaeologist diver examining a stone glyph panel.
+5. Clearly depict shafts of sunlight piercing through a cenote opening above.
+6. Clearly depict a school of tetra fish weaving through submerged pillars.
+7. Clearly depict a stone jaguar statue partially covered in moss.
+8. Clearly depict rope-guided walkways strung between temple platforms.
+9. Clearly depict a floating lantern buoy marking a dive path.
+10. Clearly depict tangled tree roots breaking through the temple ceiling.
+11. Clearly depict a hidden waterfall trickling into a side pool.
+12. Clearly depict small bubbles rising from the diver's breathing gear.
+13. Clearly depict ancient pottery shards scattered along the tank floor.
+14. Clearly depict a second diver photographing a glowing tank of eels.
+15. Clearly depict dappled jungle light filtering through canopy above the cenote.
+16. Clearly depict drifting silt particles catching the shafts of light.
+17. Clearly depict distant birds visible through the cenote's open ceiling.
+18. Use a cel-shaded anime style with hard-edged shadow bands.
+19. Employ an isometric perspective with dappled sunbeam lighting against the shadowed temple stone.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Keep buildings and fixed structures stationary. Choose an element actually present in the scene that can plausibly move, such as depicted people, vegetation, water, machinery, hanging elements or lighting. Do not invent an unrelated moving subject merely to fill an animation quota.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_a8ba91d37eb0">
+Produce a native Lottie JSON graphic showing an ancient Egyptian caravan camp resting near shadowy pyramids under a full moon.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the caravan camp with the pyramids looming behind.
+2. Clearly depict donkeys loaded with baskets of grain and linen.
+3. Clearly depict a merchant unrolling a papyrus scroll by torchlight.
+4. Clearly depict a fire pit surrounded by reed mats.
+5. Clearly depict a priestess pouring an offering near a small stone altar.
+6. Clearly depict a scribe painting hieroglyphs on a wooden tablet.
+7. Clearly depict a linen tent fluttering gently in the night breeze.
+8. Clearly depict clay jars of beer stacked beside the fire.
+9. Clearly depict a cat curled protectively near a grain sack.
+10. Clearly depict the moonlit silhouettes of the great pyramids beyond the dunes.
+11. Clearly depict a guard holding a bronze-tipped spear at the camp's edge.
+12. Clearly depict a woven basket of dates set beside a reed mat.
+13. Clearly depict palm fronds swaying gently near a small oasis pool.
+14. Clearly depict a torch mounted on a carved wooden post.
+15. Clearly depict scattered footprints of donkeys and travelers in soft sand.
+16. Clearly depict the Nile's faint glimmer visible in the far distance.
+17. Clearly depict a bright full moon casting silver light across the dunes.
+18. Render the entire scene with a claymation-inspired look, using rounded, soft-shaded forms throughout.
+19. Use an isometric perspective to give the ancient camp a dimensional grandeur.
+20. Include small environmental details like drifting sand and flickering torchlight for atmosphere.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a naturally moving element already present in this brief, such as the depicted water, foliage, weather, flame or celestial movement. Design structured, coherent motion rather than moving the complete background; relate secondary motion to the same wind, current or physical cause.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_423331ab0499">
+Design a native Lottie JSON graphic portraying a whimsical steampunk aquarium hall powered by clockwork machinery.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the steampunk-machinery aquarium hall.
+2. Clearly depict a brass-riveted tank housing a mechanical-looking anglerfish.
+3. Clearly depict copper pipes weaving across the ceiling like veins.
+4. Clearly depict a goggled engineer adjusting a pressure valve near the tank.
+5. Clearly depict a school of clockwork-inspired fish with glowing gears.
+6. Clearly depict a steam-powered pump hissing beside the tank base.
+7. Clearly depict gauges and dials mounted along the brass railing.
+8. Clearly depict a floating dirigible visible through a tall window.
+9. Clearly depict a mechanical crab scuttling along the tank floor.
+10. Clearly depict a checkered iron-grate floor beneath the walkway.
+11. Clearly depict a stack of leather-bound research journals on a table.
+12. Clearly depict small bursts of steam escaping from ceiling vents.
+13. Clearly depict tiny sparks flying from an overloaded gear mechanism.
+14. Clearly depict a lantern-lit control panel glowing amber.
+15. Render the scene with intricate mechanical linework and warm bronze tones.
+16. Illuminate the hall with warm amber glow against dim industrial shadows.
+17. Include small environmental details like drifting steam wisps and glinting brass sparks.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a mechanism already central to this brief. Animate its existing moving parts around stable pivots, with mechanically coherent linkage, rotations or repeatable operation. Attached pieces must remain attached and dependent parts should respond to the primary action.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_072d15a7f6e3">
+Create a native Lottie JSON illustration of a subterranean ice-cave laboratory carved deep beneath a glacier.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the glowing cavern laboratory.
+2. Clearly depict a scientist examining a glowing ice core under a headlamp.
+3. Clearly depict strings of lantern lights strung along the cavern ceiling.
+4. Clearly depict translucent blue ice walls veined with ancient air bubbles.
+5. Clearly depict a rope ladder descending from a surface access shaft.
+6. Clearly depict a table of scientific instruments measuring ice density.
+7. Clearly depict dripping meltwater collecting in a metal basin.
+8. Clearly depict frozen stalactites hanging from the cave roof.
+9. Clearly depict a portable generator humming in the corner.
+10. Clearly depict footprints preserved in a thin layer of cave frost.
+11. Clearly depict faint daylight filtering through a distant crevasse opening.
+12. Clearly depict small ice crystals sparkling in the lantern light.
+13. Use a line-art style with fine consistent strokes and minimal fill.
+14. Apply cool blue glow lighting radiating from within the ice itself.
+15. Include small environmental details like drifting ice dust and sparkling crystal glints to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Identify what in this particular brief can plausibly move, articulate, unfold, rotate or change over time. Design a coherent subject-specific repeating action; fixed rigid objects should not deform or bob arbitrarily. Use restrained illumination or existing material effects when appropriate to an otherwise static composition.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_593810975b3c">
+Produce a native Lottie JSON graphic showing a miner's underground cave lit by carbide lamps.
+
+Required elements:
+1. The canvas must effectively frame the narrow rocky tunnel deep underground.
+2. Clearly depict a miner wearing a helmet fitted with a glowing carbide lamp.
+3. Clearly depict a second lantern hanging from a wooden support beam.
+4. Clearly depict a mine cart loaded with glinting ore resting on rusty rails.
+5. Clearly depict jagged rock walls textured with faceted mineral veins.
+6. Clearly depict a pickaxe leaning against a timber support post.
+7. Clearly depict water dripping from stalactites near the tunnel ceiling.
+8. Clearly depict a second miner pushing the cart deeper into the tunnel.
+9. Clearly depict a small offshoot tunnel disappearing into darkness.
+10. Clearly depict scattered chunks of glinting ore across the tunnel floor.
+11. Clearly depict a canary in a small cage hanging near the lamp light.
+12. Clearly depict distant faint light marking the tunnel's entrance.
+13. Apply a low-poly geometric style built from flat triangular facets.
+14. Illuminate the scene with warm carbide lamp glow against deep cavern darkness.
+15. Include small environmental details like drifting dust and glinting mineral sparkles.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a vehicle already central to this brief. Animate believable motion appropriate to its setting with its complete assembly, wheels/propellers/sails or other existing moving parts coordinated, and sensible relationships to the ground, track or water. A repeated local mechanism is preferable to a vehicle teleporting back across the frame.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_4623d0beab4d">
+Create a native Lottie JSON illustration of a glamorous 1920s art deco speakeasy lounge.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show a hidden speakeasy lounge glowing with neon and jazz-era glamour.
+2. Clearly depict a glowing neon sign spelling out a hidden password above the bar.
+3. Clearly depict a polished mahogany bar lined with crystal glassware.
+4. Clearly depict a jazz trio performing on a small raised stage.
+5. Clearly depict patrons in flapper dresses and pinstripe suits lounging on velvet booths.
+6. Clearly depict geometric art deco wallpaper patterns lining the walls.
+7. Clearly depict a bartender shaking a cocktail behind the bar counter.
+8. Clearly depict a chandelier dripping with cut-glass crystals overhead.
+9. Clearly depict a hidden bookshelf door slightly ajar revealing the entrance.
+10. Clearly depict a saxophone player caught mid-note under a spotlight.
+11. Clearly depict a checkerboard-tiled floor gleaming beneath the tables.
+12. Clearly depict cigarette smoke curling upward through the dim lounge air.
+13. Clearly depict a coat check counter draped with fur stoles.
+14. Clearly depict champagne glasses stacked in a glittering pyramid.
+15. Clearly depict a rain-soaked alley window glimpsed through velvet curtains.
+16. Apply a low-poly geometric style built from flat triangular facets to render the entire lounge scene.
+17. Use vivid neon glow against the smoky darkness of the speakeasy interior.
+18. Include small environmental details like drifting smoke and sparkling chandelier light to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a person or group already central to this brief. Design a readable repeatable action appropriate to the activity described, maintaining complete articulated bodies, stable contacts and coordinated held objects. Preserve the meaning of the scene rather than adding an unrelated performer.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_dcc8c849facf">
+Write native Lottie JSON code for an image of a saxophonist playing in a dim jazz club.
+
+Requirements:
+1. The canvas must effectively frame the scene to show a saxophonist playing in a dim jazz club.
+2. Clearly depict a golden curved saxophone held mid-note.
+3. Clearly depict a tall microphone stand beside the player.
+4. Clearly depict a small round café table with a candle.
+5. Ensure the scene features moody low blue spotlight with soft shadows.
+6. Apply a smooth noir cartoon style with bold black outlines.
+7. The overall composition should feel balanced and visually clear.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a person or group already central to this brief. Design a readable repeatable action appropriate to the activity described, maintaining complete articulated bodies, stable contacts and coordinated held objects. Preserve the meaning of the scene rather than adding an unrelated performer.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_02b645422b97">
+Write native Lottie JSON code for an image of a 1920s film noir detective office set under moody stage lights.
+
+Requirements:
+1. The canvas must effectively frame the scene to show the office set and surrounding stage darkness.
+2. Clearly depict a venetian-blind window casting striped shadows.
+3. Clearly depict a detective prop desk with a rotary phone.
+4. Clearly depict a spotlight rig aimed through the fake window.
+5. Ensure the scene features bright, clear daytime lighting with soft shadows.
+6. Draw it as a technical blueprint: white line-work on a blue ground.
+7. The overall composition should feel balanced and visually clear.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Identify what in this particular brief can plausibly move, articulate, unfold, rotate or change over time. Design a coherent subject-specific repeating action; fixed rigid objects should not deform or bob arbitrarily. Use restrained illumination or existing material effects when appropriate to an otherwise static composition.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_497a54aca951">
+Produce a native Lottie JSON graphic showing a futuristic space station galley preparing meals in zero gravity.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show a sleek futuristic space station galley.
+2. Clearly depict a floating magnetic pot securing bubbling stew in microgravity.
+3. Clearly depict an astronaut chef stirring with a tethered utensil.
+4. Clearly depict a wall-mounted rack of vacuum-sealed cooking tools.
+5. Clearly depict a holographic recipe display glowing above the counter.
+6. Clearly depict a checkered floor pattern rendered in glowing panel lights.
+7. Clearly depict floating droplets of sauce drifting through the air.
+8. Clearly depict a robotic arm assisting with chopping vegetables.
+9. Clearly depict a large viewport window showing the curve of Earth below.
+10. Clearly depict silver insulated food pouches clipped to a wall rack.
+11. Clearly depict a compact induction stove humming with blue light.
+12. Clearly depict a small potted plant growing under a grow lamp.
+13. Clearly depict stars twinkling steadily through the viewport.
+14. Clearly depict a second crew member gliding past with a tray.
+15. Clearly depict a sparking control panel near the galley entrance.
+16. Clearly depict floating crumbs captured by a small vacuum device.
+17. Clearly depict soft blue emergency lighting along the ceiling seams.
+18. Render the scene with a vaporwave aesthetic using pastel gradients and a glowing grid horizon visible through the viewport.
+19. Illuminate the galley with cool neon light contrasted against the deep black of space, with drifting particles and twinkling stars.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Keep buildings and fixed structures stationary. Choose an element actually present in the scene that can plausibly move, such as depicted people, vegetation, water, machinery, hanging elements or lighting. Do not invent an unrelated moving subject merely to fill an animation quota.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_612d96f41d3d">
+Produce a native Lottie JSON graphic showing android performers leading a glowing dragon parade during Lunar New Year celebrations.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the crowded street and parading dragon procession.
+2. Clearly depict a long segmented dragon android winding through the crowd.
+3. Clearly depict performer androids holding glowing dragon support poles.
+4. Clearly depict strings of red lanterns glowing above the street.
+5. Clearly depict fireworks bursting brightly in the night sky.
+6. Clearly depict a drummer android pounding a glowing ceremonial drum.
+7. Clearly depict spectator androids waving glowing light sticks.
+8. Clearly depict storefronts adorned with neon Chinese characters.
+9. Clearly depict confetti drifting through the crowded street.
+10. Clearly depict a food vendor android serving glowing dumplings.
+11. Clearly depict smoke trailing from spent firecrackers.
+12. Clearly depict a child android sitting on shoulders to watch the parade.
+13. Clearly depict decorative gold coins scattered along the parade route.
+14. Clearly depict distant skyscrapers glowing with festival lights.
+15. Clearly depict reflections of lantern light shimmering on wet pavement.
+16. Render the scene in a vivid neon synthwave style with glowing edges against a dark festive night.
+17. Use an isometric perspective and include drifting confetti and sparks for atmosphere.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose an animal already central to this brief. Animate a complete connected body with an appropriate repeated action, coherent anatomy, correctly attached limbs/fins/wings and dependent motion. Use behavior appropriate to that species and scene; do not default to translating or bobbing the entire illustration.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_b394120f7276">
+Create a native Lottie JSON illustration of a pirate ship deck transformed into a makeshift infirmary after a fierce battle.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the deck lined with wounded sailors.
+2. Clearly depict a ship's surgeon stitching a wound by lantern light.
+3. Clearly depict bandaged sailors resting against crates and barrels.
+4. Clearly depict bloodstained bandages scattered across the planks.
+5. Clearly depict a young nurse boiling water over a small brazier.
+6. Clearly depict a splintered mast propped with rope supports.
+7. Clearly depict a chest of medical supplies opened beside the surgeon.
+8. Clearly depict a exhausted captain overseeing the recovery efforts.
+9. Clearly depict torn sails patched hastily with spare canvas.
+10. Clearly depict a cannon still smoking faintly near the rail.
+11. Clearly depict scattered weapons stacked away from the wounded.
+12. Clearly depict a lantern swinging gently over the makeshift ward.
+13. Clearly depict distant enemy ship retreating on the horizon.
+14. Clearly depict calm waters slowly settling after the battle.
+15. Clearly depict a cabin boy carrying fresh bandages hurriedly.
+16. Use a soft, painterly gradient-shaded illustration style.
+17. Render the scene in dim lantern-lit tones with somber shadows.
+18. Include small environmental details like drifting smoke, faint embers, and scattered debris to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a vehicle already central to this brief. Animate believable motion appropriate to its setting with its complete assembly, wheels/propellers/sails or other existing moving parts coordinated, and sensible relationships to the ground, track or water. A repeated local mechanism is preferable to a vehicle teleporting back across the frame.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_0105ccf20b10">
+Design a native Lottie JSON graphic portraying a Venetian lagoon meeting the open sea at twilight.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show gondolas gliding near the lagoon's edge toward open water.
+2. Clearly depict a gondolier rowing gracefully with a long wooden oar.
+3. Clearly depict candlelit windows glowing along the canal-side buildings.
+4. Clearly depict ornate striped mooring poles rising from the water.
+5. Clearly depict a masked figure in Carnevale attire standing on a small bridge.
+6. Clearly depict distant domes of a Venetian basilica silhouetted against the sky.
+7. Clearly depict fishing boats returning through the lagoon's channel.
+8. Clearly depict soft ripples reflecting warm lantern light on the water.
+9. Clearly depict pigeons perched along a stone balustrade.
+10. Clearly depict a string quartet playing near a waterside café.
+11. Clearly depict laundry strung between weathered buildings above the canal.
+12. Clearly depict the sea beyond the lagoon glowing pink and violet at dusk.
+13. Clearly depict seabirds gliding low over the lagoon's shimmering surface.
+14. Clearly depict a small vaporetto crossing in the background.
+15. Clearly depict faint stars beginning to appear above the basilica domes.
+16. Use a soft, painterly gradient-shaded illustration style with an isometric perspective for a 3D effect.
+17. Include small environmental details like drifting mist and floating lantern reflections.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a naturally moving element already present in this brief, such as the depicted water, foliage, weather, flame or celestial movement. Design structured, coherent motion rather than moving the complete background; relate secondary motion to the same wind, current or physical cause.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_65357c80bd49">
+Draw a native Lottie JSON vector image of a steampunk gear-forging factory floor beneath an aurora-lit polar night sky visible through skylights.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the full steampunk gear-forging factory floor.
+2. Clearly depict a massive rotating brass gear assembly at the center of the room.
+3. Clearly depict a coal-fired furnace glowing orange with a stoker feeding it.
+4. Clearly depict copper steam pipes running along the ceiling with leaking vapor jets.
+5. Clearly depict a foreman in a leather apron and goggles inspecting blueprints.
+6. Clearly depict rows of riveted iron workbenches with scattered tools.
+7. Clearly depict a suspended chain pulley system lifting a metal crate.
+8. Clearly depict tall arched skylight windows showing the aurora glow outside.
+9. Clearly depict a network of tarnished brass pipes feeding into the central gear.
+10. Clearly depict sparks flying from a grinding wheel station.
+11. Clearly depict floor grates venting faint steam clouds.
+12. Use a papercut / layered-paper look with distinct drop shadows between each layer.
+13. Implement an isometric perspective for a 3D effect.
+14. Bathe the interior in warm amber lamplight contrasted against the cool aurora glow from above.
+15. Include small environmental details like drifting embers, dust motes, and faint stars beyond the skylight.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a mechanism already central to this brief. Animate its existing moving parts around stable pivots, with mechanically coherent linkage, rotations or repeatable operation. Attached pieces must remain attached and dependent parts should respond to the primary action.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_1c3e3f44c979">
+Draw a native Lottie JSON vector image of a steampunk airship dock night market suspended above the clouds.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the cloud-suspended airship dock market.
+2. Clearly depict a vendor grilling skewers on a brass steam-powered grill.
+3. Clearly depict a moored airship glowing with lantern lights along its hull.
+4. Clearly depict a clockwork automaton serving drinks at a stall counter.
+5. Clearly depict brass pipework running along the dock's edges venting steam.
+6. Clearly depict a gear-covered stall selling mechanical trinkets.
+7. Clearly depict layered paper clouds drifting below the floating platform.
+8. Clearly depict a goggle-wearing merchant weighing spices on a brass scale.
+9. Clearly depict strings of Edison bulbs looping between dock posts.
+10. Clearly depict a small dirigible drone delivering a parcel to a stall.
+11. Clearly depict layered paper crowds in Victorian-inspired travel gear.
+12. Clearly depict a telescope stall pointed toward distant stars.
+13. Clearly depict rivets and copper plating detailing the dock flooring.
+14. Clearly depict distant floating cities glowing faintly on the horizon.
+15. Clearly depict a mechanical bird perched atop a lamp post.
+16. Clearly depict steam venting rhythmically from a boiler stall.
+17. Use a papercut / layered-paper look with metallic-toned drop shadows between layers.
+18. Render in isometric perspective with warm brass-lantern lighting.
+19. Include small environmental details like drifting steam, floating sparks, and glowing embers.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a vehicle already central to this brief. Animate believable motion appropriate to its setting with its complete assembly, wheels/propellers/sails or other existing moving parts coordinated, and sensible relationships to the ground, track or water. A repeated local mechanism is preferable to a vehicle teleporting back across the frame.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_6f314989f8b9">
+Produce a native Lottie JSON graphic showing a Silicon Valley startup newsroom livestream studio at sunset.
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show a sleek open-plan studio bathed in warm evening light.
+2. Clearly depict a host speaking into a ring-lit microphone.
+3. Clearly depict a wall of monitors displaying live chat comments.
+4. Clearly depict a producer adjusting a mobile teleprompter rig.
+5. Clearly depict a drone camera hovering near the ceiling.
+6. Clearly depict scattered energy drink cans on a standing desk.
+7. Clearly depict a robotic arm holding a secondary camera.
+8. Clearly depict beanbag chairs scattered in a lounge corner.
+9. Clearly depict a large digital countdown timer on the wall.
+10. Clearly depict a technician adjusting an LED lighting panel.
+11. Clearly depict a glass wall overlooking a palm-lined courtyard.
+12. Clearly depict a skateboard leaning near the entrance door.
+13. Clearly depict tangled charging cables snaking across the floor.
+14. Clearly depict a whiteboard covered with startup diagrams.
+15. Clearly depict distant office towers silhouetted against the sunset.
+16. Clearly depict a security guard checking badges at the glass doors.
+17. Render the scene as sleek layered silhouettes against a vivid pastel sunset gradient sky.
+18. Apply an isometric perspective to enhance the studio's modern three-dimensional depth.
+19. Include small environmental details like floating dust particles and faint light sparks for atmosphere.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Keep buildings and fixed structures stationary. Choose an element actually present in the scene that can plausibly move, such as depicted people, vegetation, water, machinery, hanging elements or lighting. Do not invent an unrelated moving subject merely to fill an animation quota.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_e9dc38c3de1e">
+Draw a native Lottie JSON vector image of an abstract geometric composition depicting an Egyptian desert oasis at twilight.
+
+Please follow these specifications:
+1. The canvas must effectively frame the composition as a tranquil desert oasis at dusk.
+2. Clearly depict a cluster of palm trees simplified into curved triangular fronds atop tall cylinders.
+3. Clearly depict a circular watering pool rendered as concentric pastel rings.
+4. Clearly depict a distant pyramid silhouette formed from stacked triangular shapes.
+5. Clearly depict a caravan of camel shapes simplified into rounded geometric humps.
+6. Clearly depict a cluster of geometric figures in flowing robes resting near the pool.
+7. Clearly depict a woven tent structure made of layered trapezoidal fabric panels.
+8. Clearly depict a scattering of small square lanterns glowing warm amber near the tents.
+9. Clearly depict a crescent moon shape rising above the dunes.
+10. Clearly depict a row of undulating dune shapes formed from soft wave-like curves.
+11. Clearly depict a scattering of star shapes rendered as small four-pointed diamonds.
+12. Clearly depict a stylized falcon shape soaring above the oasis in simplified geometric form.
+13. Clearly depict a cluster of clay jars simplified into stacked cylinder shapes near the water.
+14. Clearly depict a decorative border pattern of interlocking triangles along the oasis edge.
+15. Clearly depict a distant obelisk shape rendered as a tall thin triangle-topped rectangle.
+16. Clearly depict scattered sand particles drifting across the dunes.
+17. Render the composition with a Memphis-style palette of warm dusk pastels and desert tones.
+18. Illuminate the scene with a hazy, misty twilight glow softened by drifting sand haze.
+19. Include small environmental details like floating dust specks and faint starlight sparkles.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a naturally moving element already present in this brief, such as the depicted water, foliage, weather, flame or celestial movement. Design structured, coherent motion rather than moving the complete background; relate secondary motion to the same wind, current or physical cause.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_3caa08158632">
+Produce a native Lottie JSON graphic showing a Gothic stained glass window as an abstract geometric composition.
+
+Please follow these specifications:
+1. The canvas must effectively frame a tall arched window divided into geometric glass panes.
+2. Clearly depict a large rose-shaped medallion of interlocking petal shapes at the top.
+3. Clearly depict thick black leaded lines separating each pane of colored glass.
+4. Clearly depict a ruby-red triangular pane glowing near the center.
+5. Clearly depict a sapphire-blue diamond pane beside the ruby triangle.
+6. Clearly depict a cluster of small emerald hexagon panes along the lower border.
+7. Clearly depict a pointed arch frame outlining the entire window.
+8. Clearly depict a row of trefoil shapes tracing the arch's curved edge.
+9. Clearly depict faint crackled texture within several glass panes.
+10. Clearly depict a golden quatrefoil accent at the window's very peak.
+11. Clearly depict a stone tracery lattice underlying the colored panes.
+12. Clearly depict scattered light-ray beams passing through the colored glass.
+13. Render the entire window using a visible pixel-art grid of chunky square units.
+14. Apply bright backlit sunlight streaming through the glass to saturate the colors.
+15. Include small environmental details like drifting dust motes illuminated within the light beams.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Identify what in this particular brief can plausibly move, articulate, unfold, rotate or change over time. Design a coherent subject-specific repeating action; fixed rigid objects should not deform or bob arbitrarily. Use restrained illumination or existing material effects when appropriate to an otherwise static composition.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_00125d7ab1bf">
+Draw a native Lottie JSON vector image of a tangram puzzle animal as an abstract geometric composition.
+
+Please follow these specifications:
+1. The canvas must effectively frame seven tangram pieces arranged into a leaping fox silhouette.
+2. Clearly depict a large triangle forming the fox's angular back.
+3. Clearly depict a medium triangle forming the pointed head.
+4. Clearly depict a small square forming the chest section.
+5. Clearly depict a parallelogram forming the stretched front leg.
+6. Clearly depict two small triangles forming the bushy tail.
+7. Clearly depict a thin triangle forming the alert upright ear.
+8. Clearly depict bold color-blocking distinguishing each individual puzzle piece.
+9. Clearly depict thin black outlines separating every tangram edge.
+10. Clearly depict a faint underlying square grid showing the puzzle's original layout.
+11. Clearly depict a scattering of unused geometric shapes off to one side.
+12. Clearly depict a subtle drop-shadow beneath the assembled fox shape.
+13. Render the entire composition using a visible pixel-art grid of chunky square units.
+14. Apply bright flat tabletop lighting typical of a puzzle laid out on a table.
+15. Include small environmental details like scattered pixel dust and stray puzzle crumbs nearby.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose an animal already central to this brief. Animate a complete connected body with an appropriate repeated action, coherent anatomy, correctly attached limbs/fins/wings and dependent motion. Use behavior appropriate to that species and scene; do not default to translating or bobbing the entire illustration.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_e429fdfc58bc">
+Design a native Lottie JSON graphic portraying a bustling New Orleans jazz club during Mardi Gras.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show a lively New Orleans jazz club during Mardi Gras.
+2. Clearly depict a trumpet player performing on a small raised stage.
+3. Clearly depict colorful beads draped over patrons' necks.
+4. Clearly depict a bartender shaking a cocktail behind a carved wooden bar.
+5. Clearly depict wrought-iron balcony railings visible through the front window.
+6. Clearly depict dancers moving energetically across a wooden floor.
+7. Clearly depict a saxophonist swaying beside the trumpet player.
+8. Clearly depict strings of purple, green, and gold lights overhead.
+9. Clearly depict a tray of beignets dusted with powdered sugar on a table.
+10. Clearly depict a masked reveler laughing near the bar counter.
+11. Clearly depict a chalkboard listing the evening's live music lineup.
+12. Clearly depict confetti scattered across the floor and tables.
+13. Clearly depict a brass tuba player grooving in the background.
+14. Clearly depict warm stage lighting spilling onto the dancing crowd.
+15. Clearly depict a street parade visible passing outside the window.
+16. Clearly depict smoky haze drifting near the stage lights.
+17. Use a risograph-print look with 2-3 overprinted spot colors and slight misregistration.
+18. Implement an isometric perspective for a 3D effect.
+19. Include small environmental details like floating confetti and drifting smoke to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a person or group already central to this brief. Design a readable repeatable action appropriate to the activity described, maintaining complete articulated bodies, stable contacts and coordinated held objects. Preserve the meaning of the scene rather than adding an unrelated performer.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_de4f7793c35f">
+Design a native Lottie JSON graphic portraying a subterranean hobbit-hole pantry and kitchen nook at twilight.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the round-doored underground kitchen.
+2. Clearly depict a low arched doorway framed with carved wood.
+3. Clearly depict strings of onions and dried herbs hanging from beams.
+4. Clearly depict a stone hearth with a bubbling cast-iron pot.
+5. Clearly depict a wooden table laden with bread loaves and cheese wheels.
+6. Clearly depict round windows glowing with amber evening light.
+7. Clearly depict a small hobbit figure stirring the pot with a wooden spoon.
+8. Clearly depict a curious mouse nibbling crumbs near the table leg.
+9. Clearly depict shelves stacked with jars of preserves.
+10. Clearly depict a curled pipe of smoke drifting from a chair-side pipe rack.
+11. Clearly depict fireflies glimmering just outside the round window.
+12. Use a risograph-print look with 2-3 overprinted spot colors and slight misregistration.
+13. Render the scene in an isometric perspective for a 3D effect.
+14. Light the kitchen with warm hearth glow against the cool dusky twilight outside.
+15. Include small environmental details like drifting smoke and floating dust motes.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a mechanism already central to this brief. Animate its existing moving parts around stable pivots, with mechanically coherent linkage, rotations or repeatable operation. Attached pieces must remain attached and dependent parts should respond to the primary action.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_1d80873fb824">
+Produce a native Lottie JSON graphic showing a moonlit jellyfish bloom drifting near the surface.
+
+Please follow these specifications:
+1. The canvas must effectively frame the scene to show the jellyfish bloom illuminated by moonlight.
+2. Clearly depict dozens of translucent jellyfish pulsing gently through the water.
+3. Clearly depict moonlight filtering down through the water's surface.
+4. Clearly depict delicate tentacles trailing beneath each jellyfish.
+5. Clearly depict small fish darting between the jellyfish bodies.
+6. Clearly depict faint silver ripples reflecting on the water's surface above.
+7. Clearly depict drifting plankton glowing softly around the jellyfish.
+8. Clearly depict a sea turtle passing calmly through the bloom.
+9. Clearly depict dark open water stretching into the background.
+10. Clearly depict subtle color variations glowing within the jellyfish bodies.
+11. Clearly depict a scattering of tiny bubbles rising toward the surface.
+12. Clearly depict faint stars visible through the water's rippling surface.
+13. Clearly depict soft shadows cast by the drifting jellyfish forms.
+14. Use a watercolor-inspired vector style with soft washes and bleed edges.
+15. Render cool moonlit underwater light filtering through the bloom for atmosphere.
+16. Include small environmental details like drifting particles and faint glimmers to bring the scene to life.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose an animal already central to this brief. Animate a complete connected body with an appropriate repeated action, coherent anatomy, correctly attached limbs/fins/wings and dependent motion. Use behavior appropriate to that species and scene; do not default to translating or bobbing the entire illustration.
+</script>
+<script type="text/plain" id="prompt-lottie-ds-anim30k_ab9c6723dee0">
+Draw a native Lottie JSON vector image of an Andean adobe home glowing during a nighttime festival.
+
+Please follow these specifications:
+1. The canvas must effectively frame the warm adobe interior with a festival visible through the open doorway.
+2. Clearly depict a woven textile tapestry hanging on the thick adobe wall.
+3. Clearly depict a family gathered around a low wooden table with steaming bowls.
+4. Clearly depict a charango guitar leaning against a woven basket.
+5. Clearly depict strings of colorful paper lanterns glowing outside the doorway.
+6. Clearly depict a clay oven glowing with embers in the corner.
+7. Clearly depict a woman in traditional dress ladling stew from a pot.
+8. Clearly depict dried corn cobs hanging from the ceiling beams.
+9. Clearly depict a llama figurine carved from wood on a shelf.
+10. Clearly depict distant festival dancers visible through the doorway.
+11. Clearly depict woven floor mats in bold geometric patterns.
+12. Clearly depict a small child clutching a lit paper lantern.
+13. Clearly depict fireworks sparking faintly in the night sky outside.
+14. Clearly depict smoke curling gently from the clay oven's vent.
+15. Use a woodcut / linocut style with bold geometric carved patterning.
+16. Render the lighting as warm firelit interior glow meeting the distant festival lantern-light outside.
+
+ANIMATED ADAPTATION:
+Preserve the visual subject, composition constraints, required objects and illustration style above. For this adaptation, use a 960 by 720 canvas (w=960,h=720,fr=60,ip=0,op=360) and a six-second seamless repeating loop using native Lottie keyframes; these adaptation dimensions and native-Lottie JSON format supersede any conflicting static canvas dimensions or static output format above. Choose a clearly readable primary motion appropriate to subjects actually present, plus coordinated secondary or environmental motion when supported by this scene. Maintain object identity, anatomy, attachments, depth ordering and physical contacts throughout the loop. Choose motions and phases that naturally return to the initial state without teleportation, abrupt resets or a globally sliding/bobbing illustration. Static architecture must remain stable. Preserve visual richness at every time point.
+Scene-specific motion guidance: Choose a person or group already central to this brief. Design a readable repeatable action appropriate to the activity described, maintaining complete articulated bodies, stable contacts and coordinated held objects. Preserve the meaning of the scene rather than adding an unrelated performer.
+</script>
 <script type="text/plain" id="prompt-lottie-lottie-loading-morph">
 三个彩色圆点依次弹跳，然后变形为一个旋转的圆环，再散开回到三个圆点。交付一个 Lottie JSON（Bodymovin 5.7 格式，能被 lottie-web 5.13 的 SVG 渲染器正常播放）：画布 512×512，60 fps，2–4 秒无缝循环；只用形状图层（不用图片、字体、文字图层，不用表达式）；文件不超过 120 KB；配色明快、动作有缓动和弹性，不要生硬的线性运动。
 </script>
@@ -283,10 +1176,12 @@
 <script src="vendor/lottie.min.js?v=1790217916" defer></script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
+  const players = new Map();
   const io = new IntersectionObserver((entries) => entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    io.unobserve(e.target);
-    lottie.loadAnimation({ container: e.target, renderer: 'svg', loop: true, autoplay: true, path: e.target.dataset.src });
+    const a = players.get(e.target);
+    if (!e.isIntersecting) { if (a) a.pause(); return; }
+    if (a) { a.play(); return; }
+    players.set(e.target, lottie.loadAnimation({ container: e.target, renderer: 'svg', loop: true, autoplay: true, path: e.target.dataset.src }));
   }), { rootMargin: '200px' });
   document.querySelectorAll('.lottie[data-src]').forEach((el) => io.observe(el));
 });

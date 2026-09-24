@@ -1,0 +1,367 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The rail cart rolls from the ticket booth to the tower station with turning wheel sets; once it has arrived the lifting collar carries the ring cabin up the mast while the cabin turns half a revolution, pauses at the top and turns back on the way down; the cart then returns to the booth. The turnstile turns slowly and the beacon on the crown rotates.",
+  "parts": [
+    {
+      "id": "ring_collar",
+      "parent": null,
+      "box": [
+        134,
+        14,
+        84,
+        166,
+        40,
+        116
+      ],
+      "colors": [
+        "#6D7390",
+        "#DCE1EB"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            150,
+            25,
+            100
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              3.5,
+              0
+            ],
+            [
+              6,
+              120
+            ],
+            [
+              7,
+              120
+            ],
+            [
+              9.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ring_cabin",
+      "parent": "ring_collar",
+      "box": [
+        118,
+        16,
+        68,
+        182,
+        34,
+        132
+      ],
+      "colors": [
+        "#FAFBFD",
+        "#8E86A9",
+        "#B3DAEA",
+        "#A59DC1",
+        "#EE8C6E",
+        "#D8735A",
+        "#FFC66B",
+        "#EBC7A4",
+        "#463C4C",
+        "#6C8FB0",
+        "#C45F66",
+        "#7D9A7E"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "y",
+          "pivot": [
+            150,
+            25,
+            100
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              3.5,
+              0
+            ],
+            [
+              7,
+              3.1416
+            ],
+            [
+              9.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rail_cart",
+      "parent": null,
+      "box": [
+        68,
+        12,
+        155,
+        101,
+        36,
+        175
+      ],
+      "colors": [
+        "#746E8E",
+        "#EEF1F6",
+        "#8CC5DC",
+        "#FFD27A",
+        "#CF4F48",
+        "#EE8C6E",
+        "#D8735A",
+        "#F8F9FC",
+        "#6C8FB0",
+        "#C45F66",
+        "#7D9A7E",
+        "#5B566F",
+        "#EBC7A4",
+        "#463C4C"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "x",
+          "pivot": [
+            85,
+            20,
+            165
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              3.5,
+              62
+            ],
+            [
+              9.5,
+              62
+            ],
+            [
+              11.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cart_wheels_rear",
+      "parent": "rail_cart",
+      "box": [
+        73,
+        9,
+        158,
+        81,
+        17,
+        172
+      ],
+      "colors": [
+        "#4E4960",
+        "#A09BB3"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            77,
+            13,
+            165
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              3.5,
+              -20.667
+            ],
+            [
+              9.5,
+              -20.667
+            ],
+            [
+              11.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cart_wheels_front",
+      "parent": "rail_cart",
+      "box": [
+        88,
+        9,
+        158,
+        96,
+        17,
+        172
+      ],
+      "colors": [
+        "#4E4960",
+        "#A09BB3"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            92,
+            13,
+            165
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              3.5,
+              -20.667
+            ],
+            [
+              9.5,
+              -20.667
+            ],
+            [
+              11.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "turnstile",
+      "parent": null,
+      "box": [
+        55,
+        13,
+        183,
+        69,
+        16,
+        197
+      ],
+      "colors": [
+        "#6D7390",
+        "#DCE1EB"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            62,
+            14,
+            190
+          ],
+          "amount": 6.283185307179586,
+          "period": 12,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "crown_beacon",
+      "parent": null,
+      "box": [
+        146,
+        207,
+        96,
+        155,
+        212,
+        104
+      ],
+      "colors": [
+        "#FFB04C",
+        "#746E8E"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            150,
+            209,
+            100
+          ],
+          "amount": 6.283185307179586,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

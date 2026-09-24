@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f6f9f8">
+<meta name="description" content="乔木 LLM 擂台定价：Free 0 元，Pro 29 元/月，Team 99 元/月。">
+<title>定价 · 乔木 LLM 擂台</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23008573'/%3E%3Cg fill='%23fff'%3E%3Ccircle cx='16' cy='11.5' r='5.2'/%3E%3Ccircle cx='11.6' cy='14.6' r='3.8'/%3E%3Ccircle cx='20.4' cy='14.6' r='3.8'/%3E%3Crect x='14.9' y='15' width='2.2' height='8' rx='1.1'/%3E%3Crect x='7.5' y='23' width='17' height='2.4' rx='1.2'/%3E%3C/g%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f6f9f8;
+    --surface: #ffffff;
+    --ink: #12231f;
+    --ink-2: #46554f;
+    --ink-3: #687672;
+    --line: #e1e8e5;
+    --line-2: #d2dbd8;
+    --teal-1: #f1faf8;
+    --teal-2: #e2f5f0;
+    --teal-3: #cbede4;
+    --teal-4: #aae0d3;
+    --teal-6: #5ec2b0;
+    --teal-9: #12a594;
+    --teal-11: #008573;
+    --teal-11h: #006f60;
+    --teal-12: #0c3d37;
+    --radius-lg: 22px;
+    --shadow-sm: 0 1px 2px rgba(18, 35, 31, .05);
+    --shadow-card: 0 1px 2px rgba(18, 35, 31, .04), 0 16px 36px -20px rgba(18, 35, 31, .2);
+    --shadow-lift: 0 1px 2px rgba(18, 35, 31, .04), 0 28px 52px -24px rgba(18, 35, 31, .28);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 88px; }
+  body {
+    position: relative;
+    margin: 0;
+    min-width: 320px;
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, p, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  svg { display: block; flex: none; }
+  ::selection { background: var(--teal-3); color: var(--teal-12); }
+  :focus-visible { outline: 2px solid var(--teal-9); outline-offset: 3px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .container { width: 100%; max-width: 1152px; margin: 0 auto; padding: 0 24px; }
+
+  /* 顶部柔光与点阵 */
+  .page-glow { position: absolute; top: 0; left: 0; right: 0; height: 760px; z-index: -1; overflow: hidden; pointer-events: none; }
+  .page-glow::before {
+    content: ""; position: absolute; left: 50%; top: -380px; width: 1320px; height: 840px; transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(18, 165, 148, .17), rgba(18, 165, 148, .05) 60%, rgba(18, 165, 148, 0));
+  }
+  .page-glow::after {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(12, 61, 55, .14) 1px, transparent 1.3px);
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(ellipse 50% 62% at 50% 0%, #000 25%, transparent 72%);
+    mask-image: radial-gradient(ellipse 50% 62% at 50% 0%, #000 25%, transparent 72%);
+  }
+
+  /* 页头 */
+  .site-header { position: sticky; top: 0; z-index: 40; border-bottom: 1px solid transparent; transition: background-color .25s ease, border-color .25s ease; }
+  .site-header.is-scrolled, .site-header.menu-open {
+    background: rgba(255, 255, 255, .86);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+    border-bottom-color: var(--line);
+  }
+  .site-header.menu-open { background: #fff; }
+  .header-inner { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 700; letter-spacing: .02em; white-space: nowrap; border-radius: 10px; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 9px; box-shadow: 0 4px 12px -4px rgba(0, 133, 115, .55); }
+  .brand-llm { color: var(--teal-11); font-weight: 800; letter-spacing: .01em; }
+  .nav { display: flex; align-items: center; gap: 4px; }
+  .nav a { padding: 7px 14px; border-radius: 999px; font-size: 15px; font-weight: 500; color: var(--ink-2); transition: color .15s, background-color .15s; }
+  .nav a:hover { color: var(--ink); background: rgba(18, 35, 31, .05); }
+  .nav a[aria-current] { color: var(--teal-11); background: var(--teal-2); }
+  .header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+  /* 按钮 */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 46px; padding: 0 20px; border: 1px solid transparent; border-radius: 12px;
+    font-size: 15px; font-weight: 600; letter-spacing: .02em; line-height: 1; white-space: nowrap;
+    transition: background-color .15s, border-color .15s, color .15s, box-shadow .2s, transform .15s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn svg { width: 18px; height: 18px; transition: transform .2s ease; }
+  .btn:hover svg { transform: translateX(2px); }
+  .btn-sm { height: 38px; padding: 0 16px; border-radius: 10px; font-size: 14px; }
+  .btn-block { width: 100%; }
+  .btn-primary { background: var(--teal-11); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 8px 18px -10px rgba(0, 133, 115, .7); }
+  .btn-primary:hover { background: var(--teal-11h); }
+  .btn-outline { background: #fff; border-color: var(--line-2); color: var(--ink); box-shadow: var(--shadow-sm); }
+  .btn-outline:hover { border-color: var(--teal-6); color: var(--teal-11); background: var(--teal-1); }
+  .btn-ghost { color: var(--ink-2); }
+  .btn-ghost:hover { color: var(--ink); background: rgba(18, 35, 31, .05); }
+
+  .menu-toggle { display: none; position: relative; width: 40px; height: 40px; flex: none; border: 1px solid var(--line-2); border-radius: 11px; background: #fff; box-shadow: var(--shadow-sm); }
+  .menu-toggle .bar { position: absolute; left: 11px; right: 11px; height: 2px; border-radius: 2px; background: var(--ink); transition: transform .25s ease, opacity .2s ease; }
+  .menu-toggle .bar:nth-child(1) { top: 13px; }
+  .menu-toggle .bar:nth-child(2) { top: 18px; }
+  .menu-toggle .bar:nth-child(3) { top: 23px; }
+  .menu-toggle[aria-expanded="true"] .bar:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+  .menu-toggle[aria-expanded="true"] .bar:nth-child(2) { opacity: 0; }
+  .menu-toggle[aria-expanded="true"] .bar:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+  .mobile-menu {
+    position: absolute; top: 100%; left: 0; right: 0;
+    padding: 6px 20px 20px; background: #fff; border-bottom: 1px solid var(--line);
+    box-shadow: 0 28px 40px -28px rgba(18, 35, 31, .35);
+    animation: drop .22s ease both;
+  }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-menu nav a { display: block; padding: 14px 4px; border-bottom: 1px solid var(--line); font-size: 16px; font-weight: 500; }
+  .mobile-menu nav a[aria-current] { color: var(--teal-11); }
+  .mobile-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+
+  /* 首屏 */
+  .hero { padding: clamp(24px, 4.4vh, 64px) 0 clamp(72px, 10vh, 112px); }
+  .hero-copy { max-width: 800px; text-align: center; animation: rise .6s cubic-bezier(.2, .7, .2, 1) backwards; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 14px 0 12px;
+    border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, .78); box-shadow: var(--shadow-sm);
+    font-size: 13px; font-weight: 500; color: var(--ink-2); letter-spacing: .04em;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal-9); box-shadow: 0 0 0 3px var(--teal-3); }
+  .hero h1 { margin-top: 16px; font-size: clamp(32px, 3.6vw, 50px); line-height: 1.18; font-weight: 800; letter-spacing: -.01em; text-wrap: balance; }
+  .nowrap { white-space: nowrap; }
+  .hl { position: relative; z-index: 0; color: var(--teal-11); white-space: nowrap; }
+  .hl::after { content: ""; position: absolute; z-index: -1; left: -.06em; right: -.06em; bottom: .04em; height: .3em; border-radius: .12em; background: var(--teal-3); }
+  .lead { margin-top: 14px; font-size: 17px; color: var(--ink-2); text-wrap: balance; }
+
+  /* 定价卡片 */
+  .plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; margin-top: clamp(36px, 5.4vh, 64px); }
+  .plan {
+    position: relative; display: flex; flex-direction: column;
+    padding: 28px 28px 30px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    transition: transform .3s cubic-bezier(.2, .7, .2, 1), box-shadow .3s ease, border-color .3s ease;
+    animation: rise .6s cubic-bezier(.2, .7, .2, 1) backwards;
+  }
+  .plan:nth-child(1) { animation-delay: .06s; }
+  .plan:nth-child(2) { animation-delay: .12s; }
+  .plan:nth-child(3) { animation-delay: .18s; }
+  .plan::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0; }
+  .plan.is-picked::after { animation: ping .8s ease-out; }
+  .plan--featured {
+    z-index: 1; margin: -12px 0; padding-top: 40px; padding-bottom: 42px;
+    border-color: var(--teal-9);
+    background: linear-gradient(180deg, #e8f7f3 0, #fff 44%);
+    box-shadow: 0 0 0 1px var(--teal-9), 0 30px 60px -28px rgba(0, 133, 115, .42), 0 1px 2px rgba(18, 35, 31, .04);
+  }
+  @media (hover: hover) {
+    .plan:hover { transform: translateY(-4px); border-color: var(--line-2); box-shadow: var(--shadow-lift); }
+    .plan--featured:hover { border-color: var(--teal-9); box-shadow: 0 0 0 1px var(--teal-9), 0 38px 66px -28px rgba(0, 133, 115, .5), 0 1px 2px rgba(18, 35, 31, .04); }
+  }
+  .badge {
+    position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%);
+    display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 13px 0 10px;
+    border-radius: 999px; background: var(--teal-11); color: #fff;
+    font-size: 12.5px; font-weight: 600; letter-spacing: .1em; white-space: nowrap;
+    box-shadow: 0 8px 16px -8px rgba(0, 133, 115, .8);
+  }
+  .badge svg { width: 13px; height: 13px; }
+  .plan-head { display: flex; align-items: center; gap: 14px; }
+  .plan-icon { display: grid; place-items: center; width: 46px; height: 46px; flex: none; border-radius: 13px; background: var(--teal-2); color: var(--teal-11); }
+  .plan-icon svg { width: 28px; height: 28px; }
+  .plan--featured .plan-icon { background: var(--teal-11); color: #fff; box-shadow: 0 8px 18px -10px rgba(0, 133, 115, .9); }
+  .plan-name { font-size: 21px; line-height: 1.2; font-weight: 700; letter-spacing: .01em; }
+  .plan-desc { margin-top: 3px; font-size: 14px; line-height: 1.4; color: var(--ink-3); }
+  .price { display: flex; align-items: baseline; gap: 6px; margin-top: 22px; }
+  .amount { font-size: 52px; line-height: 1; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .unit { font-size: 16px; font-weight: 500; color: var(--ink-2); }
+  .plan .btn { margin-top: 20px; }
+  .plan-body { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--line-2); }
+  .includes { font-size: 13px; font-weight: 600; color: var(--ink-3); letter-spacing: .04em; }
+  .features { display: grid; gap: 10px; margin-top: 10px; }
+  .features li { display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 12px; align-items: start; }
+  .check { display: grid; place-items: center; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; background: var(--teal-2); color: var(--teal-11); }
+  .check svg { width: 12px; height: 12px; }
+  .features strong { display: block; font-size: 15px; line-height: 1.5; font-weight: 600; }
+  .features small { display: block; font-size: 13px; line-height: 1.5; color: var(--ink-3); }
+
+  /* 通用区块 */
+  .section { padding: 0 0 clamp(72px, 10vh, 112px); }
+  .narrow { max-width: 928px; }
+  .section-head { max-width: 640px; margin: 0 auto 36px; text-align: center; }
+  .kicker { font-size: 12.5px; font-weight: 700; letter-spacing: .16em; color: var(--teal-11); }
+  .section-head h2 { margin-top: 8px; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.25; font-weight: 800; letter-spacing: -.005em; }
+  .section-head p:not(.kicker) { margin-top: 10px; font-size: 16px; color: var(--ink-2); text-wrap: balance; }
+
+  /* 对比表 */
+  .table-card { overflow-x: auto; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+  .compare { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .compare col.c-feature { width: 34%; }
+  .compare th, .compare td { padding: 15px 18px; border-bottom: 1px solid var(--line); text-align: center; vertical-align: middle; }
+  .compare thead th { padding: 22px 18px 18px; font-size: 17px; font-weight: 700; vertical-align: bottom; }
+  .compare thead th small { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; color: var(--ink-3); }
+  .compare thead th:first-child { text-align: left; font-size: 13px; font-weight: 600; color: var(--ink-3); letter-spacing: .06em; }
+  .compare tbody th { text-align: left; font-weight: 500; }
+  .compare th:first-child { padding-left: 26px; }
+  .compare .group > * { padding-top: 11px; padding-bottom: 11px; background: #fafcfb; font-size: 12.5px; font-weight: 700; letter-spacing: .12em; color: var(--teal-11); }
+  .compare .is-pro { background: rgba(226, 245, 240, .5); }
+  .compare .group > .is-pro { background: rgba(226, 245, 240, .75); }
+  .compare thead .is-pro { color: var(--teal-11); box-shadow: inset 0 3px 0 var(--teal-9); }
+  .compare tbody:last-child tr:last-child > * { border-bottom: 0; }
+  .val { font-weight: 600; }
+  .yes { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--teal-2); color: var(--teal-11); vertical-align: middle; }
+  .yes svg { width: 13px; height: 13px; }
+  .no { display: inline-block; width: 14px; height: 2px; border-radius: 2px; background: var(--line-2); vertical-align: middle; }
+
+  /* 常见问题 */
+  .faq-list { display: grid; gap: 12px; max-width: 800px; margin: 0 auto; }
+  .faq-item { background: #fff; border: 1px solid var(--line); border-radius: 16px; transition: border-color .2s, box-shadow .2s; }
+  .faq-item[open] { border-color: var(--teal-4); box-shadow: var(--shadow-card); }
+  .faq-item summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px 18px 24px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; list-style: none; }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-icon { display: grid; place-items: center; width: 30px; height: 30px; flex: none; border-radius: 50%; background: var(--bg); color: var(--ink-2); transition: transform .25s ease, background-color .2s, color .2s; }
+  .faq-icon svg { width: 14px; height: 14px; }
+  .faq-item summary:hover .faq-icon { background: var(--teal-2); color: var(--teal-11); }
+  .faq-item[open] .faq-icon { transform: rotate(45deg); background: var(--teal-11); color: #fff; }
+  .faq-answer { padding: 0 24px 20px; font-size: 15px; line-height: 1.8; color: var(--ink-2); animation: fade .25s ease; }
+
+  .cta {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 32px;
+    max-width: 800px; margin: 28px auto 0; padding: 24px 28px;
+    border: 1px solid var(--teal-3); border-radius: 18px;
+    background: linear-gradient(120deg, var(--teal-2), var(--teal-1) 70%);
+  }
+  .cta h3 { font-size: 18px; line-height: 1.4; font-weight: 700; }
+  .cta p { margin-top: 4px; font-size: 14.5px; color: var(--ink-2); }
+
+  /* 页脚 */
+  .site-footer { border-top: 1px solid var(--line); }
+  .site-footer p { padding: 26px 24px 30px; text-align: center; font-size: 14px; color: var(--ink-3); letter-spacing: .02em; }
+  .site-footer strong { font-weight: 600; color: var(--teal-11); }
+
+  /* 提示条 */
+  .toast {
+    position: fixed; left: 16px; right: 16px; bottom: 28px; z-index: 60;
+    display: flex; align-items: center; gap: 12px; width: fit-content; max-width: 520px; margin: 0 auto;
+    padding: 12px 20px 12px 12px; border-radius: 14px; background: var(--teal-12); color: #fff;
+    box-shadow: 0 20px 44px -18px rgba(12, 61, 55, .6);
+    opacity: 0; visibility: hidden; transform: translateY(14px); pointer-events: none;
+    transition: opacity .25s ease, transform .3s cubic-bezier(.2, .7, .2, 1), visibility 0s linear .3s;
+  }
+  .toast.show { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+  .toast-icon { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 50%; background: var(--teal-9); }
+  .toast-icon svg { width: 14px; height: 14px; }
+  .toast-title { display: block; font-size: 14.5px; font-weight: 600; line-height: 1.4; }
+  .toast-sub { display: block; font-size: 12.5px; line-height: 1.4; color: rgba(255, 255, 255, .72); }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+  @keyframes fade { from { opacity: 0; transform: translateY(-4px); } }
+  @keyframes drop { from { opacity: 0; transform: translateY(-6px); } }
+  @keyframes ping {
+    0% { opacity: 1; box-shadow: 0 0 0 0 rgba(18, 165, 148, .45); }
+    100% { opacity: 0; box-shadow: 0 0 0 16px rgba(18, 165, 148, 0); }
+  }
+
+  /* 响应式 */
+  @media (max-width: 1040px) {
+    .plans { gap: 18px; }
+    .plan { padding: 26px 22px 28px; }
+    .plan--featured { padding-top: 40px; padding-bottom: 42px; }
+    .amount { font-size: 46px; }
+  }
+  @media (max-width: 860px) {
+    .plans { grid-template-columns: minmax(0, 1fr); max-width: 480px; margin-left: auto; margin-right: auto; gap: 28px; }
+    .plan--featured { margin: 0; padding-top: 34px; padding-bottom: 30px; }
+  }
+  @media (max-width: 760px) {
+    html { scroll-padding-top: 76px; }
+    .header-inner { height: 60px; }
+    .nav, .header-actions .btn-ghost { display: none; }
+    .menu-toggle { display: block; }
+  }
+  @media (min-width: 761px) {
+    .mobile-menu { display: none !important; }
+  }
+  @media (max-width: 560px) {
+    .container { padding: 0 18px; }
+    .lead { font-size: 16px; }
+    .compare th, .compare td { padding: 13px 8px; font-size: 14px; }
+    .compare thead th { padding: 18px 8px 14px; font-size: 15px; }
+    .compare thead th small { font-size: 12px; }
+    .compare th:first-child { padding-left: 16px; }
+    .faq-item summary { padding: 16px 16px 16px 18px; font-size: 15.5px; }
+    .faq-answer { padding: 0 18px 18px; }
+    .cta { padding: 22px 20px; }
+    .cta .btn { width: 100%; }
+  }
+  @media (max-width: 400px) {
+    .header-actions > .btn-primary { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.5 8.4l2.9 2.9 6.1-6.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 20 20"><path d="M4 10h11M11 5.5l4.5 4.5-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 16 16"><path d="M8 2.5c.45 3.3 2.2 5.05 5.5 5.5-3.3.45-5.05 2.2-5.5 5.5-.45-3.3-2.2-5.05-5.5-5.5 3.3-.45 5.05-2.2 5.5-5.5z" fill="currentColor"/></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24">
+    <path fill="currentColor" opacity=".5" d="M11.4 12.6C11.4 8.7 9 6.2 4.6 6.2c0 4.1 2.5 6.4 6.8 6.4z"/>
+    <path fill="currentColor" d="M12.6 14.4c0-4 2.4-6.6 6.8-6.6 0 4.1-2.5 6.6-6.8 6.6z"/>
+    <path d="M12 20.5v-8.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M7.5 20.5h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>
+  </symbol>
+  <symbol id="i-tree" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M8 18A4 4 0 0 1 6.2 10.6 3.6 3.6 0 0 1 9.4 5.4a3 3 0 0 1 5.2 0 3.6 3.6 0 0 1 3.2 5.2A4 4 0 0 1 16 18z"/>
+    <path d="M12 17v3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M7.5 20.8h9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>
+  </symbol>
+  <symbol id="i-grove" viewBox="0 0 24 24">
+    <g opacity=".5" fill="currentColor">
+      <circle cx="6" cy="11.8" r="3.4"/>
+      <circle cx="18" cy="11.8" r="3.4"/>
+      <path d="M6 15v5M18 15v5M3 20.3h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </g>
+    <circle cx="12" cy="8.6" r="4.6" fill="currentColor"/>
+    <path d="M12 13v7.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+</svg>
+
+<div class="page-glow" aria-hidden="true"></div>
+
+<header class="site-header" id="top">
+  <div class="container header-inner">
+    <a class="brand" href="#top" aria-label="乔木 LLM 擂台">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="9" fill="#008573"/>
+        <g fill="#fff">
+          <circle cx="16" cy="11.5" r="5.2"/>
+          <circle cx="11.6" cy="14.6" r="3.8"/>
+          <circle cx="20.4" cy="14.6" r="3.8"/>
+          <rect x="14.9" y="15" width="2.2" height="8" rx="1.1"/>
+          <rect x="7.5" y="23" width="17" height="2.4" rx="1.2"/>
+        </g>
+      </svg>
+      <span class="brand-name">乔木 <span class="brand-llm">LLM</span> 擂台</span>
+    </a>
+    <nav class="nav" aria-label="主导航">
+      <a href="#pricing" data-nav aria-current="true">定价方案</a>
+      <a href="#compare" data-nav>功能对比</a>
+      <a href="#faq" data-nav>常见问题</a>
+    </nav>
+    <div class="header-actions">
+      <button type="button" class="btn btn-ghost btn-sm" data-login>登录</button>
+      <a class="btn btn-primary btn-sm" href="#plans">免费开始</a>
+      <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="打开菜单">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu" hidden>
+    <nav aria-label="移动端导航">
+      <a href="#pricing" data-nav aria-current="true">定价方案</a>
+      <a href="#compare" data-nav>功能对比</a>
+      <a href="#faq" data-nav>常见问题</a>
+    </nav>
+    <div class="mobile-actions">
+      <button type="button" class="btn btn-outline" data-login>登录</button>
+      <a class="btn btn-primary" href="#plans">免费开始</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="pricing" aria-labelledby="hero-title">
+    <div class="container hero-copy">
+      <p class="eyebrow"><span class="dot"></span>乔木 LLM 擂台 · 定价</p>
+      <h1 id="hero-title">选好方案，<span class="nowrap">把模型<span class="hl">请上擂台</span></span></h1>
+      <p class="lead">个人上手免费；需要无限 Case 选 Pro；团队共建题库、协作标注选 Team。</p>
+    </div>
+
+    <div class="container">
+      <div class="plans" id="plans">
+        <article class="plan" aria-labelledby="plan-free">
+          <div class="plan-head">
+            <span class="plan-icon" aria-hidden="true"><svg width="28" height="28"><use href="#i-sprout"/></svg></span>
+            <div>
+              <h2 class="plan-name" id="plan-free">Free</h2>
+              <p class="plan-desc">个人尝鲜，零门槛上手</p>
+            </div>
+          </div>
+          <p class="price"><span class="amount">0</span><span class="unit">元</span></p>
+          <button type="button" class="btn btn-outline btn-block" data-plan="Free" data-price="0 元">免费开始</button>
+          <div class="plan-body">
+            <p class="includes">包含</p>
+            <ul class="features">
+              <li>
+                <span class="check" aria-hidden="true"><svg width="12" height="12"><use href="#i-check"/></svg></span>
+                <div><strong>3 个内置 Case</strong><small>精选评测题，开箱即用</small></div>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true"><svg width="12" height="12"><use href="#i-check"/></svg></span>
+                <div><strong>本地 API Key</strong><small>用你自己的 Key，只存在本地</small></div>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="plan plan--featured" aria-labelledby="plan-pro">
+          <span class="badge"><svg width="13" height="13" aria-hidden="true"><use href="#i-spark"/></svg>推荐</span>
+          <div class="plan-head">
+            <span class="plan-icon" aria-hidden="true"><svg width="28" height="28"><use href="#i-tree"/></svg></span>
+            <div>
+              <h2 class="plan-name" id="plan-pro">Pro</h2>
+              <p class="plan-desc">深度评测，不设上限</p>
+            </div>
+          </div>
+          <p class="price"><span class="amount">29</span><span class="unit">元/月</span></p>
+          <button type="button" class="btn btn-primary btn-block" data-plan="Pro" data-price="29 元/月">升级到 Pro<svg width="18" height="18" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+          <div class="plan-body">
+            <p class="includes">包含 Free 全部权益，另加</p>
+            <ul class="features">
+              <li>
+                <span class="check" aria-hidden="true"><svg width="12" height="12"><use href="#i-check"/></svg></span>
+                <div><strong>无限 Case</strong><small>自建评测题，想建多少建多少</small></div>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true"><svg width="12" height="12"><use href="#i-check"/></svg></span>
+                <div><strong>贡献徽章</strong><small>分享优质 Case，点亮社区徽章</small></div>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="plan" aria-labelledby="plan-team">
+          <div class="plan-head">
+            <span class="plan-icon" aria-hidden="true"><svg width="28" height="28"><use href="#i-grove"/></svg></span>
+            <div>
+              <h2 class="plan-name" id="plan-team">Team</h2>
+              <p class="plan-desc">团队共建，协同评测</p>
+            </div>
+          </div>
+          <p class="price"><span class="amount">99</span><span class="unit">元/月</span></p>
+          <button type="button" class="btn btn-outline btn-block" data-plan="Team" data-price="99 元/月">创建团队</button>
+          <div class="plan-body">
+            <p class="includes">包含 Pro 全部权益，另加</p>
+            <ul class="features">
+              <li>
+                <span class="check" aria-hidden="true"><svg width="12" height="12"><use href="#i-check"/></svg></span>
+                <div><strong>共享题库</strong><small>成员共用一套 Case 题库</small></div>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true"><svg width="12" height="12"><use href="#i-check"/></svg></span>
+                <div><strong>协作标注</strong><small>多人为模型输出打分、标注</small></div>
+              </li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="compare" aria-labelledby="compare-title">
+    <div class="container narrow">
+      <div class="section-head">
+        <p class="kicker">COMPARE</p>
+        <h2 id="compare-title">功能对比</h2>
+        <p>三档权益逐项对照，每一档都包含上一档的全部权益。</p>
+      </div>
+      <div class="table-card">
+        <table class="compare">
+          <caption class="sr-only">Free、Pro、Team 三档方案权益对比</caption>
+          <colgroup><col class="c-feature"><col><col><col></colgroup>
+          <thead>
+            <tr>
+              <th scope="col">权益</th>
+              <th scope="col">Free<small>0 元</small></th>
+              <th scope="col" class="is-pro">Pro<small>29 元/月</small></th>
+              <th scope="col">Team<small>99 元/月</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="group"><th scope="rowgroup">评测</th><td></td><td class="is-pro"></td><td></td></tr>
+            <tr>
+              <th scope="row">Case 数量</th>
+              <td><span class="val">3 个内置</span></td>
+              <td class="is-pro"><span class="val">无限</span></td>
+              <td><span class="val">无限</span></td>
+            </tr>
+            <tr>
+              <th scope="row">本地 API Key</th>
+              <td><span class="yes" role="img" aria-label="包含"><svg width="13" height="13"><use href="#i-check"/></svg></span></td>
+              <td class="is-pro"><span class="yes" role="img" aria-label="包含"><svg width="13" height="13"><use href="#i-check"/></svg></span></td>
+              <td><span class="yes" role="img" aria-label="包含"><svg width="13" height="13"><use href="#i-check"/></svg></span></td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr class="group"><th scope="rowgroup">社区</th><td></td><td class="is-pro"></td><td></td></tr>
+            <tr>
+              <th scope="row">贡献徽章</th>
+              <td><span class="no" role="img" aria-label="不包含"></span></td>
+              <td class="is-pro"><span class="yes" role="img" aria-label="包含"><svg width="13" height="13"><use href="#i-check"/></svg></span></td>
+              <td><span class="yes" role="img" aria-label="包含"><svg width="13" height="13"><use href="#i-check"/></svg></span></td>
+            </tr>
+          </tbody>
+          <tbody>
+            <tr class="group"><th scope="rowgroup">团队协作</th><td></td><td class="is-pro"></td><td></td></tr>
+            <tr>
+              <th scope="row">共享题库</th>
+              <td><span class="no" role="img" aria-label="不包含"></span></td>
+              <td class="is-pro"><span class="no" role="img" aria-label="不包含"></span></td>
+              <td><span class="yes" role="img" aria-label="包含"><svg width="13" height="13"><use href="#i-check"/></svg></span></td>
+            </tr>
+            <tr>
+              <th scope="row">协作标注</th>
+              <td><span class="no" role="img" aria-label="不包含"></span></td>
+              <td class="is-pro"><span class="no" role="img" aria-label="不包含"></span></td>
+              <td><span class="yes" role="img" aria-label="包含"><svg width="13" height="13"><use href="#i-check"/></svg></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq" aria-labelledby="faq-title">
+    <div class="container narrow">
+      <div class="section-head">
+        <p class="kicker">FAQ</p>
+        <h2 id="faq-title">常见问题</h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item" open>
+          <summary><span>什么是 Case？</span><span class="faq-icon" aria-hidden="true"><svg width="14" height="14"><use href="#i-plus"/></svg></span></summary>
+          <div class="faq-answer"><p>Case 就是一道评测题：一段 prompt，加上你关心的评判要点。把同一个 Case 交给不同模型作答，结果在擂台上并排展示，谁强谁弱一目了然。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary><span>「本地 API Key」是什么意思？</span><span class="faq-icon" aria-hidden="true"><svg width="14" height="14"><use href="#i-plus"/></svg></span></summary>
+          <div class="faq-answer"><p>你使用自己在模型服务商处申请的 API Key。Key 只保存在你的本地环境中，调用模型时直接使用你自己的额度。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary><span>贡献徽章怎么获得？</span><span class="faq-icon" aria-hidden="true"><svg width="14" height="14"><use href="#i-plus"/></svg></span></summary>
+          <div class="faq-answer"><p>Pro 用户把自己编写的 Case 分享到社区题库，就会获得贡献徽章，展示在个人资料上。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary><span>Team 的共享题库和协作标注怎么用？</span><span class="faq-icon" aria-hidden="true"><svg width="14" height="14"><use href="#i-plus"/></svg></span></summary>
+          <div class="faq-answer"><p>团队成员共用同一套 Case 题库，评测口径保持一致；多人还可以对同一批模型输出打分、写标注，结果汇总在一起。</p></div>
+        </details>
+        <details class="faq-item">
+          <summary><span>可以先用 Free，之后再升级吗？</span><span class="faq-icon" aria-hidden="true"><svg width="14" height="14"><use href="#i-plus"/></svg></span></summary>
+          <div class="faq-answer"><p>当然可以。Free 无需付费就能体验 3 个内置 Case；需要更多 Case 或团队协作时，再升级到 Pro 或 Team。</p></div>
+        </details>
+      </div>
+
+      <div class="cta">
+        <div>
+          <h3>还没想好？先免费开一局</h3>
+          <p>Free 自带 3 个内置 Case，填上本地 API Key 就能开赛。</p>
+        </div>
+        <button type="button" class="btn btn-primary" data-plan="Free" data-price="0 元">免费开始<svg width="18" height="18" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>Powered by <strong>向阳乔木</strong></p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span class="toast-icon" aria-hidden="true"><svg width="14" height="14"><use href="#i-check"/></svg></span>
+  <span><b class="toast-title"></b><span class="toast-sub"></span></span>
+</div>
+
+<script>
+(() => {
+  const header = document.querySelector('.site-header');
+  const toggle = header.querySelector('.menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+
+  const setMenu = (open) => {
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? '关闭菜单' : '打开菜单');
+    header.classList.toggle('menu-open', open);
+    menu.hidden = !open;
+  };
+  toggle.addEventListener('click', () => setMenu(menu.hidden));
+  menu.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('click', (e) => { if (!menu.hidden && !header.contains(e.target)) setMenu(false); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) { setMenu(false); toggle.focus(); }
+  });
+  matchMedia('(min-width: 761px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+
+  const links = [...document.querySelectorAll('[data-nav]')];
+  const sections = ['pricing', 'compare', 'faq'].map((id) => document.getElementById(id));
+  let active = '';
+  const update = () => {
+    header.classList.toggle('is-scrolled', scrollY > 8);
+    const probe = scrollY + innerHeight * 0.4;
+    let id = sections[0].id;
+    for (const s of sections) if (s.getBoundingClientRect().top + scrollY <= probe) id = s.id;
+    if (scrollY + innerHeight >= document.documentElement.scrollHeight - 4) id = sections[sections.length - 1].id;
+    if (id === active) return;
+    active = id;
+    for (const a of links) {
+      if (a.hash === '#' + id) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    }
+  };
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { ticking = false; update(); });
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  update();
+
+  const toast = document.getElementById('toast');
+  const toastTitle = toast.querySelector('.toast-title');
+  const toastSub = toast.querySelector('.toast-sub');
+  let hideTimer = 0;
+  const showToast = (title, sub) => {
+    toastTitle.textContent = title;
+    toastSub.textContent = sub;
+    toast.classList.add('show');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  };
+
+  document.addEventListener('click', (e) => {
+    const pick = e.target.closest('[data-plan]');
+    if (pick) {
+      showToast(`已选择 ${pick.dataset.plan} · ${pick.dataset.price}`, '演示页面：尚未接入注册与支付');
+      const card = pick.closest('.plan');
+      if (card) {
+        card.classList.remove('is-picked');
+        void card.offsetWidth;
+        card.classList.add('is-picked');
+        setTimeout(() => card.classList.remove('is-picked'), 900);
+      }
+      return;
+    }
+    if (e.target.closest('[data-login]')) {
+      setMenu(false);
+      showToast('登录暂未开放', '这是一个静态的定价演示页面');
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGRESS: crowd evacuation sim</title>
+<meta name="description" content="Interactive crowd evacuation simulator: draw a floor plan, release the crowd and see where it jams.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1222'/%3E%3Cpath d='M9 6h10v20H9z' fill='none' stroke='%23cdd7ea' stroke-width='2.4'/%3E%3Ccircle cx='13' cy='13' r='2' fill='%23ff5c5c'/%3E%3Ccircle cx='13' cy='19' r='2' fill='%23ffd166'/%3E%3Cpath d='M19 16h8m-3-3 3 3-3 3' stroke='%2334e3a4' stroke-width='2.4' fill='none'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="view"></canvas>
+
+<header id="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 6h10v20H9z" fill="none" stroke="#cdd7ea" stroke-width="2.4"/><circle cx="13" cy="13" r="2" fill="#ff5c5c"/><circle cx="13" cy="19" r="2" fill="#ffd166"/><path d="M19 16h8m-3-3 3 3-3 3" stroke="#34e3a4" stroke-width="2.4" fill="none"/></svg>
+    <div><b>EGRESS</b><span>crowd evacuation sim</span></div>
+  </div>
+  <button id="scenarioBtn" class="scenario-btn" aria-haspopup="true">
+    <span class="lbl">Scenario</span><b id="scenarioName">Concert hall</b>
+    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+  </button>
+  <div class="transport">
+    <button id="playBtn" class="icon-btn primary" data-tip="Play / pause · Space">
+      <svg class="i-pause" viewBox="0 0 16 16"><rect x="3.5" y="3" width="3" height="10" rx="1"/><rect x="9.5" y="3" width="3" height="10" rx="1"/></svg>
+      <svg class="i-play" viewBox="0 0 16 16"><path d="M4.5 2.8v10.4L13 8z"/></svg>
+    </button>
+    <button id="resetBtn" class="icon-btn" data-tip="Restart run, same crowd · R">
+      <svg viewBox="0 0 16 16"><path d="M3.2 8a4.8 4.8 0 1 0 1.5-3.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M2.6 2.2v3.4H6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button id="shuffleBtn" class="icon-btn" data-tip="New random crowd · N">
+      <svg viewBox="0 0 16 16"><path d="M2 4.5h2.6c3.4 0 3.4 7 6.8 7H13M2 11.5h2.6c1.4 0 2.2-1.2 2.9-2.6M9 6.9c.7-1.3 1.4-2.4 2.4-2.4H13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M11.6 2.8 13.5 4.5l-1.9 1.7M11.6 9.8l1.9 1.7-1.9 1.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="seg" id="speedSeg" data-tip="Simulation speed · 1–4">
+      <button data-speed="1">1×</button><button data-speed="2">2×</button><button data-speed="4">4×</button><button data-speed="8">8×</button>
+    </div>
+  </div>
+  <div class="clock"><span>T+</span><b id="clock">0:00.0</b><em id="statusPill" class="status">RUNNING</em></div>
+  <div class="spacer"></div>
+  <button id="helpBtn" class="icon-btn" data-tip="How it works · ?">?</button>
+</header>
+
+<nav id="toolbar" class="glass" aria-label="Tools">
+  <button class="tool active" data-tool="inspect" data-tip="Inspect & pan · V&#10;Hover to read a spot, drag to pan, click an exit to close it">
+    <svg viewBox="0 0 20 20"><path d="M5 3l10 6.2-4.4 1 2.6 5-1.9 1-2.6-5L5 14.6z" fill="currentColor"/></svg><span>Inspect</span>
+  </button>
+  <button class="tool" data-tool="wall" data-tip="Wall · W&#10;Drag to draw. Shift = free angle">
+    <svg viewBox="0 0 20 20"><path d="M3 16 16 4" stroke="currentColor" stroke-width="3.2" stroke-linecap="square"/></svg><span>Wall</span>
+  </button>
+  <button class="tool" data-tool="pillar" data-tip="Pillar · O&#10;Click to place a column">
+    <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="5" fill="currentColor"/></svg><span>Pillar</span>
+  </button>
+  <button class="tool" data-tool="exit" data-tip="Exit · X&#10;Drag across a wall to cut a door with an exit. Click an exit to close / reopen it">
+    <svg viewBox="0 0 20 20"><path d="M4 3h7v14H4z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M11 10h6m-2.5-2.8L17 10l-2.5 2.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Exit</span>
+  </button>
+  <button class="tool" data-tool="people" data-tip="People · P&#10;Drag to spray people in. Right-drag removes them">
+    <svg viewBox="0 0 20 20"><circle cx="6" cy="7" r="2.3" fill="currentColor"/><circle cx="14" cy="7" r="2.3" fill="currentColor"/><circle cx="10" cy="13.5" r="2.3" fill="currentColor"/><circle cx="4.5" cy="14.5" r="1.6" fill="currentColor" opacity=".6"/><circle cx="15.5" cy="14.5" r="1.6" fill="currentColor" opacity=".6"/></svg><span>People</span>
+  </button>
+  <button class="tool" data-tool="erase" data-tip="Eraser · E&#10;Drag over walls, pillars or exits to remove them">
+    <svg viewBox="0 0 20 20"><path d="M11.5 3.5 17 9l-7 7H6l-3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M7.5 7.5 13 13" stroke="currentColor" stroke-width="1.8"/></svg><span>Erase</span>
+  </button>
+  <hr>
+  <button class="tool small" id="undoBtn" data-tip="Undo layout edit · Ctrl+Z">
+    <svg viewBox="0 0 20 20"><path d="M7 5 3.5 8.5 7 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 8.5h7.5a4.5 4.5 0 0 1 0 9H9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Undo</span>
+  </button>
+  <button class="tool small" id="clearCrowdBtn" data-tip="Remove everyone">
+    <svg viewBox="0 0 20 20"><circle cx="8" cy="7" r="2.6" fill="currentColor"/><path d="M3 16c.6-3 2.6-4.6 5-4.6s4.4 1.6 5 4.6z" fill="currentColor"/><path d="m13 4 4 4m0-4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>No crowd</span>
+  </button>
+  <button class="tool small" id="restoreBtn" data-tip="Restore the original floor plan">
+    <svg viewBox="0 0 20 20"><path d="M3 9.5 10 4l7 5.5V17H3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 17v-4.5h4V17" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>Plan</span>
+  </button>
+</nav>
+
+<div id="caption">
+  <h1 id="capTitle">Concert hall</h1>
+  <p id="capText"></p>
+  <div id="toolHint"></div>
+</div>
+
+<aside id="panel" class="glass">
+  <section class="kpis">
+    <div class="kpi-main">
+      <label>Evacuated</label>
+      <div class="big"><b id="kEvac">0</b><small id="kEvacOf">/ 0</small><span id="kPct">0%</span></div>
+      <div class="bar"><i id="kBar"></i></div>
+    </div>
+    <div class="kpi-row">
+      <div><b id="kFlow">0.0</b><small>out / s</small></div>
+      <div><b id="kDens">0.0</b><small>max / m²</small></div>
+      <div><b id="kStuck">0</b><small>stuck</small></div>
+      <div class="risk" data-tip="People pressed with more than 2.6 kN, the range where crushing injuries start"><b id="kRisk">0</b><small>crush risk</small></div>
+    </div>
+  </section>
+  <section>
+    <h3>Where it jams <span class="hint" id="jamHint">live</span></h3>
+    <div id="jamList" class="jam-list"></div>
+  </section>
+  <section>
+    <h3>Exits <span class="hint">click to close / reopen</span></h3>
+    <div id="exitList" class="exit-list"></div>
+  </section>
+  <section>
+    <h3>Evacuation curve <span class="key"><i class="k-now"></i>now<i class="k-prev"></i>last<i class="k-flow"></i>flow</span></h3>
+    <canvas id="chart"></canvas>
+  </section>
+  <section class="controls">
+    <h3>Crowd</h3>
+    <div class="slider">
+      <label for="sN">People <b id="vN">700</b></label>
+      <input type="range" id="sN" min="50" max="2500" step="50" value="700">
+    </div>
+    <div class="slider">
+      <label for="sU">Urgency <b id="vU">hurried</b></label>
+      <input type="range" id="sU" min="0" max="100" step="1" value="25">
+    </div>
+    <div class="slider">
+      <label for="sA">Exit knowledge <b id="vA">habit</b></label>
+      <input type="range" id="sA" min="0" max="100" step="1" value="15">
+    </div>
+  </section>
+</aside>
+
+<div id="bottombar" class="glass">
+  <div class="seg heat" id="heatSeg">
+    <button data-heat="off">Off</button><button data-heat="cong">Congestion</button><button data-heat="dens">Density</button><button data-heat="jam">Jam map</button><button data-heat="press">Pressure</button>
+  </div>
+  <div class="legend">
+    <div class="grad" id="legendGrad"></div>
+    <div class="ticks" id="legendTicks"></div>
+    <div class="unit" id="legendUnit"></div>
+  </div>
+  <div class="toggles">
+    <button class="chip" id="tColor" data-tip="Colour people by speed or by chosen exit · C"><i class="dot speed"></i><span>Speed</span></button>
+    <button class="chip" id="tTrails" data-tip="Footprint trails · T">Trails</button>
+    <button class="chip" id="tRoutes" data-tip="Route field to the nearest exit · G">Routes</button>
+  </div>
+</div>
+
+<div id="zoomCtl">
+  <button id="zoomIn" data-tip="Zoom in · scroll">+</button>
+  <button id="zoomOut" data-tip="Zoom out">−</button>
+  <button id="zoomFit" data-tip="Fit plan · F">
+    <svg viewBox="0 0 16 16"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+  </button>
+</div>
+
+<div id="tooltip" hidden></div>
+<div id="report" class="glass" hidden></div>
+<div id="scenarioMenu" class="glass" hidden></div>
+<div id="help" hidden>
+  <div class="help-card">
+    <button class="close" id="helpClose" aria-label="Close">×</button>
+    <h2>How the simulation works</h2>
+    <p>Every person is a body with a radius, a mass and a preferred speed. Each step they feel a pull towards their chosen exit, a short-range push away from people and walls, and, once bodies touch, contact and sliding friction. This is the social-force model of Helbing, Farkas &amp; Vicsek, so arches, clogging and crowd pressure emerge on their own; they are not scripted.</p>
+    <p>Routes come from a fast-marching distance field for every exit, so people walk around furniture and through doors instead of in straight lines. Every half second they may switch exits, weighing walking time against the queue ahead. <b>Exit knowledge</b> moves them from pure habit (the way they came in, never the fire exits) to fully informed.</p>
+    <p><b>Where it jams:</b> the <i>Congestion</i> layer lights up where the crowd is dense <i>and</i> barely moving. Rings mark live jams, named after the choke point at the head of each queue. The <i>Jam map</i> adds up the person-seconds lost at every spot over the whole run, and the report ranks the worst ones.</p>
+    <div class="keys">
+      <div><kbd>Space</kbd> play / pause</div><div><kbd>R</kbd> restart run</div><div><kbd>N</kbd> new random crowd</div>
+      <div><kbd>1</kbd>–<kbd>4</kbd> speed</div><div><kbd>H</kbd> cycle heat layer</div><div><kbd>C</kbd> colour mode</div>
+      <div><kbd>V W O X P E</kbd> tools</div><div><kbd>Ctrl Z</kbd> undo edit</div><div><kbd>F</kbd> fit view</div>
+    </div>
+    <p class="fine">Ideas to try: close the busiest exit; add a second door to the bottleneck; drop a pillar in front of a door; crank urgency to panic and watch the pressure layer.</p>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

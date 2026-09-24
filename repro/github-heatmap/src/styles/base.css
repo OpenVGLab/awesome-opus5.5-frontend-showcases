@@ -1,0 +1,281 @@
+:root {
+  --font-sans: 'Mona Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --radius: 8px;
+  --page-max: 1760px;
+  --page-pad: clamp(16px, 2.2vw, 40px);
+}
+
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #010409;
+  --bg-top: #010409;
+  --surface: #0d1117;
+  --surface-hover: #151b23;
+  --overlay: #151b23;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --fg: #e6edf3;
+  --fg-muted: #8b949e;
+  --fg-subtle: #6e7681;
+  --accent: #1f6feb;
+  --accent-hover: #388bfd;
+  --accent-fg: #4493f8;
+  --btn-bg: #21262d;
+  --btn-hover: #292e36;
+  --seg-bg: #010409;
+  --seg-on: #21262d;
+  --danger: #f85149;
+  --cat-commit: #4493f8;
+  --cat-pr: #ab7df8;
+  --cat-review: #d29922;
+  --cat-issue: #3fb950;
+  --code-bg: #0a0e14;
+  --backdrop: rgba(1, 4, 9, 0.6);
+  --shadow-lg: 0 12px 32px rgba(1, 4, 9, 0.85);
+  --cell-outline: rgba(255, 255, 255, 0.05);
+
+  --tk-com: #8b949e;
+  --tk-str: #a5d6ff;
+  --tk-key: #ff7b72;
+  --tk-lit: #79c0ff;
+  --tk-num: #79c0ff;
+  --tk-fn: #d2a8ff;
+  --tk-tag: #7ee787;
+  --tk-attr: #79c0ff;
+  --tk-exp: #ffa657;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f6f8fa;
+  --bg-top: #ffffff;
+  --surface: #ffffff;
+  --surface-hover: #f6f8fa;
+  --overlay: #ffffff;
+  --border: #d1d9e0;
+  --border-muted: #e6eaef;
+  --fg: #1f2328;
+  --fg-muted: #59636e;
+  --fg-subtle: #818b98;
+  --accent: #0969da;
+  --accent-hover: #0860ca;
+  --accent-fg: #0969da;
+  --btn-bg: #f6f8fa;
+  --btn-hover: #eef1f4;
+  --seg-bg: #f6f8fa;
+  --seg-on: #ffffff;
+  --danger: #cf222e;
+  --cat-commit: #0969da;
+  --cat-pr: #8250df;
+  --cat-review: #9a6700;
+  --cat-issue: #1a7f37;
+  --code-bg: #f6f8fa;
+  --backdrop: rgba(31, 35, 40, 0.3);
+  --shadow-lg: 0 12px 32px rgba(66, 74, 83, 0.18);
+  --cell-outline: rgba(31, 35, 40, 0.06);
+
+  --tk-com: #59636e;
+  --tk-str: #0a3069;
+  --tk-key: #cf222e;
+  --tk-lit: #0550ae;
+  --tk-num: #0550ae;
+  --tk-fn: #8250df;
+  --tk-tag: #116329;
+  --tk-attr: #0550ae;
+  --tk-exp: #953800;
+}
+
+/* Hooks read by CalendarHeatmap.vue */
+:root {
+  --hm-label: var(--fg-muted);
+  --hm-label-strong: var(--fg);
+  --hm-ring: var(--fg);
+  --hm-ring-hover: color-mix(in srgb, var(--fg) 55%, transparent);
+  --hm-tip-bg: var(--tip-bg, #3d444d);
+  --hm-tip-fg: #ffffff;
+  --hm-cell-outline: var(--cell-outline);
+  --hm-focus: var(--accent-fg);
+}
+:root[data-theme='light'] {
+  --tip-bg: #25292e;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.5 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+button {
+  color: inherit;
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-fg);
+  outline-offset: 2px;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--btn-bg);
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+.btn:hover:not(:disabled) {
+  border-color: var(--fg-subtle);
+  background: var(--btn-hover);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.btn .icon {
+  color: var(--fg-muted);
+}
+.btn--primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fff;
+}
+.btn--primary .icon {
+  color: inherit;
+}
+.btn--primary:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--accent-hover);
+}
+.icon-btn {
+  width: 30px;
+  padding: 0;
+}
+
+.seg {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--seg-bg);
+}
+.seg button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.seg button:hover {
+  color: var(--fg);
+}
+.seg button.on {
+  background: var(--seg-on);
+  color: var(--fg);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 13px 16px 14px;
+}
+.panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.panel__title {
+  flex: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+.panel__hint {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--fg-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tk-com {
+  color: var(--tk-com);
+  font-style: italic;
+}
+.tk-str {
+  color: var(--tk-str);
+}
+.tk-key {
+  color: var(--tk-key);
+}
+.tk-lit,
+.tk-num {
+  color: var(--tk-num);
+}
+.tk-fn {
+  color: var(--tk-fn);
+}
+.tk-tag {
+  color: var(--tk-tag);
+}
+.tk-attr {
+  color: var(--tk-attr);
+}
+.tk-exp {
+  color: var(--tk-exp);
+}

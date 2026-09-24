@@ -1,0 +1,1470 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>果冻跳跳 JELLY HOP</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#3b2335}
+body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Noto Sans SC","Source Han Sans SC",sans-serif;color:#5a2440;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none;overscroll-behavior:none}
+#stage{position:absolute;left:0;top:0;width:1280px;height:720px;overflow:hidden;cursor:default}
+.lot{position:absolute;left:0;top:0;pointer-events:none}
+/* lottie-web gives each <svg> translate3d(0,0,0), which makes every animation its own compositor layer; paint them into their parent layer instead */
+#stage svg{transform:none!important}
+.lot svg,.bg svg{display:block}
+.tile{position:absolute;left:0;top:0;will-change:transform}
+#world{position:absolute;left:0;top:0;width:1280px;height:720px;will-change:transform}
+#world .plat,#world .fx,#world .coin{position:absolute;left:0;top:0;transform-origin:0 0;pointer-events:none}
+#jelly{position:absolute;left:0;top:0;width:220px;height:220px;transform-origin:110px 194px;pointer-events:none}
+.ftxt{position:absolute;left:0;top:0;white-space:nowrap;font-weight:900;font-size:30px;color:#fff;pointer-events:none;opacity:0;
+  text-shadow:0 3px 0 #b8577d,2px 2px 0 #b8577d,-2px 2px 0 #b8577d,2px -1px 0 #b8577d,-2px -1px 0 #b8577d}
+.ftxt.perfect{color:#fff6b8;font-size:34px;text-shadow:0 3px 0 #c9771c,2px 2px 0 #c9771c,-2px 2px 0 #c9771c,2px -1px 0 #c9771c,-2px -1px 0 #c9771c}
+.ftxt.coin{color:#ffe36e;text-shadow:0 3px 0 #b86f12,2px 2px 0 #b86f12,-2px 2px 0 #b86f12,2px -1px 0 #b86f12,-2px -1px 0 #b86f12}
+.ftxt.spring{color:#e8fbff;text-shadow:0 3px 0 #3b8fb8,2px 2px 0 #3b8fb8,-2px 2px 0 #3b8fb8,2px -1px 0 #3b8fb8,-2px -1px 0 #3b8fb8}
+.ftxt.go{animation:floatUp 1.05s ease-out forwards}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,0) scale(.6)}15%{opacity:1;transform:translate(-50%,-18px) scale(1.12)}30%{transform:translate(-50%,-28px) scale(1)}100%{opacity:0;transform:translate(-50%,-86px) scale(1)}}
+
+/* HUD */
+#hud{position:absolute;left:0;top:0;width:1280px;height:720px;pointer-events:none;display:none}
+#hud.on{display:block}
+.hud-score{position:absolute;left:14px;top:8px;width:250px;height:110px}
+.hud-score .lbl{position:absolute;left:92px;right:26px;top:31px;text-align:center;font-size:15px;font-weight:700;color:#c25b84;letter-spacing:2px}
+.hud-score .num{position:absolute;left:84px;right:20px;top:46px;text-align:center;font-size:40px;line-height:48px;font-weight:900;color:#6b2447}
+.chip{position:absolute;left:18px;width:200px;height:60px}
+.chip .txt{position:absolute;left:50px;right:14px;top:0;height:60px;line-height:58px;font-size:21px;font-weight:900;color:#6b2447;white-space:nowrap}
+.chip .txt small{font-size:15px;font-weight:700;color:#b0587e;margin-right:6px}
+#chipBest{top:112px}
+#chipCombo{top:166px}
+#comboBox{position:absolute;left:500px;top:28px;width:280px;height:280px;pointer-events:none;display:none}
+#comboBox.on{display:block}
+#comboBox .t{position:absolute;left:0;right:0;text-align:center;font-weight:900;color:#fff;white-space:nowrap}
+#comboBox .big{top:98px;font-size:62px;line-height:66px;text-shadow:0 4px 0 #c9577f,3px 3px 0 #c9577f,-3px 3px 0 #c9577f,3px -2px 0 #c9577f,-3px -2px 0 #c9577f}
+#comboBox .small{top:168px;font-size:19px;color:#8a2c55}
+#comboBox .t{animation:none}
+#comboBox.on .t{animation:comboTxt 1.45s ease-out forwards}
+@keyframes comboTxt{0%{transform:scale(0)}12%{transform:scale(1.2)}20%{transform:scale(1)}74%{opacity:1;transform:scale(1.04)}100%{opacity:0;transform:scale(.72)}}
+
+/* top-right buttons (always above screens) */
+#topbar{position:absolute;left:0;top:0;width:1280px;height:0;pointer-events:none}
+.btn-round{position:absolute;top:10px;width:92px;height:92px;padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;outline:none}
+.btn-round .bg{position:absolute;left:0;top:0;width:92px;height:92px;pointer-events:none}
+#btnPause{left:1082px;display:none}
+#btnPause.on{display:block}
+#btnSound{left:1176px}
+
+/* generic buttons */
+.btn{position:absolute;padding:0;border:0;background:none;cursor:pointer;outline:none;font:inherit;color:#fff}
+.btn .bg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.btn .lbl{position:absolute;left:0;right:0;top:0;bottom:4%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-weight:900;white-space:nowrap;pointer-events:none;transition:transform .07s}
+.btn.down .lbl{transform:translateY(5%)}
+.btn.pink .lbl,.btn.lav .lbl{color:#fff;text-shadow:0 2px 0 rgba(170,40,95,.55)}
+.btn.mint .lbl{color:#fff;text-shadow:0 2px 0 rgba(30,120,95,.6)}
+.btn.lemon .lbl{color:#7a4a12;text-shadow:0 1px 0 rgba(255,255,255,.6)}
+
+/* screens */
+.screen{position:absolute;left:0;top:0;width:1280px;height:720px;display:none}
+.screen.on{display:block}
+.panel{position:absolute}
+.panel>.bg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+
+/* title */
+#logo{position:absolute;left:260px;top:8px;width:760px;height:270px}
+#logo .bg{position:absolute;left:0;top:0;width:760px;height:270px}
+#logo h1{position:absolute;left:0;right:0;top:44px;margin:0;text-align:center;font-size:98px;line-height:112px;font-weight:900;color:#fff;letter-spacing:10px;
+  text-shadow:0 5px 0 #c93a6e,4px 4px 0 #c93a6e,-4px 4px 0 #c93a6e,4px -3px 0 #c93a6e,-4px -3px 0 #c93a6e,0 12px 18px rgba(130,30,70,.35)}
+#logo .en{position:absolute;left:0;right:0;top:210px;text-align:center;font-size:28px;line-height:34px;font-weight:900;color:#fff;letter-spacing:9px;
+  text-shadow:0 2px 0 #2f8f70}
+#menuPanel{left:160px;top:494px;width:960px;height:214px}
+#menuPanel .hint{position:absolute;left:62px;top:52px;font-size:17px;font-weight:700;color:#b0587e;letter-spacing:1px}
+.diffBtn{top:70px;width:204px;height:68px}
+.diffBtn .lbl b{font-size:26px;line-height:28px}
+.diffBtn .lbl i{font-style:normal;font-size:14px;line-height:18px;font-weight:700;opacity:.9}
+#dEasy{left:60px}#dNormal{left:268px}#dHard{left:476px}
+#btnStart{left:690px;top:48px;width:246px;height:82px}
+#btnStart .lbl{font-size:32px;letter-spacing:4px}
+#btnHelp{left:710px;top:130px;width:204px;height:68px}
+#btnHelp .lbl{font-size:23px;letter-spacing:2px}
+#menuPanel .keys{position:absolute;left:66px;top:146px;width:600px;font-size:15px;line-height:20px;font-weight:700;color:#a4668a}
+#menuPanel .keys b{color:#d24e7e}
+
+/* help */
+#helpPanel{left:50px;top:18px;width:1180px;height:680px}
+#helpPanel h2{position:absolute;left:0;right:0;top:66px;margin:0;text-align:center;font-size:38px;line-height:44px;font-weight:900;color:#d24e7e;letter-spacing:6px}
+#helpPanel h2 small{font-size:17px;letter-spacing:4px;color:#b58aa2;margin-left:12px}
+#helpPanel ul{position:absolute;left:64px;top:132px;width:392px;margin:0;padding:0;list-style:none}
+#helpPanel li{font-size:18px;line-height:26px;font-weight:700;color:#6b3553;margin:0 0 12px;padding-left:22px;position:relative}
+#helpPanel li::before{content:"✦";position:absolute;left:0;top:0;color:#ff8fb5}
+#helpPanel li b{color:#d24e7e}
+.demos{position:absolute;left:478px;top:128px;width:660px;height:450px}
+.demo{position:absolute;width:216px;height:212px}
+.demo .lot{width:216px;height:153px}
+.demo p{position:absolute;left:-4px;right:-4px;top:156px;margin:0;text-align:center;font-size:15px;line-height:20px;font-weight:700;color:#6b3553}
+.demo p b{display:block;font-size:17px;color:#d24e7e}
+#btnHelpClose{left:476px;top:584px;width:228px;height:76px}
+#btnHelpClose .lbl{font-size:26px;letter-spacing:3px}
+#helpPanel .esc{position:absolute;left:720px;top:612px;font-size:15px;color:#b58aa2;font-weight:700}
+
+/* pause */
+#pausePanel{left:380px;top:112px;width:520px;height:480px}
+#pausePanel h2,#overPanel h2{position:absolute;left:0;right:0;margin:0;text-align:center;font-weight:900;color:#d24e7e}
+#pausePanel h2{top:74px;font-size:46px;line-height:52px;letter-spacing:8px}
+#pausePanel h2 small,#overPanel h2 small{display:block;font-size:16px;line-height:22px;letter-spacing:5px;color:#b58aa2}
+#pausePanel .btn{left:125px;width:270px;height:90px}
+#pausePanel .btn .lbl{font-size:28px;letter-spacing:3px}
+#btnResume{top:162px}#btnRestart{top:250px}#btnQuit{top:338px}
+
+/* over */
+#overPanel{left:320px;top:52px;width:640px;height:600px}
+#overPanel h2{top:70px;font-size:40px;line-height:48px;letter-spacing:4px}
+#overPanel .score{position:absolute;left:0;right:0;top:152px;text-align:center}
+#overPanel .score small{display:block;font-size:17px;font-weight:700;color:#b0587e;letter-spacing:3px}
+#overPanel .score b{display:block;font-size:84px;line-height:92px;font-weight:900;color:#6b2447}
+#overPanel .stats{position:absolute;left:92px;right:92px;top:300px;display:flex;justify-content:space-between}
+#overPanel .stat{width:140px;text-align:center}
+#overPanel .stat small{display:block;font-size:16px;font-weight:700;color:#b0587e;letter-spacing:1px}
+#overPanel .stat b{display:block;font-size:34px;line-height:42px;font-weight:900;color:#6b2447}
+#overPanel .diffTag{position:absolute;left:0;right:0;top:392px;text-align:center;font-size:16px;font-weight:700;color:#a4668a}
+#overPanel .btn{top:444px;width:246px;height:82px}
+#overPanel .btn .lbl{font-size:28px;letter-spacing:3px}
+#btnRetry{left:66px}#btnBack{left:328px}
+#record{position:absolute;left:100px;top:-62px;width:440px;height:236px;display:none;pointer-events:none}
+#record.on{display:block}
+#record .bg{position:absolute;left:0;top:0;width:440px;height:236px}
+#record .rt{position:absolute;left:0;right:0;top:135px;text-align:center;font-size:32px;line-height:38px;font-weight:900;color:#fff;letter-spacing:6px;
+  text-shadow:0 3px 0 #c9577f,2px 2px 0 #c9577f,-2px 2px 0 #c9577f}
+#overPanel.rec h2{visibility:hidden}
+
+#loading{position:absolute;left:0;top:0;width:1280px;height:720px;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  color:#ffd6e6;font-size:30px;font-weight:900;letter-spacing:4px}
+#loading small{font-size:16px;color:#c79ab4;margin-top:10px;letter-spacing:2px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="far"></div>
+  <div id="mid"></div>
+  <div id="world">
+    <div id="platLayer"></div>
+    <div id="fxBack"></div>
+    <div id="jelly"></div>
+    <div id="coinLayer"></div>
+    <div id="fxFront"></div>
+    <div id="seaLayer"></div>
+    <div id="fxTop"></div>
+  </div>
+
+  <div id="hud">
+    <div class="hud-score"><div class="lot" id="hudScoreBg" style="width:250px;height:110px"></div><div class="lbl">得分</div><div class="num" id="scoreNum">0</div></div>
+    <div class="chip" id="chipBest"><div class="lot" style="width:200px;height:60px"></div><div class="txt"><small>最高</small><span id="bestNum">0</span></div></div>
+    <div class="chip" id="chipCombo"><div class="lot" style="width:200px;height:60px"></div><div class="txt"><small>连击</small><span id="comboNum">×1</span></div></div>
+    <div id="comboBox"><div class="lot" style="width:280px;height:280px"></div><div class="t big" id="comboBig">+2</div><div class="t small" id="comboSmall">完美 ×1</div></div>
+  </div>
+
+  <div class="screen" id="scrTitle">
+    <div id="logo"><div class="bg"></div><h1>果冻跳跳</h1><div class="en">JELLY HOP</div></div>
+    <div class="panel" id="menuPanel"><div class="bg"></div>
+      <div class="hint">选择难度</div>
+      <button class="btn lemon diffBtn" id="dEasy" data-lottie="btn_lemon" data-act="diff" data-diff="easy"><span class="lbl"><b>简单</b><i>最高 <span data-best="easy">0</span></i></span></button>
+      <button class="btn lemon diffBtn" id="dNormal" data-lottie="btn_lemon" data-act="diff" data-diff="normal"><span class="lbl"><b>普通</b><i>最高 <span data-best="normal">0</span></i></span></button>
+      <button class="btn lemon diffBtn" id="dHard" data-lottie="btn_lemon" data-act="diff" data-diff="hard"><span class="lbl"><b>困难</b><i>最高 <span data-best="hard">0</span></i></span></button>
+      <button class="btn pink" id="btnStart" data-lottie="btn_pink" data-act="start"><span class="lbl">开始游戏</span></button>
+      <button class="btn mint" id="btnHelp" data-lottie="btn_mint" data-act="help"><span class="lbl">玩法帮助</span></button>
+      <div class="keys">按住 <b>空格 / 鼠标 / 触屏</b> 蓄力，松开起跳 · <b>P</b> 暂停 · <b>H</b> 帮助 · <b>M</b> 静音<br>点击屏幕或按空格也能直接开始</div>
+    </div>
+  </div>
+
+  <div class="screen" id="scrHelp">
+    <div class="panel" id="helpPanel"><div class="bg"></div>
+      <h2>玩法帮助<small>HOW TO PLAY</small></h2>
+      <ul>
+        <li>按住 <b>空格 / 鼠标 / 触屏</b> 蓄力，果冻会被压扁、发颤；松开就起跳。</li>
+        <li>蓄力越久跳得越远，稳稳落到下一块甜点上得 <b>1 分</b>。</li>
+        <li>落在平台正中心算 <b>“完美”</b>：得 2 分，连续完美翻倍 2 → 4 → 8 → 16，封顶 32。</li>
+        <li>没踩稳就会掉进草莓牛奶海，本局结束。越往后平台越小、越远。</li>
+        <li><b>P</b> 暂停 · <b>H</b> 帮助 · <b>M</b> 静音</li>
+      </ul>
+      <div class="demos">
+        <div class="demo" style="left:0;top:0"><div class="lot" data-demo="help_charge"></div><p><b>蓄力起跳</b>按得越久，跳得越远</p></div>
+        <div class="demo" style="left:222px;top:0"><div class="lot" data-demo="help_perfect"></div><p><b>完美落地</b>踩中正中心，分数翻倍</p></div>
+        <div class="demo" style="left:444px;top:0"><div class="lot" data-demo="help_spring"></div><p><b>弹簧垫</b>落上后自动小跳一次 +1</p></div>
+        <div class="demo" style="left:0;top:226px"><div class="lot" data-demo="help_cookie"></div><p><b>饼干</b>会慢慢塌掉，快跳走！</p></div>
+        <div class="demo" style="left:222px;top:226px"><div class="lot" data-demo="help_tray"></div><p><b>移动托盘</b>左右滑动，看准时机</p></div>
+        <div class="demo" style="left:444px;top:226px"><div class="lot" data-demo="help_coin"></div><p><b>金币蛋糕</b>落上吃到金币 +5</p></div>
+      </div>
+      <button class="btn mint" id="btnHelpClose" data-lottie="btn_mint" data-act="closeHelp"><span class="lbl">知道了</span></button>
+      <div class="esc">H / Esc 返回</div>
+    </div>
+  </div>
+
+  <div class="screen" id="scrPause">
+    <div class="panel" id="pausePanel"><div class="bg"></div>
+      <h2>暂停<small>PAUSED</small></h2>
+      <button class="btn pink" id="btnResume" data-lottie="btn_pink" data-act="resume"><span class="lbl">继续游戏</span></button>
+      <button class="btn mint" id="btnRestart" data-lottie="btn_mint" data-act="restart"><span class="lbl">重新开始</span></button>
+      <button class="btn lav" id="btnQuit" data-lottie="btn_lav" data-act="title"><span class="lbl">返回标题</span></button>
+    </div>
+  </div>
+
+  <div class="screen" id="scrOver">
+    <div class="panel" id="overPanel"><div class="bg"></div>
+      <div id="record"><div class="bg"></div><div class="rt">新纪录！</div></div>
+      <h2>扑通！掉进牛奶海<small>GAME OVER</small></h2>
+      <div class="score"><small>本局得分</small><b id="overScore">0</b></div>
+      <div class="stats">
+        <div class="stat"><small>最高连击</small><b id="overCombo">0</b></div>
+        <div class="stat"><small>完美次数</small><b id="overPerfect">0</b></div>
+        <div class="stat"><small>最高分</small><b id="overBest">0</b></div>
+      </div>
+      <div class="diffTag" id="overDiff">难度：普通</div>
+      <button class="btn pink" id="btnRetry" data-lottie="btn_pink" data-act="restart"><span class="lbl">再来一局</span></button>
+      <button class="btn lav" id="btnBack" data-lottie="btn_lav" data-act="title"><span class="lbl">返回标题</span></button>
+    </div>
+  </div>
+
+  <div id="topbar">
+    <button class="btn-round" id="btnPause" data-lottie="btn_pause" data-act="pauseBtn" aria-label="暂停"></button>
+    <button class="btn-round" id="btnSound" data-lottie="btn_sound" data-act="sound" aria-label="静音"></button>
+  </div>
+
+  <div id="loading">加载中…<small id="loadTxt">0 / 0</small></div>
+</div>
+
+<script src="../vendor/lottie.min.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const Q = new URLSearchParams(location.search);
+const BOT = Q.get('bot') === '1';   // test hook: autopilot also plays real games
+const SEQ = (Q.get('seq') || '').split(',').filter(Boolean);   // test hook: force platform types
+const stage = $('#stage');
+
+// ------------------------------------------------------------------ 16:9 scaling
+// CSS zoom keeps composited layers on pure translations (much cheaper for the software compositor than a scale transform).
+const HAS_ZOOM = typeof CSS !== 'undefined' && CSS.supports && CSS.supports('zoom', '2');
+let SCALE = 1;
+function fit() {
+  const s = Math.min(innerWidth / 1280, innerHeight / 720);
+  SCALE = s;
+  const ox = (innerWidth - 1280 * s) / 2, oy = (innerHeight - 720 * s) / 2;
+  if (HAS_ZOOM) {
+    stage.style.zoom = s;
+    stage.style.left = (ox / s) + 'px';
+    stage.style.top = (oy / s) + 'px';
+  } else {
+    stage.style.transformOrigin = '0 0';
+    stage.style.transform = `translate(${ox}px,${oy}px) scale(${s})`;
+  }
+}
+addEventListener('resize', fit);
+fit();
+
+// ------------------------------------------------------------------ storage
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('jellyhop.' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('jellyhop.' + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+};
+
+// ------------------------------------------------------------------ assets & lottie helpers
+const ASSETS = ['sky', 'mountains', 'clouds', 'hills', 'sea', 'jelly', 'plat_cupcake', 'plat_pudding', 'plat_candybox', 'plat_macaron',
+  'plat_cake', 'plat_cookie', 'plat_spring', 'plat_tray', 'coin', 'dust', 'halo', 'splash', 'btn_pink', 'btn_mint', 'btn_lemon', 'btn_lav',
+  'btn_pause', 'btn_sound', 'panel_menu', 'panel_help', 'panel_pause', 'panel_over', 'logo', 'hud_score', 'chip_best', 'chip_combo',
+  'combo', 'record', 'help_charge', 'help_perfect', 'help_spring', 'help_cookie', 'help_tray', 'help_coin'];
+const TEXT = {};
+const STATUS = window.JELLY_HOP = {
+  ready: false, mode: 'loading',
+  assets: { total: ASSETS.length, loaded: 0, failed: [], files: {} },
+  lottie: { instances: 0, used: {} },
+};
+const WORLD_ANIMS = new Set();
+
+async function loadAssets(progress) {
+  await Promise.all(ASSETS.map(async (n) => {
+    try {
+      const r = await fetch('assets/' + n + '.json');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const t = await r.text();
+      JSON.parse(t);
+      TEXT[n] = t;
+      STATUS.assets.loaded++;
+      STATUS.assets.files[n] = t.length;
+    } catch (e) {
+      STATUS.assets.failed.push(n);
+    }
+    progress();
+  }));
+}
+
+function makeLottie(el, name, opts = {}) {
+  const a = lottie.loadAnimation({
+    container: el, renderer: 'svg', loop: !!opts.loop, autoplay: !!opts.autoplay,
+    animationData: JSON.parse(TEXT[name]),
+    rendererSettings: { progressiveLoad: false, hideOnTransparent: true, preserveAspectRatio: 'xMidYMid meet' },
+  });
+  a.__name = name;
+  STATUS.lottie.instances++;
+  STATUS.lottie.used[name] = (STATUS.lottie.used[name] || 0) + 1;
+  if (opts.world) WORLD_ANIMS.add(a);
+  return a;
+}
+function div(parent, cls, w, h) {
+  const d = document.createElement('div');
+  d.className = cls;
+  if (w) d.style.width = w + 'px';
+  if (h) d.style.height = h + 'px';
+  parent.appendChild(d);
+  return d;
+}
+// goToAndStop is relative to the active segment, so reset to the full timeline first.
+function stopAt(a, f) { a.resetSegments(true); a.goToAndStop(f, true); }
+function playSeg(a, seg, loop = false, speed = 1) { a.setLoop(loop); a.setSpeed(speed); a.playSegments(seg, true); }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+
+// ------------------------------------------------------------------ audio (Web Audio, synthesized)
+const Sound = (() => {
+  let ctx = null, master = null, sfxBus = null, musicBus = null, comp = null, noiseBuf = null;
+  let muted = !!store.get('muted', false);
+  let musicOn = false, nextNoteTime = 0, step = 0, timer = null, ducked = false;
+  let chargeNodes = null;
+  const NOTE = (n) => {
+    const m = /^([A-G])(#?)(\d)$/.exec(n);
+    const idx = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] ? 1 : 0);
+    return 440 * Math.pow(2, (idx + (Number(m[3]) + 1) * 12 - 69) / 12);
+  };
+  function unlock() {
+    if (!ctx) {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        ctx = new AC();
+        comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = -14; comp.ratio.value = 4;
+        master = ctx.createGain(); master.gain.value = muted ? 0 : 0.9;
+        sfxBus = ctx.createGain(); sfxBus.gain.value = 0.8;
+        musicBus = ctx.createGain(); musicBus.gain.value = 0.32;
+        sfxBus.connect(master); musicBus.connect(master); master.connect(comp); comp.connect(ctx.destination);
+        noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        startMusic();
+      } catch (e) { ctx = null; return; }
+    }
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  }
+  function tone(type, f0, f1, t0, dur, vol, bus = sfxBus, attack = 0.005) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(f0, t0);
+    if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(bus);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+    return o;
+  }
+  function noise(t0, dur, vol, type, f0, f1, q = 1) {
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = noiseBuf;
+    f.type = type; f.Q.value = q;
+    f.frequency.setValueAtTime(f0, t0);
+    if (f1) f.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+    g.gain.setValueAtTime(vol, t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    s.connect(f); f.connect(g); g.connect(sfxBus);
+    s.start(t0, Math.random() * 0.5); s.stop(t0 + dur + 0.02);
+  }
+  const SFX = {
+    jump(p) { const t = ctx.currentTime; tone('sine', 300, 760 + p * 300, t, 0.16, 0.22); tone('triangle', 600, 1300, t, 0.1, 0.06); },
+    land() { const t = ctx.currentTime; tone('sine', 230, 85, t, 0.14, 0.32); noise(t, 0.09, 0.12, 'lowpass', 900, 300); },
+    perfect(level) {
+      const t = ctx.currentTime, base = [0, 4, 7, 12], up = Math.min(level, 5) * 2;
+      base.forEach((s, i) => tone('triangle', NOTE('C6') * Math.pow(2, (s + up) / 12), 0, t + i * 0.055, 0.3, 0.14));
+      tone('sine', 2400, 3200, t + 0.2, 0.25, 0.04);
+    },
+    coin() { const t = ctx.currentTime; tone('square', 988, 0, t, 0.08, 0.06); tone('square', 1319, 0, t + 0.07, 0.3, 0.06); tone('sine', 2637, 0, t + 0.07, 0.25, 0.04); },
+    spring() {
+      const t = ctx.currentTime, o = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(560, t + 0.35);
+      lfo.frequency.value = 26; lg.gain.value = 38; lfo.connect(lg); lg.connect(o.frequency);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+      o.connect(g); g.connect(sfxBus); o.start(t); lfo.start(t); o.stop(t + 0.5); lfo.stop(t + 0.5);
+    },
+    crack() { const t = ctx.currentTime; for (let i = 0; i < 3; i++) noise(t + i * 0.05 + Math.random() * 0.03, 0.04, 0.16, 'bandpass', 2200 + Math.random() * 900, 0, 3); },
+    crumble() { const t = ctx.currentTime; noise(t, 0.45, 0.25, 'lowpass', 1400, 200); for (let i = 0; i < 5; i++) noise(t + i * 0.06, 0.04, 0.12, 'bandpass', 1800, 0, 4); },
+    fall() { const t = ctx.currentTime; tone('sine', 900, 170, t, 0.85, 0.12); tone('triangle', 450, 90, t + 0.05, 0.8, 0.04); },
+    wobble() { const t = ctx.currentTime; tone('sine', 520, 380, t, 0.12, 0.1); tone('sine', 520, 380, t + 0.14, 0.12, 0.1); },
+    splash() { const t = ctx.currentTime; noise(t, 0.6, 0.32, 'bandpass', 1500, 260, 0.8); tone('sine', 320, 110, t, 0.25, 0.22); },
+    click() { const t = ctx.currentTime; tone('square', 880, 0, t, 0.04, 0.045); tone('square', 1320, 0, t + 0.035, 0.05, 0.035); },
+    start() { const t = ctx.currentTime; ['C5', 'E5', 'G5', 'C6'].forEach((n, i) => tone('triangle', NOTE(n), 0, t + i * 0.07, 0.22, 0.12)); },
+    over() { const t = ctx.currentTime; ['G4', 'E4', 'C4'].forEach((n, i) => tone('triangle', NOTE(n), 0, t + i * 0.2, 0.3, 0.14)); },
+    record() {
+      const t = ctx.currentTime;
+      ['C5', 'E5', 'G5', 'C6', 'E6'].forEach((n, i) => tone('triangle', NOTE(n), 0, t + i * 0.08, 0.3, 0.13));
+      ['C6', 'E6', 'G6'].forEach((n) => tone('sine', NOTE(n), 0, t + 0.48, 0.9, 0.07));
+    },
+    bump() { const t = ctx.currentTime; tone('sine', 600, 900, t, 0.06, 0.05); },
+  };
+  function sfx(name, arg) {
+    if (!ctx || muted || !SFX[name]) return;
+    try { SFX[name](arg); } catch (e) { /* ignore scheduling glitches */ }
+  }
+  function startCharge() {
+    if (!ctx || muted) return;
+    stopCharge();
+    const t = ctx.currentTime, o = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain();
+    o.type = 'triangle'; o.frequency.setValueAtTime(240, t); o.frequency.exponentialRampToValueAtTime(820, t + 1.6);
+    lfo.frequency.setValueAtTime(7, t); lfo.frequency.linearRampToValueAtTime(16, t + 1.6);
+    lg.gain.setValueAtTime(5, t); lg.gain.linearRampToValueAtTime(22, t + 1.6);
+    lfo.connect(lg); lg.connect(o.frequency);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.07, t + 0.05);
+    o.connect(g); g.connect(sfxBus); o.start(t); lfo.start(t);
+    chargeNodes = { o, lfo, g };
+  }
+  function stopCharge() {
+    if (!chargeNodes || !ctx) { chargeNodes = null; return; }
+    const { o, lfo, g } = chargeNodes, t = ctx.currentTime;
+    try {
+      g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(Math.max(0.0001, g.gain.value), t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+      o.stop(t + 0.06); lfo.stop(t + 0.06);
+    } catch (e) { /* already stopped */ }
+    chargeNodes = null;
+  }
+  // --- background music: a looping 8-bar candy-pop tune, scheduled ahead on the audio clock
+  const BPM = 116, EIGHTH = 60 / BPM / 2;
+  const MEL = ('E5 - G5 - C6 - G5 E5|A5 - G5 E5 C5 - E5 -|F5 - A5 - C6 - A5 F5|G5 - B5 - D6 - B5 G5|' +
+    'C6 - B5 G5 E5 - G5 C6|A5 - - E5 A5 - C6 -|F5 - E5 - D5 - C5 D5|E5 - D5 - G4 - - -').split('|').map((b) => b.trim().split(/\s+/));
+  const BASS = ['C3', 'A2', 'F2', 'G2', 'C3', 'A2', 'F2', 'G2'];
+  const CHORD = [['C4', 'E4', 'G4'], ['A3', 'C4', 'E4'], ['F3', 'A3', 'C4'], ['G3', 'B3', 'D4'],
+    ['C4', 'E4', 'G4'], ['A3', 'C4', 'E4'], ['F3', 'A3', 'C4'], ['G3', 'B3', 'D4']];
+  function scheduleStep(s, t) {
+    const bar = Math.floor(s / 8) % 8, e = s % 8;
+    const n = MEL[bar][e];
+    if (n && n !== '-') {
+      const f = NOTE(n);
+      tone('triangle', f, 0, t, EIGHTH * 1.8, 0.16, musicBus, 0.004);
+      tone('sine', f * 2, 0, t, EIGHTH * 0.9, 0.035, musicBus, 0.004);
+    }
+    if (e === 0 || e === 4) {
+      const b = NOTE(BASS[bar]) * (e === 4 ? 2 : 1);
+      tone('sine', b, 0, t, EIGHTH * 3.2, 0.22, musicBus, 0.01);
+      tone('sine', 150, 48, t, 0.14, 0.2, musicBus, 0.003);
+    }
+    if (e % 2 === 1) {
+      CHORD[bar].forEach((c) => tone('square', NOTE(c) * 2, 0, t, EIGHTH * 0.5, 0.012, musicBus, 0.003));
+      const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      src.buffer = noiseBuf; f.type = 'highpass'; f.frequency.value = 7000;
+      g.gain.setValueAtTime(0.05, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+      src.connect(f); f.connect(g); g.connect(musicBus); src.start(t, Math.random() * 0.5); src.stop(t + 0.05);
+    }
+  }
+  function startMusic() {
+    if (musicOn || !ctx) return;
+    musicOn = true;
+    nextNoteTime = ctx.currentTime + 0.12;
+    timer = setInterval(() => {
+      if (!ctx) return;
+      while (nextNoteTime < ctx.currentTime + 0.15) {
+        try { scheduleStep(step, nextNoteTime); } catch (e) { /* ignore */ }
+        nextNoteTime += EIGHTH;
+        step = (step + 1) % 64;
+      }
+    }, 30);
+  }
+  function setMuted(m) {
+    muted = m;
+    store.set('muted', m);
+    if (m) stopCharge();
+    if (master) master.gain.setTargetAtTime(m ? 0 : 0.9, ctx.currentTime, 0.03);
+  }
+  function duck(on) {
+    ducked = on;
+    if (musicBus) musicBus.gain.setTargetAtTime(on ? 0.12 : 0.32, ctx.currentTime, 0.1);
+  }
+  return { unlock, sfx, startCharge, stopCharge, setMuted, duck, get muted() { return muted; }, get ctx() { return ctx; } };
+})();
+
+// ------------------------------------------------------------------ constants
+const MAX_CHARGE = 1600;          // ms of charge for the longest jump (matches the 96-frame charge segments)
+const K_DIST = 0.4;               // px of jump distance per ms of charge
+const SEA_Y = 618;
+const SEG = { idle: [0, 120], charge: [120, 216], hold: [216, 240], takeoff: [240, 260], air: [260, 320], land: [320, 360], perfect: [360, 440], fall: [440, 500] };
+const PSEG = { idle: [0, 120], land: [120, 160], charge: [160, 256], release: [256, 290] };
+const SPRING = { boing: [60, 130], land: [130, 160], charge: [160, 256], release: [256, 290] };
+const COOKIE = { crumble: [60, 210], collapse: [210, 270] };
+const TRAY = { idle: [0, 120], land: [120, 160] };
+const COIN = { spin: [0, 60], collect: [60, 110] };
+const TYPES = {
+  cupcake: { file: 'plat_cupcake', topW: 156, dh: 82, kind: 'normal' },
+  pudding: { file: 'plat_pudding', topW: 124, dh: 70, kind: 'normal' },
+  candybox: { file: 'plat_candybox', topW: 158, dh: 76, kind: 'normal' },
+  macaron: { file: 'plat_macaron', topW: 136, dh: 78, kind: 'normal' },
+  cake: { file: 'plat_cake', topW: 148, dh: 76, kind: 'cake' },
+  cookie: { file: 'plat_cookie', topW: 152, dh: 0, kind: 'cookie' },
+  spring: { file: 'plat_spring', topW: 122, dh: 0, kind: 'spring' },
+  tray: { file: 'plat_tray', topW: 156, dh: 0, kind: 'tray', h: 260 },
+};
+const NORMALS = ['cupcake', 'pudding', 'candybox', 'macaron'];
+const DIFF = {
+  easy: { name: '简单', s0: [1.05, 1.3], s1: [0.82, 1.02], g0: [175, 285], g1: [230, 380], perfect: 1.3, sp: { spring: 0.08, cookie: 0.06, tray: 0.06, cake: 0.12 }, amp: [30, 55], per: [3.8, 5.0], crumble: 3.2 },
+  normal: { name: '普通', s0: [0.88, 1.1], s1: [0.66, 0.86], g0: [195, 320], g1: [260, 440], perfect: 1.0, sp: { spring: 0.08, cookie: 0.1, tray: 0.12, cake: 0.1 }, amp: [40, 75], per: [3.0, 4.2], crumble: 2.5 },
+  hard: { name: '困难', s0: [0.74, 0.94], s1: [0.56, 0.72], g0: [225, 360], g1: [300, 480], perfect: 0.85, sp: { spring: 0.07, cookie: 0.14, tray: 0.25, cake: 0.1 }, amp: [50, 100], per: [2.4, 3.4], crumble: 2.0 },
+};
+
+// ------------------------------------------------------------------ RNG
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+// ------------------------------------------------------------------ state
+const G = {
+  mode: 'loading', diff: store.get('diff', 'normal'), score: 0, combo: 0, maxCombo: 0, perfects: 0, jumps: 0,
+  best: { easy: store.get('best.easy', 0), normal: store.get('best.normal', 0), hard: store.get('best.hard', 0) },
+  inputLock: 0, holdSrc: null, keyHeld: false, overT: -1, overShownAt: 0, helpFrom: 'title',
+};
+if (!DIFF[G.diff]) G.diff = 'normal';
+if (Q.get('diff') && DIFF[Q.get('diff')]) G.diff = Q.get('diff');
+
+const W = { plats: [], gen: 0, time: 0, camX: 0, camTarget: 0, rng: Math.random, diff: 'normal', demo: true, lastX: 0, lastY: 450 };
+const J = { el: $('#jelly'), anim: null, x: 0, y: 0, rot: 0, state: 'idle', plat: null, offX: 0, vx: 0, vy: 0, g: 1800, chargeMs: 0, landT: 9, flight: null, spring: null, teeter: null, visible: true, pendingIdle: false };
+const AI = { wait: 1.2, holding: false, t: 0, holdMs: 0 };
+
+// ------------------------------------------------------------------ views (created once, pooled)
+const farTiles = [], midTiles = [], seaTiles = [];
+const Pools = {};
+const coinPool = [];
+const fx = { dust: [], halo: [], splash: [] };
+let hudAnims = {};
+const floatPool = [];
+let comboAnim = null;
+
+function buildWorld() {
+  const far = $('#far'), mid = $('#mid');
+  for (let i = 0; i < 2; i++) {
+    const t = div(far, 'tile', 1600, 720);
+    makeLottie(div(t, 'lot', 1600, 720), 'sky', { autoplay: true, loop: true, world: true });
+    const m = div(t, 'lot', 1600, 380); m.style.top = '250px';
+    makeLottie(m, 'mountains', { autoplay: true, loop: true, world: true });
+    const c = div(t, 'lot', 1600, 260); c.style.top = '40px';
+    makeLottie(c, 'clouds', { autoplay: true, loop: true, world: true });
+    farTiles.push(t);
+    const h = div(mid, 'tile', 1600, 300);
+    makeLottie(h, 'hills', { autoplay: true, loop: true, world: true });
+    midTiles.push(h);
+    const s = div($('#seaLayer'), 'lot', 1600, 170);
+    makeLottie(s, 'sea', { autoplay: true, loop: true, world: true });
+    seaTiles.push(s);
+  }
+  J.anim = makeLottie(J.el, 'jelly', { world: true });
+  J.anim.addEventListener('complete', () => {
+    if (J.pendingIdle) { J.pendingIdle = false; playSeg(J.anim, SEG.idle, true); }
+  });
+  // platform pools
+  const pre = { cupcake: 3, pudding: 3, candybox: 3, macaron: 3, cake: 2, cookie: 2, spring: 2, tray: 2 };
+  for (const [type, n] of Object.entries(pre)) {
+    Pools[type] = [];
+    for (let i = 0; i < n; i++) Pools[type].push(newPlatView(type));
+  }
+  for (let i = 0; i < 3; i++) coinPool.push(newCoinView());
+  for (let i = 0; i < 3; i++) fx.dust.push(newFx('dust', 260, 120, $('#fxFront')));
+  for (let i = 0; i < 2; i++) fx.halo.push(newFx('halo', 380, 220, $('#fxBack')));
+  for (let i = 0; i < 2; i++) fx.splash.push(newFx('splash', 320, 260, $('#fxTop')));
+  for (let i = 0; i < 8; i++) { const d = div($('#fxTop'), 'ftxt'); floatPool.push(d); }
+}
+function newPlatView(type) {
+  const T = TYPES[type];
+  const el = div($('#platLayer'), 'plat', 260, T.h || 760);
+  el.style.display = 'none';
+  const anim = makeLottie(el, T.file, { world: true });
+  return { el, anim, type };
+}
+function getPlatView(type) {
+  const v = (Pools[type] && Pools[type].pop()) || newPlatView(type);
+  v.el.style.display = '';
+  stopAt(v.anim, 0);
+  return v;
+}
+function releasePlatView(v) { v.anim.pause(); v.el.style.display = 'none'; (Pools[v.type] || (Pools[v.type] = [])).push(v); }
+function newCoinView() {
+  const el = div($('#coinLayer'), 'coin', 160, 160);
+  el.style.display = 'none';
+  return { el, anim: makeLottie(el, 'coin', { world: true }) };
+}
+function newFx(name, w, h, parent) {
+  const el = div(parent, 'fx', w, h);
+  el.style.display = 'none';
+  const anim = makeLottie(el, name, { world: true });
+  const o = { el, anim, busy: false };
+  anim.addEventListener('complete', () => { o.busy = false; el.style.display = 'none'; });
+  return o;
+}
+function playFx(list, x, y, ax, ay, s) {
+  const o = list.find((f) => !f.busy) || list[0];
+  o.busy = true;
+  o.el.style.display = '';
+  o.el.style.transform = `translate(${x - ax * s}px,${y - ay * s}px) scale(${s})`;
+  playSeg(o.anim, [0, o.anim.animationData.op], false);
+  return o;
+}
+
+// ------------------------------------------------------------------ platforms
+function platXAt(p, t) { return p.kind === 'tray' ? p.baseX + p.amp * Math.sin(p.omega * t + p.phase) : p.x; }
+function platByIndex(i) { return W.plats.find((p) => p.index === i); }
+function perfectR(p) { return clamp(p.topW * p.s * 0.09, 7, 14) * DIFF[W.diff].perfect; }
+
+function pickType(i) {
+  const D = DIFF[W.diff], r = W.rng();
+  const prev = W.plats.length ? W.plats[W.plats.length - 1].type : '';
+  let acc = 0;
+  for (const [t, pr] of Object.entries(D.sp)) {
+    if (W.demo && t === 'tray') continue;
+    acc += pr;
+    if (r < acc && t !== prev) return t;
+  }
+  let t = NORMALS[Math.floor(W.rng() * NORMALS.length)];
+  if (t === prev) t = NORMALS[(NORMALS.indexOf(t) + 1) % NORMALS.length];
+  return t;
+}
+function genPlatform() {
+  const i = W.gen++;
+  const D = DIFF[W.diff];
+  const prev = W.plats.length ? W.plats[W.plats.length - 1] : null;
+  let type, s, gap = 0, y;
+  if (i === 0) { type = 'cupcake'; s = 1.1; y = 452; }
+  else if (i === 1) { type = 'pudding'; s = 1.06; gap = 250; y = 440; }
+  else if (i === 2) { type = 'macaron'; s = 1.0; gap = 270; y = 456; }
+  else {
+    const r = Math.min(1, (i - 3) / 45);
+    type = pickType(i);
+    const sLo = lerp(D.s0[0], D.s1[0], r), sHi = lerp(D.s0[1], D.s1[1], r);
+    s = lerp(sLo, sHi, W.rng());
+    if (type === 'spring') s = Math.max(s, 0.8);
+    const gLo = lerp(D.g0[0], D.g1[0], r), gHi = lerp(D.g0[1], D.g1[1], r);
+    gap = lerp(gLo, gHi, W.rng());
+    y = clamp(W.lastY + (W.rng() * 2 - 1) * 42, 408, 492);
+  }
+  if (i > 0 && !W.demo && SEQ.length && TYPES[SEQ[(i - 1) % SEQ.length]]) type = SEQ[(i - 1) % SEQ.length];
+  const T = TYPES[type];
+  const p = { index: i, type, kind: T.kind, s, topW: T.topW, halfW: T.topW * s / 2, dh: T.dh, y, view: null, coin: null,
+    crumbleT: -1, crumbleDur: D.crumble, collapsed: false, coinTaken: false, amp: 0, omega: 0, phase: 0, baseX: 0, x: 0, crackT: 0 };
+  if (type === 'tray') {
+    p.amp = lerp(D.amp[0], D.amp[1], W.rng());
+    p.omega = Math.PI * 2 / lerp(D.per[0], D.per[1], W.rng());
+    p.phase = W.rng() * Math.PI * 2;
+  }
+  if (prev) {
+    const minGap = prev.halfW + p.halfW + prev.amp + p.amp + 34;
+    gap = Math.max(gap, minGap);
+    gap = Math.min(gap, MAX_CHARGE * K_DIST * 0.92 - p.amp - prev.amp);
+    p.baseX = (prev.kind === 'tray' ? prev.baseX : prev.x) + gap;
+  } else p.baseX = 0;
+  p.x = p.kind === 'tray' ? platXAt(p, W.time) : p.baseX;
+  p.view = getPlatView(type);
+  if (type === 'tray') playSeg(p.view.anim, TRAY.idle, true);
+  if (type === 'cake') {
+    const c = coinPool.pop() || newCoinView();
+    c.el.style.display = '';
+    playSeg(c.anim, COIN.spin, true);
+    p.coin = c;
+  }
+  W.lastX = p.baseX; W.lastY = y;
+  W.plats.push(p);
+  placePlat(p);
+  return p;
+}
+function placePlat(p) {
+  p.view.el.style.transform = `translate(${p.x - 130 * p.s}px,${p.y - 130 * p.s}px) scale(${p.s})`;
+  if (p.coin) {
+    const cs = 0.62 + 0.25 * p.s;
+    p.coin.el.style.transform = `translate(${p.x - 80 * cs}px,${p.y - 34 - 104 * cs - 30 * p.s}px) scale(${cs})`;
+  }
+}
+function freePlat(p) {
+  releasePlatView(p.view);
+  if (p.coin) { p.coin.anim.pause(); p.coin.el.style.display = 'none'; coinPool.push(p.coin); p.coin = null; }
+}
+function ensurePlatforms() {
+  while (W.lastX < W.camX + 1280 + 360) genPlatform();
+  // recycle platforms far behind the camera (never the one the jelly stands on)
+  while (W.plats.length && W.plats[0] !== J.plat && W.plats[0].baseX + 260 < W.camX - 60) freePlat(W.plats.shift());
+}
+
+// dips so the jelly keeps touching squashing desserts
+const LAND_DIP = [[0, 0], [4, 0.09], [11, -0.04], [18, 0.02], [26, -0.01], [36, 0]];
+const SPRING_LAND_DIP = [[0, 0], [5, 10], [12, -4], [20, 1], [26, 0]];
+function interp(tab, f) {
+  if (f <= tab[0][0]) return tab[0][1];
+  for (let i = 1; i < tab.length; i++) if (f <= tab[i][0]) { const [a, va] = tab[i - 1], [b, vb] = tab[i]; return va + (vb - va) * (f - a) / (b - a); }
+  return tab[tab.length - 1][1];
+}
+function surfaceDip(p) {
+  if (J.state === 'charge') {
+    const u = Math.min(1, J.chargeMs / MAX_CHARGE);
+    if (p.kind === 'spring') return 12 * u * p.s;
+    if (p.dh) return 0.12 * p.dh * u * p.s;
+    return 0;
+  }
+  const f = J.landT * 60;
+  if (p.kind === 'spring') return interp(SPRING_LAND_DIP, f) * p.s;
+  if (p.dh) return interp(LAND_DIP, f) * p.dh * p.s;
+  return 0;
+}
+
+// ------------------------------------------------------------------ world reset
+function resetWorld(diff, demo, seed) {
+  for (const p of W.plats) freePlat(p);
+  W.plats = [];
+  W.gen = 0; W.time = 0; W.diff = diff; W.demo = demo; W.lastX = 0; W.lastY = 450;
+  W.rng = mulberry32(seed >>> 0);
+  for (const list of Object.values(fx)) for (const o of list) { o.busy = false; o.anim.pause(); o.el.style.display = 'none'; }
+  for (const d of floatPool) d.classList.remove('go');
+  genPlatform(); genPlatform(); genPlatform();
+  const p = W.plats[0];
+  Object.assign(J, { x: p.x, y: p.y, rot: 0, state: 'idle', plat: p, offX: 0, vx: 0, vy: 0, chargeMs: 0, landT: 9, flight: null, spring: null, teeter: null, pendingIdle: false, scared: false, shakeX: 0 });
+  J.el.style.display = '';
+  playSeg(J.anim, SEG.idle, true);
+  updateCamTarget();
+  W.camX = W.camTarget;
+  ensurePlatforms();
+  AI.wait = 1.0; AI.holding = false;
+  render();
+}
+function updateCamTarget() {
+  const p = J.plat;
+  const n = platByIndex(p.index + 1);
+  const px = p.kind === 'tray' ? p.baseX : p.x;
+  const nx = n ? (n.kind === 'tray' ? n.baseX : n.x) : px + 300;
+  W.camTarget = (px + nx) / 2 - 610;
+}
+
+// ------------------------------------------------------------------ jelly actions
+function canCharge() { return (J.state === 'idle' || J.state === 'land') && J.plat && !J.plat.collapsed; }
+function startCharge(src) {
+  if (!canCharge()) return false;
+  J.state = 'charge';
+  J.chargeMs = 0;
+  J.pendingIdle = false;
+  J.scared = false;
+  G.holdSrc = src;
+  J.anim.setLoop(true); J.anim.setSpeed(1);
+  J.anim.playSegments([SEG.charge, SEG.hold], true);
+  const p = J.plat;
+  if (p.kind === 'spring') playSeg(p.view.anim, SPRING.charge);
+  else if (p.dh) playSeg(p.view.anim, PSEG.charge);
+  if (!W.demo) Sound.startCharge();
+  return true;
+}
+function cancelCharge() {
+  if (J.state !== 'charge') return;
+  Sound.stopCharge();
+  const u = Math.min(1, J.chargeMs / MAX_CHARGE);
+  // un-squash by playing the charge segment backwards
+  J.anim.setLoop(false); J.anim.setSpeed(2.5);
+  J.anim.playSegments([Math.max(121, 120 + u * 95), 120], true);
+  J.anim.setDirection(-1);
+  J.pendingIdle = true;
+  const p = J.plat;
+  if (p.dh || p.kind === 'spring') {
+    p.view.anim.setLoop(false); p.view.anim.setSpeed(2.5);
+    p.view.anim.playSegments([Math.max(161, 160 + u * 95), 160], true);
+    p.view.anim.setDirection(-1);
+  }
+  J.state = 'idle';
+  J.landT = 9;
+  J.scared = false;
+  G.holdSrc = null;
+}
+function release() {
+  if (J.state !== 'charge') return;
+  G.holdSrc = null;
+  const ms = Math.min(J.chargeMs, MAX_CHARGE);
+  const D = Math.max(14, ms * K_DIST);
+  const from = J.plat;
+  const x0 = J.x, y0 = J.y;
+  const T = 0.42 + D / 1500, H = 64 + D * 0.3;
+  const x1 = x0 + D, tl = W.time + T;
+  let target = null, bd = 1e9;
+  for (const q of W.plats) {
+    if (q.collapsed) continue;
+    const d = Math.abs(x1 - platXAt(q, tl));
+    if (d <= q.halfW + 30 && d < bd) { bd = d; target = q; }
+  }
+  const ref = target || platByIndex(from.index + 1) || from;
+  J.flight = { x0, y0, x1, y1: ref.y, D, T, H, t: 0, air: false, from };
+  J.state = 'air';
+  J.jumpId = (J.jumpId || 0) + 1;
+  J.anim.setLoop(false); J.anim.setSpeed(1);
+  J.anim.playSegments(SEG.takeoff, true);
+  if (from.kind === 'spring') playSeg(from.view.anim, SPRING.release);
+  else if (from.dh) playSeg(from.view.anim, PSEG.release);
+  playFx(fx.dust, x0, from.y, 130, 100, 0.55 + 0.45 * Math.min(1, D / 400));
+  Sound.stopCharge();
+  if (!W.demo) Sound.sfx('jump', D / 640);
+  G.jumps++;
+}
+function updateFlight(dt) {
+  const f = J.flight;
+  f.t += dt;
+  if (!f.air && f.t >= 0.1) {
+    f.air = true;
+    // stretch the somersault over the remaining flight time
+    J.anim.setLoop(false);
+    J.anim.setSpeed(clamp(1 / Math.max(0.2, f.T - 0.12), 0.7, 3.5));
+    J.anim.playSegments(SEG.air, true);
+  }
+  const u = Math.min(1, f.t / f.T);
+  J.x = f.x0 + f.D * u;
+  J.y = f.y0 + (f.y1 - f.y0) * u - 4 * f.H * u * (1 - u);
+  if (u >= 1) resolveLanding();
+}
+function resolveLanding() {
+  const f = J.flight, x = f.x1;
+  let best = null, bd = 1e9;
+  for (const q of W.plats) {
+    if (q.collapsed) continue;
+    const d = Math.abs(x - q.x);
+    if (d <= q.halfW && d < bd) { bd = d; best = q; }
+  }
+  if (best) { landOn(best, bd, f.from); return; }
+  let edge = null;
+  for (const q of W.plats) {
+    if (q.collapsed) continue;
+    const d = Math.abs(x - q.x);
+    if (d > q.halfW && d <= q.halfW + 26 && Math.abs(q.y - f.y1) < 2) edge = q;
+  }
+  G.combo = 0;
+  if (edge) {
+    J.state = 'teeter';
+    J.teeter = { p: edge, t: 0, dir: Math.sign(x - edge.x) || 1, x0: x };
+    J.y = edge.y;
+    playSeg(J.anim, SEG.fall, true);
+    if (!W.demo) Sound.sfx('wobble');
+  } else {
+    J.g = 8 * f.H / (f.T * f.T);
+    startFall(f.D / f.T, ((f.y1 - f.y0) + 4 * f.H) / f.T);
+  }
+  updateHud();
+}
+function landOn(p, d, from) {
+  J.x = p.x + clamp(J.x - p.x, -p.halfW, p.halfW);
+  J.y = p.y;
+  J.plat = p;
+  J.offX = J.x - p.x;
+  J.state = 'land';
+  J.landT = 0;
+  J.scared = false;
+  const same = p === from;
+  let perfect = false;
+  if (!same) {
+    perfect = d <= perfectR(p);
+    let pts;
+    if (perfect) {
+      G.combo++; G.perfects++;
+      G.maxCombo = Math.max(G.maxCombo, G.combo);
+      pts = Math.min(32, Math.pow(2, G.combo));
+      floatText(J.x, p.y - 118, '完美 +' + pts, 'perfect');
+    } else {
+      G.combo = 0; pts = 1;
+      floatText(J.x, p.y - 112, '+1', '');
+    }
+    addScore(pts);
+    if (perfect) showCombo(G.combo, pts);
+  }
+  J.anim.setLoop(true); J.anim.setSpeed(1);
+  J.anim.playSegments([perfect ? SEG.perfect : SEG.land, SEG.idle], true);
+  if (p.kind === 'tray') playSeg(p.view.anim, [TRAY.land, TRAY.idle], true);
+  else if (p.dh) playSeg(p.view.anim, PSEG.land);
+  if (perfect) {
+    playFx(fx.halo, p.x, p.y, 190, 140, clamp(p.topW * p.s / 170, 0.6, 1.2));
+    if (!W.demo) Sound.sfx('perfect', G.combo);
+  } else if (!W.demo) Sound.sfx('land');
+  if (p.kind === 'cake' && p.coin && !p.coinTaken && !same) {
+    p.coinTaken = true;
+    playSeg(p.coin.anim, COIN.collect, false);
+    addScore(5);
+    setTimeout(() => floatText(p.x + 40, p.y - 160, '金币 +5', 'coin'), 140);
+    if (!W.demo) Sound.sfx('coin');
+  }
+  if (p.kind === 'cookie' && p.crumbleT < 0) {
+    p.crumbleT = 0;
+    playSeg(p.view.anim, COOKIE.crumble, false, 2.5 / p.crumbleDur);
+    if (!W.demo) Sound.sfx('crack');
+  }
+  if (p.kind === 'spring' && !same) {
+    J.state = 'spring';
+    J.spring = { p, t: 0, phase: 0, air: false };
+    playSeg(p.view.anim, SPRING.boing);
+    if (!W.demo) Sound.sfx('spring');
+  }
+  updateCamTarget();
+  updateHud();
+}
+function startFall(vx, vy) {
+  J.state = 'fall';
+  J.shakeX = 0;
+  J.vx = vx; J.vy = vy;
+  J.plat = null;
+  playSeg(J.anim, SEG.fall, true);
+  if (!W.demo) Sound.sfx('fall');
+}
+function updateJelly(dt) {
+  const p = J.plat;
+  switch (J.state) {
+    case 'idle':
+    case 'land':
+    case 'charge': {
+      J.landT += dt;
+      if (J.state === 'charge') J.chargeMs = Math.min(MAX_CHARGE + 400, J.chargeMs + dt * 1000);
+      if (p.kind === 'tray') J.x = p.x + J.offX;
+      let shake = 0;
+      if (p.kind === 'cookie' && p.crumbleT > 0) {
+        const k = p.crumbleT / p.crumbleDur;
+        if (k > 0.35) shake = Math.sin(W.time * 70) * 1.6 * (k - 0.35) / 0.65;
+        // the cookie is about to break: look scared
+        if (k > 0.5 && !J.scared && !J.pendingIdle && (J.state === 'idle' || (J.state === 'land' && J.landT > 0.45))) {
+          J.scared = true;
+          playSeg(J.anim, SEG.fall, true);
+        }
+      }
+      J.shakeX = shake;
+      J.y = p.y + surfaceDip(p);
+      break;
+    }
+    case 'air': J.shakeX = 0; updateFlight(dt); break;
+    case 'spring': {
+      const sp = J.spring, q = sp.p;
+      sp.t += dt;
+      if (sp.phase === 0) {
+        const k = Math.min(1, sp.t / 0.117);
+        J.y = q.y + 24 * (1 - (1 - k) * (1 - k)) * q.s;
+        if (sp.t >= 0.2) { sp.phase = 1; sp.t0 = sp.t; sp.y0 = J.y; J.anim.setLoop(false); J.anim.setSpeed(1); J.anim.playSegments(SEG.takeoff, true); }
+      } else if (sp.phase === 1) {
+        const T = 0.64, H = 118, u = Math.min(1, (sp.t - sp.t0) / T);
+        if (!sp.air && sp.t - sp.t0 > 0.1) { sp.air = true; J.anim.setSpeed(1 / (T - 0.12)); J.anim.playSegments(SEG.air, true); }
+        J.y = sp.y0 + (q.y - sp.y0) * u - 4 * H * u * (1 - u);
+        if (u >= 1) {
+          J.y = q.y; J.state = 'land'; J.landT = 0;
+          J.anim.setLoop(true); J.anim.setSpeed(1);
+          J.anim.playSegments([SEG.land, SEG.idle], true);
+          playSeg(q.view.anim, SPRING.land);
+          addScore(1);
+          floatText(J.x, q.y - 112, '弹跳 +1', 'spring');
+          if (!W.demo) Sound.sfx('land');
+        }
+      }
+      break;
+    }
+    case 'teeter': {
+      const tt = J.teeter;
+      tt.t += dt;
+      const k = Math.min(1, tt.t / 0.5);
+      J.rot = tt.dir * 70 * k * k;
+      J.x = tt.x0 + tt.dir * 26 * k * k;
+      if (k >= 1) { J.g = 1900; startFall(tt.dir * 120, 60); }
+      break;
+    }
+    case 'fall': {
+      J.vy += J.g * dt;
+      J.x += J.vx * dt;
+      J.y += J.vy * dt;
+      J.rot += J.vx * dt * 0.12;
+      if (J.y > SEA_Y + 70) {
+        J.state = 'sunk';
+        J.el.style.display = 'none';
+        playFx(fx.splash, J.x, SEA_Y, 160, 200, 1);
+        if (!W.demo) Sound.sfx('splash');
+        G.overT = W.demo ? 1.2 : 0.85;
+      }
+      break;
+    }
+    case 'sunk':
+      if (G.overT > 0) {
+        G.overT -= dt;
+        if (G.overT <= 0) {
+          if (W.demo) resetWorld('normal', true, (Math.random() * 1e9) | 0);
+          else gameOver();
+        }
+      }
+      break;
+    default: break;
+  }
+}
+function collapseCookie(p) {
+  p.collapsed = true;
+  playSeg(p.view.anim, COOKIE.collapse, false, 1);
+  if (!W.demo) Sound.sfx('crumble');
+  if (J.plat === p && (J.state === 'idle' || J.state === 'land' || J.state === 'charge')) {
+    if (J.state === 'charge') { Sound.stopCharge(); G.holdSrc = null; }
+    J.g = 1900;
+    G.combo = 0;
+    startFall(0, 0);
+    updateHud();
+  }
+}
+
+// ------------------------------------------------------------------ demo autopilot (title screen)
+function updateDemo(dt) {
+  if (!W.demo && !(BOT && G.mode === 'playing')) return;
+  if (AI.holding) {
+    AI.t += dt * 1000;
+    if (J.state !== 'charge') { AI.holding = false; return; }
+    if (AI.t >= AI.holdMs) { AI.holding = false; release(); AI.wait = 0.55 + Math.random() * 0.6; }
+    return;
+  }
+  if (!canCharge() || (J.state === 'land' && J.landT < 0.45)) return;
+  AI.wait -= dt;
+  if (AI.wait > 0) return;
+  const n = platByIndex(J.plat.index + 1);
+  if (!n) return;
+  const err = Math.random() < 0.55 ? (Math.random() * 2 - 1) * perfectR(n) * 0.5 : (Math.random() * 2 - 1) * n.halfW * 0.45;
+  const D = n.x - J.x + err;
+  AI.holdMs = clamp(D / K_DIST, 40, MAX_CHARGE);
+  AI.t = 0;
+  AI.holding = startCharge('ai');
+}
+
+// ------------------------------------------------------------------ rendering
+let lastFarBase = null;
+function render() {
+  const cam = Math.round(W.camX * SCALE) / SCALE;
+  $('#world').style.transform = `translate(${-cam}px,0)`;
+  const fo = -(((cam * 0.12) % 1600) + 1600) % 1600;
+  farTiles[0].style.transform = `translate(${fo}px,0)`;
+  farTiles[1].style.transform = `translate(${fo + 1600}px,0)`;
+  const mo = -(((cam * 0.4) % 1600) + 1600) % 1600;
+  midTiles[0].style.transform = `translate(${mo}px,392px)`;
+  midTiles[1].style.transform = `translate(${mo + 1600}px,392px)`;
+  const base = Math.floor(cam / 1600) * 1600;
+  if (base !== lastFarBase) {
+    lastFarBase = base;
+    seaTiles[0].style.transform = `translate(${base}px,606px)`;
+    seaTiles[1].style.transform = `translate(${base + 1600}px,606px)`;
+  }
+  for (const p of W.plats) if (p.kind === 'tray') placePlat(p);
+  J.el.style.transform = `translate(${J.x + (J.shakeX || 0) - 110}px,${J.y - 194}px)` + (J.rot ? ` rotate(${J.rot}deg)` : '');
+}
+
+// ------------------------------------------------------------------ HUD & feedback
+function addScore(n) {
+  if (W.demo) return;
+  G.score += n;
+  if (hudAnims.score) playSeg(hudAnims.score, [0, 16]);
+  updateHud();
+}
+function updateHud() {
+  if (W.demo) return;
+  $('#scoreNum').textContent = G.score;
+  const shownBest = Math.max(G.best[G.diff], G.score);
+  if (String(shownBest) !== $('#bestNum').textContent) {
+    if (G.score > G.best[G.diff] && hudAnims.best) playSeg(hudAnims.best, [0, 16]);
+    $('#bestNum').textContent = shownBest;
+  }
+  const mult = G.combo > 0 ? Math.min(32, Math.pow(2, G.combo)) : 1;
+  const txt = '×' + mult;
+  if ($('#comboNum').textContent !== txt) {
+    $('#comboNum').textContent = txt;
+    if (hudAnims.combo) playSeg(hudAnims.combo, [0, 16]);
+  }
+}
+let floatIdx = 0;
+function floatText(x, y, text, cls) {
+  if (W.demo) return;
+  const d = floatPool[floatIdx++ % floatPool.length];
+  d.className = 'ftxt ' + cls;
+  d.textContent = text;
+  d.style.left = x + 'px';
+  d.style.top = y + 'px';
+  void d.offsetWidth;
+  d.classList.add('go');
+}
+let comboTimer = 0;
+function showCombo(level, pts) {
+  if (W.demo) return;
+  const L = Math.min(5, level);
+  const box = $('#comboBox');
+  box.classList.remove('on');
+  void box.offsetWidth;
+  box.classList.add('on');
+  $('#comboBig').textContent = '+' + pts;
+  $('#comboBig').style.fontSize = (48 + L * 7) + 'px';
+  $('#comboSmall').textContent = level >= 2 ? '连续完美 ×' + level : '完美！';
+  playSeg(comboAnim, [(L - 1) * 90, L * 90]);
+  clearTimeout(comboTimer);
+  comboTimer = setTimeout(() => { box.classList.remove('on'); comboAnim.pause(); }, 1500);
+}
+
+// ------------------------------------------------------------------ buttons
+const btnMap = {};
+function setupButton(btn) {
+  const bg = document.createElement('div');
+  bg.className = 'bg';
+  btn.prepend(bg);
+  const a = makeLottie(bg, btn.dataset.lottie);
+  btn._a = a; btn._sel = false; btn._b = false;
+  stopAt(a, 0);
+  if (btn.id) btnMap[btn.id] = btn;
+  btn.addEventListener('pointerdown', (e) => { e.stopPropagation(); Sound.unlock(); pressBtn(btn); });
+  btn.addEventListener('pointerup', () => releaseBtn(btn));
+  btn.addEventListener('pointerleave', () => { if (btn._down) releaseBtn(btn, true); });
+  btn.addEventListener('click', (e) => { e.stopPropagation(); btn.blur(); Sound.sfx('click'); action(btn.dataset.act, btn); });
+}
+function isRound(btn) { return btn.classList.contains('btn-round'); }
+function pressBtn(btn) {
+  btn._down = true;
+  btn.classList.add('down');
+  const a = btn._a;
+  if (isRound(btn)) playSeg(a, btn._b ? [30, 38] : [0, 8]);
+  else playSeg(a, btn._sel ? [90, 98] : [0, 8]);
+}
+function releaseBtn(btn) {
+  if (!btn._down) return;
+  btn._down = false;
+  btn.classList.remove('down');
+  const a = btn._a;
+  if (isRound(btn)) playSeg(a, btn._b ? [38, 56] : [8, 26]);
+  else if (btn._sel) playSeg(a, [[98, 116], [30, 90]], true);
+  else playSeg(a, [8, 26]);
+}
+function flashBtn(btn) { pressBtn(btn); setTimeout(() => releaseBtn(btn), 90); }
+function setSelected(btn, on) {
+  btn._sel = on;
+  if (on) playSeg(btn._a, [30, 90], true);
+  else stopAt(btn._a, 0);
+}
+function setRoundState(btn, b) { btn._b = b; stopAt(btn._a, b ? 30 : 0); }
+
+// ------------------------------------------------------------------ screens
+const screens = { title: $('#scrTitle'), help: $('#scrHelp'), pause: $('#scrPause'), over: $('#scrOver') };
+const panelAnims = {};
+let logoAnim = null, recordAnim = null;
+const demoAnims = [];
+function showScreen(name, on) {
+  const el = screens[name];
+  const pa = panelAnims[name];
+  if (pa && pa.__closeDone) { pa.removeEventListener('complete', pa.__closeDone); pa.__closeDone = null; }
+  if (on) {
+    el.classList.add('on');
+    if (pa) playSeg(pa, [0, 25]);
+  } else el.classList.remove('on');
+}
+// closing plays the panel pop-in backwards before hiding
+function closeScreen(name, then) {
+  const pa = panelAnims[name];
+  if (!pa || !screens[name].classList.contains('on')) { showScreen(name, false); if (then) then(); return; }
+  pa.setLoop(false);
+  pa.playSegments([24, 0], true);
+  pa.setDirection(-1);
+  pa.setSpeed(2.2);
+  const done = () => {
+    if (pa.__closeDone !== done) return;
+    showScreen(name, false);
+    pa.setDirection(1); pa.setSpeed(1);
+    if (then) then();
+  };
+  pa.__closeDone = done;
+  pa.addEventListener('complete', done);
+  setTimeout(done, 450);
+}
+function refreshTitle() {
+  for (const d of ['easy', 'normal', 'hard']) {
+    $(`[data-best="${d}"]`).textContent = G.best[d];
+    const b = btnMap[{ easy: 'dEasy', normal: 'dNormal', hard: 'dHard' }[d]];
+    if (b._sel !== (G.diff === d)) setSelected(b, G.diff === d);
+  }
+}
+function commitBest() {
+  if (W.demo || G.score <= G.best[G.diff]) return false;
+  G.best[G.diff] = G.score;
+  store.set('best.' + G.diff, G.score);
+  return true;
+}
+function goTitle() {
+  if (G.mode === 'paused') commitBest();
+  G.mode = 'title';
+  STATUS.mode = 'title';
+  resumeWorld();
+  showScreen('pause', false); showScreen('over', false); showScreen('help', false);
+  $('#hud').classList.remove('on');
+  $('#btnPause').classList.remove('on');
+  $('#comboBox').classList.remove('on');
+  $('#record').classList.remove('on');
+  if (recordAnim) recordAnim.pause();
+  showScreen('title', true);
+  refreshTitle();
+  logoAnim.setLoop(true);
+  logoAnim.playSegments([[0, 30], [30, 150]], true);
+  resetWorld('normal', true, (Math.random() * 1e9) | 0);
+  Sound.duck(false);
+}
+function startGame() {
+  if (G.mode === 'paused') commitBest();
+  if (G.mode === 'title') logoAnim.pause();
+  showScreen('title', false); showScreen('pause', false); showScreen('over', false); showScreen('help', false);
+  $('#record').classList.remove('on');
+  if (recordAnim) recordAnim.pause();
+  G.mode = 'playing';
+  STATUS.mode = 'playing';
+  resumeWorld();
+  G.score = 0; G.combo = 0; G.maxCombo = 0; G.perfects = 0; G.jumps = 0; G.holdSrc = null;
+  G.inputLock = 0.25;
+  const seed = Q.get('seed') ? Number(Q.get('seed')) : (Math.random() * 1e9) | 0;
+  resetWorld(G.diff, false, seed);
+  $('#hud').classList.add('on');
+  $('#btnPause').classList.add('on');
+  setRoundState(btnMap.btnPause, false);
+  updateHud();
+  Sound.duck(false);
+  Sound.sfx('start');
+}
+function pauseGame() {
+  if (G.mode !== 'playing') return;
+  cancelCharge();
+  G.mode = 'paused';
+  STATUS.mode = 'paused';
+  pauseWorld();
+  setRoundState(btnMap.btnPause, true);
+  showScreen('pause', true);
+  Sound.duck(true);
+}
+function resumeGame() {
+  if (G.mode !== 'paused') return;
+  closeScreen('pause');
+  G.mode = 'playing';
+  STATUS.mode = 'playing';
+  resumeWorld();
+  setRoundState(btnMap.btnPause, false);
+  G.inputLock = 0.2;
+  Sound.duck(false);
+}
+function pauseWorld() { for (const a of WORLD_ANIMS) if (!a.isPaused) { a.pause(); a.__resume = true; } }
+function resumeWorld() { for (const a of WORLD_ANIMS) if (a.__resume) { a.__resume = false; a.play(); } }
+function openHelp() {
+  if (G.mode === 'playing') pauseGame();
+  G.helpFrom = G.mode;
+  if (G.mode === 'paused') showScreen('pause', false);
+  if (G.mode === 'title') { showScreen('title', false); logoAnim.pause(); }
+  G.mode = 'help';
+  STATUS.mode = 'help';
+  showScreen('help', true);
+  for (const a of demoAnims) { a.setLoop(true); a.goToAndPlay(0, true); }
+}
+function closeHelp() {
+  if (G.mode !== 'help') return;
+  for (const a of demoAnims) a.pause();
+  const from = G.helpFrom;
+  closeScreen('help', () => {
+    if (from === 'title') { G.mode = 'title'; STATUS.mode = 'title'; showScreen('title', true); logoAnim.play(); }
+    else { G.mode = 'paused'; STATUS.mode = 'paused'; showScreen('pause', true); }
+  });
+}
+function gameOver() {
+  G.mode = 'over';
+  STATUS.mode = 'over';
+  G.overShownAt = performance.now();
+  $('#btnPause').classList.remove('on');
+  const d = G.diff;
+  const rec = G.score > 0 && commitBest();
+  $('#overScore').textContent = G.score;
+  $('#overCombo').textContent = G.maxCombo;
+  $('#overPerfect').textContent = G.perfects;
+  $('#overBest').textContent = G.best[d];
+  $('#overDiff').textContent = '难度：' + DIFF[d].name + ' · 共跳 ' + G.jumps + ' 次';
+  $('#overPanel').classList.toggle('rec', rec);
+  showScreen('over', true);
+  STATUS.lastResult = { score: G.score, maxCombo: G.maxCombo, perfects: G.perfects, record: rec };
+  if (rec) {
+    $('#record').classList.add('on');
+    recordAnim.setLoop(true);
+    recordAnim.playSegments([[0, 40], [40, 160]], true);
+    Sound.sfx('record');
+  } else {
+    $('#record').classList.remove('on');
+    Sound.sfx('over');
+  }
+  updateHud();
+}
+function toggleMute() {
+  Sound.unlock();
+  Sound.setMuted(!Sound.muted);
+  setRoundState(btnMap.btnSound, Sound.muted);
+}
+function action(act, btn) {
+  switch (act) {
+    case 'diff': G.diff = btn.dataset.diff; store.set('diff', G.diff); refreshTitle(); break;
+    case 'start': startGame(); break;
+    case 'help': openHelp(); break;
+    case 'closeHelp': closeHelp(); break;
+    case 'resume': resumeGame(); break;
+    case 'restart': startGame(); break;
+    case 'title': goTitle(); break;
+    case 'pauseBtn': if (G.mode === 'playing') pauseGame(); else if (G.mode === 'paused') resumeGame(); break;
+    case 'sound': toggleMute(); break;
+    default: break;
+  }
+}
+
+// ------------------------------------------------------------------ input
+function pressDown(src) {
+  if (G.mode !== 'playing' || G.inputLock > 0 || W.demo) return;
+  if (G.holdSrc) return;
+  startCharge(src);
+}
+function pressUp(src) {
+  if (G.mode !== 'playing') return;
+  if (J.state === 'charge' && G.holdSrc === src) release();
+}
+addEventListener('keydown', (e) => {
+  Sound.unlock();
+  const k = e.code;
+  if (k === 'Space' || k === 'Enter' || k.startsWith('Arrow')) e.preventDefault();
+  if (e.repeat) return;
+  if (k === 'KeyM') { toggleMute(); return; }
+  switch (G.mode) {
+    case 'title':
+      if (k === 'Space' || k === 'Enter') { flashBtn(btnMap.btnStart); G.keyHeld = k === 'Space'; startGame(); }
+      else if (k === 'KeyH') { flashBtn(btnMap.btnHelp); openHelp(); }
+      else if (k === 'ArrowLeft' || k === 'ArrowRight') {
+        const order = ['easy', 'normal', 'hard'];
+        const i = clamp(order.indexOf(G.diff) + (k === 'ArrowLeft' ? -1 : 1), 0, 2);
+        G.diff = order[i]; store.set('diff', G.diff); refreshTitle(); Sound.sfx('click');
+      } else if (k === 'Digit1' || k === 'Digit2' || k === 'Digit3') {
+        G.diff = ['easy', 'normal', 'hard'][Number(k.slice(5)) - 1]; store.set('diff', G.diff); refreshTitle(); Sound.sfx('click');
+      }
+      break;
+    case 'playing':
+      if (k === 'Space') { if (!G.keyHeld) pressDown('key'); }
+      else if (k === 'KeyP' || k === 'Escape') { flashBtn(btnMap.btnPause); pauseGame(); }
+      else if (k === 'KeyH') openHelp();
+      break;
+    case 'paused':
+      if (k === 'KeyP' || k === 'Escape' || k === 'Enter') { flashBtn(btnMap.btnResume); resumeGame(); }
+      else if (k === 'KeyH') openHelp();
+      else if (k === 'KeyR') startGame();
+      break;
+    case 'help':
+      if (k === 'KeyH' || k === 'Escape' || k === 'Enter') { flashBtn(btnMap.btnHelpClose); closeHelp(); }
+      break;
+    case 'over':
+      if ((k === 'Space' || k === 'Enter') && performance.now() - G.overShownAt > 700) { flashBtn(btnMap.btnRetry); G.keyHeld = k === 'Space'; startGame(); }
+      else if (k === 'Escape') goTitle();
+      break;
+    default: break;
+  }
+});
+addEventListener('keyup', (e) => {
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (G.keyHeld) { G.keyHeld = false; return; }
+    pressUp('key');
+  }
+});
+stage.addEventListener('pointerdown', (e) => {
+  Sound.unlock();
+  if (e.target.closest('.btn,.btn-round')) return;
+  if (G.mode === 'playing') {
+    e.preventDefault();
+    try { stage.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ }
+    pressDown('ptr');
+  } else if (G.mode === 'title' && !e.target.closest('#menuPanel')) {
+    flashBtn(btnMap.btnStart);
+    startGame();
+  }
+});
+addEventListener('pointerup', () => pressUp('ptr'));
+addEventListener('pointercancel', () => { if (J.state === 'charge' && G.holdSrc === 'ptr') cancelCharge(); });
+addEventListener('blur', () => { if (J.state === 'charge' && !W.demo) cancelCharge(); G.keyHeld = false; });
+document.addEventListener('visibilitychange', () => { if (document.hidden && G.mode === 'playing') pauseGame(); });
+addEventListener('contextmenu', (e) => e.preventDefault());
+
+// ------------------------------------------------------------------ main loop
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  if (G.mode === 'playing' || G.mode === 'title' || G.mode === 'over' || (G.mode === 'help' && G.helpFrom === 'title')) {
+    if (G.inputLock > 0) G.inputLock -= dt;
+    W.time += dt;
+    for (const p of W.plats) {
+      if (p.kind === 'tray') p.x = platXAt(p, W.time);
+      if (p.kind === 'cookie' && p.crumbleT >= 0 && !p.collapsed) {
+        p.crumbleT += dt;
+        p.crackT += dt;
+        if (p.crackT > 0.55 && !W.demo) { p.crackT = 0; Sound.sfx('crack'); }
+        if (p.crumbleT >= p.crumbleDur) collapseCookie(p);
+      }
+    }
+    updateJelly(dt);
+    updateDemo(dt);
+    W.camX += (W.camTarget - W.camX) * (1 - Math.exp(-dt * 3.2));
+    ensurePlatforms();
+    render();
+  }
+  requestAnimationFrame(frame);
+}
+
+// ------------------------------------------------------------------ debug / test hooks
+STATUS.nextHoldMs = (latencyMs = 30) => {
+  if (!J.plat) return null;
+  const n = platByIndex(J.plat.index + 1);
+  if (!n) return null;
+  let D = n.x - J.x;
+  for (let k = 0; k < 4; k++) {
+    const hold = D / K_DIST;
+    const t = W.time + (hold + latencyMs) / 1000 + 0.42 + D / 1500;
+    D = platXAt(n, t) - (J.plat.kind === 'tray' ? platXAt(J.plat, W.time + (hold + latencyMs) / 1000) + J.offX : J.x);
+  }
+  return Math.round(clamp(D / K_DIST, 30, MAX_CHARGE));
+};
+STATUS.nextPlat = () => {
+  const n = J.plat && platByIndex(J.plat.index + 1);
+  return n ? { dx: n.x - J.x, halfW: n.halfW, perfectR: perfectR(n), type: n.type } : null;
+};
+STATUS.snapshot = () => ({ mode: G.mode, score: G.score, combo: G.combo, maxCombo: G.maxCombo, perfects: G.perfects, jumps: G.jumps,
+  jelly: J.state, onPlat: J.plat ? J.plat.index : null, plats: W.plats.length, diff: G.diff, muted: Sound.muted, audio: Sound.ctx ? Sound.ctx.state : 'none' });
+
+// ------------------------------------------------------------------ boot
+async function boot() {
+  const lt = $('#loadTxt');
+  lt.textContent = '0 / ' + ASSETS.length;
+  await loadAssets(() => { lt.textContent = STATUS.assets.loaded + ' / ' + ASSETS.length; });
+  if (STATUS.assets.failed.length) {
+    $('#loading').firstChild.textContent = '资源加载失败';
+    lt.textContent = STATUS.assets.failed.join(', ');
+    console.error('Jelly Hop: failed to load assets', STATUS.assets.failed);
+    return;
+  }
+  buildWorld();
+  hudAnims.score = makeLottie($('#hudScoreBg'), 'hud_score');
+  stopAt(hudAnims.score, 0);
+  hudAnims.best = makeLottie($('#chipBest .lot'), 'chip_best');
+  stopAt(hudAnims.best, 0);
+  hudAnims.combo = makeLottie($('#chipCombo .lot'), 'chip_combo');
+  stopAt(hudAnims.combo, 0);
+  comboAnim = makeLottie($('#comboBox .lot'), 'combo');
+  stopAt(comboAnim, 0);
+  logoAnim = makeLottie($('#logo .bg'), 'logo');
+  panelAnims.title = makeLottie($('#menuPanel .bg'), 'panel_menu');
+  panelAnims.help = makeLottie($('#helpPanel .bg'), 'panel_help');
+  panelAnims.pause = makeLottie($('#pausePanel .bg'), 'panel_pause');
+  panelAnims.over = makeLottie($('#overPanel .bg'), 'panel_over');
+  for (const pa of Object.values(panelAnims)) stopAt(pa, 24);
+  recordAnim = makeLottie($('#record .bg'), 'record');
+  stopAt(recordAnim, 0);
+  for (const el of $$('[data-demo]')) { const a = makeLottie(el, el.dataset.demo); stopAt(a, 0); demoAnims.push(a); }
+  $$('.btn,.btn-round').forEach(setupButton);
+  setRoundState(btnMap.btnSound, Sound.muted);
+  $('#loading').style.display = 'none';
+  STATUS.ready = true;
+  goTitle();
+  if (Q.get('autostart') === '1') startGame();
+  requestAnimationFrame((t) => { last = t; frame(t); });
+}
+boot();
+})();
+</script>
+</body>
+</html>

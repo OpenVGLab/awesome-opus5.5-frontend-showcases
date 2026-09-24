@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The noria turns slowly with the stream and lifts water to the elevated trough; the double tipping bucket snaps from side to side feeding the catch basin, while foam flecks travel along the flume into the covered distribution box; the grain cart tips its load into the bin, rights its box and rolls down the lane and back; the upper millstone turns under its hopper.",
+  "parts": [
+    {
+      "id": "noria_wheel",
+      "parent": null,
+      "box": [
+        31,
+        9,
+        63,
+        101,
+        79,
+        79
+      ],
+      "colors": [
+        "#9C4A35",
+        "#763425",
+        "#8FBBA0",
+        "#BFDAC6"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            66,
+            44,
+            71
+          ],
+          "amount": 6.283185307179586,
+          "period": 12,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "tipping_bucket",
+      "parent": null,
+      "box": [
+        85,
+        63,
+        81,
+        103,
+        69,
+        89
+      ],
+      "colors": [
+        "#6B9B80",
+        "#F1EDE3",
+        "#AAD6CE"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            94,
+            63,
+            85
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1.5,
+              0.38
+            ],
+            [
+              4,
+              0.38
+            ],
+            [
+              4.5,
+              -0.38
+            ],
+            [
+              7,
+              -0.38
+            ],
+            [
+              7.5,
+              0.38
+            ],
+            [
+              10,
+              0.38
+            ],
+            [
+              10.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flume_flow",
+      "parent": null,
+      "box": [
+        100,
+        57,
+        84,
+        141,
+        57,
+        86
+      ],
+      "colors": [
+        "#EDF7F3"
+      ],
+      "channels": [
+        {
+          "type": "flow",
+          "axis": "x",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": 8,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "upper_millstone",
+      "parent": null,
+      "box": [
+        44,
+        41,
+        162,
+        68,
+        57,
+        186
+      ],
+      "colors": [
+        "#F1EDE3",
+        "#DCD5C6",
+        "#BC6A4E"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            56,
+            44,
+            174
+          ],
+          "amount": 6.283185307179586,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "grain_cart",
+      "parent": null,
+      "box": [
+        103,
+        13,
+        160,
+        152,
+        32,
+        192
+      ],
+      "colors": [
+        "#763425",
+        "#5A281D"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "x",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              5.5,
+              0
+            ],
+            [
+              8.3,
+              34
+            ],
+            [
+              9.2,
+              34
+            ],
+            [
+              11.6,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cart_box",
+      "parent": "grain_cart",
+      "box": [
+        103,
+        26,
+        164,
+        130,
+        42,
+        188
+      ],
+      "colors": [
+        "#9C4A35",
+        "#BC6A4E",
+        "#D8B46C",
+        "#B8934F"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            104,
+            26,
+            176
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1.5,
+              0
+            ],
+            [
+              2.8,
+              0.7
+            ],
+            [
+              4,
+              0.7
+            ],
+            [
+              5.2,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cart_wheels",
+      "parent": "grain_cart",
+      "box": [
+        109,
+        13,
+        160,
+        131,
+        34,
+        192
+      ],
+      "colors": [
+        "#A39C8E",
+        "#DCD5C6"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            120,
+            23,
+            176
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              5.5,
+              0
+            ],
+            [
+              8.3,
+              -3.4
+            ],
+            [
+              9.2,
+              -3.4
+            ],
+            [
+              11.6,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

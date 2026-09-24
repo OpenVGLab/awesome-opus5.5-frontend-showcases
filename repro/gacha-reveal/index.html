@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>星詠みの召喚 — ガチャ演出</title>
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "../vendor/three/build/three.module.js",
+    "three/addons/": "../vendor/three/jsm/"
+  }
+}
+</script>
+</head>
+<body data-phase="loading">
+<div id="app">
+  <canvas id="gl"></canvas>
+  <canvas id="fx"></canvas>
+
+  <div id="ui">
+    <div id="loading">
+      <div class="ld-ring"></div>
+      <p>星図を展開しています…</p>
+    </div>
+
+    <section id="home" class="screen">
+      <header class="topbar">
+        <div class="logo">
+          <div class="logo-main">星詠みの召喚</div>
+          <div class="logo-sub">ASTRAL SUMMON</div>
+        </div>
+        <div class="top-right">
+          <div class="wallet" title="星晶石">
+            <i class="gem"></i><span id="gems">30,000</span><small>星晶石</small>
+          </div>
+          <button id="btnRates" class="chip-btn">提供割合</button>
+          <button id="btnSound" class="icon-btn" aria-label="サウンド切替">
+            <svg class="on" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <svg class="off" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <aside class="banner">
+        <div class="banner-tag">期間限定　ピックアップ召喚</div>
+        <h2 class="banner-title">天狼、星海を駆ける</h2>
+        <div class="banner-body">
+          <div class="banner-card" id="bannerCard"></div>
+          <div class="banner-copy">
+            <div class="bc-rar">SSR<span class="bc-stars">★★★★★</span></div>
+            <div class="bc-name"><small>【天狼】</small>シリウス</div>
+            <div class="bc-up">出現率 UP!</div>
+            <dl class="bc-rates">
+              <dt>SSR</dt><dd>6.00%</dd>
+              <dt>ピックアップ</dt><dd>3.00%</dd>
+            </dl>
+            <div class="bc-period">9/24(木) 16:00 〜 10/8(木) 15:59</div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="summon">
+        <div class="summon-meta">
+          <div class="pity">天井まで あと <b id="pity">90</b> 回</div>
+          <button id="btnTicket" class="ticket-btn">SSR確定チケット <b id="tickets">×2</b></button>
+        </div>
+        <div class="btn-row">
+          <button id="btn1" class="summon-btn single">
+            <span class="sb-label">1回召喚</span>
+            <span class="sb-cost"><i class="gem"></i>300</span>
+          </button>
+          <button id="btn10" class="summon-btn multi">
+            <span class="sb-badge first" id="badge10">初回限定 SSR1体確定</span>
+            <span class="sb-label">10回召喚</span>
+            <span class="sb-cost"><i class="gem"></i>3,000</span>
+          </button>
+        </div>
+      </div>
+      <div class="hint">[1] 1回召喚　[0] 10回召喚　[Space] 次へ　[S] スキップ　[M] 音</div>
+    </section>
+
+    <section id="seq" class="screen">
+      <div class="seq-ctrl">
+        <button id="btnAuto" class="chip-btn on" aria-pressed="true"><span class="dot"></span>AUTO</button>
+        <button id="btnSkip" class="chip-btn">SKIP <span class="ff">▶▶</span></button>
+      </div>
+      <div id="promo"></div>
+      <div id="info"></div>
+      <div id="cutin">
+        <div class="ci-band"></div>
+        <div class="ci-core">
+          <div class="ci-text">SSR</div>
+          <div class="ci-sub">SUPER SPECIAL RARE</div>
+        </div>
+        <div class="ci-line">星が、応えた──</div>
+      </div>
+      <div id="tapHint">TAP TO CONTINUE</div>
+      <div id="strip"></div>
+    </section>
+
+    <section id="results" class="screen">
+      <div class="res-head">
+        <h2>召喚結果</h2>
+        <div class="res-sum" id="resSum"></div>
+      </div>
+      <div class="res-grid" id="resGrid"></div>
+      <div class="res-actions">
+        <button id="btnBack" class="chip-btn big">TOPへ戻る</button>
+        <button id="btnAgain" class="summon-btn multi compact">
+          <span class="sb-label" id="againLabel">もう一度 10回召喚</span>
+          <span class="sb-cost"><i class="gem"></i><span id="againCost">3,000</span></span>
+        </button>
+      </div>
+    </section>
+
+    <div id="modal">
+      <div class="modal-panel" role="dialog" aria-label="提供割合">
+        <div class="modal-head">
+          <h3>提供割合</h3>
+          <button id="btnClose" class="icon-btn" aria-label="閉じる">✕</button>
+        </div>
+        <div id="ratesBody"></div>
+      </div>
+    </div>
+    <div id="toast"></div>
+  </div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

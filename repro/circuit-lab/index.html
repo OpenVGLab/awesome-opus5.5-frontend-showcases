@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Circuit Lab – drag-and-drop circuit experiment simulator</title>
+<meta name="description" content="Build circuits from batteries, resistors, bulbs, switches, meters and wires, then press Start Test to check whether the circuit is closed.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230ea5e9'/%3E%3Cpath d='M18 4L8 18h7l-2 10 11-15h-7z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/widgets.css">
+</head>
+<body>
+<div id="app">
+  <!-- ===== Header: title, experiment steps, sound & help ===== -->
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+        <defs><linearGradient id="gLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs>
+        <rect width="40" height="40" rx="11" fill="url(#gLogo)"/>
+        <path d="M22.5 6L11 22h8.5l-2.5 12 12.5-17H21z" fill="#fff"/>
+      </svg>
+      <div>
+        <div class="brand-name">Circuit Lab</div>
+        <div class="brand-sub">Drag &middot; connect &middot; test</div>
+      </div>
+    </div>
+    <nav id="stepper" class="stepper" aria-label="Experiment steps"></nav>
+    <div class="top-actions">
+      <button type="button" id="btnSound" class="icon-btn" aria-label="Sound on or off"></button>
+      <button type="button" id="btnHelp" class="icon-btn" data-icon="help" title="How to use" aria-label="How to use"></button>
+    </div>
+  </header>
+
+  <!-- ===== Left: component palette and example circuits ===== -->
+  <aside class="panel left">
+    <section>
+      <h2>Components</h2>
+      <p class="hint">Drag onto the workspace, or click to add</p>
+      <div id="palette" class="palette"></div>
+    </section>
+    <section>
+      <h2>Example circuits</h2>
+      <div id="examples" class="examples"></div>
+    </section>
+    <section class="tips">
+      <h2>Controls</h2>
+      <ul>
+        <li><b>Drag</b> a part to move it, a wire end to stretch it</li>
+        <li><b>Drag from a terminal</b> to draw a new wire</li>
+        <li><b>Double-click</b> a part to set its properties</li>
+        <li><kbd>R</kbd> rotate &middot; <kbd>Del</kbd> delete &middot; <kbd>T</kbd> test</li>
+        <li><b>Wheel</b> zoom &middot; drag empty space to pan</li>
+      </ul>
+    </section>
+  </aside>
+
+  <!-- ===== Centre: the workspace ===== -->
+  <main id="stage" class="stage">
+    <svg id="board" aria-label="Circuit workspace">
+      <defs>
+        <pattern id="pGrid" width="20" height="20" x="-10" y="-10" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="1.1" fill="#94a3b8" fill-opacity="0.22"/>
+        </pattern>
+        <pattern id="pGridMajor" width="100" height="100" x="-0.5" y="-0.5" patternUnits="userSpaceOnUse">
+          <path d="M0.5 0V100M0 0.5H100" stroke="#94a3b8" stroke-opacity="0.08" stroke-width="1" fill="none"/>
+        </pattern>
+        <linearGradient id="gBattBody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#4a5568"/><stop offset="0.45" stop-color="#1f2733"/><stop offset="1" stop-color="#0c1017"/>
+        </linearGradient>
+        <linearGradient id="gBattBand" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fcd34d"/><stop offset="0.5" stop-color="#f59e0b"/><stop offset="1" stop-color="#9a5a07"/>
+        </linearGradient>
+        <linearGradient id="gMetal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f8fafc"/><stop offset="0.55" stop-color="#94a3b8"/><stop offset="1" stop-color="#e2e8f0"/>
+        </linearGradient>
+        <linearGradient id="gResBody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f1e3c2"/><stop offset="0.5" stop-color="#d6bb8c"/><stop offset="1" stop-color="#a4854f"/>
+        </linearGradient>
+        <linearGradient id="gSwitchBase" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#454c59"/><stop offset="1" stop-color="#1c2028"/>
+        </linearGradient>
+        <radialGradient id="gGlass" cx="0.4" cy="0.35" r="0.7">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.26"/><stop offset="1" stop-color="#bcd0f0" stop-opacity="0.07"/>
+        </radialGradient>
+        <radialGradient id="gBulbLit" cx="0.5" cy="0.55" r="0.55">
+          <stop offset="0" stop-color="#fffbe8"/><stop offset="0.55" stop-color="#ffd76a" stop-opacity="0.85"/><stop offset="1" stop-color="#ffab40" stop-opacity="0.15"/>
+        </radialGradient>
+        <radialGradient id="gGlow">
+          <stop offset="0" stop-color="#ffd98a" stop-opacity="0.6"/><stop offset="0.45" stop-color="#ffc061" stop-opacity="0.2"/><stop offset="1" stop-color="#ffaa40" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="gDial" cx="0.5" cy="0.4" r="0.65">
+          <stop offset="0" stop-color="#fffdf6"/><stop offset="1" stop-color="#e9e1cc"/>
+        </radialGradient>
+      </defs>
+      <g id="world">
+        <rect x="-6000" y="-6000" width="12000" height="12000" fill="url(#pGrid)"/>
+        <rect x="-6000" y="-6000" width="12000" height="12000" fill="url(#pGridMajor)"/>
+        <g id="lyGlow"></g>
+        <g id="lyHilite"></g>
+        <g id="lyParts"></g>
+        <g id="lyWires"></g>
+        <g id="lyFlow"></g>
+        <g id="lyNodes"></g>
+        <g id="lyIssues"></g>
+        <g id="lyLabels"></g>
+        <g id="lyOverlay"></g>
+        <g id="lyFx"></g>
+      </g>
+    </svg>
+
+    <div id="coach" class="coach"></div>
+    <div id="status" class="status"></div>
+    <div id="emptyHint" class="empty-hint" hidden>
+      <div class="empty-art" data-icon="layers"></div>
+      <b>Your workspace is empty</b>
+      <span>Drag a battery, a resistor and some wires here from the left, or load an example circuit.</span>
+    </div>
+
+    <div class="toolbar" role="toolbar" aria-label="Workspace tools">
+      <button type="button" id="btnUndo" class="icon-btn" data-icon="undo" title="Undo (Ctrl+Z)" aria-label="Undo"></button>
+      <button type="button" id="btnRedo" class="icon-btn" data-icon="redo" title="Redo (Ctrl+Y)" aria-label="Redo"></button>
+      <span class="sep"></span>
+      <button type="button" id="btnRotate" class="icon-btn" data-icon="rotate" title="Rotate selected (R)" aria-label="Rotate selected"></button>
+      <button type="button" id="btnDelete" class="icon-btn" data-icon="trash" title="Delete selected (Del)" aria-label="Delete selected"></button>
+      <span class="sep"></span>
+      <button type="button" id="btnZoomOut" class="icon-btn" data-icon="zoomOut" title="Zoom out (-)" aria-label="Zoom out"></button>
+      <span id="zoomPct" class="zoom-pct">100%</span>
+      <button type="button" id="btnZoomIn" class="icon-btn" data-icon="zoomIn" title="Zoom in (+)" aria-label="Zoom in"></button>
+      <button type="button" id="btnFit" class="icon-btn" data-icon="fit" title="Fit circuit to view (0)" aria-label="Fit to view"></button>
+      <span class="sep"></span>
+      <button type="button" id="btnClear" class="icon-btn" data-icon="eraser" title="Clear workspace" aria-label="Clear workspace"></button>
+    </div>
+
+    <div id="selbar" class="selbar" hidden></div>
+    <div id="props" class="props" hidden role="dialog" aria-label="Component properties"></div>
+    <div id="tip" class="tip" hidden></div>
+    <div id="toasts" class="toasts" aria-live="polite"></div>
+    <div class="scanline" aria-hidden="true"></div>
+  </main>
+
+  <!-- ===== Right: Start Test and results ===== -->
+  <aside class="panel right">
+    <button type="button" id="btnTest" class="btn-test">
+      <span class="bt-icon" data-icon="play"></span><span id="btnTestLabel">Start Test</span><kbd>T</kbd>
+    </button>
+    <label class="auto"><input type="checkbox" id="autoTest"><span>Re-test automatically after every change</span></label>
+    <div id="result" class="res res-idle" aria-live="polite"></div>
+    <div id="readings" class="card readings" hidden>
+      <h2>Component readings</h2>
+      <table>
+        <thead><tr><th>Part</th><th>U</th><th>I</th><th>P</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="records" class="card records">
+      <div class="card-head"><h2>Lab notebook</h2><button type="button" id="btnClearRecords" class="link">Clear</button></div>
+      <table>
+        <thead><tr><th>#</th><th>Result</th><th>U</th><th>I</th><th>R</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </aside>
+</div>
+
+<!-- ===== Help dialog ===== -->
+<div id="help" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-label="How to use Circuit Lab">
+    <div class="modal-head">
+      <h2>How to use Circuit Lab</h2>
+      <button type="button" class="icon-btn" data-close data-icon="close" aria-label="Close"></button>
+    </div>
+    <div class="help-grid">
+      <section>
+        <h3>1 &middot; Build</h3>
+        <p>Drag batteries, resistors, bulbs, switches, meters and wires from the left onto the workspace (or click a card to add one).</p>
+        <p>Drag a part to move it. Drag a <b>wire end</b> to stretch the wire, or drag from any free <b>terminal</b> to draw a new wire.</p>
+        <p>When two metal ends touch, a gold <b>contact point</b> appears automatically &ndash; that is where current can pass.</p>
+      </section>
+      <section>
+        <h3>2 &middot; Set up</h3>
+        <p><b>Double-click</b> any part to set its properties: battery voltage, resistance, bulb rating, meter range or wire colour.</p>
+        <p>Click a switch to open or close it. Select a part to rotate or delete it.</p>
+      </section>
+      <section>
+        <h3>3 &middot; Test</h3>
+        <p>Press <b>Start Test</b> on the right. A closed circuit shows the <b>current intensity</b>, moving current dots and every reading.</p>
+        <p>If the circuit is open, the disconnected spots are marked in <span class="red">red</span> and explained in the list.</p>
+      </section>
+      <section>
+        <h3>Keyboard</h3>
+        <table class="keys">
+          <tr><td><kbd>R</kbd></td><td>rotate selected</td><td><kbd>Del</kbd></td><td>delete selected</td></tr>
+          <tr><td><kbd>E</kbd></td><td>properties</td><td><kbd>Space</kbd></td><td>flip switch</td></tr>
+          <tr><td><kbd>T</kbd></td><td>start test</td><td><kbd>Ctrl Z</kbd></td><td>undo</td></tr>
+          <tr><td><kbd>Arrows</kbd></td><td>nudge</td><td><kbd>Shift</kbd>+drag</td><td>branch a wire</td></tr>
+        </table>
+        <p class="small">Physics: wires, ammeters and closed switches are ideal (0 &Omega;), voltmeters draw no current, a bulb&rsquo;s resistance is U&sup2; &divide; P. Currents follow Ohm&rsquo;s law and Kirchhoff&rsquo;s laws.</p>
+      </section>
+    </div>
+    <div class="modal-foot">
+      <button type="button" id="btnResetProgress" class="btn" data-icon="reset">Reset experiment progress</button>
+      <span class="grow"></span>
+      <button type="button" class="btn primary" data-close>Got it</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

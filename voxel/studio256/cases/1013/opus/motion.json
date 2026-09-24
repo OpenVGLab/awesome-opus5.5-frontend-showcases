@@ -1,0 +1,350 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The trawler's net drum turns to haul the cod-end up the stern ramp, holds, then pays it back down while the paired trawl winches keep turning and the radar sweeps. The tug runs its towing winch, sweeps its fire monitor and turns its radar at its own tempo, and the light buoy lifts gently on the swell.",
+  "parts": [
+    {
+      "id": "net_drum",
+      "parent": null,
+      "box": [
+        155,
+        27,
+        73,
+        180,
+        53,
+        95
+      ],
+      "colors": [
+        "#B5733A",
+        "#B98E4A",
+        "#4A3D30",
+        "#EB7A2C"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            168,
+            40,
+            84
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1.0,
+              0
+            ],
+            [
+              4.5,
+              -2.2
+            ],
+            [
+              7.0,
+              -2.2
+            ],
+            [
+              10.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cod_end",
+      "parent": null,
+      "box": [
+        186,
+        16,
+        77,
+        196,
+        32,
+        91
+      ],
+      "colors": [
+        "#C27D3E",
+        "#8E5A2C",
+        "#EB7A2C",
+        "#C9D1D4"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "x",
+          "pivot": [
+            191,
+            20,
+            84
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1.0,
+              0
+            ],
+            [
+              4.5,
+              -7
+            ],
+            [
+              7.0,
+              -7
+            ],
+            [
+              10.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            191,
+            20,
+            84
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1.0,
+              0
+            ],
+            [
+              4.5,
+              5
+            ],
+            [
+              7.0,
+              5
+            ],
+            [
+              10.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trawl_winches",
+      "parent": null,
+      "box": [
+        138,
+        29,
+        66,
+        150,
+        41,
+        102
+      ],
+      "colors": [
+        "#B98E4A",
+        "#6F7C86",
+        "#4A3D30"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            144,
+            35,
+            84
+          ],
+          "amount": 6.283185307179586,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "trawler_radar",
+      "parent": null,
+      "box": [
+        89,
+        58,
+        77,
+        91,
+        59,
+        91
+      ],
+      "colors": [
+        "#E4E1D8"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            90,
+            58.5,
+            84
+          ],
+          "amount": 6.283185307179586,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "tug_radar",
+      "parent": null,
+      "box": [
+        100,
+        63,
+        157,
+        102,
+        64,
+        167
+      ],
+      "colors": [
+        "#E4E1D8"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            101,
+            63.5,
+            162
+          ],
+          "amount": -6.283185307179586,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "tug_monitor",
+      "parent": null,
+      "box": [
+        105,
+        47,
+        159,
+        116,
+        51,
+        165
+      ],
+      "colors": [
+        "#D2462F",
+        "#8D949A"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            107,
+            48,
+            162
+          ],
+          "amount": 0.5,
+          "period": 6,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "tug_tow_winch",
+      "parent": null,
+      "box": [
+        75,
+        21,
+        155,
+        85,
+        31,
+        169
+      ],
+      "colors": [
+        "#B98E4A",
+        "#6F7C86",
+        "#4A3D30"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            80,
+            26,
+            162
+          ],
+          "amount": -6.283185307179586,
+          "period": 6,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "light_buoy",
+      "parent": null,
+      "box": [
+        183,
+        5,
+        189,
+        201,
+        45,
+        207
+      ],
+      "colors": [
+        "#D2462F",
+        "#F1EFE8",
+        "#35434F",
+        "#FFF1B8",
+        "#59616A"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            192,
+            5,
+            198
+          ],
+          "amount": 0.7,
+          "period": 4,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>纽约城（8192³）· 体素</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --fg: #1b232d; --muted: #5b6673; --panel: rgba(255,255,255,0.84); --accent: #2d6bd0; --line: rgba(20,30,40,0.1); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #c9d6e3; color: var(--fg);
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  #c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+  #labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .lbl { position: absolute; transform: translate(-50%, -100%); white-space: nowrap; font-size: 12px; font-weight: 600; color: #fff;
+    background: rgba(24, 34, 48, 0.72); padding: 2px 7px; border-radius: 9px; letter-spacing: 0.3px; }
+  .lbl::after { content: ''; position: absolute; left: 50%; bottom: -5px; width: 1px; height: 5px; background: rgba(24,34,48,0.72); }
+  .lbl.zone { background: rgba(214, 96, 40, 0.85); }
+  .panel { position: fixed; left: max(12px, env(safe-area-inset-left)); top: max(12px, env(safe-area-inset-top)); width: min(348px, calc(100vw - 24px));
+    max-height: calc(100vh - 24px); overflow: auto; padding: 12px 14px; background: var(--panel); backdrop-filter: blur(14px) saturate(1.3);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3); border: 1px solid rgba(255,255,255,0.6); border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(20,40,70,0.18); font-size: 12.5px; line-height: 1.5; user-select: none; }
+  .panel h1 { font-size: 17px; margin: 0 26px 4px 0; font-weight: 700; }
+  .panel h2 { font-size: 12px; margin: 10px 0 4px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; }
+  #collapse { position: absolute; right: 9px; top: 9px; width: 24px; height: 24px; border: 0; border-radius: 7px; background: rgba(20,30,40,0.07); color: var(--muted); cursor: pointer; font-size: 15px; }
+  .panel.collapsed > :not(h1):not(#collapse) { display: none !important; }
+  .prompt { margin: 0 0 6px; color: var(--muted); font-size: 12px; font-style: italic; }
+  .facts { display: grid; grid-template-columns: auto 1fr; gap: 0 10px; margin: 0; }
+  .facts dt { color: var(--muted); } .facts dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  button.b { border: 1px solid var(--line); background: rgba(255,255,255,0.7); border-radius: 8px; padding: 4px 9px; font: inherit; color: var(--fg); cursor: pointer; }
+  button.b:hover { color: var(--accent); border-color: rgba(45,107,208,0.4); }
+  button.b.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .list { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .list button { text-align: left; font-size: 12px; padding: 4px 7px; }
+  .list button small { color: var(--muted); margin-left: 3px; }
+  .list button.on small { color: #e7eefc; }
+  .progress { margin-top: 8px; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { height: 3px; background: rgba(20,30,40,0.08); border-radius: 2px; overflow: hidden; margin-top: 3px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+  .hint { position: fixed; right: 12px; bottom: 10px; font-size: 12px; color: rgba(20,30,40,0.7); background: rgba(255,255,255,0.62); padding: 4px 10px; border-radius: 8px; pointer-events: none; }
+  .clock { position: fixed; right: 12px; top: 12px; font-size: 12px; background: rgba(255,255,255,0.7); padding: 4px 10px; border-radius: 8px; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .hidden { display: none !important; }
+  a { color: var(--accent); }
+  @media (max-width: 640px) { .panel { font-size: 12px; } .hint { display: none; } .list { grid-template-columns: 1fr; } }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<canvas id="c" tabindex="0"></canvas>
+<div id="labels"></div>
+<div class="panel" id="panel">
+  <button id="collapse" title="折叠 / 展开">−</button>
+  <h1>纽约城（8192³）</h1>
+  <p class="prompt">A full rendition of New York City, fully accurate, dense, and to scale</p>
+  <dl class="facts" id="facts">
+    <dt>网格</dt><dd>8192³ · 1 米 / 体素</dd>
+    <dt>覆盖</dt><dd id="fCover">8.19 × 8.19 公里</dd>
+    <dt>静态体素</dt><dd id="fVox">—</dd>
+    <dt>动态角色</dt><dd id="fActors">—</dd>
+    <dt>渲染</dt><dd id="fRender">—</dd>
+  </dl>
+  <h2>动画</h2>
+  <div class="row">
+    <button class="b on" id="play">暂停</button>
+    <button class="b" data-speed="0.5">0.5×</button><button class="b on" data-speed="1">1×</button><button class="b" data-speed="2">2×</button>
+    <button class="b" id="orbit">镜头环绕</button>
+    <button class="b on" id="labelsBtn">地标标注</button>
+  </div>
+  <h2>视角</h2>
+  <div class="list" id="views"></div>
+  <h2>活动区域（点击飞到近景）</h2>
+  <div class="list" id="zones"></div>
+  <h2>画质</h2>
+  <div class="row">
+    <button class="b" data-q="low">流畅</button><button class="b on" data-q="std">标准</button><button class="b" data-q="high">精细</button>
+  </div>
+  <h2>下载</h2>
+  <div class="row">
+    <button class="b" id="dlModel">静态模型</button>
+    <button class="b" id="dlActors">角色路径</button>
+    <button class="b" id="dlSrc">生成器源码</button>
+  </div>
+  <div class="progress" id="progress"><span id="ptext">准备中…</span><div class="bar"><i id="pbar"></i></div></div>
+</div>
+<div class="clock" id="clock">—</div>
+<div class="hint" id="hint">左键拖动平移 · 滚轮朝鼠标缩放 · 右键或 Alt+拖动旋转 · 双击聚焦</div>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>

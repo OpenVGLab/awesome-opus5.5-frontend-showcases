@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas of Imaginary Planets</title>
+<meta name="description" content="An interactive field guide to eight invented worlds — explore, compare and forge imaginary planets rendered live in your browser.">
+<meta name="theme-color" content="#05060a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='14' fill='%23e9c47e'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='9' fill='none' stroke='%238fe3ff' stroke-width='3' transform='rotate(-20 32 32)'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "../vendor/three/build/three.module.js",
+    "three/addons/": "../vendor/three/jsm/"
+  }
+}
+</script>
+</head>
+<body data-mode="loading">
+<div id="stage" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="#" data-nav="system" aria-label="Atlas of Imaginary Planets — home">
+    <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <circle cx="20" cy="20" r="8.5" />
+      <ellipse cx="20" cy="20" rx="17" ry="5.2" transform="rotate(-22 20 20)" />
+    </svg>
+    <span class="brand-text">Atlas of <em>Imaginary</em> Planets</span>
+  </a>
+  <nav class="nav" aria-label="Sections">
+    <button type="button" data-nav="system">System</button>
+    <button type="button" data-nav="compare">Compare</button>
+    <button type="button" data-nav="forge">Forge</button>
+    <button type="button" data-nav="about">About</button>
+  </nav>
+  <button type="button" id="soundBtn" class="sound-btn" aria-pressed="false" title="Toggle sound (M)">
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="sound-label">Sound off</span>
+  </button>
+</header>
+
+<!-- System view -->
+<section class="hero" id="hero">
+  <p class="eyebrow">A field guide · Volume I · The Vesper system</p>
+  <h1>Eight worlds that <em>were never there.</em></h1>
+  <p class="lede">A quiet star called Vesper keeps eight impossible planets: a world of glass, a donut-shaped world, a planet mended with gold. Every coastline, storm and glowing seam is invented — and painted live in your browser.</p>
+  <div class="hero-actions">
+    <button type="button" class="btn primary" id="tourBtn">Begin the tour <span aria-hidden="true">→</span></button>
+    <button type="button" class="btn ghost" data-nav="forge">Forge your own world</button>
+  </div>
+</section>
+
+<div id="labels" class="labels" aria-hidden="true"></div>
+
+<div class="sys-tools" id="sysTools">
+  <div class="seg" role="group" aria-label="Orbit speed">
+    <span class="seg-label">Time</span>
+    <button type="button" data-speed="0" title="Pause orbits (Space)">❚❚</button>
+    <button type="button" data-speed="1" class="on">1×</button>
+    <button type="button" data-speed="12">12×</button>
+    <button type="button" data-speed="60">60×</button>
+  </div>
+  <p class="hint">Drag to orbit · Scroll to zoom · Click a world to land</p>
+</div>
+
+<footer class="dock" id="dock">
+  <div class="dock-cards" id="dockCards"></div>
+</footer>
+
+<!-- Planet view -->
+<button type="button" class="back-btn" id="backBtn"><span aria-hidden="true">←</span> Vesper system</button>
+<aside class="panel" id="panel" aria-live="polite"></aside>
+<div id="markers" class="markers"></div>
+<div class="poi-card" id="poiCard" role="dialog" aria-label="Point of interest"></div>
+<div class="planet-tools" id="planetTools">
+  <div class="seg" role="group" aria-label="Scan mode">
+    <span class="seg-label">Scan</span>
+    <button type="button" data-scan="0" class="on">Visible</button>
+    <button type="button" data-scan="1">Thermal</button>
+    <button type="button" data-scan="2">Elevation</button>
+  </div>
+  <div class="seg toggles" role="group" aria-label="Layers">
+    <span class="seg-label">Layers</span>
+    <button type="button" data-layer="clouds" class="on">Clouds</button>
+    <button type="button" data-layer="atmo" class="on">Air</button>
+    <button type="button" data-layer="markers" class="on">Markers</button>
+    <button type="button" data-layer="spin" class="on">Spin</button>
+  </div>
+  <div class="scan-legend" id="scanLegend"><span class="lo">cold</span><i></i><span class="hi">hot</span></div>
+  <p class="hint">Drag to rotate · Scroll to zoom · ← → switch worlds</p>
+</div>
+
+<!-- Compare view -->
+<div class="compare-bar" id="compareBar">
+  <div class="seg" role="group" aria-label="Sort worlds by">
+    <span class="seg-label">Sort by</span>
+    <span id="metricBtns"></span>
+  </div>
+  <p class="hint">True relative sizes · Earth shown for scale · Click any world to visit</p>
+</div>
+
+<!-- Forge -->
+<aside class="forge-panel" id="forgePanel"></aside>
+<div class="forge-id" id="forgeId"></div>
+
+<!-- About -->
+<div class="modal" id="about" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" hidden>
+  <div class="modal-card">
+    <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+    <p class="eyebrow">About this atlas</p>
+    <h2 id="aboutTitle">Nothing here is real. <em>All of it is live.</em></h2>
+    <p>Each world is drawn by its own procedural shader — continents, gas bands, crystal facets and glowing seams are computed from noise every frame. There are no textures, images or sound files: the star, the sky, the soundscapes and even the thumbnails are generated when the page loads.</p>
+    <div class="about-grid">
+      <div><h3>Explore</h3><p>Drag to orbit the system and click a world to land. Switch between visible, thermal and elevation scans, and tap numbered markers to visit points of interest.</p></div>
+      <div><h3>Compare</h3><p>Line every world up at its true relative size — with Earth for scale — and re-sort them by gravity, temperature, day length or distance.</p></div>
+      <div><h3>Forge</h3><p>Design your own planet: pick a type and shape, tune seas, storms and glow, then add it to the atlas or save a postcard.</p></div>
+    </div>
+    <h3>Keyboard</h3>
+    <ul class="keys">
+      <li><kbd>1</kbd>–<kbd>8</kbd> jump to a world</li>
+      <li><kbd>←</kbd> <kbd>→</kbd> previous / next world</li>
+      <li><kbd>C</kbd> compare · <kbd>F</kbd> forge</li>
+      <li><kbd>Space</kbd> pause orbits · <kbd>M</kbd> sound</li>
+      <li><kbd>Esc</kbd> back</li>
+    </ul>
+    <p class="fine">Built with three.js and the Web Audio API. Type set in Instrument Serif, Inter and JetBrains Mono (SIL Open Font License).</p>
+  </div>
+</div>
+
+<div class="loader" id="loader" role="status">
+  <div class="loader-inner">
+    <svg class="loader-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <circle cx="20" cy="20" r="8.5" />
+      <ellipse cx="20" cy="20" rx="17" ry="5.2" transform="rotate(-22 20 20)" />
+    </svg>
+    <p class="loader-title">Atlas of <em>Imaginary</em> Planets</p>
+    <div class="loader-bar"><i id="loaderFill"></i></div>
+    <p class="loader-text" id="loaderText">Charting the Vesper system…</p>
+  </div>
+</div>
+<div class="fade" id="fade" aria-hidden="true"></div>
+<div class="toast" id="toast" role="status"></div>
+<noscript><p class="noscript">This atlas needs JavaScript and WebGL to draw its planets.</p></noscript>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

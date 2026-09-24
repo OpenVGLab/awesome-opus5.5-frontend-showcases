@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Air Quality Real-time Monitoring System</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%230b1d33' stroke='%2338bdf8' stroke-width='2'/%3E%3Cpath d='M9 16c4-3 8 3 12 0s7-3 10 0M9 23c4-3 8 3 12 0s7-3 10 0' stroke='%232dd4bf' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+<script src="vendor/echarts.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+      <defs>
+        <linearGradient id="lgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient>
+        <radialGradient id="lgB" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#1b3a63"/><stop offset="1" stop-color="#0a1628"/></radialGradient>
+      </defs>
+      <circle cx="20" cy="20" r="18" fill="url(#lgB)" stroke="url(#lgA)" stroke-width="1.6"/>
+      <path d="M9 15.5c4-3 8 3 12 0s7-3 10 0" stroke="url(#lgA)" stroke-width="2.3" fill="none" stroke-linecap="round"/>
+      <path d="M9 21.5c4-3 8 3 12 0s7-3 10 0" stroke="url(#lgA)" stroke-width="2.3" fill="none" stroke-linecap="round" opacity="0.8"/>
+      <path d="M12 27.5c3-2.2 6 2.2 9 0s5-2.2 7 0" stroke="url(#lgA)" stroke-width="2.3" fill="none" stroke-linecap="round" opacity="0.6"/>
+    </svg>
+    <div class="brand-text">
+      <div class="brand-kicker" data-i18n="appKicker">Air Quality</div>
+      <div class="brand-title" data-i18n="appTitle2">Real-time Monitoring System</div>
+    </div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+  <div class="top-right">
+    <div class="live-chip" id="liveChip"><span class="dot"></span><span id="dataTime"></span></div>
+    <div class="clock" id="clock"></div>
+    <div class="lang-toggle" id="langToggle"><button type="button" data-lang="en">EN</button><button type="button" data-lang="zh">中文</button></div>
+  </div>
+</header>
+<main id="main">
+  <section class="page fit" id="page-monitor"></section>
+  <section class="page" id="page-ranking"></section>
+  <section class="page" id="page-compare"></section>
+  <section class="page" id="page-history"></section>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

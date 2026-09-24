@@ -1,0 +1,499 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "Nested gimbal rings turn on their orthogonal pivot pins at different rates inside the fixed yoke; the seesaw bridge deck is levered right-down so its ball rolls across, then levered back so the ball returns; the acrobat rocks on the pole tip; the stair-step lifter plates rise and fall alternately carrying marbles.",
+  "parts": [
+    {
+      "id": "gimbal_outer",
+      "parent": null,
+      "box": [
+        84,
+        38,
+        83,
+        172,
+        122,
+        89
+      ],
+      "colors": [
+        "#a8733f",
+        "#7e5230",
+        "#cdae70"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "x",
+          "pivot": [
+            128,
+            80,
+            86
+          ],
+          "amount": 6.283185307179586,
+          "period": 12,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "gimbal_middle",
+      "parent": "gimbal_outer",
+      "box": [
+        125,
+        43,
+        54,
+        131,
+        117,
+        118
+      ],
+      "colors": [
+        "#35363a",
+        "#595b60",
+        "#b99a5b"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            128,
+            80,
+            86
+          ],
+          "amount": -6.283185307179586,
+          "period": 6,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "gimbal_inner",
+      "parent": "gimbal_middle",
+      "box": [
+        104,
+        77,
+        57,
+        152,
+        83,
+        115
+      ],
+      "colors": [
+        "#c7a463",
+        "#9b7c44"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            128,
+            80,
+            86
+          ],
+          "amount": 6.283185307179586,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "gimbal_core",
+      "parent": "gimbal_inner",
+      "box": [
+        107,
+        68,
+        74,
+        149,
+        92,
+        98
+      ],
+      "colors": [
+        "#dcc79c",
+        "#5a4330",
+        "#e3cf98"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "x",
+          "pivot": [
+            128,
+            80,
+            86
+          ],
+          "amount": 6.283185307179586,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "seesaw_deck",
+      "parent": null,
+      "box": [
+        78,
+        22,
+        148,
+        148,
+        48,
+        166
+      ],
+      "colors": [
+        "#b8864f",
+        "#946439",
+        "#303136",
+        "#c9a466"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            113,
+            27,
+            157
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              2.5,
+              -0.15
+            ],
+            [
+              6,
+              -0.15
+            ],
+            [
+              7.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seesaw_ball",
+      "parent": null,
+      "box": [
+        81,
+        29,
+        153,
+        89,
+        37,
+        161
+      ],
+      "colors": [
+        "#d9b672"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "x",
+          "pivot": [
+            85,
+            33,
+            157
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              2.5,
+              1.166
+            ],
+            [
+              4.5,
+              57.165
+            ],
+            [
+              6,
+              57.165
+            ],
+            [
+              7.5,
+              56
+            ],
+            [
+              9.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            85,
+            33,
+            157
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              2.5,
+              4.12
+            ],
+            [
+              4.5,
+              -0.095
+            ],
+            [
+              6,
+              -0.095
+            ],
+            [
+              7.5,
+              4.2
+            ],
+            [
+              9.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "balance_acrobat",
+      "parent": null,
+      "box": [
+        178,
+        42,
+        166,
+        222,
+        87,
+        177
+      ],
+      "colors": [
+        "#c29059",
+        "#35363a",
+        "#b99a5b",
+        "#dcc79c"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            200,
+            59,
+            170
+          ],
+          "amount": 0.18,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lift_plate_0",
+      "parent": null,
+      "box": [
+        42,
+        20,
+        70,
+        46,
+        36,
+        84
+      ],
+      "colors": [
+        "#c29059",
+        "#8f6139",
+        "#d0ae6a",
+        "#3e4045"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            44,
+            30,
+            77
+          ],
+          "amount": 3,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lift_plate_1",
+      "parent": null,
+      "box": [
+        48,
+        20,
+        70,
+        52,
+        43,
+        84
+      ],
+      "colors": [
+        "#c29059",
+        "#8f6139",
+        "#d0ae6a",
+        "#3e4045"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            50,
+            37,
+            77
+          ],
+          "amount": 3,
+          "period": 2,
+          "phase": 3.141592653589793,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lift_plate_2",
+      "parent": null,
+      "box": [
+        54,
+        20,
+        70,
+        58,
+        50,
+        84
+      ],
+      "colors": [
+        "#c29059",
+        "#8f6139",
+        "#d0ae6a",
+        "#3e4045"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            56,
+            44,
+            77
+          ],
+          "amount": 3,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lift_plate_3",
+      "parent": null,
+      "box": [
+        60,
+        20,
+        70,
+        64,
+        57,
+        84
+      ],
+      "colors": [
+        "#c29059",
+        "#8f6139",
+        "#d0ae6a",
+        "#3e4045"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            62,
+            51,
+            77
+          ],
+          "amount": 3,
+          "period": 2,
+          "phase": 3.141592653589793,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lift_plate_4",
+      "parent": null,
+      "box": [
+        66,
+        20,
+        70,
+        70,
+        64,
+        84
+      ],
+      "colors": [
+        "#c29059",
+        "#8f6139",
+        "#d0ae6a",
+        "#3e4045"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            68,
+            58,
+            77
+          ],
+          "amount": 3,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

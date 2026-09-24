@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>月宫小剧场 · 谁咬了月亮｜中秋小剧场</title>
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; height: 100%; background: #0c0920; overflow: hidden; }
+  body { font-family: "TheaterKai", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; color: #fff6e6; -webkit-tap-highlight-color: transparent; user-select: none; }
+  #stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 50% 30%, #2a2466 0%, #0c0920 70%); }
+  #wrap { position: relative; width: min(100vw, calc(100vh * 9 / 16)); height: min(100vh, calc(100vw * 16 / 9)); box-shadow: 0 0 80px rgba(0,0,0,.5); overflow: hidden; }
+  canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
+  .ui { position: absolute; left: 0; right: 0; transition: opacity .35s; }
+  #start { top: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 4.4%; background: linear-gradient(180deg, rgba(12,9,32,0) 55%, rgba(12,9,32,.72) 100%); cursor: pointer; }
+  #start .play { width: 16.5%; aspect-ratio: 1; border-radius: 50%; background: #e2433a; border: .6vh solid #fff1c9; box-shadow: 0 1vh 0 #7c1d2a, 0 0 6vh rgba(255,200,90,.55); display: grid; place-items: center; animation: pulse 1.6s ease-in-out infinite; }
+  #start .play svg { width: 44%; margin-left: 8%; fill: #fff6df; }
+  #start .go { margin-top: 3.2%; font-size: min(4.2vh, 7.5vw); letter-spacing: .12em; text-shadow: 0 .3vh 0 #3b2a40; }
+  #start .hint { margin-top: 1.2%; font-size: min(2vh, 3.6vw); opacity: .82; }
+  #start .cast { margin-top: 2.4%; font-size: min(1.9vh, 3.4vw); opacity: .75; }
+  @keyframes pulse { 50% { transform: scale(1.06); } }
+  #bar { bottom: 0; display: flex; align-items: center; gap: 2.2%; padding: 2.4% 3.6% 3.2%; background: linear-gradient(180deg, rgba(12,9,32,0), rgba(12,9,32,.78)); }
+  #bar button { flex: none; width: 8.6%; aspect-ratio: 1; border-radius: 50%; border: .25vh solid rgba(255,241,201,.85); background: rgba(35,32,87,.85); display: grid; place-items: center; cursor: pointer; padding: 0; }
+  #bar button:hover { background: #e2433a; }
+  #bar button svg { width: 52%; fill: #fff6df; }
+  #bar input { flex: 1; min-width: 0; accent-color: #f2c14e; height: 2.4vh; cursor: pointer; }
+  #time { flex: none; font-size: min(1.9vh, 3.4vw); font-variant-numeric: tabular-nums; opacity: .9; min-width: 18%; text-align: center; }
+  .hide { opacity: 0; pointer-events: none; }
+  body.clean .ui { display: none !important; }
+  body.clean canvas { cursor: default; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="wrap">
+    <canvas id="cv" width="1080" height="1920" aria-label="月宫小剧场 第1集 谁咬了月亮"></canvas>
+    <div id="start" class="ui" role="button" aria-label="点击开始">
+      <div class="play"><svg viewBox="0 0 24 24"><path d="M6 3.5v17l14-8.5z"/></svg></div>
+      <div class="go">点击开始</div>
+      <div class="hint">戴上耳机 效果更佳 · 约 44 秒</div>
+      <div class="cast">主演：嫦娥 · 玉兔团团 · 人间豆豆 · 天狗（客串）</div>
+    </div>
+    <div id="bar" class="ui hide">
+      <button id="bPlay" title="播放 / 暂停（空格）" aria-label="播放或暂停"><svg viewBox="0 0 24 24"><path id="iPlay" d="M6 3.5v17l14-8.5z"/></svg></button>
+      <button id="bReplay" title="重播（R）" aria-label="重播"><svg viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 1-7.6 5.5l2.3.8A5.6 5.6 0 1 0 12 6.4V9L7.5 5.2 12 1.4z"/></svg></button>
+      <input id="seek" type="range" min="0" max="44" step="0.01" value="0" aria-label="进度">
+      <span id="time">00:00 / 00:44</span>
+      <button id="bMute" title="声音开关（M）" aria-label="声音开关"><svg viewBox="0 0 24 24"><path id="iMute" d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7l-1.4-1.4a3 3 0 0 0 0-4.2zM18.5 6a8.5 8.5 0 0 1 0 12l-1.4-1.4a6.5 6.5 0 0 0 0-9.2z"/></svg></button>
+    </div>
+  </div>
+</div>
+<script src="font.js"></script>
+<script src="core.js"></script>
+<script src="rabbit.js"></script>
+<script src="change.js"></script>
+<script src="extras.js"></script>
+<script src="fx.js"></script>
+<script src="scenes.js"></script>
+<script src="timeline.js"></script>
+<script src="cast.js"></script>
+<script src="audio.js"></script>
+<script>
+(function () {
+  'use strict';
+  const TH = window.TH;
+  const DUR = TH.DURATION;
+  const cv = document.getElementById('cv');
+  TH.ctx = cv.getContext('2d');
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  if (params.has('clean')) document.body.classList.add('clean');
+  $('seek').max = DUR;
+
+  let t = 0, playing = false, started = false, dirty = true;
+  let anchorT = 0, anchorClock = 0, clockKind = 'perf', stallSince = 0;
+  const perf = () => performance.now() / 1000;
+  const clock = () => (clockKind === 'audio' ? TH.audio.time() : perf());
+
+  function fmt(s) { s = Math.max(0, Math.floor(s + 1e-6)); return '00:' + String(s).padStart(2, '0'); }
+  const PLAY = 'M6 3.5v17l14-8.5z', PAUSE = 'M6 4h4.5v16H6zM13.5 4H18v16h-4.5z';
+  const SND = 'M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7l-1.4-1.4a3 3 0 0 0 0-4.2zM18.5 6a8.5 8.5 0 0 1 0 12l-1.4-1.4a6.5 6.5 0 0 0 0-9.2z';
+  const MUTE = 'M4 9h4l5-4v14l-5-4H4zM15.6 9.1l1.4-1.4 2.3 2.3 2.3-2.3 1.4 1.4-2.3 2.3 2.3 2.3-1.4 1.4-2.3-2.3-2.3 2.3-1.4-1.4 2.3-2.3z';
+
+  function ui() {
+    $('iPlay').setAttribute('d', playing ? PAUSE : PLAY);
+    $('iMute').setAttribute('d', TH.audio.muted ? MUTE : SND);
+    $('seek').value = t.toFixed(2);
+    $('time').textContent = fmt(t) + ' / ' + fmt(DUR);
+  }
+
+  function play() {
+    if (t >= DUR - 0.05 || !started) t = 0;
+    started = true;
+    $('start').classList.add('hide');
+    TH.audio.unlock();
+    clockKind = TH.audio.available() ? 'audio' : 'perf';
+    anchorT = t; anchorClock = clock(); stallSince = perf();
+    TH.audio.playFrom(t, clockKind === 'audio' ? anchorClock : null);
+    playing = true;
+    showBar();
+    ui();
+  }
+  function pause() {
+    if (!playing) return;
+    t = Math.min(DUR, anchorT + (clock() - anchorClock));
+    playing = false;
+    TH.audio.stop();
+    dirty = true; showBar(true); ui();
+  }
+  function toggle() { playing ? pause() : play(); }
+  function seek(nt) {
+    const was = playing;
+    if (was) pause();
+    t = Math.max(0, Math.min(DUR, nt));
+    dirty = true; ui();
+    if (was) play();
+  }
+  function replay() { seek(0); if (!playing) play(); }
+
+  function frame() {
+    if (playing) {
+      if (clockKind === 'audio' && !TH.audio.running()) {
+        if (perf() - stallSince > 0.5) { t = anchorT; clockKind = 'perf'; anchorClock = perf(); TH.audio.stop(); }
+      } else stallSince = perf();
+      t = anchorT + (clock() - anchorClock);
+      if (t >= DUR) { t = DUR; playing = false; TH.audio.stop(); showBar(true); }
+      else TH.audio.pump(t);
+      dirty = true;
+    }
+    if (dirty) { TH.renderFrame(t); dirty = false; ui(); }
+    requestAnimationFrame(frame);
+  }
+
+  // controls auto-hide while playing
+  let hideTimer = 0;
+  function showBar(stay) {
+    if (!started) return;
+    $('bar').classList.remove('hide');
+    clearTimeout(hideTimer);
+    if (!stay) hideTimer = setTimeout(() => { if (playing) $('bar').classList.add('hide'); }, 2600);
+  }
+
+  $('start').addEventListener('click', (e) => { e.stopPropagation(); play(); });
+  cv.addEventListener('click', () => { if (!started) play(); else toggle(); });
+  $('bPlay').addEventListener('click', toggle);
+  $('bReplay').addEventListener('click', replay);
+  $('bMute').addEventListener('click', () => { TH.audio.setMuted(!TH.audio.muted); ui(); });
+  $('seek').addEventListener('input', (e) => seek(+e.target.value));
+  $('wrap').addEventListener('pointermove', () => showBar());
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' || e.code === 'KeyK') { e.preventDefault(); started ? toggle() : play(); }
+    else if (e.code === 'KeyR') replay();
+    else if (e.code === 'ArrowLeft') seek(t - 2);
+    else if (e.code === 'ArrowRight') seek(t + 2);
+    else if (e.code === 'KeyM') { TH.audio.setMuted(!TH.audio.muted); ui(); }
+    else if (e.code === 'KeyH') document.body.classList.toggle('clean');
+  });
+
+  // Public API: renderFrame(t) draws the frame for time t (and parks the player there).
+  window.renderFrame = function (nt) {
+    if (playing) pause();
+    t = Math.max(0, Math.min(DUR, +nt || 0));
+    TH.renderFrame(t); dirty = false; ui();
+    return t;
+  };
+  window.renderCast = function () { if (playing) pause(); TH.renderCast(); dirty = false; };
+  window.theater = {
+    duration: DUR, play, pause, seek, replay, toggle,
+    get time() { return playing ? anchorT + (clock() - anchorClock) : t; },
+    get playing() { return playing; },
+    clean(on = true) { document.body.classList.toggle('clean', on); },
+  };
+
+  async function boot() {
+    try {
+      if (window.THEATER_FONT_B64 && window.FontFace) {
+        const bin = Uint8Array.from(atob(window.THEATER_FONT_B64), (c) => c.charCodeAt(0));
+        const face = new FontFace('TheaterKai', bin.buffer);
+        await face.load();
+        document.fonts.add(face);
+        TH.clearWidthCache();
+        TH.clearCaches();
+      }
+    } catch (err) { console.warn('font fallback', err); }
+    t = params.has('t') ? Math.max(0, Math.min(DUR, +params.get('t'))) : 1.6;
+    if (params.has('t')) { started = true; $('start').classList.add('hide'); }
+    dirty = true;
+    requestAnimationFrame(frame);
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

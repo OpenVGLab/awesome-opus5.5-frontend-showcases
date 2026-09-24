@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The tree spade carriage with its four conical blades lifts the tree and its root ball straight up the fixed mast, pauses, then lowers it back into the hole; the lift cylinder barrel slides along its fixed rod while the roof beacon turns.",
+  "parts": [
+    {
+      "id": "spade_carriage",
+      "parent": null,
+      "box": [
+        34,
+        5,
+        100,
+        88,
+        66,
+        148
+      ],
+      "colors": [
+        "#393b40",
+        "#26272b",
+        "#b9995a",
+        "#9a7d47",
+        "#8c8982",
+        "#d0cbbd"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            58,
+            40,
+            124
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1.5,
+              0
+            ],
+            [
+              4.5,
+              26
+            ],
+            [
+              7.5,
+              26
+            ],
+            [
+              10.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tree_rootball",
+      "parent": null,
+      "box": [
+        28,
+        5,
+        96,
+        86,
+        172,
+        152
+      ],
+      "colors": [
+        "#65532f",
+        "#4d3926",
+        "#6a4f34",
+        "#8e6d4b",
+        "#5a4636",
+        "#705845",
+        "#5a6f33",
+        "#6f8540",
+        "#48592a",
+        "#86994c"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            58,
+            40,
+            124
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1.5,
+              0
+            ],
+            [
+              4.5,
+              26
+            ],
+            [
+              7.5,
+              26
+            ],
+            [
+              10.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "roof_beacon",
+      "parent": null,
+      "box": [
+        169,
+        79,
+        123,
+        173,
+        82,
+        125
+      ],
+      "colors": [
+        "#e0a33a",
+        "#b87a24"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            171,
+            80,
+            124
+          ],
+          "amount": 6.283185307179586,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

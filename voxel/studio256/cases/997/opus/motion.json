@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The banding turntable carries the half-painted plate in slow turns beneath the fixed hand-rest bridge while the hinged brush arm dabs at the glaze band; the kick wheel flywheel, shaft, wheel head and thrown pot spin three times faster inside their fixed frame; smoke puffs rise and settle above the fixed kiln chimney.",
+  "parts": [
+    {
+      "id": "plate_turntable",
+      "parent": null,
+      "box": [
+        89,
+        47,
+        137,
+        147,
+        54,
+        195
+      ],
+      "colors": [
+        "#A2703F",
+        "#B9844E",
+        "#5A3C26",
+        "#F5EFE3",
+        "#E6DCCA",
+        "#76AC98",
+        "#5B9180",
+        "#D6AA5E"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            118,
+            48,
+            166
+          ],
+          "amount": -6.283185307179586,
+          "period": 6,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "brush_arm",
+      "parent": null,
+      "box": [
+        130,
+        55,
+        169,
+        150,
+        64,
+        180
+      ],
+      "colors": [
+        "#8B6142",
+        "#D6AA5E",
+        "#EFE7D6",
+        "#76AC98"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            148,
+            62,
+            170
+          ],
+          "amount": 0.1,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "wheel_rotor",
+      "parent": null,
+      "box": [
+        161,
+        15,
+        65,
+        199,
+        78,
+        103
+      ],
+      "colors": [
+        "#9A6A3E",
+        "#5D5955",
+        "#D6AA5E",
+        "#CDB08B",
+        "#B7966D"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            180,
+            30,
+            84
+          ],
+          "amount": 6.283185307179586,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "smoke_low",
+      "parent": null,
+      "box": [
+        59,
+        129,
+        65,
+        73,
+        137,
+        79
+      ],
+      "colors": [
+        "#E6E3DC"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            66,
+            133,
+            72
+          ],
+          "amount": 1.5,
+          "period": 4,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "smoke_mid",
+      "parent": null,
+      "box": [
+        62,
+        137,
+        65,
+        74,
+        145,
+        77
+      ],
+      "colors": [
+        "#E0D4BD"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            68,
+            141,
+            71
+          ],
+          "amount": 2,
+          "period": 3,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "smoke_top",
+      "parent": null,
+      "box": [
+        65,
+        145,
+        65,
+        75,
+        152,
+        75
+      ],
+      "colors": [
+        "#E6E3DC"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            70,
+            148,
+            70
+          ],
+          "amount": 2.5,
+          "period": 6,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>月圆 · 中秋拼贴短片</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23121a36'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23e8ae45'/%3E%3Ccircle cx='25' cy='27' r='5' fill='%23c98a2c'/%3E%3Ccircle cx='38' cy='38' r='4' fill='%23c98a2c'/%3E%3C/svg%3E">
+<meta name="description" content="一支完全由代码生成的中秋拼贴风动画短片：剪纸、撕纸、网点和手写毛笔字，Canvas 2D 逐帧绘制，Web Audio 实时合成配乐。">
+<style>
+  :root { --ver: #d23f2a; --rice: #f2e7cf; --gold: #e8ae45; --ink: #16141c; --night: #070a14; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--night); overflow: hidden; color: var(--rice);
+    font-family: "PingFang SC", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif; }
+  #stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #frame { position: relative; box-shadow: 0 0 80px rgba(0,0,0,.6); }
+  canvas { display: block; width: 100%; height: 100%; background: #0c1328; will-change: transform; }
+  #start { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 18px; cursor: pointer; background: radial-gradient(ellipse at center, rgba(8,10,24,.08), rgba(8,10,24,.55)); transition: opacity .5s; }
+  #start.gone { opacity: 0; pointer-events: none; }
+  #start .btn { width: 112px; height: 112px; border-radius: 50%; background: var(--ver); display: grid; place-items: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 0 0 5px rgba(242,231,207,.85), inset 0 0 0 9px var(--ver), inset 0 0 0 10px rgba(242,231,207,.5);
+    transition: transform .2s; }
+  #start:hover .btn { transform: scale(1.06); }
+  #start .btn svg { width: 44px; height: 44px; margin-left: 8px; fill: var(--rice); }
+  #start .hint { font-size: 17px; letter-spacing: .3em; text-shadow: 0 2px 8px rgba(0,0,0,.8); padding-left: .3em; }
+  #start .sub { font-size: 12px; opacity: .75; letter-spacing: .2em; margin-top: -8px; text-shadow: 0 2px 6px rgba(0,0,0,.8); }
+  #loading { position: absolute; inset: 0; display: grid; place-items: center; background: #0c1328; font-size: 16px; letter-spacing: .4em; }
+  #loading.gone { display: none; }
+  #bar { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 22px 14px; display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(to top, rgba(6,8,18,.78), rgba(6,8,18,0)); transition: opacity .4s; user-select: none; will-change: opacity; }
+  #bar.idle { opacity: 0; }
+  #bar button { appearance: none; border: 0; background: none; color: var(--rice); cursor: pointer; padding: 6px; border-radius: 6px;
+    display: grid; place-items: center; font: inherit; font-size: 13px; }
+  #bar button:hover { background: rgba(242,231,207,.12); }
+  #bar button svg { width: 22px; height: 22px; fill: currentColor; }
+  #time { font-variant-numeric: tabular-nums; font-size: 13px; opacity: .9; min-width: 92px; }
+  #track { position: relative; flex: 1; height: 26px; cursor: pointer; }
+  #track .rail { position: absolute; left: 0; right: 0; top: 11px; height: 4px; background: rgba(242,231,207,.25); border-radius: 2px; }
+  #track .fill { position: absolute; left: 0; top: 11px; height: 4px; background: var(--ver); border-radius: 2px; width: 100%;
+    transform-origin: 0 50%; transform: scaleX(0); }
+  #track .knob-rail { position: absolute; left: 0; right: 0; top: 6px; height: 14px; pointer-events: none; transform: translateX(0); }
+  #track .knob { position: absolute; top: 0; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--rice);
+    box-shadow: 0 0 0 3px var(--ver); left: 0; }
+  #track .tick { position: absolute; top: 8px; width: 2px; height: 10px; background: rgba(242,231,207,.55); }
+  #track .tip { position: absolute; bottom: 26px; transform: translateX(-50%); background: rgba(10,12,26,.9); padding: 4px 8px; border-radius: 4px;
+    font-size: 12px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s; }
+  #track:hover .tip { opacity: 1; }
+  #chapter { font-size: 13px; letter-spacing: .15em; opacity: .9; min-width: 70px; text-align: right; }
+  body.clean #bar, body.clean #start, body.clean #loading { display: none !important; }
+  body.clean #frame { box-shadow: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="frame">
+    <canvas id="film" width="1920" height="1080" aria-label="中秋拼贴动画短片《月圆》"></canvas>
+    <div id="loading">裁纸中…</div>
+    <div id="start" role="button" tabindex="0" aria-label="点击开始播放（有声音）">
+      <div class="btn"><svg viewBox="0 0 24 24"><path d="M6 3.5v17l14-8.5z"/></svg></div>
+      <div class="hint">点击开始 · 有声</div>
+      <div class="sub">空格 播放/暂停　← → 快退/快进　F 全屏　M 静音</div>
+    </div>
+    <div id="bar">
+      <button id="play" title="播放 / 暂停 (空格)" aria-label="播放或暂停">
+        <svg viewBox="0 0 24 24" class="i-play"><path d="M7 4.5v15l12-7.5z"/></svg>
+        <svg viewBox="0 0 24 24" class="i-pause" style="display:none"><path d="M6.5 4.5h4v15h-4zM13.5 4.5h4v15h-4z"/></svg>
+      </button>
+      <span id="time">00:00 / 00:59</span>
+      <div id="track" title="拖动或点击跳转">
+        <div class="rail"></div><div class="fill"></div><div class="knob-rail"><div class="knob"></div></div><div class="tip"></div>
+      </div>
+      <span id="chapter">深夜</span>
+      <button id="mute" title="静音 (M)" aria-label="静音">
+        <svg viewBox="0 0 24 24" class="i-vol"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" fill-rule="evenodd"/></svg>
+        <svg viewBox="0 0 24 24" class="i-mute" style="display:none"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="1.8"/></svg>
+      </button>
+      <button id="aspect" title="切换横版 / 竖版 (9:16)" aria-label="切换画幅">竖版</button>
+      <button id="full" title="全屏 (F)" aria-label="全屏">
+        <svg viewBox="0 0 24 24"><path d="M4 9V4h5v2H6v3zM20 9V4h-5v2h3v3zM4 15v5h5v-2H6v-3zM20 15v5h-5v-2h3v-3z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+<script src="js/core.js"></script>
+<script src="js/paper.js"></script>
+<script src="js/brush.js"></script>
+<script src="js/glyphs2.js"></script>
+<script src="js/elements.js"></script>
+<script src="js/figures.js"></script>
+<script src="js/s_night.js"></script>
+<script src="js/s_moon.js"></script>
+<script src="js/s_home.js"></script>
+<script src="js/s_legend.js"></script>
+<script src="js/s_train.js"></script>
+<script src="js/s_reunion.js"></script>
+<script src="js/s_wish.js"></script>
+<script src="js/film.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/player.js"></script>
+</body>
+</html>

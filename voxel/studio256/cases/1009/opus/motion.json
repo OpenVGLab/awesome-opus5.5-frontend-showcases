@@ -1,0 +1,396 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The belt stand spins the pump pulley and flywheel; the crank drives the connecting rod, crosshead and piston back and forth in the cutaway double-acting cylinder while sparks rise in the forge it blows. On a slower cycle the hand winch crank turns the gear and drum, the cargo lift rises and lowers and the counterweight moves opposite in its own tower.",
+  "parts": [
+    {
+      "id": "pump_crank",
+      "parent": null,
+      "box": [
+        78,
+        28,
+        66,
+        122,
+        72,
+        90
+      ],
+      "colors": [
+        "#47624B",
+        "#80847A",
+        "#A94C34"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            100,
+            50,
+            78
+          ],
+          "amount": 6.283185307179586,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "pump_crosshead",
+      "parent": null,
+      "box": [
+        112,
+        40,
+        82,
+        172,
+        60,
+        102
+      ],
+      "colors": [
+        "#949C8E",
+        "#D5D1C3",
+        "#6E8A69"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "x",
+          "pivot": [
+            130,
+            50,
+            92
+          ],
+          "amount": 6,
+          "period": 2,
+          "phase": 1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "pump_conrod",
+      "parent": "pump_crosshead",
+      "box": [
+        102,
+        44,
+        90,
+        134,
+        56,
+        94
+      ],
+      "colors": [
+        "#C26C46",
+        "#CFA656"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            130,
+            50,
+            92
+          ],
+          "amount": -0.2527,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "stand_wheels",
+      "parent": null,
+      "box": [
+        32,
+        58,
+        60,
+        72,
+        98,
+        95
+      ],
+      "colors": [
+        "#47624B",
+        "#A94C34",
+        "#80847A"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            52,
+            78,
+            78
+          ],
+          "amount": 6.283185307179586,
+          "period": 1,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "winch_crank",
+      "parent": null,
+      "box": [
+        114,
+        36,
+        196,
+        140,
+        48,
+        212
+      ],
+      "colors": [
+        "#47624B",
+        "#8C6642"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            126,
+            42,
+            204
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              5,
+              -8
+            ],
+            [
+              7,
+              -8
+            ],
+            [
+              11,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "winch_drum",
+      "parent": null,
+      "box": [
+        110,
+        10,
+        162,
+        142,
+        42,
+        202
+      ],
+      "colors": [
+        "#80847A",
+        "#A0704A",
+        "#C6B086",
+        "#4D6751"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            126,
+            26,
+            182
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              5,
+              2.6667
+            ],
+            [
+              7,
+              2.6667
+            ],
+            [
+              11,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lift_car",
+      "parent": null,
+      "box": [
+        186,
+        12,
+        128,
+        218,
+        106,
+        164
+      ],
+      "colors": [
+        "#A0704A",
+        "#8C6642",
+        "#4D6751",
+        "#C6B086",
+        "#BE9260",
+        "#80847A"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            202,
+            30,
+            146
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              5,
+              16
+            ],
+            [
+              7,
+              16
+            ],
+            [
+              11,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "counterweight",
+      "parent": null,
+      "box": [
+        198,
+        57,
+        67,
+        214,
+        146,
+        81
+      ],
+      "colors": [
+        "#34473A",
+        "#4D6751",
+        "#C6B086"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            206,
+            70,
+            74
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              5,
+              -16
+            ],
+            [
+              7,
+              -16
+            ],
+            [
+              11,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "forge_sparks",
+      "parent": null,
+      "box": [
+        50,
+        9,
+        158,
+        60,
+        54,
+        168
+      ],
+      "colors": [
+        "#FFC75C",
+        "#FF8F3C"
+      ],
+      "channels": [
+        {
+          "type": "flow",
+          "axis": "y",
+          "pivot": [
+            55,
+            30,
+            163
+          ],
+          "amount": 22,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

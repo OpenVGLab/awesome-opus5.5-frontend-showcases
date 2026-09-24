@@ -4,7 +4,7 @@
 
 > 收集 Claude Opus 5.5（2026-09-22 发布）做出来的前端作品：SVG 游戏与动画、「鹈鹕骑自行车」系列、Lottie、Three.js / WebGL、代码逐帧动画、网页与 UI——凡是模型写代码、在浏览器里跑出来的，都在这里。
 
-**在线试玩：** [总览](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/) · [Voxel](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/voxel/)
+**在线试玩：** [总览](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/) · [SVG](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/svg/) · [Lottie](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/lottie/) · [Voxel](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/voxel/) · [社区 prompt 复刻](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/repro/) · [中秋专题](https://openvglab.github.io/awesome-opus5.5-frontend-showcases/midautumn/)
 
 ## 目录
 
@@ -15,8 +15,8 @@
 - 🚲 [更多骑行系列](#-更多骑行系列) — 9 条
 - ✨ [SVG 动画与插画](#-svg-动画与插画) — 7 条
 - 🎞️ [Lottie 动画](#-lottie-动画) — 5 条
-- 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 8 条
-- 🎬 [代码逐帧动画与视频](#-代码逐帧动画与视频) — 9 条
+- 🧊 [3D · Three.js · WebGL](#-3d--threejs--webgl) — 10 条
+- 🎬 [代码逐帧动画与视频](#-代码逐帧动画与视频) — 10 条
 - 🖥️ [网页、UI 与应用](#-网页ui-与应用) — 9 条
 - 📊 [评测与工具](#-评测与工具)
 - [收录标准与贡献](#收录标准与贡献)
@@ -900,6 +900,8 @@ Bodymovin JSON，用 lottie-web 播放；只用形状图层，不用图片和字
 
 | 作品 | 来源 | 日期 | 简介 |
 | --- | --- | --- | --- |
+| [忘了哪边是下的路：水彩墨线 3D 音乐驾驶](https://x.com/chetanankola/status/2103001194696458512) | [Chetan Ankola (@chetanankola)](https://x.com/chetanankola) | 2026-09-24 | 作者第一个用 Opus 5.5 vibe coding 的 Three.js 3D 体验：路面 90° 折上黄墙、倒挂着跑过天花板，最后变成五线谱，在音符间转向就能弹出每条街的旋律；水彩加墨线的画风，屋顶上有台收音机。 |
+| [海岛铁路《Pelagia》：Opus 5.5 对 GPT-6 Astra](https://x.com/vib3coded/status/2102672447405228135) | [Vib3Coded (@vib3coded)](https://x.com/vib3coded) | 2026-09-23 | 同一条提示词、带水下剖面的海岛铁路：Opus 5.5 花 2.65 美元做出海边小镇和醒目的红色大桥，Astra 花 8.49 美元做出热带氛围和海底隧道（均按 API 价格计）。作者此前还对比过 Opus 5 与 5.5 的火山岛，5.5 多了水下生物、猛犸象和极光。 |
 | [数据中心内部的可交互 3D](https://x.com/RyanSael/status/2102740041621762166) | [Ryan Sael (@RyanSael)](https://x.com/RyanSael) | 2026-09-23 | 让 Opus 5.5 展示“它运行的楼里有什么”：让机架过载能看到 GPU 降频，再跟着热量从屋顶散出；一次生成用时 1 小时 53 分钟，API 成本 38.99 美元。[在线体验](https://datacenter.lab.sael.net) |
 | [同一条提示词的 3D 景观网页：Opus 5.5 / Astra / Sol](https://x.com/alin_zone/status/2102701111090008066) | [阿蔺A-Lin (@alin_zone)](https://x.com/alin_zone) | 2026-09-23 | 用同一条提示词做实时交互的 3D 景观网页，视频依次是 Opus 5.5、GPT-6 Astra、GPT-6 Sol 的结果。 |
 | [卡通生命：Opus 5.5 × Three.js](https://x.com/higgsfield_ai/status/2102618931622207535) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | 用 Three.js 让日常物品拥有卡通生命。 |
@@ -915,6 +917,7 @@ Bodymovin JSON，用 lottie-web 播放；只用形状图层，不用图片和字
 
 | 作品 | 来源 | 日期 | 简介 |
 | --- | --- | --- | --- |
+| [拼贴风中秋短片](https://x.com/ring_hyacinth/status/2102986085328716066) | [Ring Hyacinth (@ring_hyacinth)](https://x.com/ring_hyacinth) | 2026-09-24 | 40 秒拼贴风中秋片：动画由 Opus 5.5 用 JavaScript 逐帧画出（手绘纹理用 p5.js + p5.brush），音效由它写 Node.js 程序合成；脚本和音乐由作者提供，背景底稿和纸张材质由 Nano Banana Pro 生成。 |
 | [让 Opus 5.5 自由发挥写的动画短片](https://www.xiaohongshu.com/explore/6ab45d76000000000202be26?xsec_token=CBjc6DgxV29PzCmyBsUUBA6MoDnERoYo_3i5AdRNAl2tc=&xsec_source=pc_share) | 春和景明.LinxAI（小红书） | 2026-09-24 | 48 秒竖屏短片，题材和画面全交给 Opus 5.5 自由发挥；原帖没有公开 prompt。 |
 | [水循环：一镜到底的无缝循环动画](https://x.com/higgsfield_ai/status/2102781807179735211) | [Higgsfield AI (@higgsfield_ai)](https://x.com/higgsfield_ai) | 2026-09-23 | Opus 5.5 与 GPT-6 Sol 合作完成。按 brief “Create a seamless looping animation of the water cycle, entirely in code.” 用代码搭建环境、光照和角色动画，在浏览器里实时渲染、首尾无缝衔接，最后打包成带时间轴控制的单个 HTML。 |
 | [人生的意义是什么？](https://x.com/HarveenChadha/status/2102759892507398309) | [Harveen Singh Chadha (@HarveenChadha)](https://x.com/HarveenChadha) | 2026-09-23 | 一次生成的纯 JavaScript 手绘拼贴风动画，脚本和配乐也由 Opus 完成；用时 16 分钟、1.9 万 tokens、3.6 美元。Prompt：“Create a pure javascript animation. 30s-60s whimsical hand drawn collage style with appropriate audio on the topic what is the purpose of life ?” |

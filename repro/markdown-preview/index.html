@@ -1,0 +1,1473 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Markdown 双栏实时预览 · 乔木 LLM 擂台</title>
+<meta name="description" content="左侧 textarea 编辑 Markdown，右侧实时预览。手写极简渲染器，零依赖；窄屏自动改为上下布局。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 208 208'%3E%3Crect width='208' height='208' rx='46' fill='%23e0523a'/%3E%3Cpath transform='translate(0 40)' fill='%23fff' d='M30 98V30h20l20 25 20-25h20v68H90V59L70 84 50 59v39zm125 0l-30-33h20V30h20v35h20z'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #ebe6dc;
+  --ink: #23201b;
+  --muted: #8a8275;
+  --accent: #e0523a;
+  --accent-hi: #ff7b5f;
+  --paper: #fffdf8;
+  --paper-head: #f9f5ec;
+  --line: #e6dece;
+  --ed-bg: #17191e;
+  --ed-head: #1c1f25;
+  --ed-rule: rgba(255, 255, 255, .07);
+  --ed-text: #d9dce2;
+  --ed-dim: #5f6775;
+  --gap: 14px;
+  --a: 1fr;
+  --b: 1fr;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, Consolas, "Cascadia Mono", "DejaVu Sans Mono", "Liberation Mono", "Noto Sans Mono CJK SC", "PingFang SC", "Microsoft YaHei", monospace;
+  --ed-size: clamp(13px, .36vw + 9.4px, 15px);
+  --ed-lh: 1.75;
+  --ed-px: 26px;
+  --ed-py: 22px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html, body { height: 100%; margin: 0; }
+body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  font-family: var(--sans);
+  color: var(--ink);
+  background:
+    radial-gradient(1100px 520px at 10% -12%, #f7f2e8 0%, rgba(247, 242, 232, 0) 70%),
+    radial-gradient(900px 500px at 100% 115%, #e1dace 0%, rgba(225, 218, 206, 0) 70%),
+    var(--bg);
+}
+button { font: inherit; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 22px 12px;
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.logo {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  box-shadow: 0 8px 16px -8px rgba(224, 82, 58, .8), inset 0 -2px 0 rgba(0, 0, 0, .14);
+}
+.logo svg { width: 24px; height: auto; fill: #fff; display: block; }
+.brand-text { min-width: 0; }
+.brand h1 { margin: 0; font-size: 16px; font-weight: 750; letter-spacing: .01em; white-space: nowrap; }
+.brand p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.actions { flex: none; display: flex; gap: 8px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1px solid #d8cfbf;
+  background: rgba(255, 255, 255, .62);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.btn:hover { background: #fff; border-color: #c9bda8; }
+.btn:active { transform: translateY(1px); }
+.btn svg { width: 15px; height: 15px; flex: none; }
+.btn-dark { background: var(--ink); border-color: var(--ink); color: #fbf7ef; }
+.btn-dark:hover { background: #000; border-color: #000; }
+.btn:focus-visible, .tool:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; }
+
+/* ---------- workspace ---------- */
+.workspace {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, var(--a)) var(--gap) minmax(0, var(--b));
+  grid-template-rows: minmax(0, 1fr);
+  padding: 0 22px 22px;
+}
+.pane {
+  container-type: inline-size;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.pane-head {
+  flex: none;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px 0 18px;
+}
+.label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 11.5px;
+  font-weight: 750;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.label small {
+  font: 500 12px/1 var(--mono);
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: .75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* editor pane */
+.pane-editor {
+  color-scheme: dark;
+  background: var(--ed-bg);
+  box-shadow: 0 22px 44px -24px rgba(24, 19, 12, .6), 0 2px 6px -2px rgba(24, 19, 12, .25);
+  transition: box-shadow .2s;
+}
+.pane-editor:focus-within {
+  box-shadow: 0 22px 44px -24px rgba(24, 19, 12, .6), 0 2px 6px -2px rgba(24, 19, 12, .25), 0 0 0 2px rgba(255, 123, 95, .35);
+}
+.pane-editor .pane-head { background: var(--ed-head); border-bottom: 1px solid var(--ed-rule); color: #8f97a4; }
+.tools { display: flex; gap: 6px; flex: none; }
+.tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .09);
+  background: rgba(255, 255, 255, .04);
+  color: #c4c9d1;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.tool code { font: 700 12.5px/1 var(--mono); color: var(--accent-hi); }
+.tool:hover { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .16); color: #fff; }
+.tool:active { transform: translateY(1px); }
+
+.editor-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #3a404b transparent;
+}
+.line-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
+  background: rgba(255, 255, 255, .04);
+  box-shadow: inset 2px 0 0 var(--accent-hi);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s;
+}
+.line-band.on { opacity: 1; }
+
+/* The textarea sits exactly on top of the highlighted <pre>: both must share every
+   property that affects line breaking, or the caret drifts away from the visible text. */
+.editor {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 100%;
+}
+.editor > .hl, .editor > textarea {
+  grid-area: 1 / 1;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: var(--ed-py) var(--ed-px);
+  font-family: var(--mono);
+  font-size: var(--ed-size);
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--ed-lh);
+  letter-spacing: 0;
+  word-spacing: 0;
+  tab-size: 4;
+  font-kerning: none;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+  text-align: left;
+  text-indent: 0;
+  text-transform: none;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  -webkit-font-smoothing: antialiased;
+}
+.editor > .hl {
+  display: block;
+  padding-bottom: calc(var(--ed-py) + 30vh);
+  color: var(--ed-text);
+  pointer-events: none;
+  user-select: none;
+}
+/* iOS Safari keeps ~3px of unremovable horizontal padding inside textareas,
+   and zooms the page when a field under 16px gets focus. */
+.ios .editor > .hl { padding-left: calc(var(--ed-px) + 3px); padding-right: calc(var(--ed-px) + 3px); }
+html.ios { --ed-size: 16px; }
+.editor > textarea {
+  align-self: stretch;
+  justify-self: stretch;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  resize: none;
+  overflow: hidden;
+  outline: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--ed-text);
+  caret-color: var(--accent-hi);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.js .editor > textarea { color: transparent; -webkit-text-fill-color: transparent; }
+.editor > textarea::placeholder { color: #5b6370; -webkit-text-fill-color: #5b6370; opacity: 1; }
+.editor > textarea::selection { background: rgba(255, 123, 95, .3); color: transparent; -webkit-text-fill-color: transparent; }
+
+.hl .t-m, .hl .t-fm { color: var(--ed-dim); }
+.hl .t-hm { color: var(--accent-hi); }
+.hl .t-h { color: #f6c985; text-shadow: .35px 0 0 currentColor; }
+.hl .t-b { color: #fff; text-shadow: .35px 0 0 currentColor; }
+.hl .t-bi { color: #fff; text-shadow: .35px 0 0 currentColor; }
+.hl .t-i { color: #cbbcff; }
+.hl .t-s { color: #8a919c; text-decoration: line-through; }
+.hl .t-c { color: #80e2c6; background: rgba(128, 226, 198, .08); border-radius: 3px; }
+.hl .t-li, .hl .t-qm { color: var(--accent-hi); }
+.hl .t-q { color: #aab1bc; }
+.hl .t-hr { color: #6f7784; }
+.hl .t-a { color: #8fc6ff; }
+.hl .t-u { color: #6690bb; text-decoration: underline; text-decoration-color: rgba(102, 144, 187, .45); }
+.hl .t-lang { color: #cbbcff; }
+.hl .t-code { color: #a9ddcd; }
+
+/* splitter */
+.splitter {
+  display: grid;
+  place-items: center;
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+  border-radius: 8px;
+}
+.splitter span {
+  width: 4px;
+  height: 40px;
+  border-radius: 4px;
+  background: #cec4b3;
+  transition: background .15s, height .15s, width .15s;
+}
+.splitter:hover span, .splitter.dragging span, .splitter:focus-visible span { background: var(--accent); height: 60px; }
+.splitter:focus-visible { background: rgba(224, 82, 58, .08); }
+body.resizing { cursor: col-resize; user-select: none; }
+body.resizing .pane { pointer-events: none; }
+
+/* preview pane */
+.pane-preview {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: 0 22px 44px -28px rgba(24, 19, 12, .38), 0 1px 3px rgba(24, 19, 12, .06);
+}
+.pane-preview .pane-head { background: var(--paper-head); border-bottom: 1px solid var(--line); color: #8c8477; padding-right: 16px; }
+.pane-preview .label { flex: none; }
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px 3px 8px;
+  border-radius: 99px;
+  background: #e4f1e5;
+  color: #2f7c4c;
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: .04em;
+}
+.live i { width: 6px; height: 6px; border-radius: 50%; background: #2f9e5a; }
+.stats { font-size: 12px; color: #9a9285; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.preview-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #d7cebe transparent;
+}
+.md-wrap { position: relative; max-width: 800px; margin: 0 auto; }
+.rail {
+  position: absolute;
+  left: 20px;
+  top: 0;
+  width: 3px;
+  height: 0;
+  border-radius: 3px;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .18s ease, height .18s ease;
+}
+.rail.on { opacity: .8; }
+.rail.jump { transition: opacity .2s; }
+
+/* ---------- rendered markdown ---------- */
+.md {
+  padding: 34px 48px 56px;
+  font-size: clamp(15px, .3vw + 11.3px, 16.5px);
+  line-height: 1.8;
+  color: #2d2a25;
+  overflow-wrap: break-word;
+}
+.md ::selection { background: rgba(224, 82, 58, .18); }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
+  position: relative;
+  margin: 1.7em 0 .65em;
+  color: #1b1915;
+  line-height: 1.35;
+  font-weight: 750;
+  letter-spacing: .005em;
+}
+.md h1 { font-size: 2em; margin-bottom: .8em; padding-bottom: .5em; }
+.md h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--accent);
+}
+.md h2 { font-size: 1.36em; }
+.md h2::before {
+  content: "";
+  display: inline-block;
+  width: .36em;
+  height: .36em;
+  margin: 0 .6em .16em .08em;
+  border-radius: 1.5px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  vertical-align: middle;
+}
+.md h3 { font-size: 1.14em; }
+.md h4 { font-size: 1.02em; }
+.md h5, .md h6 { font-size: .95em; color: #4a463e; }
+.md p { margin: .85em 0; }
+.md strong {
+  font-weight: 700;
+  color: #1c1a16;
+  background: linear-gradient(transparent 62%, rgba(224, 82, 58, .2) 62%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.md :is(h1, h2, h3, h4, h5, h6) strong { background: none; font-weight: 850; }
+.md em { font-style: italic; }
+.md del { color: #9b9386; }
+.md a {
+  color: #c1402a;
+  text-decoration: underline;
+  text-decoration-color: rgba(193, 64, 42, .35);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.md a:hover { text-decoration-color: currentColor; }
+.md code {
+  font-family: var(--mono);
+  font-size: .86em;
+  padding: .12em .42em;
+  border-radius: 6px;
+  border: 1px solid #ebe1cf;
+  background: #f4ede1;
+  color: #b33c26;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.md pre {
+  position: relative;
+  margin: 1.2em 0;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: #1b1d22;
+  color: #e2e5ea;
+  font-size: .86em;
+  line-height: 1.65;
+  overflow-x: auto;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04);
+  scrollbar-width: thin;
+  scrollbar-color: #3a404b transparent;
+}
+.md pre code { padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font-size: inherit; white-space: pre; }
+.md pre[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font: 650 10.5px/1 var(--sans);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #6f7683;
+}
+.md ul, .md ol { margin: .7em 0; padding-left: 1.5em; }
+.md li { margin: .32em 0; padding-left: .2em; }
+.md li::marker { color: var(--accent); }
+.md ol > li::marker { font-weight: 700; font-variant-numeric: tabular-nums; }
+.md li > ul, .md li > ol { margin: .3em 0; }
+.md ul ul { list-style-type: circle; }
+.md blockquote {
+  margin: 1.1em 0;
+  padding: .75em 1.1em;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  background: #f7f0e4;
+  color: #5d574d;
+}
+.md blockquote > :first-child { margin-top: 0; }
+.md blockquote > :last-child { margin-bottom: 0; }
+.md hr {
+  height: 1px;
+  margin: 2.2em 0;
+  border: 0;
+  background: repeating-linear-gradient(90deg, #d6ccba 0 6px, transparent 6px 12px);
+}
+.md .empty { margin-top: 16vh; text-align: center; color: #a69e90; line-height: 2; }
+
+/* toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 30px;
+  z-index: 10;
+  max-width: calc(100vw - 32px);
+  padding: 9px 16px;
+  border-radius: 99px;
+  background: #23201b;
+  color: #fbf7ef;
+  font-size: 13px;
+  box-shadow: 0 12px 26px -10px rgba(0, 0, 0, .45);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 10px);
+  transition: opacity .2s, transform .2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- narrow screens: stack editor above preview ---------- */
+@media (max-width: 768px) {
+  :root { --gap: 12px; --ed-px: 18px; --ed-py: 16px; }
+  .topbar { padding: 10px 12px 9px; }
+  .logo { width: 34px; height: 34px; border-radius: 9px; }
+  .logo svg { width: 21px; }
+  .brand h1 { font-size: 15px; }
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, var(--a)) var(--gap) minmax(0, var(--b));
+    padding: 0 10px 10px;
+  }
+  .pane { border-radius: 12px; }
+  .pane-head { height: 42px; padding-left: 14px; }
+  .splitter { cursor: row-resize; }
+  .splitter span { width: 40px; height: 4px; }
+  .splitter:hover span, .splitter.dragging span, .splitter:focus-visible span { width: 60px; height: 4px; }
+  body.resizing { cursor: row-resize; }
+  .md { padding: 22px 22px 36px; }
+  .rail { left: 9px; }
+  .md-wrap { max-width: none; }
+}
+@media (max-width: 560px) {
+  .brand p { display: none; }
+  .btn { width: 34px; padding: 0; justify-content: center; }
+  .btn .txt { display: none; }
+}
+
+/* pane headers follow the pane's own width, which the splitter can change */
+@container (max-width: 560px) {
+  .label small { display: none; }
+}
+@container (max-width: 470px) {
+  .tool { padding: 0 9px; }
+  .tool .t { display: none; }
+}
+@container (max-width: 300px) {
+  .pane-editor .label { display: none; }
+  .pane-editor .pane-head { justify-content: flex-end; }
+}
+@container (max-width: 330px) {
+  .stats { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+@media print {
+  body { display: block; height: auto; overflow: visible; background: #fff; }
+  .topbar, .pane-editor, .splitter, .pane-head, .toast, .rail { display: none !important; }
+  .workspace { display: block; padding: 0; }
+  .pane-preview { border: 0; box-shadow: none; overflow: visible; }
+  .preview-scroll { overflow: visible; }
+  .md-wrap { max-width: none; }
+  .md { padding: 0; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true"><svg viewBox="0 0 208 128"><path d="M30 98V30h20l20 25 20-25h20v68H90V59L70 84 50 59v39zm125 0l-30-33h20V30h20v35h20z"/></svg></span>
+    <div class="brand-text">
+      <h1>Markdown 实时预览</h1>
+      <p>左边写，右边看 · 手写极简渲染器，零依赖</p>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn" id="resetBtn" type="button" title="恢复默认示例（可用 Ctrl/⌘ + Z 撤销）" aria-label="恢复示例">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.64-6.36"/><path d="M3 4v5h5"/></svg>
+      <span class="txt">恢复示例</span>
+    </button>
+    <button class="btn btn-dark" id="copyBtn" type="button" title="复制渲染后的 HTML" aria-label="复制 HTML">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4.5A2.5 2.5 0 0 1 2 12.5v-8A2.5 2.5 0 0 1 4.5 2h8A2.5 2.5 0 0 1 15 4.5V5"/></svg>
+      <span class="txt">复制 HTML</span>
+    </button>
+  </div>
+</header>
+
+<main class="workspace" id="workspace">
+  <section class="pane pane-editor" aria-label="Markdown 编辑区">
+    <div class="pane-head">
+      <span class="label">Markdown <small>擂台介绍.md</small></span>
+      <div class="tools" role="toolbar" aria-label="插入 Markdown 语法">
+        <button class="tool" type="button" data-act="heading" title="标题：在 # / ## / ### / 无 之间切换" aria-label="标题"><code>#</code><span class="t">标题</span></button>
+        <button class="tool" type="button" data-act="bold" title="粗体（Ctrl/⌘ + B）" aria-label="粗体"><code>**</code><span class="t">粗体</span></button>
+        <button class="tool" type="button" data-act="list" title="列表：切换行首的 - " aria-label="列表"><code>-</code><span class="t">列表</span></button>
+        <button class="tool" type="button" data-act="code" title="代码（Ctrl/⌘ + E）；选中多行时生成代码块" aria-label="代码"><code>`</code><span class="t">代码</span></button>
+      </div>
+    </div>
+    <div class="editor-scroll" id="edScroll">
+      <div class="line-band" id="band" aria-hidden="true"></div>
+      <div class="editor">
+        <pre class="hl" id="hl" aria-hidden="true"></pre>
+        <textarea id="src" rows="1" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" aria-label="Markdown 源文本" placeholder="在这里输入 Markdown，右侧会实时渲染……">
+# 乔木 LLM 擂台
+
+> 同一道题，交给不同的大模型，谁的答卷更漂亮，打开网页一眼便知。
+
+**乔木 LLM 擂台**是一个让大模型「同台过招」的对比项目：每道题都是一段简短的需求，模型要直接交出一个**能在浏览器里打开的网页**，所有答卷并排摆上擂台，由你来当裁判。
+
+## 擂台怎么比
+
+- **同题同规则**：每位选手拿到的 prompt 与系统提示一字不差
+- **只交 HTML**：不讲思路、不写长文，结果直接在浏览器里见分晓
+- **看真本事**：比的不是跑分，而是页面上的每一个细节
+  - 需求有没有做全
+  - 交互顺不顺手
+  - 窄屏、空内容这些边角情况
+
+## 今天这道题
+
+你正在看的页面，就是其中一份答卷。题目只有四行：
+
+1. 左右分栏：左侧 `textarea` 编辑 Markdown，右侧实时预览
+2. 支持 `#` 标题、`**粗体**`、`-` 列表和 `` `code` ``
+3. 默认塞入一段介绍擂台的 md —— 也就是你正在读的这段
+4. 窄屏时改为上下布局
+
+渲染器没有依赖任何库，是手写的。核心思路不过几行正则：
+
+```js
+const html = md
+  .replace(/^# (.*)$/gm, '&lt;h1>$1&lt;/h1>')
+  .replace(/\*\*(.+?)\*\*/g, '&lt;strong>$1&lt;/strong>')
+  .replace(/`([^`]+)`/g, '&lt;code>$1&lt;/code>');
+```
+
+---
+
+**轮到你了**：在左边随手改几个字，右边立刻跟着变。选中文字按 `Ctrl/⌘ + B` 加粗；在列表项末尾回车，会自动续上一个 `- `。
+
+题目来源：[joeseesun/llm-case-benchmark](https://github.com/joeseesun/llm-case-benchmark)
+</textarea>
+      </div>
+    </div>
+  </section>
+
+  <div class="splitter" id="splitter" role="separator" tabindex="0" aria-orientation="vertical" aria-label="调整两栏大小" aria-valuemin="20" aria-valuemax="80" aria-valuenow="50" title="拖动调整大小 · 双击复位"><span></span></div>
+
+  <section class="pane pane-preview" aria-label="实时预览">
+    <div class="pane-head">
+      <span class="label">Preview <span class="live"><i id="liveDot"></i>实时</span></span>
+      <span class="stats" id="stats"></span>
+    </div>
+    <div class="preview-scroll" id="pvScroll">
+      <div class="md-wrap" id="mdWrap">
+        <div class="rail" id="rail" aria-hidden="true"></div>
+        <article class="md" id="preview"><noscript><p>需要启用 JavaScript 才能实时预览。</p></noscript></article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  const root = document.documentElement;
+  const $ = (id) => document.getElementById(id);
+  const src = $('src');
+  const hl = $('hl');
+  const out = $('preview');
+  const band = $('band');
+  const rail = $('rail');
+  const mdWrap = $('mdWrap');
+  const edScroll = $('edScroll');
+  const pvScroll = $('pvScroll');
+  const stats = $('stats');
+  const liveDot = $('liveDot');
+  const workspace = $('workspace');
+  const splitter = $('splitter');
+  const toastEl = $('toast');
+
+  if (/iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+    root.classList.add('ios');
+  }
+
+  /* ================= Markdown renderer ================= */
+
+  const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  const esc = (s) => s.replace(/[&<>"']/g, (c) => ESC_MAP[c]);
+  const ESCAPABLE = /[!-\/:-@\[-`{-~]/;
+
+  const RE_BLANK = /^[ \t]*$/;
+  const RE_HEADING = /^ {0,3}(#{1,6})(?:[ \t]+(.*?))?(?:[ \t]+#+)?[ \t]*$/;
+  const RE_HR = /^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$/;
+  const RE_ITEM = /^([ \t]*)([-*+]|\d{1,9}[.)])([ \t]+)(.*)$/;
+  const RE_QUOTE = /^( {0,3}>)([ \t]?)(.*)$/;
+  const RE_FENCE = /^( {0,3})(`{3,}|~{3,})(.*)$/;
+  const RE_FENCE_END = /^ {0,3}(`{3,}|~{3,})[ \t]*$/;
+  const RE_LINK = /\[([^\[\]\n]+)\]\(\s*([^\s()]*(?:\([^\s()]*\)[^\s()]*)*)(?:\s+&quot;([^\n]*?)&quot;)?\s*\)/g;
+  const RE_LINK_HL = /\[([^\[\]\n]+)\]\(([^()\n]*(?:\([^()\n]*\)[^()\n]*)*)\)/g;
+
+  // Shared by the renderer (tags) and the editor highlighter (coloured markers).
+  const EMPHASIS = [
+    { re: /()\*\*\*(?=\S)([\s\S]*?\S)\*\*\*/g, mk: '***', open: '<strong><em>', close: '</em></strong>', cls: 't-bi' },
+    { re: /()\*\*(?=\S)([\s\S]*?\S)\*\*/g, mk: '**', open: '<strong>', close: '</strong>', cls: 't-b' },
+    { re: /(^|[^\w])__(?=\S)([\s\S]*?\S)__(?!\w)/g, mk: '__', open: '<strong>', close: '</strong>', cls: 't-b' },
+    { re: /()~~(?=\S)([\s\S]*?\S)~~/g, mk: '~~', open: '<del>', close: '</del>', cls: 't-s' },
+    { re: /()\*(?=[^\s*])([^*]*?[^\s*])\*/g, mk: '*', open: '<em>', close: '</em>', cls: 't-i' },
+    { re: /(^|[^\w])_(?=[^\s_])([^_]*?[^\s_])_(?!\w)/g, mk: '_', open: '<em>', close: '</em>', cls: 't-i' },
+  ];
+
+  const indentWidth = (s) => {
+    let w = 0;
+    for (const c of s) w += c === '\t' ? 4 - (w % 4) : 1;
+    return w;
+  };
+
+  const fenceOpen = (line) => {
+    const m = RE_FENCE.exec(line);
+    if (!m) return null;
+    const info = m[3].trim();
+    if (m[2][0] === '`' && info.includes('`')) return null;
+    return { ch: m[2][0], len: m[2].length, lang: info.split(/\s+/)[0] };
+  };
+  const fenceClose = (line, f) => {
+    const m = RE_FENCE_END.exec(line);
+    return !!m && m[1][0] === f.ch && m[1].length >= f.len;
+  };
+
+  // Finds the closing backtick run of exactly the same length (CommonMark code spans).
+  const scanTicks = (t, i) => {
+    let j = i;
+    while (t[j] === '`') j++;
+    const run = j - i;
+    for (let k = t.indexOf('`', j); k !== -1;) {
+      let e = k;
+      while (t[e] === '`') e++;
+      if (e - k === run) return { open: j, close: k, end: e };
+      k = t.indexOf('`', e);
+    }
+    return { open: j, close: -1, end: j };
+  };
+
+  const restore = (s, frags) => s.replace(/\u0001(\d+)\u0002/g, (_, k) => frags[k]);
+
+  const safeScheme = (href) => {
+    const raw = href.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    const m = /^([a-z][a-z0-9+.\-]*):/i.exec(raw.replace(/[\u0000-\u0020\u007f-\u009f]+/g, ''));
+    return !m || /^(https?|mailto|tel)$/i.test(m[1]);
+  };
+
+  function inline(text) {
+    const frags = [];
+    const hold = (h) => '\u0001' + (frags.push(h) - 1) + '\u0002';
+    let s = '';
+    for (let i = 0; i < text.length;) {
+      const c = text[i];
+      if (c === '\u0001' || c === '\u0002') { i++; continue; }
+      if (c === '\\' && i + 1 < text.length && ESCAPABLE.test(text[i + 1])) {
+        s += hold(esc(text[i + 1]));
+        i += 2;
+        continue;
+      }
+      if (c === '`') {
+        const r = scanTicks(text, i);
+        if (r.close < 0) { s += text.slice(i, r.end); i = r.end; continue; }
+        let code = text.slice(r.open, r.close).replace(/\n/g, ' ');
+        if (code.length > 2 && code[0] === ' ' && code[code.length - 1] === ' ' && code.trim()) code = code.slice(1, -1);
+        s += hold('<code>' + esc(code) + '</code>');
+        i = r.end;
+        continue;
+      }
+      s += c;
+      i++;
+    }
+    s = esc(s).replace(RE_LINK, (m, label, url, title) => {
+      const href = restore(url, frags);
+      if (/[<>]/.test(href) || !safeScheme(href)) return m;
+      const ext = /^https?:/i.test(href) ? ' target="_blank" rel="noopener noreferrer"' : '';
+      const tip = title ? ' title="' + restore(title, frags).replace(/<[^>]*>/g, '') + '"' : '';
+      return hold('<a href="' + href + '"' + tip + ext + '>') + label + hold('</a>');
+    });
+    for (const r of EMPHASIS) s = s.replace(r.re, (m, pre, body) => pre + r.open + body + r.close);
+    return restore(s.replace(/\n/g, '<br>'), frags);
+  }
+
+  function renderList(lines, start, base, map) {
+    const items = [];
+    const n = lines.length;
+    let i = start;
+    while (i < n) {
+      const line = lines[i];
+      const m = RE_ITEM.exec(line);
+      if (m && !RE_HR.test(line)) {
+        items.push({ indent: indentWidth(m[1]), ordered: /\d/.test(m[2]), num: parseInt(m[2], 10), text: [m[4]], line: i, end: i });
+        i++;
+        continue;
+      }
+      if (RE_BLANK.test(line)) {
+        let j = i + 1;
+        while (j < n && RE_BLANK.test(lines[j])) j++;
+        if (j < n && RE_ITEM.test(lines[j]) && !RE_HR.test(lines[j])) { i = j; continue; }
+        break;
+      }
+      if (fenceOpen(line) || RE_HEADING.test(line) || RE_HR.test(line) || RE_QUOTE.test(line)) break;
+      const last = items[items.length - 1];
+      last.text.push(line.trim());
+      last.end = i;
+      i++;
+    }
+
+    let html = '';
+    const stack = [];
+    for (const it of items) {
+      const tag = it.ordered ? 'ol' : 'ul';
+      while (stack.length && it.indent < stack[stack.length - 1].indent) html += '</li></' + stack.pop().tag + '>';
+      const top = stack[stack.length - 1];
+      const open = () => {
+        html += '<' + tag + (it.ordered && it.num !== 1 ? ' start="' + it.num + '"' : '') + '>';
+        stack.push({ indent: it.indent, tag });
+      };
+      if (!top || it.indent >= top.indent + 2) open();
+      else if (top.tag !== tag) { html += '</li></' + stack.pop().tag + '>'; open(); }
+      else html += '</li>';
+      html += '<li' + (map ? ' data-line="' + (base + it.line) + '" data-end="' + (base + it.end) + '"' : '') + '>' + inline(it.text.join('\n'));
+    }
+    while (stack.length) html += '</li></' + stack.pop().tag + '>';
+    return { html, next: i };
+  }
+
+  function renderBlocks(lines, base, map) {
+    const at = (a, b) => (map ? ' data-line="' + (base + a) + '" data-end="' + (base + b) + '"' : '');
+    const n = lines.length;
+    let html = '';
+    let para = -1;
+    let i = 0;
+    const flush = (end) => {
+      if (para < 0) return;
+      html += '<p' + at(para, end - 1) + '>' + inline(lines.slice(para, end).map((l) => l.trim()).join('\n')) + '</p>';
+      para = -1;
+    };
+    while (i < n) {
+      const line = lines[i];
+      if (RE_BLANK.test(line)) { flush(i); i++; continue; }
+
+      const f = fenceOpen(line);
+      if (f) {
+        flush(i);
+        let j = i + 1;
+        while (j < n && !fenceClose(lines[j], f)) j++;
+        const lang = f.lang ? esc(f.lang) : '';
+        html += '<pre' + at(i, Math.min(j, n - 1)) + (lang ? ' data-lang="' + lang + '"' : '') + '><code' +
+          (lang ? ' class="language-' + lang + '"' : '') + '>' + esc(lines.slice(i + 1, j).join('\n')) + '</code></pre>';
+        i = j + 1;
+        continue;
+      }
+
+      let m = RE_HEADING.exec(line);
+      if (m) {
+        flush(i);
+        const lv = m[1].length;
+        html += '<h' + lv + at(i, i) + '>' + inline(m[2] || '') + '</h' + lv + '>';
+        i++;
+        continue;
+      }
+      if (RE_HR.test(line)) {
+        flush(i);
+        html += '<hr' + at(i, i) + '>';
+        i++;
+        continue;
+      }
+      if (RE_QUOTE.test(line)) {
+        flush(i);
+        const inner = [];
+        let j = i;
+        while (j < n && (m = RE_QUOTE.exec(lines[j]))) { inner.push(m[3]); j++; }
+        html += '<blockquote' + at(i, j - 1) + '>' + renderBlocks(inner, base + i, map) + '</blockquote>';
+        i = j;
+        continue;
+      }
+      if (RE_ITEM.test(line)) {
+        flush(i);
+        const r = renderList(lines, i, base, map);
+        html += r.html;
+        i = r.next;
+        continue;
+      }
+      if (para < 0) para = i;
+      i++;
+    }
+    flush(n);
+    return html;
+  }
+
+  const renderMarkdown = (text, map) => renderBlocks(text.replace(/\r\n?/g, '\n').split('\n'), 0, map);
+
+  /* ================= editor highlighter ================= */
+  // Must reproduce the source text character for character; it only adds colour spans.
+
+  function hlInline(t) {
+    const frags = [];
+    const hold = (h) => '\u0001' + (frags.push(h) - 1) + '\u0002';
+    const emph = (s) => {
+      for (const r of EMPHASIS) {
+        s = s.replace(r.re, (m, pre, body) => pre +
+          hold('<span class="t-m">' + r.mk + '</span><span class="' + r.cls + '">') + body +
+          hold('</span><span class="t-m">' + r.mk + '</span>'));
+      }
+      return s;
+    };
+    let s = '';
+    for (let i = 0; i < t.length;) {
+      const c = t[i];
+      if (c === '\u0001' || c === '\u0002') { s += hold(c); i++; continue; }
+      if (c === '\\' && i + 1 < t.length && ESCAPABLE.test(t[i + 1])) {
+        s += hold('<span class="t-m">' + esc(t.slice(i, i + 2)) + '</span>');
+        i += 2;
+        continue;
+      }
+      if (c === '`') {
+        const r = scanTicks(t, i);
+        if (r.close < 0) { s += t.slice(i, r.end); i = r.end; continue; }
+        const ticks = t.slice(i, r.open);
+        s += hold('<span class="t-m">' + ticks + '</span><span class="t-c">' + esc(t.slice(r.open, r.close)) +
+          '</span><span class="t-m">' + ticks + '</span>');
+        i = r.end;
+        continue;
+      }
+      s += c;
+      i++;
+    }
+    s = esc(s).replace(RE_LINK_HL, (m, label, url) => hold(
+      '<span class="t-m">[</span><span class="t-a">' + restore(emph(label), frags) +
+      '</span><span class="t-m">](</span><span class="t-u">' + restore(url, frags) + '</span><span class="t-m">)</span>'));
+    return restore(emph(s), frags);
+  }
+
+  function hlLine(line) {
+    let m;
+    if (RE_HEADING.test(line)) {
+      m = /^( {0,3})(#{1,6})(.*)$/.exec(line);
+      return m[1] + '<span class="t-hm">' + m[2] + '</span><span class="t-h">' + hlInline(m[3]) + '</span>';
+    }
+    if (RE_HR.test(line)) return '<span class="t-hr">' + esc(line) + '</span>';
+    if ((m = RE_ITEM.exec(line))) return m[1] + '<span class="t-li">' + m[2] + '</span>' + m[3] + hlInline(m[4]);
+    if ((m = RE_QUOTE.exec(line))) return '<span class="t-qm">' + esc(m[1]) + '</span>' + m[2] + '<span class="t-q">' + hlLine(m[3]) + '</span>';
+    return hlInline(line);
+  }
+
+  function highlight(text) {
+    const lines = text.split('\n');
+    let fence = null;
+    let html = '';
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      let h;
+      if (fence) {
+        if (fenceClose(line, fence)) { h = '<span class="t-fm">' + esc(line) + '</span>'; fence = null; }
+        else h = '<span class="t-code">' + esc(line) + '</span>';
+      } else if ((fence = fenceOpen(line))) {
+        const m = RE_FENCE.exec(line);
+        h = m[1] + '<span class="t-fm">' + m[2] + '</span><span class="t-lang">' + esc(m[3]) + '</span>';
+      } else {
+        h = hlLine(line);
+      }
+      html += (i ? '\n' : '') + '<span class="ln">' + h + '</span>';
+    }
+    // A trailing newline only gets its own line box if something follows it.
+    return text.endsWith('\n') ? html + ' ' : html;
+  }
+
+  /* ================= live update ================= */
+
+  let driver = 'editor';
+  let anchors = null;
+  let lastRendered = null;
+  let lineHeight = 0;
+  let wantReveal = false;
+
+  const refreshOverlay = () => { hl.innerHTML = highlight(src.value); };
+
+  function renderPreview(tick) {
+    const text = src.value;
+    if (text === lastRendered) return;
+    lastRendered = text;
+    const t0 = performance.now();
+    const html = renderMarkdown(text, true);
+    out.innerHTML = html || '<p class="empty">这里会显示渲染结果<br>在左边写点 Markdown 试试吧</p>';
+    const ms = performance.now() - t0;
+    const plain = html ? out.textContent : '';
+    const words = (plain.match(/[\u3400-\u9fff\uf900-\ufaff]/g) || []).length +
+      (plain.match(/[A-Za-z0-9]+(?:['’.\-][A-Za-z0-9]+)*/g) || []).length;
+    const lines = text ? text.split('\n').length : 0;
+    stats.textContent = words.toLocaleString() + ' 字 · ' + lines.toLocaleString() + ' 行 · 渲染 ' + (ms < 10 ? ms.toFixed(1) : Math.round(ms)) + ' ms';
+    anchors = null;
+    if (tick && liveDot.animate) {
+      liveDot.animate([
+        { boxShadow: '0 0 0 0 rgba(47, 158, 90, .55)' },
+        { boxShadow: '0 0 0 7px rgba(47, 158, 90, 0)' },
+      ], { duration: 650, easing: 'ease-out' });
+    }
+    if (driver === 'editor') syncFrom('editor');
+    queueCaret();
+  }
+
+  let pvRaf = 0;
+  const queuePreview = () => {
+    if (!pvRaf) pvRaf = requestAnimationFrame(() => { pvRaf = 0; renderPreview(true); });
+  };
+
+  src.addEventListener('input', (e) => {
+    refreshOverlay();
+    if (!e.isComposing) queuePreview();
+    wantReveal = true;
+    queueCaret();
+  });
+  src.addEventListener('compositionend', () => { refreshOverlay(); queuePreview(); });
+  // The textarea is always taller than its text; never let it scroll away from the overlay.
+  src.addEventListener('scroll', () => {
+    if (src.scrollTop || src.scrollLeft) { src.scrollTop = 0; src.scrollLeft = 0; }
+  });
+
+  /* ================= caret: active line + preview rail ================= */
+
+  const lineOf = (pos) => {
+    const v = src.value;
+    let n = 0;
+    for (let i = v.indexOf('\n'); i !== -1 && i < pos; i = v.indexOf('\n', i + 1)) n++;
+    return n;
+  };
+  const caretLine = () => lineOf(src.selectionStart);
+
+  // The overlay mirrors the textarea's layout, so a Range inside it gives the caret's on-screen box.
+  function caretRect() {
+    const v = src.value;
+    const pos = src.selectionDirection === 'backward' ? src.selectionStart : src.selectionEnd;
+    const lineEl = hl.children[lineOf(pos)];
+    if (!lineEl) return null;
+    let col = pos - (pos > 0 ? v.lastIndexOf('\n', pos - 1) + 1 : 0);
+    const walker = document.createTreeWalker(lineEl, NodeFilter.SHOW_TEXT);
+    let node = null;
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      node = t;
+      if (col <= t.length) break;
+      col -= t.length;
+    }
+    if (!node) return lineEl.getBoundingClientRect();
+    const range = document.createRange();
+    range.setStart(node, Math.min(col, node.length));
+    range.collapse(true);
+    const rects = range.getClientRects();
+    return rects.length ? rects[0] : lineEl.getBoundingClientRect();
+  }
+
+  // Keep the caret a little away from the editor's edges after typing or toolbar edits.
+  function revealCaret() {
+    const r = caretRect();
+    if (!r) return;
+    const box = edScroll.getBoundingClientRect();
+    const margin = Math.min(48, box.height / 4);
+    if (r.bottom > box.bottom - margin) edScroll.scrollTop += r.bottom - (box.bottom - margin);
+    else if (r.top < box.top + margin) edScroll.scrollTop -= box.top + margin - r.top;
+  }
+
+  function updateBand(ln) {
+    const el = hl.children[ln];
+    if (!el) { band.classList.remove('on'); return; }
+    if (!lineHeight) lineHeight = parseFloat(getComputedStyle(hl).lineHeight) || 24;
+    const base = edScroll.getBoundingClientRect().top - edScroll.scrollTop;
+    const rects = el.getClientRects();
+    let top;
+    let bottom;
+    if (rects.length) {
+      const pad = Math.max(0, (lineHeight - rects[0].height) / 2);
+      top = rects[0].top - pad;
+      bottom = rects[rects.length - 1].bottom + pad;
+    } else {
+      top = el.getBoundingClientRect().top;
+      bottom = top + lineHeight;
+    }
+    band.style.transform = 'translateY(' + (top - base).toFixed(1) + 'px)';
+    band.style.height = (bottom - top).toFixed(1) + 'px';
+    band.classList.add('on');
+  }
+
+  function updateRail(ln) {
+    let hit = null;
+    for (const el of out.querySelectorAll('[data-line]')) {
+      if (+el.dataset.line > ln) break;
+      if (ln <= +el.dataset.end) hit = el;
+    }
+    if (!hit) { rail.classList.remove('on'); return; }
+    const wr = mdWrap.getBoundingClientRect();
+    const r = hit.getBoundingClientRect();
+    const wasOff = !rail.classList.contains('on');
+    if (wasOff) rail.classList.add('jump');
+    rail.style.transform = 'translateY(' + (r.top - wr.top).toFixed(1) + 'px)';
+    rail.style.height = Math.max(10, r.height).toFixed(1) + 'px';
+    rail.classList.add('on');
+    if (wasOff) {
+      void rail.offsetHeight;
+      rail.classList.remove('jump');
+    }
+  }
+
+  let caretRaf = 0;
+  function queueCaret() {
+    if (caretRaf) return;
+    caretRaf = requestAnimationFrame(() => {
+      caretRaf = 0;
+      if (document.activeElement !== src) {
+        wantReveal = false;
+        band.classList.remove('on');
+        rail.classList.remove('on');
+        return;
+      }
+      if (wantReveal) {
+        wantReveal = false;
+        driver = 'editor';
+        revealCaret();
+      }
+      const ln = caretLine();
+      updateBand(ln);
+      updateRail(ln);
+    });
+  }
+
+  src.addEventListener('focus', () => { driver = 'editor'; queueCaret(); });
+  src.addEventListener('blur', queueCaret);
+  src.addEventListener('keyup', queueCaret);
+  src.addEventListener('mouseup', queueCaret);
+  document.addEventListener('selectionchange', () => { if (document.activeElement === src) queueCaret(); });
+
+  /* ================= scroll sync ================= */
+  // Each rendered block carries its source line; pair its position with the same line in the
+  // editor overlay and interpolate between those anchor pairs.
+
+  function buildAnchors() {
+    const eMax = Math.max(0, edScroll.scrollHeight - edScroll.clientHeight);
+    const pMax = Math.max(0, pvScroll.scrollHeight - pvScroll.clientHeight);
+    const eBase = edScroll.getBoundingClientRect().top - edScroll.scrollTop + 16;
+    const pBase = pvScroll.getBoundingClientRect().top - pvScroll.scrollTop + 16;
+    const lineEls = hl.children;
+    const pts = [[0, 0]];
+    for (const el of out.querySelectorAll('[data-line]')) {
+      const lineEl = lineEls[+el.dataset.line];
+      if (!lineEl) continue;
+      const e = Math.min(eMax, Math.max(0, lineEl.getBoundingClientRect().top - eBase));
+      const p = Math.min(pMax, Math.max(0, el.getBoundingClientRect().top - pBase));
+      const last = pts[pts.length - 1];
+      if (e < last[0] || p < last[1]) continue;
+      if (e > last[0]) pts.push([e, p]);
+      else if (pts.length > 1) last[1] = p;
+    }
+    const last = pts[pts.length - 1];
+    if (eMax > 0) {
+      if (last[0] >= eMax && pts.length > 1) last[1] = pMax;
+      else pts.push([eMax, pMax]);
+    }
+    anchors = pts;
+  }
+
+  function mapScroll(v, from, to) {
+    for (let k = 1; k < anchors.length; k++) {
+      const a = anchors[k - 1];
+      const b = anchors[k];
+      if (v <= b[from]) {
+        const span = b[from] - a[from];
+        const f = span > 0 ? Math.min(1, Math.max(0, (v - a[from]) / span)) : 1;
+        return a[to] + (b[to] - a[to]) * f;
+      }
+    }
+    return anchors[anchors.length - 1][to];
+  }
+
+  function syncFrom(which) {
+    if (!anchors) buildAnchors();
+    if (which === 'editor') {
+      const t = mapScroll(edScroll.scrollTop, 0, 1);
+      if (Math.abs(pvScroll.scrollTop - t) >= 1) pvScroll.scrollTop = t;
+    } else {
+      const t = mapScroll(pvScroll.scrollTop, 1, 0);
+      if (Math.abs(edScroll.scrollTop - t) >= 1) edScroll.scrollTop = t;
+    }
+  }
+
+  for (const type of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
+    edScroll.addEventListener(type, () => { driver = 'editor'; }, { passive: true });
+    pvScroll.addEventListener(type, () => { driver = 'preview'; }, { passive: true });
+  }
+  edScroll.addEventListener('scroll', () => { if (driver === 'editor') syncFrom('editor'); }, { passive: true });
+  pvScroll.addEventListener('scroll', () => { if (driver === 'preview') syncFrom('preview'); }, { passive: true });
+
+  let resizeRaf = 0;
+  const onResize = () => {
+    anchors = null;
+    lineHeight = 0;
+    queueCaret();
+    if (!resizeRaf) resizeRaf = requestAnimationFrame(() => { resizeRaf = 0; syncFrom(driver); });
+  };
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver(onResize);
+    ro.observe(edScroll);
+    ro.observe(pvScroll);
+  }
+  window.addEventListener('resize', onResize);
+
+  /* ================= editing helpers ================= */
+
+  // execCommand keeps the browser's native undo stack intact; fall back to a plain value write.
+  function replaceRange(start, end, text, selA, selB) {
+    const before = src.value;
+    const expected = before.slice(0, start) + text + before.slice(end);
+    src.focus();
+    src.setSelectionRange(start, end);
+    let ok = false;
+    try { ok = document.execCommand('insertText', false, text); } catch (err) { ok = false; }
+    if (!ok || src.value !== expected) {
+      src.value = expected;
+      src.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    src.setSelectionRange(selA, selB);
+    wantReveal = true;
+    queueCaret();
+  }
+
+  function lineBounds(s, e) {
+    const v = src.value;
+    const a = s > 0 ? v.lastIndexOf('\n', s - 1) + 1 : 0;
+    if (e > s && v[e - 1] === '\n') e--;
+    let b = v.indexOf('\n', e);
+    if (b < 0) b = v.length;
+    return [a, b];
+  }
+
+  function wrapInline(mk, placeholder) {
+    const v = src.value;
+    let s = src.selectionStart;
+    let e = src.selectionEnd;
+    while (s < e && /\s/.test(v[s])) s++;
+    while (e > s && /\s/.test(v[e - 1])) e--;
+    const L = mk.length;
+    if (s >= L && v.slice(s - L, s) === mk && v.slice(e, e + L) === mk) {
+      replaceRange(s - L, e + L, v.slice(s, e), s - L, e - L);
+      return;
+    }
+    const sel = v.slice(s, e);
+    if (sel.length > 2 * L && sel.startsWith(mk) && sel.endsWith(mk)) {
+      const inner = sel.slice(L, sel.length - L);
+      replaceRange(s, e, inner, s, s + inner.length);
+      return;
+    }
+    const body = sel || placeholder;
+    replaceRange(s, e, mk + body + mk, s + L, s + L + body.length);
+  }
+
+  function toggleHeading() {
+    const v = src.value;
+    const s = src.selectionStart;
+    const e = src.selectionEnd;
+    const [a, b] = lineBounds(s, e);
+    const lines = v.slice(a, b).split('\n');
+    const single = lines.length === 1;
+    const text = lines.map((l) => {
+      if (!single && !l.trim()) return l;
+      const m = /^( {0,3})(#{1,6})(?:[ \t]+|$)/.exec(l);
+      if (m) {
+        const rest = l.slice(m[0].length);
+        return m[2].length >= 3 ? m[1] + rest : m[1] + '#'.repeat(m[2].length + 1) + ' ' + rest;
+      }
+      return '# ' + l.replace(/^[ \t]+/, '');
+    }).join('\n');
+    if (single) {
+      const caret = Math.max(a, a + text.length - (b - e));
+      replaceRange(a, b, text, Math.max(a, caret - (e - s)), caret);
+    } else {
+      replaceRange(a, b, text, a, a + text.length);
+    }
+  }
+
+  function toggleList() {
+    const v = src.value;
+    const [a, b] = lineBounds(src.selectionStart, src.selectionEnd);
+    const lines = v.slice(a, b).split('\n');
+    const re = /^([ \t]*)(?:[-*+]|\d{1,9}[.)])[ \t]+/;
+    const filled = lines.filter((l) => l.trim());
+    const allItems = filled.length > 0 && filled.every((l) => re.test(l));
+    const text = lines.map((l) => {
+      if (allItems) return l.replace(re, '$1');
+      if (!l.trim()) return lines.length === 1 ? '- ' : l;
+      return re.test(l) ? l : l.replace(/^([ \t]*)/, '$1- ');
+    }).join('\n');
+    if (lines.length === 1) replaceRange(a, b, text, a + text.length, a + text.length);
+    else replaceRange(a, b, text, a, a + text.length);
+  }
+
+  function toggleCode() {
+    const v = src.value;
+    const s = src.selectionStart;
+    const e = src.selectionEnd;
+    const sel = v.slice(s, e);
+    const [a, b] = lineBounds(s, e);
+    const block = v.slice(a, b);
+    const fenced = /^(`{3,}|~{3,})[^\n]*\n([\s\S]*?)\n\1[ \t]*$/.exec(block);
+    if (fenced) {
+      replaceRange(a, b, fenced[2], a, a + fenced[2].length);
+      return;
+    }
+    if (sel.includes('\n') || (s === e && !block.trim())) {
+      const body = sel.includes('\n') ? block : '代码';
+      replaceRange(a, b, '```\n' + body + '\n```', a + 4, a + 4 + body.length);
+      return;
+    }
+    if (sel.includes('`')) {
+      replaceRange(s, e, '`` ' + sel + ' ``', s + 3, s + 3 + sel.length);
+      return;
+    }
+    wrapInline('`', 'code');
+  }
+
+  // Enter on a list item continues the list; Enter on an empty item outdents it, then ends the list
+  // (leaving a blank line, otherwise the next line would be a lazy continuation of the last item).
+  function continueList(e) {
+    if (e.shiftKey || e.ctrlKey || e.metaKey || e.altKey || e.isComposing || e.keyCode === 229) return;
+    const v = src.value;
+    const s = src.selectionStart;
+    if (s !== src.selectionEnd) return;
+    const a = s > 0 ? v.lastIndexOf('\n', s - 1) + 1 : 0;
+    let b = v.indexOf('\n', s);
+    if (b < 0) b = v.length;
+    const line = v.slice(a, b);
+    if (RE_HR.test(line)) return;
+    const m = /^([ \t]*)([-*+]|(\d{1,9})([.)]))([ \t]+)/.exec(line);
+    if (!m || s < a + m[0].length) return;
+    e.preventDefault();
+    if (!line.slice(m[0].length).trim()) {
+      if (m[1]) {
+        const indent = m[1].endsWith('\t') ? m[1].slice(0, -1) : m[1].slice(0, Math.max(0, m[1].length - 2));
+        const moved = indent + line.slice(m[1].length);
+        replaceRange(a, b, moved, a + moved.length, a + moved.length);
+      } else {
+        const prevStart = a >= 2 ? v.lastIndexOf('\n', a - 2) + 1 : 0;
+        const gap = a > 0 && !RE_BLANK.test(v.slice(prevStart, a - 1)) ? '\n' : '';
+        replaceRange(a, b, gap, a + gap.length, a + gap.length);
+      }
+      return;
+    }
+    const marker = m[3] ? (parseInt(m[3], 10) + 1) + m[4] : m[2];
+    const ins = '\n' + m[1] + marker + m[5];
+    replaceRange(s, s, ins, s + ins.length, s + ins.length);
+  }
+
+  const actions = {
+    heading: toggleHeading,
+    bold: () => wrapInline('**', '粗体'),
+    list: toggleList,
+    code: toggleCode,
+  };
+
+  src.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey) {
+      const k = e.key.toLowerCase();
+      if (k === 'b') { e.preventDefault(); actions.bold(); return; }
+      if (k === 'e') { e.preventDefault(); actions.code(); return; }
+    }
+    if (e.key === 'Enter') continueList(e);
+  });
+
+  for (const btn of document.querySelectorAll('.tool')) {
+    btn.addEventListener('mousedown', (e) => e.preventDefault());
+    btn.addEventListener('click', () => {
+      driver = 'editor';
+      actions[btn.dataset.act]();
+    });
+  }
+
+  /* ================= top bar actions ================= */
+
+  let toastTimer = 0;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2000);
+  }
+
+  $('resetBtn').addEventListener('click', () => {
+    driver = 'editor';
+    replaceRange(0, src.value.length, src.defaultValue, 0, 0);
+    edScroll.scrollTop = 0;
+    pvScroll.scrollTop = 0;
+    toast('已恢复示例文本，Ctrl/⌘ + Z 可撤销');
+  });
+
+  $('copyBtn').addEventListener('click', async () => {
+    const html = renderMarkdown(src.value, false);
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(html);
+      ok = true;
+    } catch (err) {
+      const tmp = document.createElement('textarea');
+      tmp.value = html;
+      tmp.setAttribute('readonly', '');
+      tmp.style.cssText = 'position:fixed;top:-1000px;left:0;opacity:0;';
+      document.body.appendChild(tmp);
+      tmp.select();
+      try { ok = document.execCommand('copy'); } catch (err2) { ok = false; }
+      tmp.remove();
+    }
+    toast(ok ? '已复制渲染后的 HTML（' + html.length.toLocaleString() + ' 字符）' : '复制失败：浏览器没有开放剪贴板权限');
+  });
+
+  /* ================= splitter ================= */
+
+  const narrow = window.matchMedia('(max-width: 768px)');
+  let split = 0.5;
+
+  function setSplit(v) {
+    split = Math.min(0.8, Math.max(0.2, v));
+    workspace.style.setProperty('--a', (split * 100).toFixed(3) + 'fr');
+    workspace.style.setProperty('--b', ((1 - split) * 100).toFixed(3) + 'fr');
+    splitter.setAttribute('aria-valuenow', String(Math.round(split * 100)));
+    anchors = null;
+    queueCaret();
+  }
+
+  splitter.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const vertical = narrow.matches;
+    const cs = getComputedStyle(workspace);
+    const r = workspace.getBoundingClientRect();
+    const gap = vertical ? splitter.offsetHeight : splitter.offsetWidth;
+    const start = vertical ? r.top + parseFloat(cs.paddingTop) : r.left + parseFloat(cs.paddingLeft);
+    const size = (vertical
+      ? r.height - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+      : r.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)) - gap;
+    const move = (ev) => setSplit(((vertical ? ev.clientY : ev.clientX) - start - gap / 2) / size);
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', up);
+      document.body.classList.remove('resizing');
+      splitter.classList.remove('dragging');
+    };
+    try { splitter.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ }
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+    document.body.classList.add('resizing');
+    splitter.classList.add('dragging');
+  });
+  splitter.addEventListener('dblclick', () => setSplit(0.5));
+  splitter.addEventListener('keydown', (e) => {
+    const step = { ArrowLeft: -0.02, ArrowUp: -0.02, ArrowRight: 0.02, ArrowDown: 0.02 }[e.key];
+    if (step) setSplit(split + step);
+    else if (e.key === 'Home') setSplit(0.2);
+    else if (e.key === 'End') setSplit(0.8);
+    else if (e.key === 'Enter') setSplit(0.5);
+    else return;
+    e.preventDefault();
+  });
+
+  const syncOrientation = () => splitter.setAttribute('aria-orientation', narrow.matches ? 'horizontal' : 'vertical');
+  if (narrow.addEventListener) narrow.addEventListener('change', syncOrientation);
+  else narrow.addListener(syncOrientation);
+  syncOrientation();
+
+  /* ================= boot ================= */
+
+  refreshOverlay();
+  renderPreview(false);
+  root.classList.add('js');
+})();
+</script>
+</body>
+</html>

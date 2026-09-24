@@ -1,0 +1,696 @@
+{
+ "scenes": [
+  {
+   "id": "midautumn",
+   "code": "const C={W0:'#1B2550',W1:'#243467',W2:'#34498B',B0:'#262C4A',B1:'#3F4663',M0:'#F6EAC0',M1:'#E6D39A',M2:'#FFF7DD',M3:'#D6BE88',\nS0:'#D8D4CA',S1:'#B2AEA6',S2:'#8A8884',S3:'#6A7082',P0:'#B6302A',P1:'#80211A',P2:'#2D5D79',P3:'#D9A441',R0:'#5B6674',R1:'#76818E',R2:'#3C4551',\nT0:'#4A372C',T1:'#6C503D',F0:'#2A5035',F1:'#396843',F2:'#548A51',GR:'#45604C',G0:'#F2C02D',G1:'#F9DA6B',L0:'#DA372D',L1:'#A2211A',L2:'#E9B449',\nY0:'#F4F1EA',Y1:'#EBE6DB',Y2:'#E8A0AA',D0:'#9A6A3E',K0:'#C3813A',K3:'#3C5C9A',H0:'#EE96A4',FP:'#F8D04A',FQ:'#F3BC3C'};\n\n// every solid is staged in G first; only pieces connected to the base are emitted\nconst N=256,G=new Uint8Array(N*N*N),PAL=[],PIX=new Map();\nconst ci=c=>{let i=PIX.get(c);if(i===undefined){PAL.push(c);i=PAL.length;PIX.set(c,i);}return i;};\nconst gi=(x,y,z)=>x+N*(z+N*y);\nconst put=(x,y,z,c)=>{x=Math.round(x);y=Math.round(y);z=Math.round(z);if(x<10||x>245||z<10||z>245||y<4||y>245)return;G[gi(x,y,z)]=c===null?0:ci(c);};\nconst at=(x,y,z)=>(x<0||y<0||z<0||x>255||y>255||z>255)?0:G[gi(x,y,z)];\nfunction h3(x,y,z){let h=(Math.imul(x|0,374761393)+Math.imul(y|0,668265263)+Math.imul(z|0,1274126177))|0;h=Math.imul(h^(h>>>13),1103515245);h^=h>>>16;return (h>>>0)/4294967296;}\nfunction vn(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z);let fx=x-xi,fy=y-yi,fz=z-zi;fx=fx*fx*(3-2*fx);fy=fy*fy*(3-2*fy);fz=fz*fz*(3-2*fz);let r=0;\n  for(let k=0;k<8;k++){const a=k&1,b=(k>>1)&1,c=k>>2;r+=(a?fx:1-fx)*(b?fy:1-fy)*(c?fz:1-fz)*h3(xi+a,yi+b,zi+c);}return r;}\nconst ss=t=>t<=0?0:t>=1?1:t*t*(3-2*t);\nfunction boxG(x0,y0,z0,x1,y1,z1,c){for(let y=Math.min(y0,y1);y<=Math.max(y0,y1);y++)for(let z=Math.min(z0,z1);z<=Math.max(z0,z1);z++)for(let x=Math.min(x0,x1);x<=Math.max(x0,x1);x++)put(x,y,z,c);}\nfunction lineG(x0,y0,z0,x1,y1,z1,c){const s=Math.ceil(Math.max(Math.abs(x1-x0),Math.abs(y1-y0),Math.abs(z1-z0)));for(let i=0;i<=s;i++){const t=s?i/s:0;put(x0+(x1-x0)*t,y0+(y1-y0)*t,z0+(z1-z0)*t,c);}}\nfunction cyl(cx,y0,cz,r,h,c){for(let y=Math.ceil(y0);y<y0+h;y++)for(let z=Math.ceil(cz-r);z<=Math.floor(cz+r);z++)for(let x=Math.ceil(cx-r);x<=Math.floor(cx+r);x++)if((x-cx)**2+(z-cz)**2<=r*r)put(x,y,z,c);}\nfunction coneG(cx,y0,cz,r0,r1,h,c){for(let y=Math.ceil(y0);y<y0+h;y++){const r=r0+(r1-r0)*(y-y0)/Math.max(1,h-1);for(let z=Math.ceil(cz-r);z<=Math.floor(cz+r);z++)for(let x=Math.ceil(cx-r);x<=Math.floor(cx+r);x++)if((x-cx)**2+(z-cz)**2<=r*r)put(x,y,z,c);}}\nfunction ringG(cx,cy,cz,R,tr,c,axis){const e=R+tr;for(let y=Math.ceil(cy-(axis==='y'?tr:e));y<=Math.floor(cy+(axis==='y'?tr:e));y++)for(let z=Math.ceil(cz-(axis==='z'?tr:e));z<=Math.floor(cz+(axis==='z'?tr:e));z++)for(let x=Math.ceil(cx-(axis==='x'?tr:e));x<=Math.floor(cx+(axis==='x'?tr:e));x++){\n  const dx=x-cx,dy=y-cy,dz=z-cz,ax=axis==='x'?dx:axis==='y'?dy:dz,rad=axis==='x'?Math.hypot(dy,dz):axis==='y'?Math.hypot(dx,dz):Math.hypot(dx,dy);if((rad-R)**2+ax*ax<=tr*tr)put(x,y,z,c);}}\nfunction ell(cx,cy,cz,rx,ry,rz,fn){\n  for(let y=Math.ceil(cy-ry);y<=Math.floor(cy+ry);y++)for(let z=Math.ceil(cz-rz);z<=Math.floor(cz+rz);z++)for(let x=Math.ceil(cx-rx);x<=Math.floor(cx+rx);x++){\n    const q=((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2;if(q>1)continue;const c=typeof fn==='string'||fn===null?fn:fn(x,y,z,q);if(c!==undefined&&(c!==null||fn===null))put(x,y,z,c);}\n}\nfunction bm(x0,y0,z0,x1,y1,z1,r,fn){\n  const dx=x1-x0,dy=y1-y0,dz=z1-z0,L2=dx*dx+dy*dy+dz*dz;\n  for(let y=Math.ceil(Math.min(y0,y1)-r);y<=Math.floor(Math.max(y0,y1)+r);y++)for(let z=Math.ceil(Math.min(z0,z1)-r);z<=Math.floor(Math.max(z0,z1)+r);z++)\n  for(let x=Math.ceil(Math.min(x0,x1)-r);x<=Math.floor(Math.max(x0,x1)+r);x++){\n    const t=L2?Math.max(0,Math.min(1,((x-x0)*dx+(y-y0)*dy+(z-z0)*dz)/L2)):0,ex=x-x0-t*dx,ey=y-y0-t*dy,ez=z-z0-t*dz,d2=ex*ex+ey*ey+ez*ez;\n    if(d2<=r*r){const c=typeof fn==='string'?fn:fn(x,y,z,t,Math.sqrt(d2));if(c)put(x,y,z,c);}\n  }\n}\nfunction curve(ctrl,steps){\n  const out=[],P=i=>ctrl[Math.max(0,Math.min(ctrl.length-1,i))];\n  for(let i=0;i<ctrl.length-1;i++)for(let s=0;s<steps;s++){const t=s/steps,p0=P(i-1),p1=P(i),p2=P(i+1),p3=P(i+2);\n    out.push([0,1,2].map(k=>0.5*(2*p1[k]+(p2[k]-p0[k])*t+(2*p0[k]-5*p1[k]+4*p2[k]-p3[k])*t*t+(3*p1[k]-p0[k]-3*p2[k]+p3[k])*t*t*t)));}\n  out.push(ctrl[ctrl.length-1].slice());return out;\n}\nfunction limb(ctrl,r0,r1,fn,steps){const p=curve(ctrl,steps||4),n=p.length-1;for(let i=0;i<n;i++){const r=r0+(r1-r0)*i/n;bm(p[i][0],p[i][1],p[i][2],p[i+1][0],p[i+1][1],p[i+1][2],r,fn);}return p;}\n\n// ---------- ground, pond and base ----------\nconst LAND=18,WATER=14,BX=128,BZ=128,WX=162,WZ=166;\nfunction baseS(x,z){const dx=(x-BX)/100,dz=(z-BZ)/97,th=Math.atan2(dz,dx);return Math.pow(dx**4+dz**4,0.25)/(1+0.022*Math.sin(5*th+0.7)+0.014*Math.sin(9*th+2.3));}\nfunction waterF(x,z){const dx=(x-WX)/78,dz=(z-WZ)/62,th=Math.atan2(dz,dx);return Math.hypot(dx,dz)/(1+0.06*Math.sin(3*th+0.4)+0.035*Math.sin(7*th+1.9));}\nconst TOP=new Int16Array(65536),KIND=new Uint8Array(65536);\nfor(let x=12;x<244;x++)for(let z=12;z<244;z++){\n  const s=baseS(x,z);if(s>1)continue;const wf=waterF(x,z),k=x+256*z;let kind,top;\n  if(wf<1&&s<0.945){kind=4;top=WATER;}\n  else if(wf<1.08&&s>=0.93){kind=3;top=16+(h3(x,5,z)>0.55?1:0);}\n  else if(wf<1.2){kind=2;top=15+Math.round(3*ss((wf-1)/0.2));}\n  else{kind=1;top=LAND+Math.round((vn(x*0.06,3.3,z*0.06)-0.5)*3);if(s>0.975)top-=1;}\n  KIND[k]=kind;TOP[k]=top;\n}\nfor(let x=12;x<244;x++)for(let z=12;z<244;z++){\n  const k=x+256*z,kind=KIND[k];if(!kind)continue;const top=TOP[k];let lo=top-2;\n  for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const kk=x+a+256*(z+b);lo=Math.min(lo,(KIND[kk]?TOP[kk]:3)-1);}\n  lo=Math.max(5,lo);put(x,4,z,C.B0);\n  for(let y=lo;y<=top;y++){\n    let col;\n    if(y===top){\n      if(kind===4)col=C.W1;\n      else if(kind===3)col=vn(x*0.25,5,z*0.25)<0.5?C.S0:C.S1;\n      else if(kind===2){const r=vn(x*0.3,9,z*0.3);col=r<0.42?C.S1:r<0.5?C.S2:r<0.56?C.S0:C.GR;}\n      else col=vn(x*0.09,7.7,z*0.09)>0.63?C.F0:C.GR;\n    }else if(kind===4)col=C.W0;\n    else if(y===top-1)col=kind===1?C.T0:C.S2;\n    else if(y<=6)col=C.B0;\n    else col=y===10+Math.round(Math.sin(x*0.05+z*0.04))?C.S3:C.B1;\n    put(x,y,z,col);\n  }\n}\nconst isW=(x,z)=>KIND[x+256*z]===4;\n\n// ripples, reflected moon and its glitter path\nconst ISX=134,ISZ=188,ORB=22,RX=176;\nfor(let x=60;x<244;x++)for(let z=90;z<244;z++){\n  if(!isW(x,z))continue;const d=Math.hypot(x-ISX,z-ISZ),a=Math.atan2(z-ISZ,x-ISX);\n  if((Math.abs(d-33)<0.55||Math.abs(d-40)<0.55)&&Math.sin(a*5+d*0.3)>-0.2)put(x,WATER,z,C.W2);\n  else if(z%9===0&&vn(x*0.12,z*0.3,4)>0.6)put(x,WATER,z,C.W2);\n}\nfor(let z=120;z<=152;z++){\n  const v=(z-136)/15;if(Math.abs(v)>1||(z%4===3))continue;const half=15*Math.sqrt(1-v*v);\n  for(let x=Math.round(RX-half);x<=Math.round(RX+half);x++){if(!isW(x,z)||h3(x,z,5)<0.06)continue;const f=Math.hypot((x-RX)/15,v);put(x,WATER,z,f<0.55?C.M2:f<0.85?C.M0:C.M1);}\n}\nfor(let z=155;z<=216;z+=3){\n  const k=1-(z-155)/70,half=2+7*k*(0.6+0.4*h3(z,1,7));let x=Math.round(RX-half+(h3(z,2,2)-0.5)*3);\n  while(x<=RX+half){const seg=2+Math.floor(h3(x,z,3)*5),gap=1+Math.floor(h3(x,z,9)*4);\n    for(let i=0;i<seg&&x<=RX+half;i++,x++)if(isW(x,z))put(x,WATER,z,Math.abs(x-RX)<half*0.4?C.M0:C.M1);\n    x+=gap;}\n}\n\n// ---------- stones ----------\nfunction rock(cx,cy,cz,rx,ry,rz,sd){\n  ell(cx,cy,cz,rx*1.25,ry*1.25,rz*1.25,(x,y,z)=>{\n    const q=((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2+(vn(x*0.23+sd,y*0.23,z*0.23-sd)-0.5)*0.9;if(q>1)return null;\n    return (y-cy)/ry+(vn(x*0.3,y*0.3,z*0.3)-0.5)*0.4>0.3?C.S0:C.S1;});\n}\nfunction taihu(cx,cz,h,r,sd,heavy){\n  const n=Math.max(3,Math.round(h/(r*1.2))),L=[],H=[];let x=cx,z=cz;\n  for(let i=0;i<n;i++){const t=i/(n-1),rr=r*(heavy?0.66+0.46*Math.pow(t,0.8):1-0.28*t);\n    L.push([x,LAND-2+t*h*0.9,z,rr*(0.85+rng()*0.3),rr*(1.15+rng()*0.4)]);x+=(rng()-0.5)*r*0.7+(heavy?r*0.12:0);z+=(rng()-0.5)*r*0.5;}\n  for(let i=0;i<Math.round(h/11);i++){const p=L[1+Math.floor(rng()*(n-2))];H.push([p[0]+(rng()-0.5)*r*0.6,p[1]+(rng()-0.5)*p[4]*0.8,p[2]+(rng()-0.5)*r*0.6,r*(0.3+rng()*0.2)]);}\n  const x0=Math.min(...L.map(p=>p[0]-p[3]*1.6)),x1=Math.max(...L.map(p=>p[0]+p[3]*1.6)),z0=Math.min(...L.map(p=>p[2]-p[3]*1.6)),z1=Math.max(...L.map(p=>p[2]+p[3]*1.6)),y1=Math.max(...L.map(p=>p[1]+p[4]*1.4));\n  for(let y=LAND-3;y<=y1;y++)for(let zz=Math.floor(z0);zz<=Math.ceil(z1);zz++)for(let xx=Math.floor(x0);xx<=Math.ceil(x1);xx++){\n    let f=(vn(xx*0.13+sd,y*0.13,zz*0.13)-0.5)*0.55;\n    for(const [lx,ly,lz,rh,rv] of L)f+=Math.exp(-(((xx-lx)/rh)**2+((y-ly)/rv)**2+((zz-lz)/rh)**2));\n    for(const [hx,hy,hz,hr] of H)f-=1.6*Math.exp(-(((xx-hx)/hr)**2+((y-hy)/(hr*1.3))**2+((zz-hz)/hr)**2));\n    if(f>0.5)put(xx,y,zz,'ROCK');\n  }\n}\n\n// ---------- pavilion ----------\nconst PX=104,PZ=112,PT=26,COLR=26,YE=70,YA=114,LIFT=12,SQ=0.8660254;\nconst hexD=(dx,dz)=>Math.max(Math.abs(dx*SQ+dz*0.5),Math.abs(dz),Math.abs(dz*0.5-dx*SQ))/SQ;\nconst cornerK=(dx,dz)=>{let a=Math.atan2(dz,dx)/(Math.PI/3);a-=Math.round(a);return 1-Math.abs(a)*2;};\nfunction roofY(dx,dz){const d=hexD(dx,dz),c=cornerK(dx,dz),Re=40+7*Math.pow(c,2.5),r=d/Re;return [YE+(YA-YE)*Math.pow(Math.max(0,1-r),1.5)+LIFT*c*c*c*r*r*r*r,r,c];}\nfunction roofUnder(dx,dz){let m=Math.round(roofY(dx,dz)[0]);for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]])m=Math.min(m,Math.round(roofY(dx+a,dz+b)[0]));return m-2;}\n\nfor(let th=0;th<Math.PI*2;th+=0.085){\n  let r=5;while(r<130&&waterF(WX+Math.cos(th)*r,WZ+Math.sin(th)*r)<1)r+=0.5;\n  const bx=WX+Math.cos(th)*r,bz=WZ+Math.sin(th)*r;\n  if(baseS(bx,bz)>0.99||hexD(bx-PX,bz-PZ)<40||(bx>86&&bx<122&&bz>138&&bz<166)||(bx<92&&bz>160))continue;\n  if(rng()<0.48){const big=baseS(bx,bz)>0.9?1.3:1.1;rock(bx,15,bz,(2.8+rng()*3.4)*big,(1.8+rng()*2)*big,(2.8+rng()*3)*big,rng()*50);}\n}\n\nfor(let x=PX-37;x<=PX+37;x++)for(let z=PZ-37;z<=PZ+37;z++){\n  const dx=x-PX,dz=z-PZ,d=hexD(dx,dz);if(d>36.4)continue;\n  const wall=d>33.6,fa=Math.round((Math.atan2(dz,dx)-Math.PI/6)/(Math.PI/3))*(Math.PI/3)+Math.PI/6,s=-dx*Math.sin(fa)+dz*Math.cos(fa);\n  for(let y=wall?11:PT-2;y<=PT;y++){\n    if(y<PT-1&&d>35.6)continue;let col;\n    if(y>=PT-1&&d>34.8)col=C.S0;\n    else if(y===PT)col=((dx+70)%7===0||(dz+70)%7===0)?C.S1:C.S0;\n    else if(wall)col=(y-11)%4===3?C.S2:C.S1;\n    else col=C.S1;\n    put(x,y,z,col);\n  }\n}\nfor(let i=0;i<5;i++){const z0=144+3*i,top=24-2*i;boxG(94,11,z0,114,top,z0+2,C.S1);boxG(94,top,z0,114,top,z0+2,C.S0);}\nfor(let z=143;z<=159;z++){const t=Math.round(26-(z-143)*0.6);boxG(91,11,z,93,t,z,C.S1);boxG(115,11,z,117,t,z,C.S1);put(92,t+1,z,C.S0);put(116,t+1,z,C.S0);}\nfor(let i=0;i<3;i++){const z1=80-3*i,top=24-2*i;boxG(96,14,z1-2,112,top,z1,C.S1);boxG(96,top,z1-2,112,top,z1,C.S0);}\n\nconst COLS=[];for(let k=0;k<6;k++){const a=k*Math.PI/3;COLS.push([PX+COLR*Math.cos(a),PZ+COLR*Math.sin(a)]);}\nfor(const [cx,cz] of COLS){cyl(cx,PT+1,cz,2.6,46,C.P0);cyl(cx,PT+1,cz,4,2,C.S0);cyl(cx,PT+3,cz,3.2,1,C.S1);}\nfunction seg(A,B,inset){const L=Math.hypot(B[0]-A[0],B[1]-A[1]),ux=(B[0]-A[0])/L,uz=(B[1]-A[1])/L;return {ux,uz,ax:A[0]+ux*inset,az:A[1]+uz*inset,len:L-2*inset};}\nfunction railing(A,B){\n  const {ux,uz,ax,az,len}=seg(A,B,2.6),P=t=>[ax+ux*t,az+uz*t],e=P(len);\n  bm(ax,PT+1.5,az,e[0],PT+1.5,e[1],0.9,C.P1);bm(ax,PT+12,az,e[0],PT+12,e[1],1.0,C.P1);bm(ax,PT+7,az,e[0],PT+7,e[1],0.6,C.P1);\n  for(let t=0;t<=len;t+=0.5){const [x,z]=P(t),i=Math.floor(t);\n    for(let y=PT+3;y<=PT+6;y++)if((i+y)%4===0||(i-y+400)%4===0)put(x,y,z,C.P0);\n    for(let y=PT+8;y<=PT+11;y++)if(i%3===1)put(x,y,z,C.P0);}\n  for(const t of [len/3,2*len/3]){const [x,z]=P(t);bm(x,PT+1,z,x,PT+13,z,0.9,C.P1);put(x,PT+14,z,C.P3);}\n}\nfunction upper(A,B){\n  const {ux,uz,ax,az,len}=seg(A,B,0),P=t=>[ax+ux*t,az+uz*t];\n  bm(A[0],71,A[1],B[0],71,B[1],1.4,C.P2);bm(A[0],66,A[1],B[0],66,B[1],0.9,C.P0);\n  for(let t=2;t<=len-2;t+=0.5){const [x,z]=P(t),i=Math.floor(t);\n    for(let y=67;y<=69;y++)put(x,y,z,(i%6===3&&y===68)?C.P3:C.P0);\n    for(let y=60;y<=65;y++)if(y===60||y===63||i%4===0)put(x,y,z,C.P1);}\n  for(let t=0;t<=len;t+=0.5){const [x,z]=P(t),top=roofUnder(x-PX,z-PZ),m=t%(len/3),br=Math.min(m,len/3-m)<1.6;\n    for(let y=73;y<=top;y++)put(x,y,z,br?C.P3:(y===73?C.P0:C.P2));}\n}\nfor(const k of [0,2,3,5])railing(COLS[k],COLS[(k+1)%6]);\nfor(let k=0;k<6;k++)upper(COLS[k],COLS[(k+1)%6]);\n\nfor(let x=PX-52;x<=PX+52;x++)for(let z=PZ-52;z<=PZ+52;z++){\n  const dx=x-PX,dz=z-PZ,[yy,r]=roofY(dx,dz);if(r>1)continue;\n  let lo=Math.round(yy);for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]])lo=Math.min(lo,Math.round(roofY(dx+a,dz+b)[0]));lo-=2;\n  if(hexD(dx,dz)<COLR-1.5)lo=Math.min(lo,74);\n  let top=Math.round(yy);\n  const ka=Math.round(Math.atan2(dz,dx)/(Math.PI/3))*(Math.PI/3),along=dx*Math.cos(ka)+dz*Math.sin(ka),perp=Math.abs(dz*Math.cos(ka)-dx*Math.sin(ka));\n  const ridge=perp<1.6&&along>4,fa=Math.round((Math.atan2(dz,dx)-Math.PI/6)/(Math.PI/3))*(Math.PI/3)+Math.PI/6,s=dz*Math.cos(fa)-dx*Math.sin(fa);\n  const rib=((Math.round(s)%4)+4)%4===0,eave=r>0.955;\n  if(ridge)top+=2;else if(rib&&!eave)top+=1;\n  let nt=top;for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]])nt=Math.min(nt,Math.round(roofY(dx+a,dz+b)[0]));\n  for(let y=lo;y<=top;y++)put(x,y,z,y===lo||(y<nt&&!eave)?C.P1:(ridge&&y>top-3)||eave?C.R2:y===top&&rib?C.R1:C.R0);\n}\nfor(let k=0;k<6;k++){const a=k*Math.PI/3,ca=Math.cos(a),sa=Math.sin(a),y0=YE+LIFT+1;\n  bm(PX+45*ca,y0+1,PZ+45*sa,PX+50*ca,y0+6,PZ+50*sa,1.3,C.R2);put(PX+50.6*ca,y0+7.6,PZ+50.6*sa,C.P3);}\ncyl(PX,YA-1,PZ,4.2,4,C.R2);ell(PX,YA+6,PZ,3.6,3.6,3.6,C.P3);cyl(PX,YA+9,PZ,1.6,3,C.P3);ell(PX,YA+13.5,PZ,2.4,2.6,2.4,C.P3);lineG(PX,YA+16,PZ,PX,YA+19,PZ,C.P3);\n\ncyl(PX,PT+1,PZ,6,1,C.S1);coneG(PX,PT+2,PZ,4.6,3,8,C.S1);cyl(PX,PT+10,PZ,11,2,C.S0);ringG(PX,PT+10,PZ,10.4,0.8,C.S1,'y');\nfor(let k=0;k<4;k++){const a=Math.PI/4+k*Math.PI/2,sx=PX+17*Math.cos(a),sz=PZ+17*Math.sin(a);ell(sx,PT+4,sz,3.6,3.2,3.6,C.S1);cyl(sx,PT+6,sz,3.4,1,C.S0);}\nconst TT=PT+12;\ncyl(100,TT,110,4.6,1,C.Y0);ringG(100,TT+0.6,110,4.2,0.6,C.K3,'y');\nfor(const [mx,my,mz] of [[98.3,TT+1,109],[101.7,TT+1,109],[100,TT+1,111.9],[100,TT+3,110]]){cyl(mx,my,mz,2.3,2,C.K0);put(mx,my+1,mz,C.L2);}\nell(109,TT+3.4,106,3.4,3.2,3.4,C.G1);lineG(109,TT+6,106,109,TT+7,106,C.T0);ell(110.5,TT+7,106,1.6,0.6,1,C.F2);\nell(106,TT+2.6,116,3,2.6,3,C.K3);put(106,TT+5,116,C.Y0);bm(108.6,TT+2.4,116,111,TT+4.6,116,0.7,C.K3);ringG(103.2,TT+2.8,116,1.5,0.5,C.K3,'z');\nfor(const [cx,cz] of [[97,117],[100,119.5],[103,121]]){cyl(cx,TT,cz,1.3,2,C.Y0);put(cx,TT+1,cz,C.T1);}\n\n// ---------- osmanthus tree ----------\nconst bark=(x,y,z)=>vn(x*0.35,y*0.1,z*0.35)>0.56?C.T1:C.T0;\nlimb([[42,12,62],[46,32,65],[40,50,60],[46,66,58],[50,80,56]],8,5,bark,5);\nlimb([[50,80,56],[48,100,54],[50,122,56],[50,140,56],[50,148,57]],5,2.2,bark,5);\nfor(let i=0;i<6;i++){const a=i*1.05+0.4,l=12+rng()*6;limb([[42,17,62],[42+Math.cos(a)*l*0.5,16,62+Math.sin(a)*l*0.5],[42+Math.cos(a)*l,14,62+Math.sin(a)*l]],3.4,1.3,bark,3);}\nfor(const [p,r0,r1] of [\n  [[[50,80,56],[41,88,54],[35,96,51]],3.6,2],[[[50,80,56],[64,90,52],[78,99,47]],3.8,2],[[[49,82,58],[46,90,72],[44,98,86]],3.4,1.8],\n  [[[49,86,55],[50,94,44],[52,102,34]],3.2,1.8],[[[49,104,55],[41,114,58],[37,121,60]],2.8,1.6],[[[49,106,56],[58,114,62],[66,120,64]],2.8,1.6],\n  [[[49,110,55],[50,118,48],[50,123,40]],2.4,1.4],[[[49,112,57],[50,116,68],[50,119,80]],2.4,1.4],[[[50,128,56],[44,134,53],[38,140,50]],2.2,1.3],\n  [[[50,128,56],[57,134,60],[62,139,62]],2.2,1.3],[[[50,130,57],[48,134,65],[46,138,72]],2,1.2],[[[50,130,55],[55,136,49],[58,141,44]],2,1.2],\n  [[[74,97,48],[82,94,45],[88,91,44]],1.6,1.0],[[[44,96,88],[42,94,95],[40,92,101]],1.6,1.0]])limb(p,r0,r1,bark,4);\nfunction keepOut(x,y,z){const d=hexD(x-PX,z-PZ);if(d>52)return false;const q=roofY(x-PX,z-PZ);return y<(q[1]<=1?q[0]:YE)+9;}\nfunction foliage(cx,cy,cz,rx,ry,rz){\n  ell(cx,cy,cz,rx*1.17,ry*1.17,rz*1.17,(x,y,z)=>{\n    if(keepOut(x,y,z))return undefined;\n    const q=((x-cx)/rx)**2+((y-cy)/ry)**2+((z-cz)/rz)**2+(vn(x*0.16,y*0.16,z*0.16)-0.5)*0.5;if(q>1)return undefined;\n    const t=(y-cy)/ry+(vn(x*0.3,y*0.3,z*0.3)-0.5)*0.5;return t>0.3?'LF2':t>-0.3?'LF1':'LF0';});\n}\nconst PADS=[[35,101,51,15,8,13],[78,100,46,16,8,14],[44,100,86,15,8,13],[52,103,34,15,8,12],[50,97,60,16,7,16],\n  [35,121,60,16,9,14],[68,120,64,16,9,14],[50,123,40,15,8,13],[50,119,80,14,8,12],\n  [38,140,50,15,8,13],[62,139,62,15,8,13],[46,138,72,13,7,11],[58,141,44,13,7,11],[50,150,57,16,7,14]];\nfor(const [cx,cy,cz,rx,ry,rz] of PADS){\n  foliage(cx,cy,cz,rx,ry,rz);\n  for(let i=0;i<3;i++){const a=rng()*Math.PI*2;foliage(cx+Math.cos(a)*rx*0.5,cy+(rng()-0.3)*ry*0.5,cz+Math.sin(a)*rz*0.5,rx*(0.5+rng()*0.2),ry*(0.6+rng()*0.2),rz*(0.5+rng()*0.2));}\n}\n\n// ---------- lanterns ----------\nconst HOOKS=[];\nfunction lantern(hx,hy,hz,len){\n  hx=Math.round(hx);hz=Math.round(hz);lineG(hx,hy,hz,hx,hy-len+1,hz,C.L1);const top=hy-len,cy=top-8;\n  cyl(hx,top-1,hz,2.6,2,C.L2);\n  ell(hx,cy,hz,5.2,6.3,5.2,(x,y,z)=>{const dx=x-hx,dz=z-hz;return (dx===0||dz===0||Math.abs(dx)===Math.abs(dz))?C.L1:C.L0;});\n  cyl(hx,cy-7,hz,2.6,2,C.L2);lineG(hx,cy-8,hz,hx,cy-13,hz,C.L0);put(hx,cy-8,hz,C.L2);\n  HOOKS.push([hx,hy,hz]);\n}\nfor(const k of [0,2,3,5]){const a=k*Math.PI/3,hx=Math.round(PX+41*Math.cos(a)),hz=Math.round(PZ+41*Math.sin(a));lantern(hx,roofUnder(hx-PX,hz-PZ)-1,hz,5);}\nlantern(88,90,44,5);lantern(40,91,101,5);\n\n// ---------- rockery behind the pond ----------\ntaihu(190,66,80,11,1.3,true);taihu(172,80,52,8.5,4.1,false);taihu(213,86,32,7,7.7,false);\nrock(184,19,92,6,3,5,3);rock(160,19,72,5,2.6,4,8);rock(204,19,98,4.5,2.4,4,5);\n\n// ---------- jade rabbit ----------\nrock(66,18,181,12,6.5,11,11);ell(66,24,183,8,1,9,C.S0);\nconst RY=25;\nbm(62.5,RY+12.8,182.5,64.9,RY+12,189.6,1.5,C.Y1);bm(69.5,RY+12.8,182.5,67.1,RY+12,189.6,1.5,C.Y1);\nell(66,RY+7.5,178,6.2,7.5,6.6,C.Y0);ell(66,RY+7,182.5,4.4,5.2,3,C.Y0);\nell(62.5,RY+4,177,3.2,4,5,C.Y0);ell(69.5,RY+4,177,3.2,4,5,C.Y0);\nell(62.8,RY+1,182,1.8,1.3,3.6,C.Y0);ell(69.2,RY+1,182,1.8,1.3,3.6,C.Y0);ell(66,RY+4,171,2.2,2.2,2,C.Y0);\nell(66,RY+17.5,180,4.8,4.4,4.8,C.Y0);ell(66,RY+16.5,184,2.8,2.2,1.8,C.Y0);put(66,RY+17,186,C.Y2);put(63,RY+19,184,C.P0);put(69,RY+19,184,C.P0);\nconst ear=(bx,tx)=>bm(bx,RY+20,179.5,tx,RY+31.5,179,1.35,(x,y,z,t)=>(z>=180&&t>0.18&&t<0.9&&Math.abs(x-(bx+(tx-bx)*t))<0.8)?C.Y2:C.Y0);\near(64.5,62.5);ear(67.5,69.5);\ncyl(66,RY,191,3.8,6,C.S1);ringG(66,RY+5.5,191,3.3,0.8,C.S0,'y');cyl(66,RY+2,191,2.4,5,null);\nbm(66,RY+6.5,191,66,RY+19.5,191,1.0,C.D0);ell(66,RY+20,191,1.6,1.2,1.6,C.D0);\n\n// ---------- lotus island, leaves and lotus lanterns ----------\nfunction leaf(cx,cz,r,notch,y){y=y||WATER+1;\n  for(let z=Math.floor(cz-r);z<=Math.ceil(cz+r);z++)for(let x=Math.floor(cx-r);x<=Math.ceil(cx+r);x++){\n    const dx=x-cx,dz=z-cz,d=Math.hypot(dx,dz);if(d>r)continue;let a=Math.atan2(dz,dx)-notch;a=Math.atan2(Math.sin(a),Math.cos(a));if(Math.abs(a)<0.3&&d>1)continue;\n    const rim=d>r-1.1,vein=d>1.5&&Math.abs(Math.sin(4*a))<0.18;put(x,y,z,rim||vein?C.F2:C.F1);if(rim)put(x,y+1,z,C.F2);}\n}\nleaf(ISX,ISZ,6.5,0.6);leaf(ISX-7,ISZ+4,4.5,2.2);leaf(ISX+6,ISZ-5,4.8,-1.8);leaf(ISX-4,ISZ-6,3.8,3.9);\nlineG(ISX+3,WATER+1,ISZ+3,ISX+4,WATER+9,ISZ+4,C.F0);leaf(ISX+4,ISZ+4,4.5,1.0,WATER+10);\nlineG(ISX-3,WATER+1,ISZ-1,ISX-3,WATER+7,ISZ,C.F0);\nfor(let i=0;i<6;i++){const a=i*Math.PI/3;ell(ISX-3+Math.cos(a)*1.7,WATER+9,ISZ+Math.sin(a)*1.7,1.1,1.8,1.1,(x,y)=>y>=WATER+10?C.Y0:C.H0);}put(ISX-3,WATER+9,ISZ,C.G1);\nfor(const [x,z,r,n] of [[206,150,6,1.0],[214,164,5,2.5],[198,174,4.5,-0.5],[212,184,5.5,0.3],[96,204,4.5,2.0],[104,213,3.5,-1]])leaf(x,z,r,n);\nconst RIVER=[];\nfunction riverLantern(cx,cz){const y=WATER+1;\n  cyl(cx,y,cz,3.8,1,C.F2);\n  for(let i=0;i<8;i++){const a=i*Math.PI/4;ell(cx+Math.cos(a)*3.5,y+1.8,cz+Math.sin(a)*3.5,1.6,2,1.6,(x,yy)=>yy>=y+3?C.Y0:C.H0);}\n  for(let i=0;i<5;i++){const a=i*Math.PI*0.4+0.3;ell(cx+Math.cos(a)*1.8,y+3.4,cz+Math.sin(a)*1.8,1.2,1.9,1.2,(x,yy)=>yy>=y+5?C.Y0:C.H0);}\n  for(let yy=y+1;yy<=y+3;yy++)put(cx,yy,cz,C.M2);put(cx,y+4,cz,C.G1);put(cx,y+5,cz,C.G1);RIVER.push([cx,cz]);\n}\nfor(const a of [Math.PI/2,Math.PI*7/6,Math.PI*11/6])riverLantern(Math.round(ISX+ORB*Math.cos(a)),Math.round(ISZ+ORB*Math.sin(a)));\n\nfunction tuft(x,z,h){\n  for(let i=0;i<11;i++){const bx=x+Math.round((h3(x,i,z)-0.5)*4),bz=z+Math.round((h3(z,i,x)-0.5)*4),k=bx+256*bz;if(!KIND[k]||KIND[k]===4)continue;\n    const y=TOP[k]+1,l=h*(0.45+0.55*h3(bx,i,bz)),a=h3(i,bx,bz)*6.3;lineG(bx,y,bz,bx+Math.cos(a)*l*0.3,y+l,bz+Math.sin(a)*l*0.3,i%3===0?C.F2:i%3===1?C.F1:C.GR);}\n}\nfor(const [x,z] of [[52,172],[80,176],[58,194],[40,86],[62,74],[38,122],[140,84],[150,100],[122,60],[84,66],[176,102],[206,106],[46,150],[88,184],[228,110],[148,64]])tuft(x,z,4+h3(x,1,z)*3);\nfor(let i=0;i<70;i++){const a=rng()*Math.PI*2,r=6+Math.sqrt(rng())*34,x=Math.round(50+Math.cos(a)*r),z=Math.round(60+Math.sin(a)*r),k=x+256*z;\n  if(KIND[k]!==1||hexD(x-PX,z-PZ)<38)continue;const y=TOP[k]+1,c=rng()<0.6?C.G0:C.G1;\n  for(const [dx,dz,p] of [[0,0,1],[1,0,0.5],[0,1,0.4]])if(rng()<p&&!at(x+dx,y,z+dz)&&at(x+dx,y-1,z+dz))put(x+dx,y,z+dz,c);}\nfor(let i=0,n=0;i<200&&n<11;i++){const x=212+Math.round(rng()*16),z=112+Math.round(rng()*50),kd=KIND[x+256*z];if(kd!==2&&kd!==3)continue;n++;\n  const y=TOP[x+256*z]+1,h=12+rng()*8,dx=(rng()-0.5)*4;lineG(x,y,z,x+dx,y+h,z,C.F1);lineG(x+dx*0.85,y+h*0.85,z,x+dx,y+h+3,z,C.T1);}\nfor(const [x,z] of [[100,66],[90,62],[80,61],[70,64]])ell(x,LAND+0.5,z,3.4,1,2.6,C.S0);\n\n// ---------- material pass: lit tops for leaves and stone, blossoms on exposed foliage ----------\nconst LF=[ci('LF0'),ci('LF1'),ci('LF2')],RK=ci('ROCK');\nfor(let y=5;y<250;y++)for(let z=10;z<246;z++)for(let x=10;x<246;x++){\n  const k=gi(x,y,z),v=G[k];if(!v)continue;\n  if(v===RK){const up=!G[k+65536],dn=!G[k-65536],n=vn(x*0.11,y*0.11,z*0.11);G[k]=ci(up?(n>0.45?C.S0:C.S1):dn?C.S3:n<0.4?C.S2:C.S1);continue;}\n  if(v!==LF[0]&&v!==LF[1]&&v!==LF[2])continue;\n  const up=!G[k+65536],dn=!G[k-65536],side=!G[k+1]||!G[k-1]||!G[k+256]||!G[k-256];\n  const dens=up?0.3:side?0.19:dn?0.04:0,cell=h3(x>>1,y>>1,z>>1);\n  if(dens&&cell<dens){const f=h3(y>>1,z>>1,x>>1);G[k]=ci(f<0.5?C.G0:f<0.8?C.G1:C.P3);}\n  else G[k]=ci(up?C.F2:dn?C.F0:v===LF[2]?C.F2:v===LF[1]?C.F1:C.F0);\n}\n\n// ---------- drifting osmanthus blossoms, resting inside the crown ----------\nconst PETALS=[[52,97,87],[37,100,80],[60,97,62],[78,96,46],[81,97,55],[59,100,34],[69,99,42]];\nPETALS.forEach(([x,y,z],i)=>{const c=i<4?C.FP:C.FQ;for(const [a,b,d] of [[0,0,0],[1,0,0],[-1,0,0],[0,0,1],[0,0,-1],[0,1,0]])put(x+a,y+b,z+d,c);});\n\n// ---------- emit everything connected to the ground ----------\nconst SEEN=new Uint8Array(N*N*N),Q=new Int32Array(1600000);let qh=0,qt=0;\nfor(let z=0;z<N;z++)for(let x=0;x<N;x++){const k=gi(x,4,z);if(G[k]){SEEN[k]=1;Q[qt++]=k;}}\nwhile(qh<qt){const k=Q[qh++],x=k&255,z=(k>>8)&255,y=k>>16;\n  for(let dy=-1;dy<=1;dy++)for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){const X=x+dx,Y=y+dy,Z=z+dz;if(X<0||Y<0||Z<0||X>255||Y>255||Z>255)continue;const kk=gi(X,Y,Z);if(G[kk]&&!SEEN[kk]){SEEN[kk]=1;Q[qt++]=kk;}}}\nfor(let k=0;k<G.length;k++)if(SEEN[k])block(k&255,k>>16,(k>>8)&255,PAL[G[k]-1]);\n\n// ---------- full moon: a thick disc with maria, craters and a rounded rim ----------\nconst MX=176,MY=148,MZ=34,MR=44,MT=6.5;\nconst MARIA=[[-24,2,10,17],[-10,18,11,10],[8,16,7,7],[15,4,9,8],[27,-4,6,7],[33,13,5,4],[-8,-16,9,7],[-24,-18,5,5],[18,-12,4,4]];\nconst CRAT=[[-4,-31,3.2],[-20,-30,2.4],[24,-24,2.6],[-30,20,2.2],[30,24,2.4],[2,32,2.6],[-2,4,1.8],[12,-26,1.8],[-34,-6,2],[36,-10,2]];\nconst BACK=[];for(let i=0;i<18;i++){const a=rng()*Math.PI*2,rr=Math.sqrt(rng())*(MR-6);BACK.push([rr*Math.cos(a),rr*Math.sin(a),1.6+rng()*3.4]);}\nfunction moonFace(u,v,front){\n  for(const [cu,cv,cr] of front?CRAT:BACK){const d=Math.hypot(u-cu,v-cv);if(d<cr-0.9)return 3;if(d<cr+0.6)return 2;}\n  if(front&&Math.hypot(u+4,v+31)<14&&Math.abs(Math.sin(Math.atan2(v+31,u+4)*7))<0.12)return 2;\n  let m=0;for(const [cu,cv,a,b] of front?MARIA:[[10,6,9,7],[-14,-10,6,5]])m=Math.max(m,1-Math.hypot((u-cu)/a,(v-cv)/b));\n  return m+(vn(u*0.16+9,v*0.16,front?1:5)-0.5)*0.45>0.1?1:0;\n}\nfor(let y=MY-MR;y<=MY+MR;y++)for(let z=MZ-7;z<=MZ+7;z++)for(let x=MX-MR;x<=MX+MR;x++){\n  const dx=x-MX,dy=y-MY,dz=z-MZ,aw=Math.abs(dz);if(aw>MT)continue;\n  const rho=Math.hypot(dx,dy),edge=MR-Math.max(0,aw-(MT-2.5))*1.1;if(rho>edge)continue;\n  let col=C.M0;\n  if(aw>=5){const f=moonFace(dz>0?dx:-dx,dy,dz>0);if(aw===6){if(f===3)continue;col=f===2?C.M2:f===1?C.M1:C.M0;}else if(f===3)col=C.M1;}\n  if(col===C.M0&&rho>edge-1.3)col=C.M3;\n  block(x,y,z,col);\n}",
+   "motion": {
+    "version": 1,
+    "duration": 12,
+    "description": "Lanterns sway under the eaves and on the osmanthus branches, the jade rabbit flicks its ears and pounds the pestle, lotus lanterns circle the lotus island, and osmanthus blossoms drift down from the crown.",
+    "parts": [
+     {
+      "id": "lantern_east",
+      "parent": null,
+      "box": [
+       140,
+       49,
+       107,
+       150,
+       75,
+       117
+      ],
+      "colors": [
+       "#DA372D",
+       "#A2211A",
+       "#E9B449"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "z",
+        "pivot": [
+         145.5,
+         76,
+         112.5
+        ],
+        "amount": 0.13,
+        "period": 4,
+        "phase": 0,
+        "keys": []
+       },
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         145.5,
+         76,
+         112.5
+        ],
+        "amount": 0.05,
+        "period": 3,
+        "phase": 1.1,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "lantern_front_l",
+      "parent": null,
+      "box": [
+       79,
+       49,
+       143,
+       89,
+       75,
+       153
+      ],
+      "colors": [
+       "#DA372D",
+       "#A2211A",
+       "#E9B449"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         84.5,
+         76,
+         148.5
+        ],
+        "amount": 0.14,
+        "period": 3,
+        "phase": 1.4,
+        "keys": []
+       },
+       {
+        "type": "swing",
+        "axis": "z",
+        "pivot": [
+         84.5,
+         76,
+         148.5
+        ],
+        "amount": 0.05,
+        "period": 4,
+        "phase": 2.6,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "lantern_west",
+      "parent": null,
+      "box": [
+       58,
+       49,
+       107,
+       68,
+       75,
+       117
+      ],
+      "colors": [
+       "#DA372D",
+       "#A2211A",
+       "#E9B449"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         63.5,
+         76,
+         112.5
+        ],
+        "amount": 0.12,
+        "period": 4,
+        "phase": 2.7,
+        "keys": []
+       },
+       {
+        "type": "swing",
+        "axis": "z",
+        "pivot": [
+         63.5,
+         76,
+         112.5
+        ],
+        "amount": 0.05,
+        "period": 3,
+        "phase": 0.4,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "lantern_back_r",
+      "parent": null,
+      "box": [
+       120,
+       49,
+       71,
+       130,
+       75,
+       81
+      ],
+      "colors": [
+       "#DA372D",
+       "#A2211A",
+       "#E9B449"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "z",
+        "pivot": [
+         125.5,
+         76,
+         76.5
+        ],
+        "amount": 0.13,
+        "period": 3,
+        "phase": 4.1,
+        "keys": []
+       },
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         125.5,
+         76,
+         76.5
+        ],
+        "amount": 0.05,
+        "period": 4,
+        "phase": 3.3,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "lantern_tree_back",
+      "parent": null,
+      "box": [
+       83,
+       64,
+       39,
+       93,
+       90,
+       49
+      ],
+      "colors": [
+       "#DA372D",
+       "#A2211A",
+       "#E9B449"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         88.5,
+         91,
+         44.5
+        ],
+        "amount": 0.16,
+        "period": 4,
+        "phase": 0.8,
+        "keys": []
+       },
+       {
+        "type": "swing",
+        "axis": "z",
+        "pivot": [
+         88.5,
+         91,
+         44.5
+        ],
+        "amount": 0.06,
+        "period": 3,
+        "phase": 2,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "lantern_tree_front",
+      "parent": null,
+      "box": [
+       35,
+       65,
+       96,
+       45,
+       91,
+       106
+      ],
+      "colors": [
+       "#DA372D",
+       "#A2211A",
+       "#E9B449"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "z",
+        "pivot": [
+         40.5,
+         92,
+         101.5
+        ],
+        "amount": 0.16,
+        "period": 3,
+        "phase": 3.3,
+        "keys": []
+       },
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         40.5,
+         92,
+         101.5
+        ],
+        "amount": 0.06,
+        "period": 4,
+        "phase": 5.1,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "rabbit_ear_l",
+      "parent": null,
+      "box": [
+       62,
+       47,
+       178,
+       65,
+       57,
+       180
+      ],
+      "colors": [
+       "#F4F1EA",
+       "#E8A0AA"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "z",
+        "pivot": [
+         65,
+         46,
+         180
+        ],
+        "amount": 0.14,
+        "period": 2,
+        "phase": 0,
+        "keys": []
+       },
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         65,
+         46,
+         180
+        ],
+        "amount": 0.06,
+        "period": 1,
+        "phase": 0.8,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "rabbit_ear_r",
+      "parent": null,
+      "box": [
+       67,
+       47,
+       178,
+       70,
+       57,
+       180
+      ],
+      "colors": [
+       "#F4F1EA",
+       "#E8A0AA"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "z",
+        "pivot": [
+         68,
+         46,
+         180
+        ],
+        "amount": -0.14,
+        "period": 3,
+        "phase": 1.9,
+        "keys": []
+       },
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         68,
+         46,
+         180
+        ],
+        "amount": 0.06,
+        "period": 1,
+        "phase": 2.9,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "rabbit_pestle",
+      "parent": null,
+      "box": [
+       62,
+       31,
+       183,
+       70,
+       46,
+       192
+      ],
+      "colors": [
+       "#EBE6DB",
+       "#9A6A3E"
+      ],
+      "channels": [
+       {
+        "type": "bob",
+        "axis": "y",
+        "pivot": [
+         66,
+         35,
+         190
+        ],
+        "amount": -1.75,
+        "period": 2,
+        "phase": -1.5707963267948966,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "river_lantern_1",
+      "parent": null,
+      "box": [
+       129,
+       15,
+       205,
+       139,
+       20,
+       215
+      ],
+      "colors": [
+       "#548A51",
+       "#EE96A4",
+       "#F4F1EA",
+       "#FFF7DD",
+       "#F9DA6B"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         134.5,
+         15,
+         210.5
+        ],
+        "amount": 0.07,
+        "period": 3,
+        "phase": 0,
+        "keys": []
+       },
+       {
+        "type": "bob",
+        "axis": "y",
+        "pivot": [
+         134.5,
+         15,
+         210.5
+        ],
+        "amount": -0.3,
+        "period": 4,
+        "phase": -1.5707963267948966,
+        "keys": []
+       },
+       {
+        "type": "spin",
+        "axis": "y",
+        "pivot": [
+         134.5,
+         15,
+         188.5
+        ],
+        "amount": -6.283185307179586,
+        "period": 12,
+        "phase": 0,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "river_lantern_2",
+      "parent": null,
+      "box": [
+       110,
+       15,
+       172,
+       120,
+       20,
+       182
+      ],
+      "colors": [
+       "#548A51",
+       "#EE96A4",
+       "#F4F1EA",
+       "#FFF7DD",
+       "#F9DA6B"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         115.5,
+         15,
+         177.5
+        ],
+        "amount": 0.07,
+        "period": 3,
+        "phase": 2.1,
+        "keys": []
+       },
+       {
+        "type": "bob",
+        "axis": "y",
+        "pivot": [
+         115.5,
+         15,
+         177.5
+        ],
+        "amount": -0.3,
+        "period": 3,
+        "phase": -1.5707963267948966,
+        "keys": []
+       },
+       {
+        "type": "spin",
+        "axis": "y",
+        "pivot": [
+         134.5,
+         15,
+         188.5
+        ],
+        "amount": -6.283185307179586,
+        "period": 12,
+        "phase": 0,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "river_lantern_3",
+      "parent": null,
+      "box": [
+       148,
+       15,
+       172,
+       158,
+       20,
+       182
+      ],
+      "colors": [
+       "#548A51",
+       "#EE96A4",
+       "#F4F1EA",
+       "#FFF7DD",
+       "#F9DA6B"
+      ],
+      "channels": [
+       {
+        "type": "swing",
+        "axis": "x",
+        "pivot": [
+         153.5,
+         15,
+         177.5
+        ],
+        "amount": 0.07,
+        "period": 3,
+        "phase": 4.2,
+        "keys": []
+       },
+       {
+        "type": "bob",
+        "axis": "y",
+        "pivot": [
+         153.5,
+         15,
+         177.5
+        ],
+        "amount": -0.3,
+        "period": 6,
+        "phase": -1.5707963267948966,
+        "keys": []
+       },
+       {
+        "type": "spin",
+        "axis": "y",
+        "pivot": [
+         134.5,
+         15,
+         188.5
+        ],
+        "amount": -6.283185307179586,
+        "period": 12,
+        "phase": 0,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "blossoms_1",
+      "parent": null,
+      "box": [
+       36,
+       96,
+       45,
+       79,
+       101,
+       88
+      ],
+      "colors": [
+       "#F8D04A"
+      ],
+      "channels": [
+       {
+        "type": "flow",
+        "axis": "y",
+        "pivot": [
+         0,
+         0,
+         0
+        ],
+        "amount": -87,
+        "period": 12,
+        "phase": 0,
+        "keys": []
+       },
+       {
+        "type": "bob",
+        "axis": "x",
+        "pivot": [
+         0,
+         0,
+         0
+        ],
+        "amount": 2.5,
+        "period": 3,
+        "phase": 0,
+        "keys": []
+       },
+       {
+        "type": "bob",
+        "axis": "z",
+        "pivot": [
+         0,
+         0,
+         0
+        ],
+        "amount": 2,
+        "period": 4,
+        "phase": 1,
+        "keys": []
+       }
+      ]
+     },
+     {
+      "id": "blossoms_2",
+      "parent": null,
+      "box": [
+       58,
+       97,
+       33,
+       82,
+       101,
+       56
+      ],
+      "colors": [
+       "#F3BC3C"
+      ],
+      "channels": [
+       {
+        "type": "flow",
+        "axis": "y",
+        "pivot": [
+         0,
+         0,
+         0
+        ],
+        "amount": -87,
+        "period": 6,
+        "phase": 0,
+        "keys": []
+       },
+       {
+        "type": "bob",
+        "axis": "x",
+        "pivot": [
+         0,
+         0,
+         0
+        ],
+        "amount": 2.5,
+        "period": 3,
+        "phase": 1.7,
+        "keys": []
+       },
+       {
+        "type": "bob",
+        "axis": "z",
+        "pivot": [
+         0,
+         0,
+         0
+        ],
+        "amount": 2,
+        "period": 4,
+        "phase": 2,
+        "keys": []
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}

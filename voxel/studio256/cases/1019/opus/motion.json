@@ -1,0 +1,365 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The jumping spider drums its fuzzy pedipalps alternately and twice raises its stout front legs from the coxae in a display toward the fly, whose wings flick on the pebble; moss capsules sway on their stalks.",
+  "parts": [
+    {
+      "id": "palp_right",
+      "parent": null,
+      "box": [
+        131,
+        55,
+        148,
+        136,
+        66,
+        162
+      ],
+      "colors": [
+        "#2a2a2e",
+        "#e8dcc2"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            133,
+            63,
+            151
+          ],
+          "amount": 0.3,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "palp_left",
+      "parent": null,
+      "box": [
+        112,
+        55,
+        148,
+        117,
+        66,
+        162
+      ],
+      "colors": [
+        "#2a2a2e",
+        "#e8dcc2"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            115,
+            63,
+            151
+          ],
+          "amount": 0.3,
+          "period": 2,
+          "phase": 3.141592653589793,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "front_leg_right",
+      "parent": null,
+      "box": [
+        134,
+        38,
+        142,
+        158,
+        81,
+        184
+      ],
+      "colors": [
+        "#26262a",
+        "#c4a466",
+        "#3a3a40"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "x",
+          "pivot": [
+            137,
+            63,
+            145
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              3,
+              -0.38
+            ],
+            [
+              5,
+              -0.38
+            ],
+            [
+              6,
+              0
+            ],
+            [
+              8,
+              0
+            ],
+            [
+              8.8,
+              -0.3
+            ],
+            [
+              9.6,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front_leg_left",
+      "parent": null,
+      "box": [
+        90,
+        38,
+        142,
+        114,
+        81,
+        184
+      ],
+      "colors": [
+        "#26262a",
+        "#c4a466",
+        "#3a3a40"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "x",
+          "pivot": [
+            111,
+            63,
+            145
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              3,
+              -0.38
+            ],
+            [
+              5,
+              -0.38
+            ],
+            [
+              6,
+              0
+            ],
+            [
+              8,
+              0
+            ],
+            [
+              8.8,
+              -0.3
+            ],
+            [
+              9.6,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fly_wing_left",
+      "parent": null,
+      "box": [
+        120,
+        28,
+        202,
+        131,
+        30,
+        219
+      ],
+      "colors": [
+        "#c9c2b0",
+        "#8d8676"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            130,
+            29,
+            205
+          ],
+          "amount": -0.22,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "fly_wing_right",
+      "parent": null,
+      "box": [
+        133,
+        28,
+        202,
+        144,
+        30,
+        219
+      ],
+      "colors": [
+        "#c9c2b0",
+        "#8d8676"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            134,
+            29,
+            205
+          ],
+          "amount": 0.22,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "moss_capsule_1",
+      "parent": null,
+      "box": [
+        61,
+        33,
+        91,
+        70,
+        64,
+        98
+      ],
+      "colors": [
+        "#9a5a2e",
+        "#b8904f",
+        "#3a3530"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            64,
+            35,
+            94
+          ],
+          "amount": 0.1,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "moss_capsule_2",
+      "parent": null,
+      "box": [
+        194,
+        16,
+        169,
+        203,
+        45,
+        176
+      ],
+      "colors": [
+        "#9a5a2e",
+        "#b8904f",
+        "#3a3530"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            200,
+            18,
+            172
+          ],
+          "amount": 0.1,
+          "period": 6,
+          "phase": 1.2,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "moss_capsule_3",
+      "parent": null,
+      "box": [
+        50,
+        16,
+        171,
+        59,
+        43,
+        178
+      ],
+      "colors": [
+        "#9a5a2e",
+        "#b8904f",
+        "#3a3530"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            56,
+            18,
+            174
+          ],
+          "amount": 0.1,
+          "period": 4,
+          "phase": 2.4,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

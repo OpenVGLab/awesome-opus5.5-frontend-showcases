@@ -1,0 +1,417 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "On the windward rock table the adult albatross beats its long wings and nods into the wind while its mate raises its bill skyward and then gives two short nods. At the pedestal nest the chick bobs quickly to beg as the parent bows its head twice. The juvenile on the driftwood perch lifts both wings in slower stretches and two tussocks sway in the breeze.",
+  "parts": [
+    {
+      "id": "main_wing_left",
+      "parent": null,
+      "box": [
+        89,
+        69,
+        89,
+        133,
+        75,
+        106
+      ],
+      "colors": [
+        "#232743",
+        "#3B4066",
+        "#E9E4D6"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            133,
+            70,
+            97
+          ],
+          "amount": -0.32,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "main_wing_right",
+      "parent": null,
+      "box": [
+        147,
+        69,
+        89,
+        191,
+        75,
+        106
+      ],
+      "colors": [
+        "#232743",
+        "#3B4066",
+        "#E9E4D6"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            147,
+            70,
+            97
+          ],
+          "amount": 0.32,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "main_head",
+      "parent": null,
+      "box": [
+        133,
+        64,
+        97,
+        147,
+        83,
+        128
+      ],
+      "colors": [
+        "#F8F4EA",
+        "#12131F",
+        "#3A3E5E",
+        "#E8C46A",
+        "#E98A55"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            140,
+            70,
+            102
+          ],
+          "amount": 0.1,
+          "period": 3,
+          "phase": 0.8,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "mate_head",
+      "parent": null,
+      "box": [
+        74,
+        64,
+        74,
+        105,
+        81,
+        86
+      ],
+      "colors": [
+        "#F8F4EA",
+        "#12131F",
+        "#3A3E5E",
+        "#E8C46A",
+        "#E98A55"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            100,
+            69,
+            80
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1.5,
+              0
+            ],
+            [
+              3,
+              -1.0
+            ],
+            [
+              4.5,
+              -1.0
+            ],
+            [
+              6,
+              0
+            ],
+            [
+              7.5,
+              0
+            ],
+            [
+              8.2,
+              0.22
+            ],
+            [
+              8.9,
+              0
+            ],
+            [
+              9.6,
+              0.22
+            ],
+            [
+              10.3,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "feeder_head",
+      "parent": null,
+      "box": [
+        74,
+        44,
+        150,
+        105,
+        61,
+        160
+      ],
+      "colors": [
+        "#F8F4EA",
+        "#12131F",
+        "#3A3E5E",
+        "#E8C46A",
+        "#E98A55"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            100,
+            49,
+            155
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0.4
+            ],
+            [
+              3.2,
+              0.4
+            ],
+            [
+              4,
+              0
+            ],
+            [
+              6,
+              0
+            ],
+            [
+              7,
+              0.4
+            ],
+            [
+              8.2,
+              0.4
+            ],
+            [
+              9,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chick_head",
+      "parent": null,
+      "box": [
+        79,
+        44,
+        161,
+        89,
+        53,
+        173
+      ],
+      "colors": [
+        "#A7ABB6",
+        "#33385A",
+        "#2A2E4D"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            84,
+            45,
+            165
+          ],
+          "amount": 0.15,
+          "period": 1,
+          "phase": 1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "juvenile_wing_left",
+      "parent": null,
+      "box": [
+        146,
+        74,
+        156,
+        175,
+        78,
+        169
+      ],
+      "colors": [
+        "#232743",
+        "#3B4066",
+        "#E9E4D6"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            175,
+            75,
+            162
+          ],
+          "amount": -0.3,
+          "period": 4,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "juvenile_wing_right",
+      "parent": null,
+      "box": [
+        187,
+        74,
+        156,
+        216,
+        78,
+        169
+      ],
+      "colors": [
+        "#232743",
+        "#3B4066",
+        "#E9E4D6"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            187,
+            75,
+            162
+          ],
+          "amount": 0.3,
+          "period": 4,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "tussock_front",
+      "parent": null,
+      "box": [
+        149,
+        27,
+        184,
+        163,
+        41,
+        199
+      ],
+      "colors": [
+        "#4C8C70",
+        "#C9B46E"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            156,
+            28,
+            192
+          ],
+          "amount": 0.12,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "tussock_left",
+      "parent": null,
+      "box": [
+        57,
+        27,
+        108,
+        71,
+        41,
+        123
+      ],
+      "colors": [
+        "#4C8C70",
+        "#C9B46E"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            64,
+            28,
+            116
+          ],
+          "amount": 0.12,
+          "period": 2,
+          "phase": 1.2,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

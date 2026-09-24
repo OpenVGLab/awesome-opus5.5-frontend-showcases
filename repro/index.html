@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>复刻 · Opus Showcases</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='14' width='56' height='36' rx='14' fill='%231d1a16'/%3E%3Ccircle cx='22' cy='32' r='6' fill='%23ff9f1c'/%3E%3Ccircle cx='44' cy='28' r='4' fill='%233fb950'/%3E%3Ccircle cx='50' cy='36' r='4' fill='%231e9bf0'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f4efe6; --ink: #1d1a16; --muted: #7a7166; --line: #e4dbcc; --card: #fffdf9;
+    --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Helvetica Neue", Arial, sans-serif;
+    --latin: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; color: var(--ink); font-family: var(--sans);
+    background-color: var(--bg);
+    background-image: radial-gradient(rgba(29, 26, 22, .07) 1px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1340px; margin: 0 auto; padding: 60px 28px 72px; }
+
+  header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end; }
+  .eyebrow { font: 800 12px/1 var(--latin); letter-spacing: .3em; color: var(--muted); }
+  h1 { margin: 16px 0 18px; font-size: clamp(40px, 6vw, 76px); line-height: 1.02; font-weight: 900; letter-spacing: -.02em; }
+  h1 .svg {
+    background: linear-gradient(95deg, #e8483b 0%, #ff9f1c 28%, #3fb950 52%, #1e9bf0 76%, #7b61ff 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lead { max-width: 760px; margin: 0; font-size: 17px; line-height: 1.8; color: #4a443c; }
+  .lead code { font: 700 .92em/1 var(--latin); background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .stat { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 8px 15px; font-size: 13px; color: #4a443c; }
+  .stat b { font: 900 15px/1 var(--latin); color: var(--ink); margin-right: 4px; }
+  .strip { display: flex; gap: 8px; }
+  .strip i { width: 14px; height: 64px; border-radius: 8px; transform: skewX(-12deg); }
+
+  .grid { display: grid; grid-template-columns: 1fr; gap: 26px; margin-top: 48px; }
+  @media (min-width: 760px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .card:last-child:nth-child(odd) { grid-column: span 2; }
+  }
+  @media (min-width: 1180px) {
+    .grid { grid-template-columns: repeat(6, 1fr); }
+    .grid .card { grid-column: span 2; }
+    .grid .card:nth-child(-n+2) { grid-column: span 3; }
+  }
+  .card {
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -20px rgba(60, 40, 10, .38);
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 26px 44px -22px rgba(60, 40, 10, .5); }
+  .thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #1f1b17; border-bottom: 4px solid var(--accent); }
+  .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .35s ease, transform .6s ease; }
+  .thumb img.alt { opacity: 0; }
+  .card:hover .thumb img { transform: scale(1.035); }
+  .card:hover .thumb img.alt { opacity: 1; }
+  .thumb .go {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.9); opacity: 0;
+    background: var(--accent); color: #fff; font-weight: 900; font-size: 15px; padding: 12px 22px; border-radius: 999px;
+    box-shadow: 0 12px 26px -10px rgba(0, 0, 0, .6); transition: opacity .25s ease, transform .25s ease; white-space: nowrap;
+  }
+  .card:hover .thumb .go { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .body { display: flex; flex-direction: column; gap: 12px; flex: 1; padding: 20px 22px 22px; }
+  .meta { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+  .no { font: 900 13px/1 var(--latin); letter-spacing: .08em; color: var(--accent-ink); }
+  .chip { border-radius: 999px; padding: 4px 10px; font-weight: 800; background: var(--accent-soft); color: var(--accent-ink); }
+  .insp { margin-left: auto; }
+  h3 { margin: 0; font-size: 25px; font-weight: 900; letter-spacing: .01em; }
+  h3 small { display: block; margin-top: 3px; font: 800 12px/1.5 var(--latin); letter-spacing: .22em; color: var(--muted); }
+  .pitch { margin: 0; font-size: 15px; line-height: 1.7; color: #3d372f; }
+  .style { font-size: 13px; color: var(--muted); }
+  .style b { color: #4a443c; font-weight: 700; }
+  .keys { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 13px; color: #4a443c; }
+  .keys span { white-space: nowrap; }
+  kbd {
+    display: inline-block; margin-right: 6px; padding: 5px 8px; min-width: 26px; text-align: center;
+    font: 800 12px/1 var(--sans); color: var(--ink); background: #fff;
+    border: 1px solid #d9cfbf; border-bottom-width: 3px; border-radius: 7px;
+  }
+  .foot { display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 8px; }
+  .size { margin-right: auto; font: 700 12px/1.4 var(--latin); color: var(--muted); }
+  .btn { text-decoration: none; font-weight: 900; font-size: 14px; border-radius: 12px; padding: 10px 16px; white-space: nowrap; }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.06); }
+  .btn.ghost { background: #fff; border: 1.5px solid var(--line); color: var(--ink); }
+  .btn.ghost:hover { border-color: var(--accent); }
+  .card.pending .thumb {
+    display: grid; place-items: center; color: var(--muted); font-weight: 900; letter-spacing: .1em;
+    background: repeating-linear-gradient(45deg, #ece5d8 0 14px, #e5dccd 14px 28px);
+  }
+  .card.pending .btn { pointer-events: none; opacity: .45; }
+
+  .prompt-peek {
+    display: block; width: 100%; margin-top: auto; padding: 12px 14px; text-align: left; cursor: pointer;
+    font: inherit; color: inherit; background: #faf6ee; border: 1.5px dashed #ddd2c0; border-radius: 14px;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .prompt-peek:hover, .prompt-peek:focus-visible { border-color: var(--accent); background: #fff; outline: none; }
+  .prompt-peek + .foot { margin-top: 0; }
+  .pp-head { display: flex; align-items: center; gap: 8px; }
+  .pp-label { font: 900 12px/1 var(--latin); letter-spacing: .16em; color: var(--accent-ink); }
+  .agentic { border-radius: 999px; padding: 4px 9px; font: 800 11px/1 var(--sans); color: #fff; background: var(--ink); white-space: nowrap; }
+  .pp-more { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--accent-ink); white-space: nowrap; }
+  .pp-text {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+    margin-top: 8px; font-size: 13px; line-height: 1.65; color: #5a5249;
+  }
+
+  .prompt-dialog {
+    --accent: var(--ink); --accent-ink: var(--ink);
+    width: min(880px, calc(100vw - 28px)); max-height: min(88vh, 960px); padding: 0; border: 0; border-radius: 22px;
+    overflow: hidden; color: var(--ink); background: var(--card); box-shadow: 0 40px 90px -30px rgba(20, 12, 4, .6);
+  }
+  .prompt-dialog[open] { display: flex; flex-direction: column; }
+  .prompt-dialog::backdrop { background: rgba(29, 26, 22, .55); backdrop-filter: blur(3px); }
+  .pd-head { display: flex; align-items: center; gap: 14px; padding: 18px 24px 16px; border-top: 6px solid var(--accent); border-bottom: 1px solid var(--line); }
+  .pd-meta { display: flex; align-items: center; gap: 8px; font: 900 12px/1 var(--latin); letter-spacing: .14em; color: var(--accent-ink); }
+  .pd-head h2 { margin: 8px 0 0; font-size: 24px; font-weight: 900; }
+  .pd-actions { display: flex; gap: 8px; margin-left: auto; }
+  .pd-actions button { font-family: inherit; cursor: pointer; }
+  .pd-actions .btn.primary { border: 0; }
+  .pd-body {
+    flex: 1 1 auto; min-height: 0; margin: 0; padding: 20px 24px 28px; overflow: auto;
+    white-space: pre-wrap; overflow-wrap: anywhere; font: 14px/1.85 var(--sans); color: #2f2a24;
+  }
+
+  a.stat { text-decoration: none; border-color: var(--ink); font-weight: 800; }
+  a.stat:hover { background: var(--ink); color: #fff; }
+  .versus { margin-top: 72px; scroll-margin-top: 24px; }
+  .versus h2 { margin: 14px 0 12px; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.1; font-weight: 900; letter-spacing: -.01em; }
+  .versus .vs-lead { max-width: 860px; margin: 0; font-size: 15px; line-height: 1.8; color: #4a443c; }
+  .vs-list { display: grid; gap: 18px; margin-top: 28px; }
+  .vs-row {
+    display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr) minmax(0, 1fr); gap: 20px;
+    padding: 18px; background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--accent); border-radius: 20px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -26px rgba(60, 40, 10, .38);
+  }
+  .vs-game { display: flex; flex-direction: column; gap: 10px; padding: 4px 2px; }
+  .vs-game h3 { font-size: 22px; }
+  .vs-game .pitch { font-size: 13px; line-height: 1.65; color: #5a5249; }
+  .vs-prompt {
+    align-self: flex-start; margin-top: auto; padding: 7px 12px; cursor: pointer; font: 800 12px/1 var(--sans);
+    color: var(--accent-ink); background: #fff; border: 1.5px dashed #ddd2c0; border-radius: 999px;
+  }
+  .vs-prompt:hover, .vs-prompt:focus-visible { border-color: var(--accent); outline: none; }
+  .vs-cell { display: flex; flex-direction: column; gap: 10px; margin: 0; min-width: 0; }
+  .vs-cell .thumb { border-radius: 14px; border-bottom: 0; }
+  .vs-cap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .vs-model { font-size: 15px; font-weight: 900; }
+  .vs-model small { display: block; margin-top: 2px; font: 700 12px/1.4 var(--latin); color: var(--muted); }
+  .vs-cap .btn { margin-left: auto; padding: 8px 14px; font-size: 13px; }
+  .vs-qa { display: block; margin-top: 2px; font-size: 12px; font-weight: 700; color: #2d8539; }
+  .vs-qa.bad { color: #c0392b; }
+
+  @media (min-width: 1180px) {
+    .grid.three .card, .grid.three .card:nth-child(-n+2) { grid-column: span 2; }
+  }
+  .gal { margin-top: 72px; scroll-margin-top: 24px; }
+  .gal h2 { margin: 14px 0 12px; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.1; font-weight: 900; letter-spacing: -.01em; }
+  .gal .gal-lead { max-width: 860px; margin: 0; font-size: 15px; line-height: 1.8; color: #4a443c; }
+  .g-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min, 260px)), 1fr)); gap: 20px; margin-top: 26px; }
+  .g-item {
+    display: flex; flex-direction: column; overflow: hidden; background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -24px rgba(60, 40, 10, .38);
+  }
+  .g-media { position: relative; display: grid; place-items: center; aspect-ratio: var(--ratio, 4 / 3); background: #fff; border-bottom: 3px solid var(--accent); }
+  .g-media img, .g-media .lottie { width: 100%; height: 100%; object-fit: contain; }
+  .g-media .g-open { position: absolute; right: 10px; top: 10px; padding: 5px 10px; border-radius: 999px; font: 800 11px/1 var(--sans); color: #fff; background: rgba(29, 26, 22, .72); text-decoration: none; }
+  .g-body { display: flex; flex-direction: column; gap: 6px; flex: 1; padding: 14px 16px 16px; }
+  .g-body h3 { font-size: 17px; }
+  .g-body p { margin: 0; font-size: 13px; line-height: 1.65; color: #5a5249; }
+  .g-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 11px; color: var(--muted); }
+  .g-meta span { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; background: #fff; }
+  .g-body .vs-prompt { margin-top: auto; }
+  .gal-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .gal-nav a { text-decoration: none; font-size: 13px; font-weight: 800; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; background: #fff; }
+  .gal-nav a:hover { border-color: var(--ink); }
+
+  .site-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .site-nav a { text-decoration: none; font-weight: 800; font-size: 14px; padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--line); background: #fff; }
+  .site-nav a:hover { border-color: var(--ink); }
+  .site-nav a.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 24px; margin-top: 44px; }
+  .hub-card {
+    display: flex; flex-direction: column; overflow: hidden; text-decoration: none; color: inherit;
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .03), 0 14px 32px -20px rgba(60, 40, 10, .38); transition: transform .25s ease, box-shadow .25s ease;
+  }
+  a.hub-card:hover { transform: translateY(-4px); box-shadow: 0 26px 44px -22px rgba(60, 40, 10, .5); }
+  .hub-media { display: grid; place-items: center; aspect-ratio: 16 / 9; overflow: hidden; background: #1f1b17; border-bottom: 4px solid var(--accent); }
+  .hub-media img { width: 100%; height: 100%; object-fit: cover; }
+  .hub-card.pending .hub-media { color: var(--muted); font-weight: 900; letter-spacing: .1em; background: repeating-linear-gradient(45deg, #ece5d8 0 14px, #e5dccd 14px 28px); }
+  .hub-body { display: flex; flex-direction: column; gap: 8px; flex: 1; padding: 20px 22px 22px; }
+  .hub-sub { font: 800 11px/1 var(--latin); letter-spacing: .2em; color: var(--muted); }
+  .hub-body h2 { margin: 0; font-size: 30px; font-weight: 900; }
+  .hub-body p { margin: 0; font-size: 14px; line-height: 1.7; color: #4a443c; }
+  .hub-go { margin-top: auto; padding-top: 8px; font-weight: 900; color: var(--accent); }
+  a.g-media { text-decoration: none; }
+  .g-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: auto; }
+  .g-actions .vs-prompt { margin-top: 0; text-decoration: none; }
+  .g-actions .btn { margin-left: auto; padding: 8px 14px; font-size: 13px; }
+  .vs-cell.pending .thumb {
+    display: grid; place-items: center; color: var(--muted); font-weight: 900; letter-spacing: .08em;
+    background: repeating-linear-gradient(45deg, #ece5d8 0 14px, #e5dccd 14px 28px);
+  }
+  @media (max-width: 1080px) {
+    .vs-row { grid-template-columns: 1fr 1fr; }
+    .vs-game { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .vs-row { grid-template-columns: 1fr; }
+  }
+
+  .tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; margin-top: 56px; }
+  .tip { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; font-size: 14px; line-height: 1.75; color: #4a443c; }
+  .tip b { display: block; margin-bottom: 4px; color: var(--ink); }
+  footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 36px; font-size: 12px; color: var(--muted); }
+  @media (max-width: 720px) {
+    header { grid-template-columns: 1fr; }
+    .strip { display: none; }
+    .wrap { padding-top: 36px; }
+    .pd-head { flex-wrap: wrap; padding: 16px 18px 14px; }
+    .pd-actions { width: 100%; margin-left: 0; }
+    .pd-actions .btn { flex: 1; text-align: center; }
+    .pd-body { padding: 16px 18px 22px; }
+  }
+
+  .gal h2 small { margin-left: 10px; font-size: 14px; font-weight: 700; color: var(--muted); }
+  .g-credit, .g-note { margin: 0; font-size: 12px; line-height: 1.6; color: var(--muted); }
+  .g-credit a { color: var(--accent-ink); font-weight: 700; }
+  .g-media.dark { background: #16131a; }
+  .toc { margin-top: 28px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">OPUS SHOWCASES · RE-CREATIONS</div>
+      <h1>社区 prompt 复刻</h1>
+      <p class="lead">社区和评测集里公开的前端 prompt，原样交给 Claude Opus 5.5 重做：prompt 一字不改，模型看不到原作的画面和代码，做完在无头浏览器里自检到 0 报错。现有 25 个，按作品类型分组；每张卡片注明出处、附完整原 prompt，点封面直接打开。prompt 与原作的权利归原作者。</p>
+      <nav class="site-nav"><a href="../">总览</a><a href="../svg/">SVG</a><a href="../lottie/">Lottie</a><a href="../voxel/">Voxel</a><a href="../repro/" class="on">复刻</a><a href="../midautumn/">中秋</a></nav>
+    </div>
+  </header>
+
+  <div class="stats toc"><a class="stat" href="#repro-A"><b>4</b>网页</a><a class="stat" href="#repro-B"><b>7</b>应用</a><a class="stat" href="#repro-C"><b>3</b>游戏</a><a class="stat" href="#repro-D"><b>3</b>动画</a><a class="stat" href="#repro-F"><b>4</b>模拟与可视化</a><a class="stat" href="#repro-G"><b>1</b>3D 场景</a><a class="stat" href="#repro-H"><b>3</b>组件</a></div><section class="gal" id="repro-A" style="--accent:#1e9bf0;--accent-soft:#1e9bf01f;--accent-ink:#156fac"><div class="eyebrow">PAGES · CLAUDE OPUS 5.5</div><h2>📰 网页<small>4 个</small></h2><p class="gal-lead">以内容为主、用来浏览的页面</p><div class="g-grid" style="--min: 340px"><article class="g-item" data-title="Quorum：保留自我的蜂巢思维招募页" data-no="R01"><a class="g-media" style="--ratio: 16 / 9" href="hive-mind-landing/" target="_blank" rel="noopener"><img src="_covers/hive-mind-landing.jpg?v=1790244634" alt="Quorum：保留自我的蜂巢思维招募页" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>Quorum：保留自我的蜂巢思维招募页</h3><p>为虚构蜂巢思维“Quorum”做的营销落地页：满屏会盯着鼠标看的蜂巢小脸（唯一的蓝格就是你），可以点成员借技能、向蜂巢提问、切换身份共享开关、挑选每周一天 9–5 的 Hive Day、用滑块算 5% 会费、浏览人脉与机会，最后走完一次入会申请。</p><div class="g-meta"><span>A1 落地页与营销页</span><span>GitHub 项目</span><span>短 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/adamholter" target="_blank" rel="noopener">adamholter</a> · <a href="https://github.com/adamholter/hive-mind-landing-page" target="_blank" rel="noopener">原项目 ↗</a></p><p class="g-note">取舍：“向蜂巢提问”是预写答案加关键词匹配，不调用外部 AI；申请表不提交到服务器，只在页面内演示流程；在线人数、剩余名额和机会动态是本地模拟数据。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-hive-mind-landing">查看 prompt</button><a class="btn primary" href="hive-mind-landing/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="乔木 LLM 擂台 · 定价页" data-no="R02"><a class="g-media" style="--ratio: 16 / 9" href="pricing-page/" target="_blank" rel="noopener"><img src="_covers/pricing-page.jpg?v=1790244636" alt="乔木 LLM 擂台 · 定价页" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>乔木 LLM 擂台 · 定价页</h3><p>浅色背景、青绿点缀的单文件定价页：Free / Pro / Team 三列卡片，中间的 Pro 带「推荐」标记并轻微抬高，附功能对比表与常见问题，窄屏自动改为单列。</p><div class="g-meta"><span>A1 落地页与营销页</span><span>乔木 LLM 擂台</span><span>短 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/joeseesun" target="_blank" rel="noopener">乔木 LLM 擂台 (joeseesun)</a> · <a href="https://github.com/joeseesun/llm-case-benchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-pricing-page">查看 prompt</button><a class="btn primary" href="pricing-page/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="Hush One 降噪耳机产品落地页" data-no="R03"><a class="g-media" style="--ratio: 16 / 9" href="product-landing/" target="_blank" rel="noopener"><img src="_covers/product-landing.jpg?v=1790244636" alt="Hush One 降噪耳机产品落地页" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>Hush One 降噪耳机产品落地页</h3><p>单色极简风格的降噪耳机落地页：可拖拽、可换色刻字的 Three.js 360° 产品，联动实时价格计算器和多步骤结账，另有客服与推荐机器人、吸附小窗视频、翻页倒计时、暗色模式等 prompt 列出的全部转化功能。</p><div class="g-meta"><span>A1 落地页与营销页</span><span>GitHub 项目</span><span>详细 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/KingLeoJr" target="_blank" rel="noopener">KingLeoJr</a> · <a href="https://github.com/KingLeoJr/awesome-vibe-coding-prompt-code-templates/blob/main/ProductLandingPage" target="_blank" rel="noopener">原项目 ↗</a></p><p class="g-note">取舍：只做了 360° 查看，没有做 AR；产品图、配件图和演示视频由同一套程序化 3D 模型离线渲染，客户照片是插画头像；客服与推荐机器人是前端规则模拟；结账、邮件订阅和优惠码是演示流程，不产生真实支付或邮件；评价、奖项和竞品数据是虚构示例；倒计时是常青倒计时</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-product-landing">查看 prompt</button><a class="btn primary" href="product-landing/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="虚构行星图鉴" data-no="R04"><a class="g-media" style="--ratio: 16 / 9" href="imaginary-planets/" target="_blank" rel="noopener"><img src="_covers/imaginary-planets.jpg?v=1790245123" alt="虚构行星图鉴" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>虚构行星图鉴</h3><p>一本可交互的虚构星系图鉴：八颗由程序化着色器实时绘制的奇想行星（玻璃世界、金缝熔岩星、甜甜圈形行星、带环气态巨行星等）环绕恒星 Vesper 运行，可以飞入查看档案和热成像/高程扫描、按真实尺寸并排对比，还能在锻造台设计自己的行星加入星系，全程配有 Web Audio 实时合成的环境音。</p><div class="g-meta"><span>A3 知识科普</span><span>社区 Opus 5.5 作品</span><span>一句话 prompt</span></div><p class="g-credit">原作 <a href="https://x.com/Kappaemme1926" target="_blank" rel="noopener">Kappaemme</a> · <a href="https://x.com/Kappaemme1926/status/2102729710174196022" target="_blank" rel="noopener">原帖 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-imaginary-planets">查看 prompt</button><a class="btn primary" href="imaginary-planets/" target="_blank" rel="noopener">打开作品</a></div></div></article></div></section><section class="gal" id="repro-B" style="--accent:#7b61ff;--accent-soft:#7b61ff1f;--accent-ink:#5845b7"><div class="eyebrow">APPS & TOOLS · CLAUDE OPUS 5.5</div><h2>🧰 应用<small>7 个</small></h2><p class="gal-lead">用户完成任务、有自己状态的工具</p><div class="g-grid" style="--min: 340px"><article class="g-item" data-title="PAIRS 品牌周鞋履商城" data-no="R05"><a class="g-media" style="--ratio: 16 / 9" href="shoe-shop/" target="_blank" rel="noopener"><img src="_covers/shoe-shop.jpg?v=1790244638" alt="PAIRS 品牌周鞋履商城" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>PAIRS 品牌周鞋履商城</h3><p>可直接运行的网上鞋店：首页展示参与特卖的品牌及其折扣等级，导航栏「尺码助手」弹窗给出各品牌尺码换算表与跨品牌换算，列表页按性别筛选，详情页用程序化 3D 鞋子做可拖拽的 360° 旋转和四张上脚效果图，购物车可把同款不同尺码合并成一条，结账页模拟分期方案与每期金额。</p><div class="g-meta"><span>B1 电商与消费</span><span>ArtifactsBench</span><span>短 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">ArtifactsBench (Tencent Hunyuan)</a> · <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">题目 ↗</a></p><p class="g-note">取舍：商品图、360° 视图和上脚效果图都是浏览器内程序化生成的 3D 渲染，不是实拍，上脚模特是风格化的人台腿；品牌和商品为虚构，尺码表参照常见换算规则编写；支付、信用审核、库存和评价均为模拟，订单只保存在当前浏览器会话。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-shoe-shop">查看 prompt</button><a class="btn primary" href="shoe-shop/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="空气质量实时监测系统" data-no="R06"><a class="g-media" style="--ratio: 16 / 9" href="air-quality-dashboard/" target="_blank" rel="noopener"><img src="_covers/air-quality-dashboard.jpg?v=1790244639" alt="空气质量实时监测系统" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>空气质量实时监测系统</h3><p>深色数据大屏风格的全国空气质量监测系统：337 城市实时地图与 24 小时 / 30 天时间轴回放，城市与站点的逐时及日累计图表，74 / 168 / 337 城市和汾渭平原城市、区县的日排名与月、年累计排名，任意城市的小时 / 日 / 月 / 年对比分析，以及可导出 CSV / Excel 的…</p><div class="g-meta"><span>B2 数据看板</span><span>ArtifactsBench</span><span>详细 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">ArtifactsBench (Tencent Hunyuan)</a> · <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">题目 ↗</a></p><p class="g-note">取舍：无法接入真实的国家空气质量实时发布接口，全部监测数据由确定性模拟模型生成（覆盖 2020 年至当前小时，整点自动刷新），不是真实观测；168 城市名单按重点区域近似构成；除北京、上海、广州、西安、成都、武汉外，站点名称由通用名称池生成；地图只绘制省级轮廓；Excel 导出为 SpreadsheetML（.xls）格式。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-air-quality-dashboard">查看 prompt</button><a class="btn primary" href="air-quality-dashboard/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="电路实验室：拖拽式电路实验模拟器" data-no="R07"><a class="g-media" style="--ratio: 16 / 9" href="circuit-lab/" target="_blank" rel="noopener"><img src="_covers/circuit-lab.jpg?v=1790245126" alt="电路实验室：拖拽式电路实验模拟器" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>电路实验室：拖拽式电路实验模拟器</h3><p>把电池、电阻、灯泡、开关、电表和导线拖到网格工作台上，金属端相碰自动生成金色接触点，双击元件设置电压等参数，点击右侧“Start Test”按欧姆定律和基尔霍夫定律求解电路：回路闭合时显示电流强度并用流动光点演示电流、点亮灯泡，断开时用红圈、虚线和编号标出断点并逐条说明，另有 6 步引导实验和实…</p><div class="g-meta"><span>B4 学习与实验</span><span>ArtifactsBench</span><span>详细 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">ArtifactsBench (Tencent Hunyuan)</a> · <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-circuit-lab">查看 prompt</button><a class="btn primary" href="circuit-lab/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="看板拖拽" data-no="R08"><a class="g-media" style="--ratio: 16 / 9" href="kanban-board/" target="_blank" rel="noopener"><img src="_covers/kanban-board.jpg?v=1790244640" alt="看板拖拽" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>看板拖拽</h3><p>三列中文任务看板（待办 / 进行中 / 完成）：用原生 Pointer 事件把卡片拖到任意列和位置，拖动时卡片跟手倾斜、目标列高亮并实时让出空位，每列都有「添加」按钮，所有改动自动保存在 localStorage。</p><div class="g-meta"><span>B5 效率与办公</span><span>乔木 LLM 擂台</span><span>一句话 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/joeseesun" target="_blank" rel="noopener">乔木 LLM 擂台 (joeseesun)</a> · <a href="https://github.com/joeseesun/llm-case-benchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-kanban-board">查看 prompt</button><a class="btn primary" href="kanban-board/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="双栏 Markdown 实时预览" data-no="R09"><a class="g-media" style="--ratio: 16 / 9" href="markdown-preview/" target="_blank" rel="noopener"><img src="_covers/markdown-preview.jpg?v=1790244641" alt="双栏 Markdown 实时预览" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>双栏 Markdown 实时预览</h3><p>左侧带语法着色的 textarea 写 Markdown，右侧由手写渲染器逐键实时预览，默认载入「乔木 LLM 擂台」介绍，两栏按内容块同步滚动并标出正在编辑的段落，窄屏自动改为上下布局。</p><div class="g-meta"><span>B5 效率与办公</span><span>乔木 LLM 擂台</span><span>一句话 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/joeseesun" target="_blank" rel="noopener">乔木 LLM 擂台 (joeseesun)</a> · <a href="https://github.com/joeseesun/llm-case-benchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-markdown-preview">查看 prompt</button><a class="btn primary" href="markdown-preview/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="Cellwise 智能电子表格" data-no="R10"><a class="g-media" style="--ratio: 16 / 9" href="smart-spreadsheet/" target="_blank" rel="noopener"><img src="_covers/smart-spreadsheet.jpg?v=1790244642" alt="Cellwise 智能电子表格" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>Cellwise 智能电子表格</h3><p>纯浏览器端从零实现的智能电子表格：Canvas 表格支持增删改查与记录表单、合并单元格、150 余个带自动补全和彩色引用高亮的公式函数、多级排序与自动筛选、随数据实时联动的柱状/折线/饼图，并用自写解析器原生导入导出 .xlsx 与 CSV。</p><div class="g-meta"><span>B5 效率与办公</span><span>ArtifactsBench</span><span>短 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">ArtifactsBench (Tencent Hunyuan)</a> · <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">题目 ↗</a></p><p class="g-note">取舍：只支持 .xlsx/.xlsm 与 CSV，不支持旧版二进制 .xls；图表不写入导出的 .xlsx（可单独导出 PNG）；导入时忽略条件格式、数据验证、批注、图片与数据透视表；公式不支持动态数组溢出。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-smart-spreadsheet">查看 prompt</button><a class="btn primary" href="smart-spreadsheet/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="淘宝「已买到的宝贝」订单页" data-no="R11"><a class="g-media" style="--ratio: 16 / 9" href="taobao-orders/" target="_blank" rel="noopener"><img src="_covers/taobao-orders.jpg?v=1790244643" alt="淘宝「已买到的宝贝」订单页" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>淘宝「已买到的宝贝」订单页</h3><p>仿淘宝网页版「已买到的宝贝」订单列表：26 笔模拟订单覆盖全部交易状态，付款、确认收货、评价、退款、查物流、订单回收站等流程都能实际操作，窄屏下自动切换成手机淘宝的卡片样式。</p><div class="g-meta"><span>B6 界面复刻</span><span>ArtifactsBench</span><span>短 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">ArtifactsBench (Tencent Hunyuan)</a> · <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">题目 ↗</a></p><p class="g-note">取舍：没有后端：订单、物流、店铺都是前端模拟数据，刷新即重置；支付密码输入任意 6 位数字即可；卖家发货、同意退款由计时器模拟；商品图是手绘 SVG 插画而非实拍；聊天回复是按关键词匹配的预设话术；淘宝其他页面的链接只弹出演示提示。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-taobao-orders">查看 prompt</button><a class="btn primary" href="taobao-orders/" target="_blank" rel="noopener">打开作品</a></div></div></article></div></section><section class="gal" id="repro-C" style="--accent:#e8483b;--accent-soft:#e8483b1f;--accent-ink:#a7332a"><div class="eyebrow">GAMES · CLAUDE OPUS 5.5</div><h2>🎮 游戏<small>3 个</small></h2><p class="gal-lead">有目标、胜负或分数，玩家操控</p><div class="g-grid" style="--min: 340px"><article class="g-item" data-title="猫步：夜城横版跑酷" data-no="R12"><a class="g-media" style="--ratio: 16 / 9" href="catwalk/" target="_blank" rel="noopener"><img src="_covers/catwalk.jpg?v=1790244644" alt="猫步：夜城横版跑酷" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>猫步：夜城横版跑酷</h3><p>一只燕尾服黑猫在自动卷轴的夜色城市里一键跳跃前行，穿过煤气灯街、灯笼巷、霓虹高楼，最后在月光下的钟楼前坐下；路灯、灯笼和霓虹的动态光照、体积光与泛光营造出成熟的夜景氛围，爵士配乐和猫叫全部由 Web Audio 实时合成。</p><div class="g-meta"><span>C1 街机休闲</span><span>社区 Opus 5.5 作品</span><span>详细 prompt</span></div><p class="g-credit">原作 <a href="https://x.com/blitast_studio" target="_blank" rel="noopener">BLITAST STUDIO</a> · <a href="https://x.com/blitast_studio/status/2102775632933654585" target="_blank" rel="noopener">原帖 ↗</a></p><p class="g-note">取舍：没有真正的实时全局光照：间接光用分段半球光、烘焙顶点 AO、墙面光斑贴片、跟随补光、体积光锥和 Bloom 近似；同屏只有 8 盏真实点光（2 盏投影），轮流分配给附近的灯源；猫的模型和动作全部程序化生成，没有骨骼动画、动捕和毛发。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-catwalk">查看 prompt</button><a class="btn primary" href="catwalk/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="魔方挑战：2×2 到 5×5" data-no="R13"><a class="g-media" style="--ratio: 16 / 9" href="rubiks-cube/" target="_blank" rel="noopener"><img src="_covers/rubiks-cube.jpg?v=1790244646" alt="魔方挑战：2×2 到 5×5" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>魔方挑战：2×2 到 5×5</h3><p>用 Three.js 打造的 3D 魔方游戏：可选 2×2、3×3、4×4、5×5 四个难度，拖动任意面即可转动对应层，拖动空白处可把整个魔方翻过来；打乱后计时挑战、自动判定六面还原并放礼花庆祝，“公式实验室”能把基础复原公式逐步演示在你自己的魔方上。</p><div class="g-meta"><span>C4 益智解谜</span><span>ArtifactsBench</span><span>详细 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">ArtifactsBench (Tencent Hunyuan)</a> · <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-rubiks-cube">查看 prompt</button><a class="btn primary" href="rubiks-cube/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="忘了哪边朝下的路" data-no="R14"><a class="g-media" style="--ratio: 16 / 9" href="gravity-road/" target="_blank" rel="noopener"><img src="_covers/gravity-road.jpg?v=1790244647" alt="忘了哪边朝下的路" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>忘了哪边朝下的路</h3><p>水彩加墨线风格的 Three.js 驾驶小品：车顶绑着收音机的小红车沿一条闭合的纸带公路前进，路面 90° 折上黄色大楼外墙、倒挂着穿过吊满房子的天花板，最后化作扭转成环的五线谱，驶过音符就能按节拍奏出每条街的圆舞曲旋律。</p><div class="g-meta"><span>C7 节奏音乐</span><span>社区作品</span><span>短 prompt</span></div><p class="g-credit">原作 <a href="https://x.com/chetanankola" target="_blank" rel="noopener">Chetan Ankola</a> · <a href="https://x.com/chetanankola/status/2103001194696458512" target="_blank" rel="noopener">原帖 ↗</a></p><p class="g-note">取舍：水彩和墨线是屏幕空间的风格化后期渲染，不是颜料在纸上的流体模拟；小车沿路面轨道行驶，只控制横向车道和车速，没有车辆物理和碰撞；阴影只对大楼和天花板做了解析近似，没有阴影贴图；所有乐器和电台音效都用 Web Audio 振荡器与噪声实时合成，没有采样音色。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-gravity-road">查看 prompt</button><a class="btn primary" href="gravity-road/" target="_blank" rel="noopener">打开作品</a></div></div></article></div></section><section class="gal" id="repro-D" style="--accent:#ff9f1c;--accent-soft:#ff9f1c1f;--accent-ink:#b77214"><div class="eyebrow">ANIMATION · CLAUDE OPUS 5.5</div><h2>🎬 动画<small>3 个</small></h2><p class="gal-lead">按时间播放，看为主，交互很少</p><div class="g-grid" style="--min: 340px"><article class="g-item" data-title="灯塔与鲸" data-no="R15"><a class="g-media" style="--ratio: 16 / 9" href="xhs-free-short/" target="_blank" rel="noopener"><img src="_covers/xhs-free-short.jpg?v=1790244650" alt="灯塔与鲸" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>灯塔与鲸</h3><p>一部两分半钟的实时动画短片：风暴夜里守灯人停下旋转的灯，为迷途的小鲸照亮一条路；多年后灯塔熄灭，长大的鲸鱼唱着那支老歌归来，用一身荧光为雾中迷航的小船引路——画面、配乐和音效全部由代码在浏览器里实时生成。</p><div class="g-meta"><span>D1 叙事短片</span><span>小红书</span><span>一句话 prompt</span></div><p class="g-credit">原作 <a href="https://www.xiaohongshu.com/explore/6ab45d76000000000202be26?xsec_token=CBjc6DgxV29PzCmyBsUUBA6MoDnERoYo_3i5AdRNAl2tc=&amp;xsec_source=pc_share" target="_blank" rel="noopener">春和景明.LinxAI</a> · <a href="https://www.xiaohongshu.com/explore/6ab45d76000000000202be26?xsec_token=CBjc6DgxV29PzCmyBsUUBA6MoDnERoYo_3i5AdRNAl2tc=&amp;xsec_source=pc_share" target="_blank" rel="noopener">原帖 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-xhs-free-short">查看 prompt</button><a class="btn primary" href="xhs-free-short/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="水循环 · 无缝循环动画" data-no="R16"><a class="g-media" style="--ratio: 16 / 9" href="water-cycle/" target="_blank" rel="noopener"><img src="_covers/water-cycle.jpg?v=1790244651" alt="水循环 · 无缝循环动画" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>水循环 · 无缝循环动画</h3><p>一块漂浮的立体剖面小世界：阳光把海水蒸发成水汽，水汽凝结成云随风飘向雪山，化作雨雪落下，再经溪流、河流与地下水回到大海；一颗发光水滴每 32 秒完整走一圈，首尾无缝衔接，全部由代码实时渲染。</p><div class="g-meta"><span>D2 讲解动画</span><span>社区 Opus 5.5 作品</span><span>一句话 prompt</span></div><p class="g-credit">原作 <a href="https://x.com/higgsfield_ai" target="_blank" rel="noopener">Higgsfield AI 🧩</a> · <a href="https://x.com/higgsfield_ai/status/2102781807179735211" target="_blank" rel="noopener">原帖 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-water-cycle">查看 prompt</button><a class="btn primary" href="water-cycle/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="星咏召唤 · 抽卡演出" data-no="R17"><a class="g-media" style="--ratio: 16 / 9" href="gacha-reveal/" target="_blank" rel="noopener"><img src="_covers/gacha-reveal.jpg?v=1790244652" alt="星咏召唤 · 抽卡演出" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>星咏召唤 · 抽卡演出</h3><p>Three.js 星空祭坛上的日式手游抽卡演出：召唤阵蓄力并由蓝→金→虹逐级升格，光柱爆发后星屑逐张化为卡牌翻开，SSR 还有金卡碎裂升虹、落雷和全屏切入，音乐音效全部由 Web Audio 实时合成。</p><div class="g-meta"><span>D4 UI 与图标动效</span><span>社区作品</span><span>一句话 prompt</span></div><p class="g-credit">原作 <a href="https://x.com/gigabit_million" target="_blank" rel="noopener">@gigabit_million</a> · <a href="https://x.com/gigabit_million/status/2102567650954182955" target="_blank" rel="noopener">原帖 ↗</a></p><p class="g-note">取舍：卡面用 Canvas 程序绘制的星座图代替手绘角色立绘，角色台词只显示文字、没有配音；抽卡和星晶石为前端本地模拟（不足时免费补充），刷新即重置。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-gacha-reveal">查看 prompt</button><a class="btn primary" href="gacha-reveal/" target="_blank" rel="noopener">打开作品</a></div></div></article></div></section><section class="gal" id="repro-F" style="--accent:#12a4a8;--accent-soft:#12a4a81f;--accent-ink:#0b7275"><div class="eyebrow">SIMULATION & VISUALIZATION · CLAUDE OPUS 5.5</div><h2>🔬 模拟与可视化<small>4 个</small></h2><p class="gal-lead">由规则或数据驱动、可以调参观察的系统</p><div class="g-grid" style="--min: 340px"><article class="g-item" data-title="霓虹流体：GPU 欧拉烟雾模拟" data-no="R18"><a class="g-media" style="--ratio: 16 / 9" href="neon-fluid/" target="_blank" rel="noopener"><img src="_covers/neon-fluid.jpg?v=1790244654" alt="霓虹流体：GPU 欧拉烟雾模拟" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>霓虹流体：GPU 欧拉烟雾模拟</h3><p>完全由 WebGL 片元着色器在 GPU 上解算的欧拉流体（平流、散度、25 次 Jacobi 压力迭代、梯度减除、涡量约束）：拖拽或快速划动注入循环变色的 HDR 霓虹染料，卷成湍流烟雾，终帧着色器内完成辉光、色调映射和边缘色差，右下角玻璃拟态面板可调粘度、染料持久度、笔刷半径并切换三套配色。</p><div class="g-meta"><span>F2 流体与粒子</span><span>社区 Opus 5.5 作品</span><span>详细 prompt</span></div><p class="g-credit">原作 <a href="https://x.com/theailoser" target="_blank" rel="noopener">theailoser</a> · <a href="https://x.com/theailoser/status/2102565612874596411" target="_blank" rel="noopener">原帖 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-neon-fluid">查看 prompt</button><a class="btn primary" href="neon-fluid/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="EGRESS 人群疏散模拟：看哪里堵" data-no="R19"><a class="g-media" style="--ratio: 16 / 9" href="crowd-evacuation/" target="_blank" rel="noopener"><img src="_covers/crowd-evacuation.jpg?v=1790244656" alt="EGRESS 人群疏散模拟：看哪里堵" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>EGRESS 人群疏散模拟：看哪里堵</h3><p>俯视平面图上的社会力人群疏散模拟：人群按步行时间和排队情况选出口涌向门口，拥堵热力图、实时堵点圈和整场累计的堵塞地图标出人群卡在哪里；可以画墙、开关出口、调人数和紧急程度，对比疏散时间。</p><div class="g-meta"><span>F3 群体与交通</span><span>社区 Opus 5.5 作品</span><span>一句话 prompt</span></div><p class="g-credit">原作 <a href="https://x.com/dominikmartn" target="_blank" rel="noopener">Dom</a> · <a href="https://x.com/dominikmartn/status/2102467667978572092" target="_blank" rel="noopener">原帖 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-crowd-evacuation">查看 prompt</button><a class="btn primary" href="crowd-evacuation/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="GitHub 贡献日历热力图" data-no="R20"><a class="g-media" style="--ratio: 16 / 9" href="github-heatmap/" target="_blank" rel="noopener"><img src="_covers/github-heatmap.jpg?v=1790244657" alt="GitHub 贡献日历热力图" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>GitHub 贡献日历热力图</h3><p>用 Vue 3 + D3.js 绘制的 GitHub 风格贡献日历：按四分位分级着色、逐周波浪式过渡，支持悬停提示、点选和键盘导航，并与统计卡片、星期/月份柱状图、每周趋势和当日活动详情联动高亮；可切换年份、周起始日、方块/圆点、亮暗主题和四套配色，支持导入 JSON/CSV/GitHub Gr…</p><div class="g-meta"><span>F5 数据可视化</span><span>ArtifactsBench</span><span>短 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">ArtifactsBench (Tencent Hunyuan)</a> · <a href="https://github.com/Tencent-Hunyuan/ArtifactsBenchmark" target="_blank" rel="noopener">题目 ↗</a></p><p class="g-note">取舍：没有在浏览器里实时调用 GitHub API（需要个人访问令牌），默认展示可复现的示例数据，另提供 GraphQL 查询语句和导入功能加载真实数据；当日活动列表只对示例数据生成，内容是虚构的。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-github-heatmap">查看 prompt</button><a class="btn primary" href="github-heatmap/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="7 日延迟 · 纯 SVG 折线图" data-no="R21"><a class="g-media" style="--ratio: 16 / 9" href="svg-line-chart/" target="_blank" rel="noopener"><img src="_covers/svg-line-chart.jpg?v=1790244658" alt="7 日延迟 · 纯 SVG 折线图" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>7 日延迟 · 纯 SVG 折线图</h3><p>浅色卡片里的纯 SVG「7 日延迟」折线图，坐标轴、渐变面积、数据点、中文图例和 7 日均值线齐全，悬停、点按或方向键即可看到当天数值与较前日变化，宽度随窗口自适应而文字和线宽保持原尺寸。</p><div class="g-meta"><span>F5 数据可视化</span><span>乔木 LLM 擂台</span><span>一句话 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/joeseesun" target="_blank" rel="noopener">乔木 LLM 擂台 (joeseesun)</a> · <a href="https://github.com/joeseesun/llm-case-benchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-svg-line-chart">查看 prompt</button><a class="btn primary" href="svg-line-chart/" target="_blank" rel="noopener">打开作品</a></div></div></article></div></section><section class="gal" id="repro-G" style="--accent:#e05297;--accent-soft:#e052971f;--accent-ink:#a3346b"><div class="eyebrow">3D SCENES · CLAUDE OPUS 5.5</div><h2>🏝️ 3D 场景<small>1 个</small></h2><p class="gal-lead">用来观看或漫游的 3D 场景，没有游戏目标</p><div class="g-grid" style="--min: 340px"><article class="g-item" data-title="佩拉吉亚 · 海洋铁路" data-no="R22"><a class="g-media" style="--ratio: 16 / 9" href="pelagia/" target="_blank" rel="noopener"><img src="_covers/pelagia.jpg?v=1790244660" alt="佩拉吉亚 · 海洋铁路" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>佩拉吉亚 · 海洋铁路</h3><p>一座带透明水体剖面的椭圆形热带小岛沙盘：红白复古小火车从海边车站出发，驶过高架桥，缓缓潜入穿越珊瑚礁的玻璃海底隧道，再绕回车站；水下有鱼群、海龟和斑点鲸鲨巡游，可切换四种视角和日间、黄昏、月夜三种光照，音乐和音效全部实时合成。</p><div class="g-meta"><span>G1 电影感场景</span><span>社区作品</span><span>详细 prompt</span></div><p class="g-credit">原作 <a href="https://x.com/vib3coded" target="_blank" rel="noopener">@vib3coded</a> · <a href="https://x.com/vib3coded/status/2102672447405228135" target="_blank" rel="noopener">原帖 ↗</a></p><p class="g-note">取舍：Three.js 按交付约定经 import map 引用 ../vendor 本地副本，没有内联进 HTML，所以需要通过 HTTP 打开（file:// 下 Chrome 会拦截 ES 模块）；动物避障靠预先规划、并用完整身体包络校验过的平滑闭合航线保证（运行时持续监测），不是实时转向 AI；玻璃隧道和玻璃剖面用透明材质加菲涅尔表现，水面没有折射扭曲；环境没有 GPU，只在 SwiftShader 软件渲染下测试。</p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-pelagia">查看 prompt</button><a class="btn primary" href="pelagia/" target="_blank" rel="noopener">打开作品</a></div></div></article></div></section><section class="gal" id="repro-H" style="--accent:#6b645a;--accent-soft:#6b645a1f;--accent-ink:#4a443c"><div class="eyebrow">UI COMPONENTS · CLAUDE OPUS 5.5</div><h2>🧩 组件<small>3 个</small></h2><p class="gal-lead">可复用的界面部件或设计系统，不是完整的页面或产品</p><div class="g-grid" style="--min: 340px"><article class="g-item" data-title="无障碍登录表单" data-no="R23"><a class="g-media" style="--ratio: 16 / 9" href="a11y-login/" target="_blank" rel="noopener"><img src="_covers/a11y-login.jpg?v=1790244661" alt="无障碍登录表单" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>无障碍登录表单</h3><p>「乔木 LLM 擂台」中文登录页：每个控件都有标签，提交时逐项校验邮箱格式，用 aria-live 播报错误并把焦点移到第一个出错项；显示密码按钮用 aria-pressed 表示开关状态，键盘焦点呈高对比双色焦点环，右侧还有实时展示读屏朗读内容的语音查看器。</p><div class="g-meta"><span>H1 表单与输入</span><span>乔木 LLM 擂台</span><span>一句话 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/joeseesun" target="_blank" rel="noopener">乔木 LLM 擂台 (joeseesun)</a> · <a href="https://github.com/joeseesun/llm-case-benchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-a11y-login">查看 prompt</button><a class="btn primary" href="a11y-login/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="纯 CSS 文档页：Tabs + FAQ 手风琴" data-no="R24"><a class="g-media" style="--ratio: 16 / 9" href="tabs-accordion/" target="_blank" rel="noopener"><img src="_covers/tabs-accordion.jpg?v=1790244662" alt="纯 CSS 文档页：Tabs + FAQ 手风琴" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>纯 CSS 文档页：Tabs + FAQ 手风琴</h3><p>虚构 SDK 文档页的局部 UI：顶部「概览 / API / 示例」三个 Tabs 用 radio hack 实现，选中项是滑动的实心品牌色胶囊，手机上可横滑并带两端渐隐提示；下方 3 项 FAQ 用原生 details 做成一次只展开一项的手风琴，全程零 JavaScript，并支持深色模式与…</p><div class="g-meta"><span>H2 导航与展开</span><span>乔木 LLM 擂台</span><span>一句话 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/joeseesun" target="_blank" rel="noopener">乔木 LLM 擂台 (joeseesun)</a> · <a href="https://github.com/joeseesun/llm-case-benchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-tabs-accordion">查看 prompt</button><a class="btn primary" href="tabs-accordion/" target="_blank" rel="noopener">打开作品</a></div></div></article><article class="g-item" data-title="青绿设计 Token：light / dark 一键切换" data-no="R25"><a class="g-media" style="--ratio: 16 / 9" href="design-tokens/" target="_blank" rel="noopener"><img src="_covers/design-tokens.jpg?v=1790244664" alt="青绿设计 Token：light / dark 一键切换" loading="lazy"><span class="g-open">打开 ↗</span></a><div class="g-body"><h3>青绿设计 Token：light / dark 一键切换</h3><p>一页青绿主色的组件展厅：按钮、表单、卡片和可搜索筛选排序的数据表格只引用 CSS 语义变量，一键（或按 T）以圆形揭示动画在 light / dark 两套 token 间切换，选择写入 localStorage、刷新后保持，页尾还能并排对照两套 token 的色值与实时对比度。</p><div class="g-meta"><span>H3 设计系统与主题</span><span>乔木 LLM 擂台</span><span>一句话 prompt</span></div><p class="g-credit">出处 <a href="https://github.com/joeseesun" target="_blank" rel="noopener">乔木 LLM 擂台 (joeseesun)</a> · <a href="https://github.com/joeseesun/llm-case-benchmark" target="_blank" rel="noopener">题目 ↗</a></p><div class="g-actions"><button class="vs-prompt" type="button" data-prompt="repro-design-tokens">查看 prompt</button><a class="btn primary" href="design-tokens/" target="_blank" rel="noopener">打开作品</a></div></div></article></div></section>
+
+  <footer>
+    <span>Generated by Claude Opus · 2026-09-24</span>
+    <span><a href="https://github.com/OpenVGLab/awesome-opus5.5-frontend-showcases">github.com/OpenVGLab/awesome-opus5.5-frontend-showcases</a></span>
+  </footer>
+</div>
+
+<dialog class="prompt-dialog" id="prompt-dialog" aria-labelledby="pd-title">
+  <div class="pd-head">
+    <div>
+      <div class="pd-meta"><span id="pd-no">01</span><span>PROMPT</span><span class="agentic">Agentic 生成</span></div>
+      <h2 id="pd-title"></h2>
+    </div>
+    <div class="pd-actions">
+      <button class="btn primary" type="button" id="pd-copy">复制</button>
+      <button class="btn ghost" type="button" id="pd-close">关闭</button>
+    </div>
+  </div>
+  <pre class="pd-body" id="pd-body"></pre>
+</dialog>
+
+<script type="text/plain" id="prompt-repro-hive-mind-landing">
+Generate a landing page as a marketing page for joining our Hive Mind. The unique perks of our Hive Mind is that you still get your individual identity. You just pretty much have access to everyone else's mind. And you do get some objectives, but you only work for the Hive Mind one day a week from 9 to 5. You also need to pay 5% on income. In exchange, you get access to a wide network of professionals and opportunities. You come up with the name.
+</script>
+<script type="text/plain" id="prompt-repro-pricing-page">
+【系统提示】
+你是前端工程师。只输出一个完整可运行的 HTML 文件（内联 CSS），不要 Markdown 代码围栏，不要解释。
+
+【用户 prompt】
+生成一个完整的单文件 HTML 定价页。
+品牌名：乔木 LLM 擂台
+三档：
+- Free：0 元，3 个内置 Case，本地 API Key
+- Pro：29 元/月，无限 Case，贡献徽章
+- Team：99 元/月，共享题库，协作标注
+视觉要求：
+1. 浅色背景，青绿 accent，无紫色渐变；
+2. 三列定价卡片，中间 Pro 轻微突出；
+3. 响应式：窄屏改为单列；
+4. 含页头导航与页脚一行「Powered by 向阳乔木」；
+5. 不要外部字体 CDN 以外的依赖（可用 system font）。
+</script>
+<script type="text/plain" id="prompt-repro-product-landing">
+Create a clean, minimalist product landing page with a monochromatic color scheme
+Use a bold, sans-serif font for headlines (24-36px) and a readable sans-serif for body text (16-18px)
+Implement a hero section with a high-quality product image or video, animated on scroll
+Design a sticky header with logo, navigation, and CTA button
+Write a concise, benefit-focused headline (60-80 characters) and subheadline (120-160 characters)
+Include a prominent CTA button with contrasting color and hover effect
+Add social proof elements: customer testimonials, trust badges, and review scores
+Create an interactive product showcase with 360-degree view or augmented reality feature
+Implement a comparison chart highlighting key features and benefits
+Design an FAQ section with expandable answers to address common objections
+Use micro-interactions and subtle animations to enhance user engagement
+Optimize page load speed to under 3 seconds, implement lazy loading for images
+Create a mobile-responsive design with easy-to-tap buttons (min 44x44px)
+Implement schema markup for rich snippets in search results
+Add a live chat widget for instant customer support
+Create an exit-intent popup with a special offer to reduce bounce rate
+Implement a sticky "Add to Cart" button that appears on scroll
+Use white space effectively to improve readability and focus attention
+Add a countdown timer for limited-time offers to create urgency
+Implement a progress bar showing steps to purchase
+Create custom illustrations or icons to visualize product benefits
+Use parallax scrolling effect for background elements
+Implement a sticky social share bar for easy sharing
+Add a section showcasing related or complementary products
+Implement a dark mode toggle for improved user experience
+Create an email capture form with a relevant lead magnet
+Use CSS animations for subtle background effects
+Implement a sticky video player for product demonstrations
+Add keyboard navigation support for accessibility
+Create a dynamic pricing calculator based on user selections
+Implement a floating CTA button that appears on scroll
+Use custom cursor effects to enhance interactivity
+Create an animated infographic to explain complex features
+Implement a chatbot for personalized product recommendations
+Add a section highlighting your unique selling propositions
+Create a dynamic testimonial slider with customer photos
+Implement scroll-triggered animations for key product features
+Use custom SVG animations to illustrate product functionality
+Create an interactive size guide or product configurator
+Implement a sticky order summary for multi-step checkout process
+</script>
+<script type="text/plain" id="prompt-repro-imaginary-planets">
+build an interactive website about imaginary planets.
+</script>
+<script type="text/plain" id="prompt-repro-shoe-shop">
+You are a code expert. Please use your professional knowledge to generate accurate and professional responses. Be sure to ensure that the generated code is executable for demonstration purposes. Develop an online shoe shopping frontend project with a homepage featuring a brand special sale display area showing participating brands and discount levels. The navigation bar includes a "Size Assistant" link that opens a modal dialog displaying conversion tables for different brand shoe sizes. The product listing page supports filtering shoes by gender. The product detail page features 360-degree rotation views of shoes and on-foot effect images. The shopping cart page supports combining identical items (if there are same style items in different sizes, they can be merged into one entry). The checkout page supports installment payment functions (simulating installment options and amount per installment).
+</script>
+<script type="text/plain" id="prompt-repro-air-quality-dashboard">
+You are a code expert. Please use your professional knowledge to generate accurate and professional responses. Air Quality Real-time Monitoring System
+
+1. Air Quality Real-time Monitoring
+Display online air quality monitoring data through charts, including hourly data and daily cumulative data for various cities and monitoring stations.
+
+2. Air Quality Ranking Display
+The system ranks cities nationwide using AQI/composite index as evaluation criteria, displaying daily, monthly cumulative, and annual cumulative rankings for 74 cities, 168 cities, 337 cities, and various cities/counties in the Fenwei Plain. This helps users understand regional air quality conditions and their rankings among major cities nationwide.
+
+3. City Comparison Analysis Display
+Summarizes and displays analysis results for cities within a region. The system supports selecting any number of cities of interest to view trends in their hourly, daily, monthly, and annual data.
+
+4. Historical Data Query Display
+Consolidates historical monitoring data for cities, districts, counties, and monitoring stations within a region. Provides query functionality based on conditions (including city selection and date selection) for various pollutant values (AQI, PM2.5, PM10, O3, NO2, SO2, CO), pollution levels, and primary pollutants. Supports data export.
+</script>
+<script type="text/plain" id="prompt-repro-circuit-lab">
+You are a code expert. Please use your professional knowledge to generate accurate and professional responses. Make sure that the generated code is executable and displayable.
+
+======== ROLE ========
+You are an experienced code expert. You have been provided with a software development requirement description and are asked to generate project code based on this requirement. Follow the rules strictly to help users generate complete project code with comprehensive comments in simple, easy-to-understand language. Do not output anything else.
+
+======== OUTPUT RULES ========
+1. Always generate complete, runnable project code. Make sure the project is fully executable
+2. Ensure all code files you output are complete, with no omitted code
+3. Carefully review and check all code before final output, evaluating its executability. If the code cannot be executed or contains errors, it needs to be regenerated
+4. If the requirements involve external API access or need to use user data (images, videos, audio, etc.), please provide simulated data
+
+======== PROJECT REQUIREMENTS ========
+Develop a multi-step experimental simulator (such as a physics circuit experiment) where users can drag and drop components like batteries, resistors, and wires onto a workspace to form a circuit. Contact points are automatically generated when components touch. Users can double-click on components to set properties (such as voltage). A "Start Test" button on the right side verifies if the circuit is closed - if successful, it displays the current intensity; if unsuccessful, it highlights the disconnected location.
+</script>
+<script type="text/plain" id="prompt-repro-kanban-board">
+【系统提示】
+只用原生 HTML5 drag and drop 或 pointer 事件。只输出 HTML。
+
+【用户 prompt】
+三列看板：待办 / 进行中 / 完成。
+卡片可拖拽跨列，每列有「添加」按钮，数据保存在 localStorage。
+中文 UI，卡片无左侧竖线装饰。
+</script>
+<script type="text/plain" id="prompt-repro-markdown-preview">
+【系统提示】
+可手写极简 Markdown 渲染（标题/粗体/列表/代码），勿依赖大型库亦可。只输出 HTML。
+
+【用户 prompt】
+左右分栏：左侧 textarea 编辑 Markdown，右侧实时预览。
+支持 # 标题、**粗体**、- 列表、`code`。
+默认塞入一段介绍「乔木 LLM 擂台」的 md。
+窄屏改为上下布局。
+</script>
+<script type="text/plain" id="prompt-repro-smart-spreadsheet">
+You are a code expert. Please use your professional knowledge to generate accurate and professional responses. Be sure to provide executable code in your demonstrations. Implement a smart spreadsheet tool that supports CRUD operations on data, cell merging, formula calculations (basic mathematical functions, statistical functions, etc.), data sorting and filtering, and the ability to generate simple charts (bar charts, line charts, pie charts), with support for importing and exporting table data in Excel format.
+</script>
+<script type="text/plain" id="prompt-repro-taobao-orders">
+You are a coding expert. Please use your professional knowledge to provide accurate and expert responses. Make sure the code you generate is executable for demonstration. Create an HTML page that mimics the Taobao order list page.
+</script>
+<script type="text/plain" id="prompt-repro-catwalk">
+Let's develop a game.
+The graphics can be either 2D or 3D; choose whichever makes the game systems and overall development easier to analyze and implement.
+Personally, I’m imagining a 3D game with a side-scrolling action format.
+I’d like to create a stylish atmosphere through the lighting and other elements, so I think 3D could enable more beautiful visuals—for example, streetlamps and lanterns.
+The game I want to make is called CatWalk.
+The name says it all.
+A cat moves from side to side.
+A catwalk stretches ahead, and the screen scrolls automatically. The player uses only simple controls, such as jumping, to clear obstacles and gaps while keeping pace with the scrolling speed. In a way, it might have a similar tension and system to Flappy Bird.
+However, I want the graphics to feel mature, stylish, and atmospheric.
+If possible, I’d love to show the cat moving, running, and jumping with graceful, fluid animation.
+You can decide the stage’s setting, but starting with something straightforward, such as a nighttime street, would be fine.
+I’d be very happy if a darker setting could make indirect lighting and similar effects look beautiful.
+I understand that some things may be possible, impossible, or difficult.
+Using my requests as a starting point, please develop something you think you can realistically make.
+For now, make one stage playable through a single complete loop.
+</script>
+<script type="text/plain" id="prompt-repro-rubiks-cube">
+You are a code expert. Please use your professional knowledge to generate accurate and professional responses. Make sure the code you generate is executable and displayable.
+
+Please use HTML and JavaScript to implement a:
+
+### Gameplay
+1. **Choose Cube Level**: Players can select 2x2, 3x3, 4x4, or 5x5 Rubik's cubes.
+2. **Manipulate the Cube**: Rotate different layers of the cube using mouse controls.
+3. **Complete Restoration**: The goal is to unify the colors of all faces, with each face having a single color.
+
+### Game Features
+- **Highly Interactive**: Using Three.js technology, the game provides smooth 3D visual effects and a highly interactive user experience.
+- **Multiple Levels**: Offers different difficulty levels suitable for players of varying skill levels.
+- **Educational Value**: Exercises players' spatial imagination and logical thinking abilities.
+
+### Game Tips
+- **Learn Basic Formulas**: Understand and master some basic cube restoration formulas, such as top layer cross, corner block permutation, etc.
+- **Simple to Complex**: Beginners can start with lower-order cubes and gradually transition to higher-order cubes to progressively improve solving techniques.
+- **Practice Observation Skills**: When manipulating the cube, pay attention to color distribution and layer relationships to improve restoration efficiency.
+
+### Summary
+"The Cube" is not only a highly entertaining digital game but also an educational tool beneficial for mental development. It's suitable for players of all ages, whether cube enthusiasts or those seeking a challenge.
+
+Please include comments in your code to help other developers understand your implementation process.
+</script>
+<script type="text/plain" id="prompt-repro-gravity-road">
+Make a Three.js 3D experience: a road that forgets which way is down. It folds 90° up a yellow wall, runs upside down across a ceiling, and turns into sheet music: steer through the notes to play each street's melody. Watercolour. Ink. A radio on the roof.
+
+（原帖没有公开 prompt，这里用作者对作品的英文描述复述）
+</script>
+<script type="text/plain" id="prompt-repro-xhs-free-short">
+自由发挥，写一个动画短片。
+
+（原帖没有公开 prompt，这里按标题“让claude opus 5.5自由发挥写了个动画短片”复述）
+</script>
+<script type="text/plain" id="prompt-repro-water-cycle">
+Create a seamless looping animation of the water cycle, entirely in code.
+</script>
+<script type="text/plain" id="prompt-repro-gacha-reveal">
+ガチャ演出作って
+</script>
+<script type="text/plain" id="prompt-repro-neon-fluid">
+Write a complete, single-file HTML document containing a high-performance, GPU-accelerated interactive Eulerian Neon Fluid Simulation.
+
+Strict Technical & Aesthetic Requirements:
+
+1. Architecture & Performance:
+   - Single-file: All HTML, CSS, and JavaScript/GLSL shaders inline.
+   - Zero external dependencies: Pure WebGL 1.0 or 2.0 (no Three.js, no Pixi, no external libraries).
+   - GPU-Computed Fluid Dynamics: The simulation must run entirely via ping-pong Framebuffer Objects (FBOs) using custom fragment shaders for:
+     a) Advection (velocity & dye)
+     b) Divergence calculation
+     c) Pressure Poisson solver (Jacobi iteration, 20-30 iterations per frame)
+     d) Gradient subtraction / velocity projection
+     e) Vorticity confinement (adds turbulent swirls and prevents the fluid from turning into dull, blurry mush).
+
+2. Visual Fidelity (The "Neon Smoke" Look):
+   - Pitch-black void background (`#050508`).
+   - Additive / High-Dynamic-Range blending for dye injection.
+   - Dynamic palette: Each cursor flick or touch drag injects high-luminosity neon dye that cycles smoothly through vivid cyber hues (electric cyan `#00F0FF`, hot magenta `#FF007F`, deep ultraviolet, and radiant gold).
+   - Display shader enhancements: Include a post-processing pass directly in the final render shader that applies subtle bloom/glow, tone mapping, and chromatic aberration around the swirling edges of the fluid.
+
+3. Interaction:
+   - Mouse & Touch: Rapid cursor movement or dragging injects velocity proportional to mouse speed, along with dense glowing dye.
+   - Passive Ambient Motion: When idle, generate subtle procedural curl noise or gentle drifting vortices so the canvas is never completely static.
+   - Controls: A sleek, ultra-minimal glassmorphism HUD tucked into a corner (with auto-hide on inactivity):
+     * Viscosity slider
+     * Dye dissipation / persistence slider
+     * Splat radius slider
+     * "Clear Canvas" button
+     * Toggle button to cycle color themes (Cyberpunk, Thermal Inferno, Bioluminescent Deep).
+
+4. Production Polish:
+   - Automatically handle high-DPI displays and `resize` events without stretching or clearing the FBO textures.
+   - Graceful fallback check for floating-point texture support (`OES_texture_float` / `OES_texture_half_float`).
+   - Clean, bug-free, fully implemented code with zero placeholders or truncated comments.
+
+Return only the fully populated HTML file ready to run directly in Chrome/Safari/Firefox.
+</script>
+<script type="text/plain" id="prompt-repro-crowd-evacuation">
+build an interactive crowd evacuation sim and see where it jams
+</script>
+<script type="text/plain" id="prompt-repro-github-heatmap">
+You are a code expert. Please use your professional knowledge to generate accurate and professional responses. Be sure to provide executable code when possible. Help me draw a GitHub calendar heatmap using Vue and D3.js.
+</script>
+<script type="text/plain" id="prompt-repro-svg-line-chart">
+【系统提示】
+只输出完整 HTML（内联 SVG/CSS），禁止第三方图表库。
+
+【用户 prompt】
+用纯 SVG 画一张「7 日延迟」折线图：
+数据 ms：[820, 640, 710, 590, 540, 610, 480]
+要求：坐标轴、点、折线、悬浮显示数值（title 或简单 JS）、中文图例、响应式宽度。浅色风格。
+</script>
+<script type="text/plain" id="prompt-repro-pelagia">
+Create a polished, fully interactive 3D artwork called “Pelagia - The Ocean Line” using Three.js and WebGL. Deliver the complete experience in one standalone HTML file that opens directly in Chrome. Build the scene, interactions, animations and audio, not just a mockup.
+
+CONCEPT AND ART DIRECTION
+
+A miniature tropical island with a railway that travels above and below the ocean. Present the island and surrounding water as a large, rounded, elliptical diorama with a transparent water cutaway. The viewer should see the coastal village above the surface and a living underwater world below it simultaneously.
+
+Use a richly detailed miniature aesthetic: turquoise water, pale sand, layered stone, lush palms, cream buildings, terracotta roofs and a vintage red-and-cream train. Aim for a finished interactive artwork with thoughtful composition, soft shadows and inviting lighting.
+
+ISLAND AND TERRAIN
+
+Build a continuous solid terrain volume, from the bedrock base to the shoreline. Show visible geological layers along the cut edge. Fill the space beneath the land completely, without floating surfaces or unexplained cavities.
+
+Include a coastal station with a clock, striped awning, benches, luggage and platform lamps. Add cottages, a striped lighthouse, palm trees, rocks, beach vegetation and small decorative details. All structures and plants must sit correctly on the terrain.
+
+RAILWAY AND UNDERWATER TUNNEL
+
+Create a continuous closed railway route. The train leaves the station, follows the shoreline, crosses a supported viaduct, gradually descends into a transparent underwater tunnel, passes through the reef and returns to the station.
+
+Model rails, sleepers, track beds, bridge supports, railings, tunnel entrances, glass panels, structural ribs and warm tunnel lights. The tunnel must fully enclose the train with sufficient clearance. Keep transitions smooth and avoid abrupt slopes or roller-coaster curves.
+
+TRAIN AND ANIMATION
+
+Build a detailed vintage locomotive with at least two passenger carriages. Include shaped bodywork, rounded roofs, cream window frames, warm interior lights, doors, seats, passengers, bogies, wheels and couplings.
+
+Use an arc-length-parameterized route to maintain consistent speed and carriage spacing. Position and orient each carriage independently along the track. Wheels must remain aligned with the rails, and couplings must stay connected through curves and slopes.
+
+Have the train stop briefly at the station, open its doors, close them and depart smoothly.
+
+WATER AND MARINE LIFE
+
+Create convincing translucent water with animated surface ripples, reflections, depth tint, gentle foam near the shore and moving caustics on the seabed. Keep the underwater tunnel and marine life clearly visible through the cutaway.
+
+Populate the reef with coral, sea plants, rocks, bubbles, colorful schooling fish, a sea turtle and a spotted whale shark. Animate tails, fins and flippers naturally. Animals must swim forward and turn smoothly.
+
+Collision avoidance is mandatory. Treat the tunnel, structural ribs and entrance collars as solid obstacles. Check each animal’s complete body, including fins and tail, rather than only its center point. Keep all animals clear of the tunnel, seabed, shoreline, surface and outer water boundary. Design routes and animal sizes that fit the available space. Avoid sudden position jumps and backward swimming.
+
+CAMERAS AND CONTROLS
+
+Provide smooth camera transitions between:
+- Island: a balanced overview of the complete diorama.
+- Follow: a camera tracking the moving train.
+- On Board: a view from the train during its journey.
+- Reef: an underwater view of the tunnel and marine life.
+
+Allow free camera rotation and zoom. Prevent the camera from clipping through terrain or getting trapped inside geometry.
+
+Include play/pause, train speed, a whistle button and a route progress indicator. Add distinct Daylight, Golden Hour and Moonlight presets. At night, illuminate the station, village windows, lighthouse, train and tunnel.
+
+Use an elegant, unobtrusive English-only interface. Provide a way to hide the controls and adapt the layout to mobile screens.
+
+AUDIO
+
+Create quiet original background music and subtle environmental sounds using Web Audio: ocean ambience, train movement and a whistle. Include sound on/off and a volume slider. Start audio only after a user interaction.
+
+TECHNICAL QUALITY
+
+Generate models and textures procedurally wherever possible. Embed assets and dependencies so the final HTML can work offline without a build step or local server.
+
+Use instancing, geometry batching, sensible shadow settings and capped pixel density to balance visual detail with smooth performance.
+
+Test the finished file in desktop Chrome. Capture screenshots and inspect the console. Verify every control, camera mode, lighting preset and several complete train and animal movement cycles. Fix floating geometry, disconnected rails, tunnel intersections, transparency artifacts, incorrect swimming directions and loading errors.
+
+Return the finished standalone HTML file.
+</script>
+<script type="text/plain" id="prompt-repro-a11y-login">
+【系统提示】
+只输出完整 HTML。不要后端。
+
+【用户 prompt】
+做一个登录表单页，强调无障碍：
+- 每个控件有 label
+- 错误用 aria-live 提示
+- 密码显示/隐藏按钮有 aria-pressed
+- focus-visible 可见
+- 提交时前端校验邮箱格式
+文案中文，品牌「乔木 LLM 擂台」。
+</script>
+<script type="text/plain" id="prompt-repro-tabs-accordion">
+【系统提示】
+尽量少用 JS；Tabs 优先 radio/checkbox hack。只输出 HTML。
+
+【用户 prompt】
+做一个文档站局部 UI：
+- 顶部 3 个 Tabs：概览 / API / 示例
+- 下方手风琴 3 项 FAQ
+- 选中态明显，无左侧竖线装饰
+- 移动端 Tabs 可横滑
+- 内容用中文占位。
+</script>
+<script type="text/plain" id="prompt-repro-design-tokens">
+【系统提示】
+只输出 HTML。
+
+【用户 prompt】
+一页展示按钮/输入/卡片/表格，用 CSS 变量做 light/dark 两套 token，一键切换并 localStorage 记忆。
+主色青绿，禁止紫色渐变光晕。
+</script>
+
+
+<script>
+(() => {
+  const dlg = document.getElementById('prompt-dialog');
+  const body = document.getElementById('pd-body');
+  const copyBtn = document.getElementById('pd-copy');
+  document.querySelectorAll('[data-prompt]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.card, .vs-row, .g-item');
+      const css = getComputedStyle(card);
+      dlg.style.setProperty('--accent', css.getPropertyValue('--accent'));
+      dlg.style.setProperty('--accent-ink', css.getPropertyValue('--accent-ink'));
+      document.getElementById('pd-no').textContent = card.dataset.no || card.querySelector('.no').textContent;
+      document.getElementById('pd-title').textContent = card.dataset.title || card.querySelector('h3').firstChild.textContent;
+      body.textContent = document.getElementById('prompt-' + btn.dataset.prompt).textContent.trim();
+      copyBtn.textContent = '复制';
+      dlg.showModal();
+      body.scrollTop = 0;
+    });
+  });
+  document.getElementById('pd-close').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(body.textContent);
+    } catch (err) {
+      // navigator.clipboard only exists in secure contexts; this page is served over plain http.
+      const range = document.createRange();
+      range.selectNodeContents(body);
+      const sel = getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+    }
+    copyBtn.textContent = '已复制';
+  });
+})();
+</script>
+</body>
+</html>

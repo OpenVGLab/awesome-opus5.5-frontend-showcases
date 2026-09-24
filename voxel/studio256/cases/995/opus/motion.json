@@ -1,0 +1,338 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "Puzzle parking sequence: the loaded ground pallet of the middle bay slides left into the empty slot, then the middle-level pallet with its car lowers along the column guides to the ground, pauses, rises back, and the ground pallet returns. The service truck telescopes its lamp mast in two stages and slides a tool drawer out and back, and the entry barrier lifts while the lower pallet is down.",
+  "parts": [
+    {
+      "id": "ground_pallet_b",
+      "parent": null,
+      "box": [
+        65,
+        11,
+        52,
+        88,
+        27,
+        101
+      ],
+      "colors": [],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "x",
+          "pivot": [
+            76,
+            12,
+            76
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              0.8,
+              0
+            ],
+            [
+              3.4,
+              -27
+            ],
+            [
+              9.8,
+              -27
+            ],
+            [
+              11.6,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "middle_pallet_b",
+      "parent": null,
+      "box": [
+        65,
+        31,
+        50,
+        88,
+        47,
+        98
+      ],
+      "colors": [],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            76,
+            32,
+            74
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              3.8,
+              0
+            ],
+            [
+              6.2,
+              -20
+            ],
+            [
+              7.2,
+              -20
+            ],
+            [
+              9.4,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mast_stage2",
+      "parent": null,
+      "box": [
+        131,
+        17,
+        51,
+        135,
+        38,
+        55
+      ],
+      "colors": [
+        "#D5DEDC"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            133,
+            17,
+            53
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              0.4,
+              0
+            ],
+            [
+              2.0,
+              8
+            ],
+            [
+              9.6,
+              8
+            ],
+            [
+              11.2,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mast_stage3",
+      "parent": "mast_stage2",
+      "box": [
+        129,
+        17,
+        50,
+        136,
+        48,
+        56
+      ],
+      "colors": [
+        "#B4C1C0",
+        "#F4EBD9",
+        "#FFE9B8"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "y",
+          "pivot": [
+            133,
+            17,
+            53
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              2.0,
+              0
+            ],
+            [
+              3.4,
+              8
+            ],
+            [
+              8.2,
+              8
+            ],
+            [
+              9.6,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tool_drawer",
+      "parent": null,
+      "box": [
+        138,
+        21,
+        54,
+        144,
+        23,
+        64
+      ],
+      "colors": [
+        "#D5DEDC",
+        "#7FCFC4"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "x",
+          "pivot": [
+            141,
+            22,
+            59
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              4.4,
+              0
+            ],
+            [
+              5.2,
+              5
+            ],
+            [
+              7.6,
+              5
+            ],
+            [
+              8.4,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "entry_barrier",
+      "parent": null,
+      "box": [
+        84,
+        19,
+        183,
+        122,
+        23,
+        186
+      ],
+      "colors": [
+        "#EE7B5B",
+        "#F4EBD9",
+        "#5F6A6D"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            86,
+            21,
+            184.5
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              5.0,
+              0
+            ],
+            [
+              6.0,
+              1.4
+            ],
+            [
+              8.6,
+              1.4
+            ],
+            [
+              9.6,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

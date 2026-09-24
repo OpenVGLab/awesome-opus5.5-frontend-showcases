@@ -21,16 +21,6 @@
    "updatedAt": "2026-09-24T05:52:28.577Z"
   },
   {
-   "slug": "nyc",
-   "title": "纽约城（2048³）",
-   "status": "ok",
-   "size": 2048,
-   "blocks": 20840473,
-   "programBytes": 81567,
-   "lods": 3,
-   "updatedAt": "2026-09-24T05:52:37.251Z"
-  },
-  {
    "slug": "pelican-bicycle",
    "title": "骑自行车的鹈鹕",
    "status": "ok",

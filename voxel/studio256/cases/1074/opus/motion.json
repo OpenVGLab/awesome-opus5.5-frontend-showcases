@@ -1,0 +1,425 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The screw press ram strokes twice while its fly bar turns on the screw; pinch rollers and the hide roll feed the leather strip; the hopper cart leaves the offcut chute, tips its hopper over the scrap bin and returns; the cooling tower fan turns steadily.",
+  "parts": [
+    {
+      "id": "press_ram",
+      "parent": null,
+      "box": [
+        112,
+        71,
+        45,
+        156,
+        90,
+        85
+      ],
+      "colors": [
+        "#3AA39A",
+        "#26766F",
+        "#F17A5D",
+        "#5F6A70"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            134,
+            86,
+            65
+          ],
+          "amount": -6,
+          "period": 6,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "fly_screw",
+      "parent": "press_ram",
+      "box": [
+        102,
+        91,
+        59,
+        166,
+        149,
+        71
+      ],
+      "colors": [
+        "#394145",
+        "#5F6A70",
+        "#9BA7AC",
+        "#F17A5D",
+        "#F6EFE3"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            134,
+            110,
+            65
+          ],
+          "amount": 1.1,
+          "period": 6,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "pinch_upper",
+      "parent": null,
+      "box": [
+        106,
+        58,
+        53,
+        112,
+        64,
+        79
+      ],
+      "colors": [
+        "#9BA7AC",
+        "#5F6A70"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            109,
+            61,
+            66
+          ],
+          "amount": 6.283185307179586,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "pinch_lower",
+      "parent": null,
+      "box": [
+        106,
+        50,
+        53,
+        112,
+        56,
+        79
+      ],
+      "colors": [
+        "#9BA7AC",
+        "#5F6A70"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            109,
+            53,
+            66
+          ],
+          "amount": -6.283185307179586,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "hide_roll",
+      "parent": null,
+      "box": [
+        90,
+        57,
+        57,
+        104,
+        71,
+        75
+      ],
+      "colors": [
+        "#D8A171",
+        "#8A5233"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "z",
+          "pivot": [
+            97,
+            64,
+            66
+          ],
+          "amount": 6.283185307179586,
+          "period": 6,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "tower_fan",
+      "parent": null,
+      "box": [
+        39,
+        95,
+        49,
+        65,
+        97,
+        75
+      ],
+      "colors": [
+        "#D3F2ED",
+        "#1C4F4B"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            52,
+            96,
+            62
+          ],
+          "amount": 6.283185307179586,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "cart",
+      "parent": null,
+      "box": [
+        150,
+        13,
+        97,
+        184,
+        42,
+        119
+      ],
+      "colors": [
+        "#F17A5D",
+        "#CB5A40",
+        "#5F6A70"
+      ],
+      "channels": [
+        {
+          "type": "move_keys",
+          "axis": "x",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              5,
+              -60
+            ],
+            [
+              8.5,
+              -60
+            ],
+            [
+              11.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cart_hopper",
+      "parent": "cart",
+      "box": [
+        151,
+        27,
+        99,
+        177,
+        37,
+        117
+      ],
+      "colors": [
+        "#3AA39A",
+        "#26766F",
+        "#B7754A",
+        "#D8A171"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            156,
+            27,
+            108
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              5,
+              0
+            ],
+            [
+              6,
+              0.6
+            ],
+            [
+              7.5,
+              0.6
+            ],
+            [
+              8.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cart_wheels_front",
+      "parent": "cart",
+      "box": [
+        150,
+        12,
+        99,
+        162,
+        24,
+        117
+      ],
+      "colors": [
+        "#394145",
+        "#FFA689"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            156,
+            18,
+            108
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              5,
+              12
+            ],
+            [
+              8.5,
+              12
+            ],
+            [
+              11.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cart_wheels_rear",
+      "parent": "cart",
+      "box": [
+        166,
+        12,
+        99,
+        178,
+        24,
+        117
+      ],
+      "colors": [
+        "#394145",
+        "#FFA689"
+      ],
+      "channels": [
+        {
+          "type": "turn_keys",
+          "axis": "z",
+          "pivot": [
+            172,
+            18,
+            108
+          ],
+          "amount": 1,
+          "period": 12,
+          "phase": 0,
+          "keys": [
+            [
+              0,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              5,
+              12
+            ],
+            [
+              8.5,
+              12
+            ],
+            [
+              11.5,
+              0
+            ],
+            [
+              12,
+              0
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

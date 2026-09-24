@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>已买到的宝贝 - 我的淘宝</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff5000'/%3E%3Ctext x='32' y='45' font-size='36' font-weight='900' text-anchor='middle' fill='%23fff' font-family='sans-serif'%3E%E6%B7%98%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/widgets.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2.2l2.3 11.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v5.5M14 11v5.5"/></symbol>
+  <symbol id="i-ww" viewBox="0 0 24 24"><path stroke="none" fill="#2f9bff" d="M12 2.5c5.2 0 9.5 3.9 9.5 8.7s-4.3 8.7-9.5 8.7c-1.1 0-2.2-.2-3.2-.5L4 21.5l1.3-4.2C3.6 15.8 2.5 13.6 2.5 11.2 2.5 6.4 6.8 2.5 12 2.5z"/><path d="M8 11.8c.9 1.5 2.3 2.3 4 2.3s3.1-.8 4-2.3" stroke="#fff" stroke-width="1.9" fill="none"/><circle cx="8.7" cy="8.8" r="1.2" fill="#fff" stroke="none"/><circle cx="15.3" cy="8.8" r="1.2" fill="#fff" stroke="none"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4.5 3.5V16H4z"/><path d="M8 10.5h.01M12 10.5h.01M16 10.5h.01"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.4 4.2-6.5 8-6.5s7 2.1 8 6.5"/></symbol>
+  <symbol id="i-shop" viewBox="0 0 24 24"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.5 1.2 2.6 2.7 2.6S9.3 11 9.3 9.5c0 1.5 1.2 2.6 2.7 2.6s2.7-1.1 2.7-2.6c0 1.5 1.2 2.6 2.6 2.6S20 11 20 9.5"/><path d="M5.5 12v8h13v-8"/><path d="M10 20v-4.5h4V20"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2.5 16V6h11v10"/><path d="M13.5 9.5h4l3 3.3V16h-1.6"/><path d="M8.3 16h6.9"/><path d="M2.5 16h2.2"/><circle cx="6.5" cy="16.8" r="1.8"/><circle cx="17" cy="16.8" r="1.8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></symbol>
+  <symbol id="i-location" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-9-9.5C2 7 4.3 4.5 7.2 4.5c2 0 3.6 1.1 4.8 2.8 1.2-1.7 2.8-2.8 4.8-2.8 2.9 0 5.2 2.5 4.2 6C19.5 15.4 12 20 12 20z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19c0 1.5-1.5 2.5-4 2.5h-2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></symbol>
+  <symbol id="i-top" viewBox="0 0 24 24"><path d="M5 4h14"/><path d="M12 20V9"/><path d="m7 13 5-5 5 5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v8.5h14V12"/><path d="M12 8v12.5"/><path d="M12 8c-1.5-3.5-5.5-4-5.5-1.5S10 8 12 8zM12 8c1.5-3.5 5.5-4 5.5-1.5S14 8 12 8z"/></symbol>
+  <symbol id="i-coupon" viewBox="0 0 24 24"><path d="M3.5 6.5h17v3.2a2.3 2.3 0 0 0 0 4.6v3.2h-17v-3.2a2.3 2.3 0 0 0 0-4.6z"/><path d="M14.5 7.5v1.5M14.5 11.2v1.6M14.5 15v1.5"/></symbol>
+  <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m9 7.8 3 3.7 3-3.7M12 11.5v5M9.5 12.8h5M9.5 15h5"/></symbol>
+  <symbol id="i-invoice" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12.5H6z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+  <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4 9.5h3.5L13 5v14l-5.5-4.5H4z"/><path d="M16.5 9a4 4 0 0 1 0 6M18.8 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19.5 6v5.5c0 4.6-3.2 8.1-7.5 9.5-4.3-1.4-7.5-4.9-7.5-9.5V6z"/><path d="m8.8 12 2.3 2.3 4.2-4.3"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3.5L9 5.5h6L16.5 8H20v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="18.5" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6.2 7.5V19l-3.6-1.8v-4.7z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.4"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3.5 21.5 20h-19z"/><path d="M12 10v4.5M12 17.2v.3"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7.5h14.5a1.5 1.5 0 0 1 1.5 1.5v9.5a1.5 1.5 0 0 1-1.5 1.5H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M4 7.5 15.5 4v3.5"/><path d="M15.5 13.5h4.5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4z"/><path d="M3.5 7.5 12 11.5l8.5-4M12 11.5v9"/></symbol>
+  <symbol id="i-refund" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/><path d="m9.5 8.8 2.5 3 2.5-3M12 11.8v4.4M9.8 13h4.4M9.8 15h4.4"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14"/><path d="m21 3-7 18-4-7-7-4z"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5.5-5 4 3.5 2.5-2 4 3.5"/></symbol>
+</svg>
+
+<div class="site-nav">
+  <div class="w sn-in">
+    <ul class="sn-list">
+      <li><a href="#" data-demo><svg class="ic"><use href="#i-location"/></svg>中国大陆</a></li>
+      <li class="has-drop">
+        <a href="#" class="sn-user">小橘同学<svg class="ic caret"><use href="#i-down"/></svg></a>
+        <div class="sn-drop user-drop">
+          <div class="ud-top"><span class="avatar sm" data-avatar></span><div><b>小橘同学</b><span class="vip-badge">88VIP</span><p>淘气值 2380 · 超级会员</p></div></div>
+          <div class="ud-links"><a href="#" data-demo>账号管理</a><a href="#" data-demo>退出</a></div>
+        </div>
+      </li>
+      <li><a href="#" data-demo>消息<b class="sn-num">3</b></a></li>
+      <li><a href="#" data-demo>手机逛淘宝</a></li>
+    </ul>
+    <ul class="sn-list sn-right">
+      <li><a href="#" data-demo class="sn-hl"><svg class="ic"><use href="#i-home"/></svg>淘宝网首页</a></li>
+      <li class="has-drop"><a href="#" class="sn-cur">我的淘宝<svg class="ic caret"><use href="#i-down"/></svg></a>
+        <div class="sn-drop"><a href="#" data-tab-link="all">已买到的宝贝</a><a href="#" data-demo>我的足迹</a><a href="#" data-demo>我的优惠信息</a><a href="#" data-demo>评价管理</a></div>
+      </li>
+      <li><a href="#" data-demo class="sn-hl" id="snCart"><svg class="ic"><use href="#i-cart"/></svg>购物车<b class="sn-cart-num" data-cart-num>12</b></a></li>
+      <li class="has-drop"><a href="#"><svg class="ic"><use href="#i-star"/></svg>收藏夹<svg class="ic caret"><use href="#i-down"/></svg></a>
+        <div class="sn-drop"><a href="#" data-demo>收藏的宝贝</a><a href="#" data-demo>收藏的店铺</a></div>
+      </li>
+      <li class="sn-opt"><a href="#" data-demo>商品分类</a></li>
+      <li class="sn-sep sn-opt"></li>
+      <li class="sn-opt"><a href="#" data-demo>免费开店</a></li>
+      <li class="has-drop sn-opt"><a href="#">千牛卖家中心<svg class="ic caret"><use href="#i-down"/></svg></a>
+        <div class="sn-drop"><a href="#" data-demo>免费开店</a><a href="#" data-demo>已卖出的宝贝</a><a href="#" data-demo>出售中的宝贝</a><a href="#" data-demo>卖家服务市场</a></div>
+      </li>
+      <li class="has-drop"><a href="#">联系客服<svg class="ic caret"><use href="#i-down"/></svg></a>
+        <div class="sn-drop"><a href="#" data-demo>消费者客服</a><a href="#" data-demo>卖家客服</a><a href="#" data-demo>意见反馈</a></div>
+      </li>
+      <li class="has-drop"><a href="#"><svg class="ic"><use href="#i-grid"/></svg>网站导航<svg class="ic caret"><use href="#i-down"/></svg></a>
+        <div class="sn-drop sn-drop-r"><a href="#" data-demo>天猫</a><a href="#" data-demo>聚划算</a><a href="#" data-demo>淘宝直播</a><a href="#" data-demo>闲鱼</a><a href="#" data-demo>飞猪旅行</a></div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<header class="mt-header">
+  <div class="w mh-in">
+    <a class="logo" href="#" data-demo aria-label="淘宝网">
+      <span class="logo-mark">淘</span>
+      <span class="logo-text"><b>淘宝网</b><i>Taobao.com</i></span>
+    </a>
+    <span class="logo-sep"></span>
+    <a class="mh-title" href="#" data-tab-link="all">我的淘宝</a>
+    <nav class="mh-nav">
+      <a href="#" data-demo>首页</a>
+      <div class="mh-drop"><a href="#">账户设置<svg class="ic caret"><use href="#i-down"/></svg></a>
+        <div class="drop"><a href="#" data-demo>个人资料</a><a href="#" data-demo>安全设置</a><a href="#" data-demo>收货地址</a><a href="#" data-demo>支付宝绑定</a></div>
+      </div>
+      <div class="mh-drop"><a href="#">消息<b class="mh-dot">3</b><svg class="ic caret"><use href="#i-down"/></svg></a>
+        <div class="drop"><a href="#" data-demo>交易消息 (2)</a><a href="#" data-demo>物流消息 (1)</a><a href="#" data-demo>系统公告</a></div>
+      </div>
+    </nav>
+    <form class="mh-search" id="topSearch" autocomplete="off">
+      <svg class="ic"><use href="#i-search"/></svg>
+      <input type="text" placeholder="秋冬新款卫衣男" aria-label="搜索宝贝">
+      <button type="submit">搜索</button>
+    </form>
+  </div>
+</header>
+
+<div class="m-appbar">
+  <a href="#" class="m-ico" data-demo aria-label="返回"><svg class="ic"><use href="#i-left"/></svg></a>
+  <div class="m-title">我的订单</div>
+  <a href="#" class="m-ico" id="mSearchBtn" aria-label="搜索订单"><svg class="ic"><use href="#i-search"/></svg></a>
+  <a href="#" class="m-ico" data-demo aria-label="更多"><svg class="ic"><use href="#i-more"/></svg></a>
+</div>
+
+<div class="w page">
+  <aside class="side">
+    <div class="side-user">
+      <span class="avatar" data-avatar></span>
+      <div class="su-info">
+        <b>小橘同学</b>
+        <p><span class="vip-badge">88VIP</span><span class="su-lv">淘气值 <em>2380</em></span></p>
+      </div>
+    </div>
+    <a href="#" class="side-all" data-demo><svg class="ic"><use href="#i-grid"/></svg>全部功能<svg class="ic caret-r"><use href="#i-right"/></svg></a>
+    <dl class="side-group">
+      <dt>我的交易</dt>
+      <dd><a href="#" class="on" data-tab-link="all"><svg class="ic"><use href="#i-bag"/></svg>已买到的宝贝</a></dd>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-cart"/></svg>我的购物车</a></dd>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-shop"/></svg>购买过的店铺</a></dd>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-invoice"/></svg>我的发票</a></dd>
+      <dd><a href="#" data-tab-link="rate"><svg class="ic"><use href="#i-star"/></svg>评价管理</a></dd>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-refund"/></svg>退款维权</a></dd>
+    </dl>
+    <dl class="side-group">
+      <dt>我的收藏</dt>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-heart"/></svg>收藏的宝贝</a></dd>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-shop"/></svg>收藏的店铺</a></dd>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-clock"/></svg>我的足迹</a></dd>
+    </dl>
+    <dl class="side-group">
+      <dt>我的资产</dt>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-coupon"/></svg>红包卡券<em class="side-tip">3张可用</em></a></dd>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-coin"/></svg>淘金币</a></dd>
+      <dd><a href="#" data-demo><svg class="ic"><use href="#i-gift"/></svg>我的积分</a></dd>
+    </dl>
+    <div class="side-apps">
+      <div class="sa-head">我的应用<a href="#" data-demo aria-label="添加应用"><svg class="ic"><use href="#i-plus"/></svg></a></div>
+      <div class="sa-grid">
+        <a href="#" data-demo><i style="--c:#ffc300;--t:#3b2a00">闲</i>闲鱼</a>
+        <a href="#" data-demo><i style="--c:#ff8a00">飞</i>飞猪</a>
+        <a href="#" data-demo><i style="--c:#ff2e63">播</i>直播</a>
+        <a href="#" data-demo><i style="--c:#2d8cf0">鸟</i>裹裹</a>
+        <a href="#" data-demo><i style="--c:#e23a2e">拍</i>拍卖</a>
+        <a href="#" data-demo><i style="--c:#1fb35b">鲜</i>买菜</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="notice" id="notice">
+      <svg class="ic"><use href="#i-speaker"/></svg>
+      <p><b>安全提醒：</b>淘宝不会以任何理由要求您点击退款链接、添加QQ/微信或提供验证码，谨防“客服退款”类诈骗。</p>
+      <a href="#" class="notice-x" id="noticeX" aria-label="关闭提醒"><svg class="ic"><use href="#i-close"/></svg></a>
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+
+    <div class="search-row" id="searchRow">
+      <form class="order-search" id="orderSearch" autocomplete="off">
+        <input type="search" id="q" placeholder="输入商品标题或订单号进行搜索">
+        <button type="submit" class="btn-search">订单搜索</button>
+      </form>
+      <a href="#" class="more-filter" id="moreFilter">更多筛选条件<svg class="ic"><use href="#i-down"/></svg></a>
+    </div>
+
+    <form class="filter-panel" id="filterPanel" autocomplete="off">
+      <label><span>成交时间</span><input type="date" name="from"><i>-</i><input type="date" name="to"></label>
+      <label><span>交易状态</span><select name="status">
+        <option value="">全部</option><option value="WAIT_PAY">等待买家付款</option><option value="WAIT_SHIP">买家已付款</option>
+        <option value="WAIT_RECEIVE">卖家已发货</option><option value="SUCCESS">交易成功</option><option value="CLOSED">交易关闭</option></select></label>
+      <label><span>评价状态</span><select name="rate"><option value="">全部</option><option value="need">需我评价</option><option value="done">我已评价</option></select></label>
+      <label><span>售后服务</span><select name="after"><option value="">全部</option><option value="REFUNDING">退款中</option><option value="REFUNDED">退款成功</option></select></label>
+      <label><span>交易类型</span><select name="type"><option value="">所有类型</option><option value="tmall">天猫订单</option><option value="taobao">淘宝订单</option><option value="mobile">手机订单</option></select></label>
+      <label><span>卖家昵称</span><input type="text" name="seller" placeholder="店铺名称"></label>
+      <div class="fp-btns"><button type="submit" class="btn btn-primary">搜索</button><button type="button" class="btn btn-line" id="filterReset">重置</button></div>
+    </form>
+
+    <div class="result-bar" id="resultBar"></div>
+    <div id="viewBar"></div>
+
+    <div class="thead cols">
+      <div class="th-item">宝贝</div>
+      <div>单价</div>
+      <div>数量</div>
+      <div>商品操作</div>
+      <div>实付款</div>
+      <div class="th-status">
+        <select id="thStatus" aria-label="按交易状态筛选">
+          <option value="">交易状态</option><option value="WAIT_PAY">等待买家付款</option><option value="WAIT_SHIP">买家已付款</option>
+          <option value="WAIT_RECEIVE">卖家已发货</option><option value="SUCCESS">交易成功</option><option value="CLOSED">交易关闭</option>
+        </select>
+      </div>
+      <div>交易操作</div>
+    </div>
+
+    <div class="toolbar" id="toolbarTop"></div>
+    <div class="order-list" id="orderList"></div>
+    <div class="toolbar toolbar-bottom" id="toolbarBottom"></div>
+    <div class="pager" id="pager"></div>
+
+    <section class="recommend" id="recommend">
+      <div class="rec-head"><h3>为你推荐</h3><span>根据你的购买记录猜你喜欢</span><a href="#" id="recRefresh"><svg class="ic"><use href="#i-refresh"/></svg>换一批</a></div>
+      <div class="rec-grid" id="recGrid"></div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="w">
+    <p class="f-links"><a href="#" data-demo>阿里巴巴集团</a><a href="#" data-demo>淘宝网</a><a href="#" data-demo>天猫</a><a href="#" data-demo>聚划算</a><a href="#" data-demo>全球速卖通</a><a href="#" data-demo>1688</a><a href="#" data-demo>阿里妈妈</a><a href="#" data-demo>飞猪</a><a href="#" data-demo>阿里云</a><a href="#" data-demo>高德</a><a href="#" data-demo>优酷</a><a href="#" data-demo>钉钉</a><a href="#" data-demo>支付宝</a><a href="#" data-demo>闲鱼</a><a href="#" data-demo>菜鸟</a></p>
+    <p class="f-links f-links2"><a href="#" data-demo>关于淘宝</a><a href="#" data-demo>合作伙伴</a><a href="#" data-demo>营销中心</a><a href="#" data-demo>廉正举报</a><a href="#" data-demo>联系客服</a><a href="#" data-demo>开放平台</a><a href="#" data-demo>诚征英才</a><a href="#" data-demo>网站地图</a><a href="#" data-demo>法律声明及隐私权政策</a><a href="#" data-demo>知识产权</a></p>
+    <p class="f-copy">© 2003-2026 Taobao.com 版权所有 · 本页为前端仿制演示，与淘宝官方无关，订单、店铺与物流信息均为虚构</p>
+  </div>
+</footer>
+
+<div class="side-tools" id="sideTools">
+  <a href="#" data-tool="cart" class="st-cart"><svg class="ic"><use href="#i-cart"/></svg><span>购物车</span><b data-cart-num>12</b></a>
+  <a href="#" data-tool="fav"><svg class="ic"><use href="#i-heart"/></svg><span>收藏</span></a>
+  <a href="#" data-tool="foot"><svg class="ic"><use href="#i-clock"/></svg><span>足迹</span></a>
+  <a href="#" data-tool="service"><svg class="ic"><use href="#i-headset"/></svg><span>客服</span></a>
+  <a href="#" data-tool="feedback"><svg class="ic"><use href="#i-edit"/></svg><span>反馈</span></a>
+  <a href="#" data-tool="top" class="st-top" id="toTop"><svg class="ic"><use href="#i-top"/></svg><span>顶部</span></a>
+</div>
+
+<div id="layer"></div>
+
+<script src="js/art.js"></script>
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+<script src="js/dialogs.js"></script>
+<script src="js/views.js"></script>
+<script src="js/chat.js"></script>
+</body>
+</html>

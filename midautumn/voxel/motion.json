@@ -1,0 +1,688 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "Lanterns sway under the eaves and on the osmanthus branches, the jade rabbit flicks its ears and pounds the pestle, lotus lanterns circle the lotus island, and osmanthus blossoms drift down from the crown.",
+  "parts": [
+    {
+      "id": "lantern_east",
+      "parent": null,
+      "box": [
+        140,
+        49,
+        107,
+        150,
+        75,
+        117
+      ],
+      "colors": [
+        "#DA372D",
+        "#A2211A",
+        "#E9B449"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            145.5,
+            76,
+            112.5
+          ],
+          "amount": 0.13,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        },
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            145.5,
+            76,
+            112.5
+          ],
+          "amount": 0.05,
+          "period": 3,
+          "phase": 1.1,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lantern_front_l",
+      "parent": null,
+      "box": [
+        79,
+        49,
+        143,
+        89,
+        75,
+        153
+      ],
+      "colors": [
+        "#DA372D",
+        "#A2211A",
+        "#E9B449"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            84.5,
+            76,
+            148.5
+          ],
+          "amount": 0.14,
+          "period": 3,
+          "phase": 1.4,
+          "keys": []
+        },
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            84.5,
+            76,
+            148.5
+          ],
+          "amount": 0.05,
+          "period": 4,
+          "phase": 2.6,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lantern_west",
+      "parent": null,
+      "box": [
+        58,
+        49,
+        107,
+        68,
+        75,
+        117
+      ],
+      "colors": [
+        "#DA372D",
+        "#A2211A",
+        "#E9B449"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            63.5,
+            76,
+            112.5
+          ],
+          "amount": 0.12,
+          "period": 4,
+          "phase": 2.7,
+          "keys": []
+        },
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            63.5,
+            76,
+            112.5
+          ],
+          "amount": 0.05,
+          "period": 3,
+          "phase": 0.4,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lantern_back_r",
+      "parent": null,
+      "box": [
+        120,
+        49,
+        71,
+        130,
+        75,
+        81
+      ],
+      "colors": [
+        "#DA372D",
+        "#A2211A",
+        "#E9B449"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            125.5,
+            76,
+            76.5
+          ],
+          "amount": 0.13,
+          "period": 3,
+          "phase": 4.1,
+          "keys": []
+        },
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            125.5,
+            76,
+            76.5
+          ],
+          "amount": 0.05,
+          "period": 4,
+          "phase": 3.3,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lantern_tree_back",
+      "parent": null,
+      "box": [
+        83,
+        64,
+        39,
+        93,
+        90,
+        49
+      ],
+      "colors": [
+        "#DA372D",
+        "#A2211A",
+        "#E9B449"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            88.5,
+            91,
+            44.5
+          ],
+          "amount": 0.16,
+          "period": 4,
+          "phase": 0.8,
+          "keys": []
+        },
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            88.5,
+            91,
+            44.5
+          ],
+          "amount": 0.06,
+          "period": 3,
+          "phase": 2,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "lantern_tree_front",
+      "parent": null,
+      "box": [
+        35,
+        65,
+        96,
+        45,
+        91,
+        106
+      ],
+      "colors": [
+        "#DA372D",
+        "#A2211A",
+        "#E9B449"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            40.5,
+            92,
+            101.5
+          ],
+          "amount": 0.16,
+          "period": 3,
+          "phase": 3.3,
+          "keys": []
+        },
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            40.5,
+            92,
+            101.5
+          ],
+          "amount": 0.06,
+          "period": 4,
+          "phase": 5.1,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "rabbit_ear_l",
+      "parent": null,
+      "box": [
+        62,
+        47,
+        178,
+        65,
+        57,
+        180
+      ],
+      "colors": [
+        "#F4F1EA",
+        "#E8A0AA"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            65,
+            46,
+            180
+          ],
+          "amount": 0.14,
+          "period": 2,
+          "phase": 0,
+          "keys": []
+        },
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            65,
+            46,
+            180
+          ],
+          "amount": 0.06,
+          "period": 1,
+          "phase": 0.8,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "rabbit_ear_r",
+      "parent": null,
+      "box": [
+        67,
+        47,
+        178,
+        70,
+        57,
+        180
+      ],
+      "colors": [
+        "#F4F1EA",
+        "#E8A0AA"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            68,
+            46,
+            180
+          ],
+          "amount": -0.14,
+          "period": 3,
+          "phase": 1.9,
+          "keys": []
+        },
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            68,
+            46,
+            180
+          ],
+          "amount": 0.06,
+          "period": 1,
+          "phase": 2.9,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "rabbit_pestle",
+      "parent": null,
+      "box": [
+        62,
+        31,
+        183,
+        70,
+        46,
+        192
+      ],
+      "colors": [
+        "#EBE6DB",
+        "#9A6A3E"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            66,
+            35,
+            190
+          ],
+          "amount": -1.75,
+          "period": 2,
+          "phase": -1.5707963267948966,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "river_lantern_1",
+      "parent": null,
+      "box": [
+        129,
+        15,
+        205,
+        139,
+        20,
+        215
+      ],
+      "colors": [
+        "#548A51",
+        "#EE96A4",
+        "#F4F1EA",
+        "#FFF7DD",
+        "#F9DA6B"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            134.5,
+            15,
+            210.5
+          ],
+          "amount": 0.07,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        },
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            134.5,
+            15,
+            210.5
+          ],
+          "amount": -0.3,
+          "period": 4,
+          "phase": -1.5707963267948966,
+          "keys": []
+        },
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            134.5,
+            15,
+            188.5
+          ],
+          "amount": -6.283185307179586,
+          "period": 12,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "river_lantern_2",
+      "parent": null,
+      "box": [
+        110,
+        15,
+        172,
+        120,
+        20,
+        182
+      ],
+      "colors": [
+        "#548A51",
+        "#EE96A4",
+        "#F4F1EA",
+        "#FFF7DD",
+        "#F9DA6B"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            115.5,
+            15,
+            177.5
+          ],
+          "amount": 0.07,
+          "period": 3,
+          "phase": 2.1,
+          "keys": []
+        },
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            115.5,
+            15,
+            177.5
+          ],
+          "amount": -0.3,
+          "period": 3,
+          "phase": -1.5707963267948966,
+          "keys": []
+        },
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            134.5,
+            15,
+            188.5
+          ],
+          "amount": -6.283185307179586,
+          "period": 12,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "river_lantern_3",
+      "parent": null,
+      "box": [
+        148,
+        15,
+        172,
+        158,
+        20,
+        182
+      ],
+      "colors": [
+        "#548A51",
+        "#EE96A4",
+        "#F4F1EA",
+        "#FFF7DD",
+        "#F9DA6B"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            153.5,
+            15,
+            177.5
+          ],
+          "amount": 0.07,
+          "period": 3,
+          "phase": 4.2,
+          "keys": []
+        },
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            153.5,
+            15,
+            177.5
+          ],
+          "amount": -0.3,
+          "period": 6,
+          "phase": -1.5707963267948966,
+          "keys": []
+        },
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            134.5,
+            15,
+            188.5
+          ],
+          "amount": -6.283185307179586,
+          "period": 12,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "blossoms_1",
+      "parent": null,
+      "box": [
+        36,
+        96,
+        45,
+        79,
+        101,
+        88
+      ],
+      "colors": [
+        "#F8D04A"
+      ],
+      "channels": [
+        {
+          "type": "flow",
+          "axis": "y",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": -87,
+          "period": 12,
+          "phase": 0,
+          "keys": []
+        },
+        {
+          "type": "bob",
+          "axis": "x",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": 2.5,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        },
+        {
+          "type": "bob",
+          "axis": "z",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": 2,
+          "period": 4,
+          "phase": 1,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "blossoms_2",
+      "parent": null,
+      "box": [
+        58,
+        97,
+        33,
+        82,
+        101,
+        56
+      ],
+      "colors": [
+        "#F3BC3C"
+      ],
+      "channels": [
+        {
+          "type": "flow",
+          "axis": "y",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": -87,
+          "period": 6,
+          "phase": 0,
+          "keys": []
+        },
+        {
+          "type": "bob",
+          "axis": "x",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": 2.5,
+          "period": 3,
+          "phase": 1.7,
+          "keys": []
+        },
+        {
+          "type": "bob",
+          "axis": "z",
+          "pivot": [
+            0,
+            0,
+            0
+          ],
+          "amount": 2,
+          "period": 4,
+          "phase": 2,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

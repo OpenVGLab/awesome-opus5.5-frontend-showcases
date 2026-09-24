@@ -1,0 +1,445 @@
+{
+  "version": 1,
+  "duration": 12,
+  "description": "The hexapod carrier shifts its six legs in an alternating tripod rhythm, twitches its antennae and reaches a honeycomb cell toward the open pod with a two-joint arm while its cell carousel turns; the spherical inspector lifts off its dock, turns its scanning eye around and flaps its side fins before settling back.",
+  "parts": [
+    {
+      "id": "leg_left_front",
+      "parent": null,
+      "box": [
+        55,
+        9,
+        128,
+        80,
+        41,
+        141
+      ],
+      "colors": [
+        "#C9A45F",
+        "#78787F",
+        "#5A5A61",
+        "#28282C"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            81,
+            25,
+            136
+          ],
+          "amount": 0.15,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "leg_left_mid",
+      "parent": null,
+      "box": [
+        52,
+        9,
+        144,
+        77,
+        41,
+        156
+      ],
+      "colors": [
+        "#C9A45F",
+        "#78787F",
+        "#5A5A61",
+        "#28282C"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            78,
+            25,
+            150
+          ],
+          "amount": 0.15,
+          "period": 4,
+          "phase": 3.141592653589793,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "leg_left_rear",
+      "parent": null,
+      "box": [
+        55,
+        9,
+        158,
+        80,
+        41,
+        172
+      ],
+      "colors": [
+        "#C9A45F",
+        "#78787F",
+        "#5A5A61",
+        "#28282C"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            81,
+            25,
+            164
+          ],
+          "amount": 0.15,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "leg_right_front",
+      "parent": null,
+      "box": [
+        108,
+        9,
+        128,
+        133,
+        41,
+        141
+      ],
+      "colors": [
+        "#C9A45F",
+        "#78787F",
+        "#5A5A61",
+        "#28282C"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            107,
+            25,
+            136
+          ],
+          "amount": 0.15,
+          "period": 4,
+          "phase": 3.141592653589793,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "leg_right_mid",
+      "parent": null,
+      "box": [
+        111,
+        9,
+        144,
+        136,
+        41,
+        156
+      ],
+      "colors": [
+        "#C9A45F",
+        "#78787F",
+        "#5A5A61",
+        "#28282C"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            110,
+            25,
+            150
+          ],
+          "amount": 0.15,
+          "period": 4,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "leg_right_rear",
+      "parent": null,
+      "box": [
+        108,
+        9,
+        158,
+        133,
+        41,
+        172
+      ],
+      "colors": [
+        "#C9A45F",
+        "#78787F",
+        "#5A5A61",
+        "#28282C"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "y",
+          "pivot": [
+            107,
+            25,
+            164
+          ],
+          "amount": 0.15,
+          "period": 4,
+          "phase": 3.141592653589793,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "antennae",
+      "parent": null,
+      "box": [
+        82,
+        35,
+        103,
+        106,
+        51,
+        119
+      ],
+      "colors": [
+        "#9F7E41",
+        "#F7CA68"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            94,
+            34,
+            118
+          ],
+          "amount": 0.2,
+          "period": 3,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "arm_upper",
+      "parent": null,
+      "box": [
+        90,
+        37,
+        119,
+        98,
+        63,
+        137
+      ],
+      "colors": [
+        "#78787F",
+        "#C9A45F"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            94,
+            40,
+            134
+          ],
+          "amount": 0.12,
+          "period": 6,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "arm_fore",
+      "parent": "arm_upper",
+      "box": [
+        88,
+        56,
+        92,
+        100,
+        72,
+        118
+      ],
+      "colors": [
+        "#C9A45F",
+        "#78787F",
+        "#5A5A61",
+        "#E7A03A",
+        "#E8CF95"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "x",
+          "pivot": [
+            94,
+            60,
+            122
+          ],
+          "amount": 0.22,
+          "period": 6,
+          "phase": 1.2,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "cell_carousel",
+      "parent": null,
+      "box": [
+        78,
+        35,
+        140,
+        110,
+        55,
+        174
+      ],
+      "colors": [
+        "#B37B4B",
+        "#8A5935",
+        "#C9A45F",
+        "#E7A03A",
+        "#E8CF95"
+      ],
+      "channels": [
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            94,
+            45,
+            157
+          ],
+          "amount": 6.283185307179586,
+          "period": 12,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "orb",
+      "parent": null,
+      "box": [
+        169,
+        13,
+        137,
+        195,
+        46,
+        163
+      ],
+      "colors": [
+        "#3B3B40",
+        "#5A5A61",
+        "#C9A45F",
+        "#243238",
+        "#E8CF95",
+        "#78787F",
+        "#F7CA68",
+        "#8CC0C8"
+      ],
+      "channels": [
+        {
+          "type": "bob",
+          "axis": "y",
+          "pivot": [
+            182,
+            25,
+            150
+          ],
+          "amount": 5,
+          "period": 12,
+          "phase": -1.5707963267948966,
+          "keys": []
+        },
+        {
+          "type": "spin",
+          "axis": "y",
+          "pivot": [
+            182,
+            25,
+            150
+          ],
+          "amount": 6.283185307179586,
+          "period": 6,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "orb_fin_r",
+      "parent": "orb",
+      "box": [
+        196,
+        22,
+        143,
+        206,
+        29,
+        157
+      ],
+      "colors": [
+        "#E8CF95"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            195,
+            25,
+            150
+          ],
+          "amount": 0.35,
+          "period": 1,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    },
+    {
+      "id": "orb_fin_l",
+      "parent": "orb",
+      "box": [
+        158,
+        22,
+        143,
+        168,
+        29,
+        157
+      ],
+      "colors": [
+        "#E8CF95"
+      ],
+      "channels": [
+        {
+          "type": "swing",
+          "axis": "z",
+          "pivot": [
+            169,
+            25,
+            150
+          ],
+          "amount": -0.35,
+          "period": 1,
+          "phase": 0,
+          "keys": []
+        }
+      ]
+    }
+  ]
+}

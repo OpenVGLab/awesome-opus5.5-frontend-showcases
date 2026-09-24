@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f6fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d13" media="(prefers-color-scheme: dark)">
+<meta name="description" content="文档站局部 UI：纯 CSS 实现的 Tabs（概览 / API / 示例）与 FAQ 手风琴，零 JavaScript。">
+<title>潮汐实时消息 SDK · 文档</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234f46e5'/%3E%3Cpath d='M5.6 13c2.3-3 4.6-3 6.9 0s4.6 3 6.9 0 4.6-3 6.9 0' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M5.6 20c2.3-3 4.6-3 6.9 0s4.6 3 6.9 0 4.6-3 6.9 0' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  color-scheme: light dark;
+  interpolate-size: allow-keywords;
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    "Noto Sans Mono CJK SC", monospace;
+
+  --bg: #f4f6fb;
+  --glow-a: rgba(99, 102, 241, .13);
+  --glow-b: rgba(56, 189, 248, .10);
+  --card: #ffffff;
+  --card-2: #f8fafc;
+  --text: #0f172a;
+  --text-2: #334155;
+  --muted: #64748b;
+  --faint: #94a3b8;
+  --line: #e3e8f0;
+  --line-2: #edf1f6;
+  --line-strong: #cbd5e1;
+  --track: #eef1f7;
+  --track-edge: rgba(15, 23, 42, .05);
+  --tab-ink: #475569;
+  --hover: rgba(15, 23, 42, .05);
+  --brand: #4f46e5;
+  --brand-ink: #4338ca;
+  --brand-tint: #eef2ff;
+  --brand-soft: #e0e7ff;
+  --brand-line: #c7d2fe;
+  --brand-glow: rgba(79, 70, 229, .45);
+  --on-brand: #ffffff;
+  --ok: #16a34a;
+  --ok-ink: #15803d;
+  --ok-tint: #dcfce7;
+  --danger-ink: #b91c1c;
+  --danger-tint: #fee2e2;
+  --type-ink: #0f766e;
+  --code-bg: #0f1424;
+  --faq-open: #f7f8ff;
+  --shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 16px 40px -22px rgba(15, 23, 42, .22);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0d13;
+    --glow-a: rgba(99, 102, 241, .18);
+    --glow-b: rgba(56, 189, 248, .07);
+    --card: #121620;
+    --card-2: #161b26;
+    --text: #e7eaf1;
+    --text-2: #c2c9d6;
+    --muted: #8a94a7;
+    --faint: #5f6a7d;
+    --line: #242a37;
+    --line-2: #1c212d;
+    --line-strong: #343c4d;
+    --track: #1a1f2b;
+    --track-edge: rgba(255, 255, 255, .05);
+    --tab-ink: #a3adbf;
+    --hover: rgba(255, 255, 255, .05);
+    --brand: #6366f1;
+    --brand-ink: #a5b4fc;
+    --brand-tint: rgba(99, 102, 241, .14);
+    --brand-soft: rgba(99, 102, 241, .26);
+    --brand-line: rgba(129, 140, 248, .45);
+    --brand-glow: rgba(99, 102, 241, .6);
+    --ok: #22c55e;
+    --ok-ink: #86efac;
+    --ok-tint: rgba(34, 197, 94, .14);
+    --danger-ink: #fca5a5;
+    --danger-tint: rgba(239, 68, 68, .16);
+    --type-ink: #5eead4;
+    --code-bg: #0a0e18;
+    --faq-open: #151a2b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 20px 44px -24px rgba(0, 0, 0, .7);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  background:
+    radial-gradient(900px 420px at 8% -120px, var(--glow-a), transparent 70%),
+    radial-gradient(760px 380px at 96% -140px, var(--glow-b), transparent 70%),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--brand-soft); }
+
+code { font-family: var(--font-mono); }
+
+p { text-wrap: pretty; }
+
+.page {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vh, 64px) 24px 48px;
+}
+
+/* ---------- 页面标题 ---------- */
+
+.doc-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  font-size: 13px;
+  line-height: 22px;
+  color: var(--muted);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.logo { width: 22px; height: 22px; flex: none; }
+.logo rect { fill: var(--brand); }
+.logo path { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; }
+.logo path:first-of-type { stroke-opacity: .55; }
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.crumbs li::before {
+  content: "/";
+  margin: 0 9px;
+  color: var(--faint);
+}
+
+.crumbs [aria-current] { color: var(--text-2); }
+
+.title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+
+h1 {
+  margin: 0 4px 0 0;
+  font-size: 30px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.tag-ver { font-family: var(--font-mono); }
+
+.tag-ok {
+  border-color: transparent;
+  background: var(--ok-tint);
+  color: var(--ok-ink);
+}
+
+.tag-ok::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.lede {
+  margin: 8px 0 0;
+  font-size: 15.5px;
+  color: var(--muted);
+  text-wrap: balance;
+}
+
+/* ---------- Tabs：radio hack ---------- */
+
+.tabs {
+  position: relative;
+  margin-top: 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.tab-radio {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  clip-path: inset(50%);
+}
+
+.tabs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 20px 8px 8px;
+  border-bottom: 1px solid var(--line-2);
+}
+
+@property --fade-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --fade-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+
+.tabbar {
+  --gap: 4px;
+  --tab-min: 116px;
+  min-width: 0;
+  padding: 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 10px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+}
+
+.tabbar::-webkit-scrollbar { display: none; }
+
+/* 可横向滚动时，两端渐隐提示“还有更多”；滚到头的一侧不渐隐 */
+@supports (animation-timeline: scroll()) {
+  .tabbar {
+    animation: tabbar-fade-l linear both, tabbar-fade-r linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+
+@keyframes tabbar-fade-l {
+  0% { --fade-l: 0px; }
+  15%, 100% { --fade-l: 32px; }
+}
+
+@keyframes tabbar-fade-r {
+  0%, 85% { --fade-r: 32px; }
+  100% { --fade-r: 0px; }
+}
+
+.tablist {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(var(--tab-min), 1fr);
+  gap: var(--gap);
+  width: max-content;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--track);
+  box-shadow: inset 0 0 0 1px var(--track-edge);
+}
+
+.indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px - 2 * var(--gap)) / 3);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, 0) 65%), var(--brand);
+  box-shadow: 0 1px 2px rgba(30, 27, 75, .25), 0 6px 14px -6px var(--brand-glow);
+  transition: transform .42s cubic-bezier(.3, .9, .25, 1);
+}
+
+.tab {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--tab-ink);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  scroll-snap-align: start;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .25s ease, background-color .2s ease;
+}
+
+.tab svg {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (hover: hover) {
+  .tab:hover {
+    color: var(--text);
+    background: var(--hover);
+  }
+}
+
+#tab-overview:checked ~ .tabs-head [for="tab-overview"],
+#tab-api:checked ~ .tabs-head [for="tab-api"],
+#tab-examples:checked ~ .tabs-head [for="tab-examples"] {
+  color: var(--on-brand);
+  background: transparent;
+  font-weight: 600;
+  cursor: default;
+}
+
+#tab-api:checked ~ .tabs-head .indicator { transform: translateX(calc(100% + var(--gap))); }
+#tab-examples:checked ~ .tabs-head .indicator { transform: translateX(calc(200% + 2 * var(--gap))); }
+
+#tab-overview:focus-visible ~ .tabs-head [for="tab-overview"],
+#tab-api:focus-visible ~ .tabs-head [for="tab-api"],
+#tab-examples:focus-visible ~ .tabs-head [for="tab-examples"] {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.tabs-meta {
+  flex: none;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* 所有面板叠在同一格里：高度取最高者，切换时下方 FAQ 不跳动 */
+.panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.panel {
+  grid-area: 1 / 1;
+  min-width: 0;
+  padding: 22px 28px 28px;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+#tab-overview:checked ~ .panels #panel-overview,
+#tab-api:checked ~ .panels #panel-api,
+#tab-examples:checked ~ .panels #panel-examples {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition: opacity .32s ease, transform .38s cubic-bezier(.2, .8, .2, 1);
+}
+
+@starting-style {
+  #tab-overview:checked ~ .panels #panel-overview,
+  #tab-api:checked ~ .panels #panel-api,
+  #tab-examples:checked ~ .panels #panel-examples {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.panel h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 650;
+}
+
+.panel p { margin: 0; color: var(--text-2); }
+
+.panel p code,
+.faq-body code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--track);
+  font-size: .88em;
+  color: var(--text);
+}
+
+/* 概览 */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  padding: 14px 16px 15px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-2);
+}
+
+.feature h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.f-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 9px;
+  background: var(--brand-tint);
+  color: var(--brand);
+}
+
+.f-icon svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.panel .feature p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.meta-row + .meta-row { margin-top: 12px; }
+
+.meta-label {
+  margin-right: 4px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.scene {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: var(--track);
+  font-size: 12.5px;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.install-cmd {
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: var(--code-bg);
+  font-size: 13px;
+  line-height: 1.6;
+  color: #e6e9f5;
+  white-space: nowrap;
+}
+
+.install-cmd .prompt {
+  margin-right: 8px;
+  color: #7c86a8;
+  user-select: none;
+}
+
+/* API */
+.api-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 10px;
+}
+
+.signature {
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-2);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.signature .fn { font-weight: 600; color: var(--brand-ink); }
+.signature .arg { color: var(--text); }
+.signature .ty { color: var(--type-ink); }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--brand-tint);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--brand-ink);
+  white-space: nowrap;
+}
+
+.table-wrap {
+  margin-top: 14px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.params {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.params th {
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--card-2);
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.params td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line-2);
+  color: var(--text-2);
+  vertical-align: top;
+}
+
+.params tr:last-child td { border-bottom: 0; }
+
+.params td:nth-child(-n + 3) { white-space: nowrap; }
+
+.params code { font-size: 13px; }
+.params .name { font-weight: 600; color: var(--brand-ink); }
+.params .type { color: var(--type-ink); }
+.params .def { color: var(--muted); }
+
+.req {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--danger-tint);
+  font-size: 11px;
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--danger-ink);
+  vertical-align: 1px;
+}
+
+/* 示例 */
+.example {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.code {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--code-bg);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+  color: #d5dbee;
+}
+
+.code-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, .07);
+  font-size: 12.5px;
+  line-height: 20px;
+  color: #9aa4c4;
+}
+
+.code-head svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.code-head .lang {
+  margin-left: auto;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .07);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.code pre {
+  margin: 0;
+  padding: 12px 0 14px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.75px;
+  line-height: 1.7;
+  counter-reset: ln;
+  tab-size: 2;
+}
+
+.code pre code {
+  display: inline-block;
+  min-width: 100%;
+  padding: 0 18px 0 8px;
+}
+
+.code .line { counter-increment: ln; }
+
+.code .line::before {
+  content: counter(ln);
+  display: inline-block;
+  width: 2em;
+  margin-right: 1.2em;
+  text-align: right;
+  color: #4a5475;
+}
+
+.code .k { color: #c4a5ff; }
+.code .s { color: #a3e4a0; }
+.code .f { color: #7cc7ff; }
+.code .p { color: #f6c177; }
+.code .c { color: #6f7ba0; }
+.code .o { color: #8f9bbd; }
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card-2);
+}
+
+.preview-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--card);
+  font-size: 12.5px;
+  line-height: 20px;
+  color: var(--muted);
+}
+
+.preview-head b { font-weight: 600; color: var(--text); }
+
+.live {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 3px var(--ok-tint);
+}
+
+.preview-head .ms {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.bubbles {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 7px;
+  padding: 10px 14px 12px;
+}
+
+.msg {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 88%;
+}
+
+.msg.in { align-self: flex-start; }
+.msg.out { align-self: flex-end; }
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.avatar.alt { background: linear-gradient(135deg, #fbbf24, #f97316); }
+
+.bubble {
+  padding: 6px 12px 7px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.msg.in .bubble {
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 5px;
+  background: var(--card);
+  color: var(--text);
+}
+
+.msg.out .bubble {
+  border-bottom-right-radius: 5px;
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 12px;
+  padding: 5px 5px 5px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+.composer .send {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+}
+
+.composer svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- FAQ 手风琴：details[name] 同时只展开一项 ---------- */
+
+.faq { margin-top: 36px; }
+
+.faq-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.faq-head h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.faq-count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.faq-list {
+  display: grid;
+  gap: 10px;
+}
+
+.faq-item {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  transition: border-color .25s ease, background-color .25s ease, box-shadow .25s ease;
+}
+
+@media (hover: hover) {
+  .faq-item:hover { border-color: var(--line-strong); }
+  .faq-item:not([open]) summary:hover .pm { background: var(--line); }
+}
+
+.faq-item[open] {
+  border-color: var(--brand-line);
+  background: var(--faq-open);
+  box-shadow: 0 12px 30px -20px var(--brand-glow);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 13px;
+  list-style: none;
+  font-size: 15.5px;
+  line-height: 1.5;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.q-no {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 9px;
+  background: var(--track);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: background-color .25s ease, color .25s ease;
+}
+
+.q-text {
+  flex: 1;
+  min-width: 0;
+  transition: color .25s ease;
+}
+
+.pm {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--track);
+  transition: background-color .25s ease, transform .35s ease;
+}
+
+.pm::before,
+.pm::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 2px;
+  margin: -1px 0 0 -6px;
+  border-radius: 2px;
+  background: var(--muted);
+  transition: transform .35s ease, background-color .25s ease;
+}
+
+.pm::after { transform: rotate(90deg); }
+
+.faq-item[open] .q-no { background: var(--brand); color: var(--on-brand); }
+.faq-item[open] .q-text { color: var(--brand-ink); }
+.faq-item[open] .pm { background: var(--brand-soft); transform: rotate(180deg); }
+.faq-item[open] .pm::before,
+.faq-item[open] .pm::after { background: var(--brand); }
+.faq-item[open] .pm::after { transform: rotate(0deg); }
+
+.faq-item::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition: block-size .36s cubic-bezier(.2, .8, .2, 1), content-visibility .36s allow-discrete;
+}
+
+.faq-item[open]::details-content { block-size: auto; }
+
+.faq-body {
+  padding: 0 24px 18px 60px;
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--text-2);
+}
+
+.faq-body p { margin: 0; }
+
+.faq-item[open] .faq-body { animation: faq-in .4s ease both; }
+
+@keyframes faq-in {
+  from { opacity: 0; transform: translateY(-4px); }
+}
+
+.foot {
+  margin: 28px 0 0;
+  font-size: 13px;
+  color: var(--faint);
+  text-align: center;
+}
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 820px) {
+  .example { grid-template-columns: minmax(0, 1fr); }
+  .bubbles { min-height: 150px; }
+
+  /* 窄屏下各面板高度差异大，改回按内容撑开，避免短面板下方大片留白 */
+  .panel { display: none; }
+
+  #tab-overview:checked ~ .panels #panel-overview,
+  #tab-api:checked ~ .panels #panel-api,
+  #tab-examples:checked ~ .panels #panel-examples { display: block; }
+}
+
+@media (max-width: 640px) {
+  body { font-size: 14.5px; }
+
+  .page { padding: 20px 16px 40px; }
+
+  .title-row { gap: 8px; }
+
+  h1 { font-size: 22px; }
+
+  .lede { font-size: 14.5px; }
+
+  .tabs { margin-top: 20px; border-radius: 16px; }
+
+  .tabs-head { padding: 6px 0; }
+
+  .tabs-meta { display: none; }
+
+  .tabbar {
+    --tab-min: 136px;
+    padding: 6px 12px;
+    scroll-padding-inline: 16px;
+  }
+
+  .panel { padding: 20px 18px 22px; }
+
+  .features { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+
+  .signature { font-size: 13px; }
+
+  /* 参数表在窄屏改为逐行卡片：参数 / 类型 / 默认值一行，说明另起一行 */
+  .params,
+  .params tbody { display: block; }
+
+  .params thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .params tr {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: 2px 10px;
+    padding: 11px 14px 12px;
+    border-bottom: 1px solid var(--line-2);
+  }
+
+  .params tr:last-child { border-bottom: 0; }
+
+  .params td { padding: 0; border: 0; }
+
+  .params td:nth-child(3) {
+    justify-self: end;
+    font-size: 12px;
+    color: var(--faint);
+  }
+
+  .params td:nth-child(3)::before { content: "默认 "; }
+
+  .params td:nth-child(4) {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .faq { margin-top: 30px; }
+
+  .faq-item summary { gap: 12px; padding: 13px 14px; font-size: 15px; }
+
+  .q-no { width: 26px; height: 26px; border-radius: 8px; font-size: 11px; }
+
+  .faq-body { padding: 0 16px 16px 52px; font-size: 14px; }
+}
+
+@supports not (animation-timeline: scroll()) {
+  @media (max-width: 640px) {
+    .tabbar { --fade-r: 28px; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator, .tab, .panel, .faq-item, .q-no, .q-text, .pm, .pm::before, .pm::after {
+    transition: none !important;
+  }
+  .faq-item::details-content { transition: none; }
+  .faq-item[open] .faq-body { animation: none; }
+}
+
+@media (forced-colors: active) {
+  .indicator { forced-color-adjust: none; background: Highlight; }
+
+  #tab-overview:checked ~ .tabs-head [for="tab-overview"],
+  #tab-api:checked ~ .tabs-head [for="tab-api"],
+  #tab-examples:checked ~ .tabs-head [for="tab-examples"] { forced-color-adjust: none; color: HighlightText; }
+
+  .faq-item[open] .q-no { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+}
+
+@media print {
+  .tabs-head { display: none; }
+  .panel { grid-area: auto; visibility: visible; opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header class="doc-head">
+    <div class="doc-top">
+      <span class="brand">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9"/><path d="M5.6 13c2.3-3 4.6-3 6.9 0s4.6 3 6.9 0 4.6-3 6.9 0"/><path d="M5.6 20c2.3-3 4.6-3 6.9 0s4.6 3 6.9 0 4.6-3 6.9 0"/></svg>
+        潮汐文档
+      </span>
+      <ol class="crumbs" aria-label="当前位置">
+        <li>SDK 参考</li>
+        <li>客户端</li>
+        <li aria-current="page">实时消息</li>
+      </ol>
+    </div>
+    <div class="title-row">
+      <h1>潮汐实时消息 SDK</h1>
+      <span class="tag tag-ver">v2.4.0</span>
+      <span class="tag tag-ok">稳定版</span>
+    </div>
+    <p class="lede">为 Web、移动端和小程序提供低延迟的消息收发、在线状态与历史同步能力。本页文字均为中文占位内容。</p>
+  </header>
+
+  <section class="tabs" aria-label="SDK 文档内容">
+    <input class="tab-radio" type="radio" name="doc-tab" id="tab-overview" checked>
+    <input class="tab-radio" type="radio" name="doc-tab" id="tab-api">
+    <input class="tab-radio" type="radio" name="doc-tab" id="tab-examples">
+
+    <div class="tabs-head">
+      <div class="tabbar">
+        <div class="tablist">
+          <span class="indicator" aria-hidden="true"></span>
+          <label class="tab" for="tab-overview" id="label-overview">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5A1.5 1.5 0 0 1 4.5 4H9a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5h-5A1.5 1.5 0 0 1 3 16z"/><path d="M21 5.5A1.5 1.5 0 0 0 19.5 4H15a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5h5A1.5 1.5 0 0 0 21 16z"/></svg>
+            概览
+          </label>
+          <label class="tab" for="tab-api" id="label-api">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H7a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-1"/></svg>
+            API
+          </label>
+          <label class="tab" for="tab-examples" id="label-examples">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7.5 9.5 3 2.5-3 2.5"/><path d="M13 15h3.5"/></svg>
+            示例
+          </label>
+        </div>
+      </div>
+      <p class="tabs-meta">更新于 2026-09-18 · 阅读约 5 分钟</p>
+    </div>
+
+    <div class="panels">
+      <section class="panel" id="panel-overview" aria-labelledby="label-overview">
+        <h2>什么是潮汐 SDK</h2>
+        <p>潮汐 SDK 是一套轻量的实时消息客户端，帮助你在几分钟内为产品接入聊天、通知与多人协作。这里是中文占位文字，用来展示正文段落在文档站中的排版、行高与字重层次。</p>
+        <ul class="features">
+          <li class="feature">
+            <h3><span class="f-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12z"/></svg></span>毫秒级送达</h3>
+            <p>全球 30+ 边缘节点就近接入，端到端延迟通常低于 100ms。</p>
+          </li>
+          <li class="feature">
+            <h3><span class="f-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 0 1-14.6 5.9"/><path d="M3.5 12a8.5 8.5 0 0 1 14.6-5.9"/><path d="M18.5 2.5v4h-4"/><path d="M5.5 21.5v-4h4"/></svg></span>断线不丢消息</h3>
+            <p>自动重连并补发离线期间的消息，历史记录默认保留 7 天。</p>
+          </li>
+          <li class="feature">
+            <h3><span class="f-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="14" height="11" rx="2"/><path d="M6 19h6"/><path d="M9 15v4"/><rect x="17.5" y="8" width="4.5" height="12" rx="1.5"/></svg></span>多端一套 API</h3>
+            <p>Web、iOS、Android 与小程序共用同一套接口与事件模型。</p>
+          </li>
+        </ul>
+        <div class="meta-row">
+          <span class="meta-label">适用场景</span>
+          <span class="scene">在线客服</span>
+          <span class="scene">直播弹幕</span>
+          <span class="scene">协同编辑</span>
+          <span class="scene">订单通知</span>
+          <span class="scene">IoT 设备上报</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">快速安装</span>
+          <code class="install-cmd"><span class="prompt">$</span>npm install @tide/realtime</code>
+          <span>需要 Node.js 18 及以上，或任意现代浏览器</span>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-api" aria-labelledby="label-api">
+        <div class="api-head">
+          <code class="signature"><span class="fn">createClient</span>(<span class="arg">options</span>: <span class="ty">ClientOptions</span>): <span class="ty">TideClient</span></code>
+          <span class="chip">同步 · 返回客户端实例</span>
+        </div>
+        <p>创建客户端实例；创建后不会自动连接，需要再调用 <code>client.connect()</code>。下表为 options 的字段说明（占位）。</p>
+        <div class="table-wrap">
+          <table class="params">
+            <thead>
+              <tr><th scope="col">参数</th><th scope="col">类型</th><th scope="col">默认值</th><th scope="col">说明</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="name">appId</code><span class="req">必填</span></td>
+                <td><code class="type">string</code></td>
+                <td><span class="def">—</span></td>
+                <td>在控制台创建应用后获得的唯一标识</td>
+              </tr>
+              <tr>
+                <td><code class="name">region</code></td>
+                <td><code class="type">'cn' | 'global'</code></td>
+                <td><code class="def">'cn'</code></td>
+                <td>接入区域，决定优先连接的边缘节点</td>
+              </tr>
+              <tr>
+                <td><code class="name">reconnect</code></td>
+                <td><code class="type">boolean</code></td>
+                <td><code class="def">true</code></td>
+                <td>网络中断后是否自动重连并补发消息</td>
+              </tr>
+              <tr>
+                <td><code class="name">timeout</code></td>
+                <td><code class="type">number</code></td>
+                <td><code class="def">10000</code></td>
+                <td>建立连接的超时时间，单位为毫秒</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-examples" aria-labelledby="label-examples">
+        <h2>订阅频道并发送一条消息</h2>
+        <p>一段最小可运行代码，以及它运行后在界面上的效果示意。</p>
+        <div class="example">
+          <figure class="code">
+            <figcaption class="code-head">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+              chat.ts
+              <span class="lang">TypeScript</span>
+            </figcaption>
+<pre><code><span class="line"><span class="k">import</span> { createClient } <span class="k">from</span> <span class="s">'@tide/realtime'</span></span>
+<span class="line"></span>
+<span class="line"><span class="k">const</span> client <span class="o">=</span> <span class="f">createClient</span>({ <span class="p">appId</span>: <span class="s">'demo-app'</span> })</span>
+<span class="line"><span class="k">await</span> client.<span class="f">connect</span>()</span>
+<span class="line"></span>
+<span class="line"><span class="c">// 订阅频道：收到新消息时渲染到界面</span></span>
+<span class="line">client.<span class="f">subscribe</span>(<span class="s">'room:42'</span>, (msg) <span class="o">=&gt;</span> <span class="f">render</span>(msg))</span>
+<span class="line"><span class="k">await</span> client.<span class="f">publish</span>(<span class="s">'room:42'</span>, { <span class="p">text</span>: <span class="s">'大家好！'</span> })</span></code></pre>
+          </figure>
+          <div class="preview" role="img" aria-label="运行效果示意：room:42 频道中的三条消息">
+            <div class="preview-head"><span class="live"></span><b>room:42</b>已连接<span class="ms">42ms</span></div>
+            <div class="bubbles">
+              <div class="msg in"><span class="avatar" title="小潮">潮</span><span class="bubble">欢迎加入 room:42</span></div>
+              <div class="msg out"><span class="bubble">大家好！</span></div>
+              <div class="msg in"><span class="avatar alt" title="阿澜">澜</span><span class="bubble">收到，消息秒达。</span></div>
+            </div>
+            <div class="composer">输入消息…<span class="send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="faq" aria-labelledby="faq-title">
+    <div class="faq-head">
+      <h2 id="faq-title">常见问题</h2>
+      <span class="faq-count">共 3 个问题</span>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item" name="faq" open>
+        <summary>
+          <span class="q-no">01</span>
+          <span class="q-text">如何获取 appId 和密钥？</span>
+          <span class="pm" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p>登录潮汐控制台，进入「应用管理」并点击「新建应用」，创建完成后即可在应用详情页看到 appId。密钥只用于服务端签名，请不要写进前端代码或提交到代码仓库。</p>
+        </div>
+      </details>
+      <details class="faq-item" name="faq">
+        <summary>
+          <span class="q-no">02</span>
+          <span class="q-text">网络断开后，消息会丢失吗？</span>
+          <span class="pm" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p>不会。SDK 默认开启自动重连（<code>reconnect: true</code>），恢复连接后会按顺序补发离线期间的消息；超过 7 天的历史消息，可以通过服务端接口分页拉取。</p>
+        </div>
+      </details>
+      <details class="faq-item" name="faq">
+        <summary>
+          <span class="q-no">03</span>
+          <span class="q-text">支持哪些平台和浏览器？</span>
+          <span class="pm" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p>支持 Chrome、Edge、Safari、Firefox 的最近两个大版本，以及 iOS 13+、Android 8+ 和微信、支付宝小程序。服务端推荐使用 Node.js 18 及以上版本。</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <p class="foot">潮汐文档 · 示例页面，内容均为占位</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>体素 3D 查看 · Claude Opus 5.5</title>
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #f4efe6; color: #1d1a16; font: 14px/1.5 -apple-system, "PingFang SC", "Noto Sans SC", sans-serif; }
+  canvas { display: block; width: 100vw; height: 100vh; outline: none; touch-action: none; cursor: grab; }
+  .bar { position: fixed; left: 14px; right: 14px; top: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; pointer-events: none; }
+  .bar > * { pointer-events: auto; padding: 6px 12px; border: 1px solid #e3dccf; border-radius: 999px; background: #fffdf8e8; font: inherit; }
+  .bar a { color: inherit; font-weight: 800; text-decoration: none; }
+  .bar button { font-weight: 800; cursor: pointer; }
+  .hint { position: fixed; left: 14px; bottom: 12px; font-size: 12px; color: #6b645a; }
+</style>
+</head>
+<body>
+<canvas id="scene" tabindex="0"></canvas>
+<div class="bar"><a href="../">← 返回</a><b id="title">加载中…</b><span id="info" hidden></span>
+<button id="view" type="button">换视角</button><button id="spin" type="button">自动旋转</button><button id="play" type="button" hidden>暂停</button></div>
+<div class="hint">拖拽旋转 · 滚轮或 +/- 缩放 · 方向键微调 · 0 或双击复位 · 动画按空格暂停 / 继续</div>
+<script src="runtime/renderer.js"></script>
+<script src="runtime/motion.js"></script>
+<script>
+(async () => {
+  const $ = (id) => document.getElementById(id);
+  try {
+    const job = await (async () => ({ title: "中秋赏月", base: './', animated: true }))();
+    const canvas = $('scene');
+    const v = job.animated ? new MotionVoxelView(canvas) : new VoxelView(canvas);
+    const stats = job.animated ? await v.load(job.base + 'model.vox', job.base + 'motion.json') : await v.load(job.base + 'model.vox');
+    document.title = job.title + ' · 体素 3D 查看';
+    $('title').textContent = job.title;
+    $('info').textContent = `${(stats.voxel_count || 0).toLocaleString()} 体素 · ${job.animated ? '循环动画' : '静态'}`;
+    $('info').hidden = false;
+    const views = ['iso', 'front', 'side', 'back', 'top'];
+    let vi = 0;
+    $('view').onclick = () => { vi = (vi + 1) % views.length; v.setView(views[vi]); };
+    $('spin').onclick = () => { v.toggleRotation(); $('spin').textContent = v.auto ? '停止旋转' : '自动旋转'; };
+    if (job.animated) {
+      v.setPlaying(true);
+      $('play').hidden = false;
+      const sync = () => { $('play').textContent = v.playing ? '暂停' : '播放'; };
+      $('play').onclick = () => { v.setPlaying(!v.playing); sync(); };
+      canvas.addEventListener('keydown', (e) => { if (e.code === 'Space') setTimeout(sync); });
+    }
+    canvas.focus();
+  } catch (e) {
+    $('title').textContent = '加载失败：' + e.message;
+  }
+})();
+</script>
+</body>
+</html>
